@@ -1,2 +1,9 @@
+(include_subdirs qualified)
+
 (library
  (name cpusim))
+
+; Disabling unused warnings as errors
+(env
+ (dev
+  (flags (:standard -warn-error -A-26-27-32-33-34 -w -26-27-32-33-34))))
