@@ -14,6 +14,22 @@ module Bit = struct
     type imm4 = t * t * t * t
     type imm8 = t * t * t * t * t * t * t * t
     type imm12 = t * t * t * t * t * t * t * t * t * t * t * t
+
+    let rec bin_to_int = function
+        | [] -> 0
+        | B0 :: bs -> 2 * bin_to_int bs
+        | B1 :: bs -> 2 * bin_to_int bs + 1
+
+    let imm4_to_int = function
+        | (b3, b2, b1, b0) -> bin_to_int [b0; b1; b2; b3]
+
+    let imm8_to_int = function
+        | (b7, b6, b5, b4, b3, b2, b1, b0) ->
+                bin_to_int [b0; b1; b2; b3; b4; b5; b6; b7]
+
+    let imm12_to_int = function
+        | (b11, b10, b9, b8, b7, b6, b5, b4, b3, b2, b1, b0) ->
+                bin_to_int [b0; b1; b2; b3; b4; b5; b6; b7; b8; b9; b10; b11]
 end
 
 

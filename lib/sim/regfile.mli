@@ -1,7 +1,7 @@
-type half
+type half = int
 type t
 
 val create : unit -> t
-val read : t -> int -> half
-val write : t -> int -> half -> unit
+val read : t -> Ast.Reg.t -> half
+val write : t -> Ast.Reg.t -> half -> unit
 

@@ -1,10 +1,7 @@
 type half = int
+type reg = Ast.Reg.t
 
 type t =
-    (* { r0 : half; r1 : half; r2 : half; r3 : half;  *)
-    (*   r4 : half; r5 : half; r6 : half; r7 : half;  *)
-    (*   r8 : half; r9 : half; r10 : half; r11 : half;  *)
-    (*   r12 : half; r13 : half; r14 : half; r15 : half } *)
     { mutable r0 : half; mutable r1 : half; mutable r2 : half; mutable r3 : half; 
       mutable r4 : half; mutable r5 : half; mutable r6 : half; mutable r7 : half; 
       mutable r8 : half; mutable r9 : half; mutable r10 : half; mutable r11 : half; 
@@ -20,42 +17,41 @@ let create () =
 
 let read rf i =
     match i with
-    | 0 -> rf.r0
-    | 1 -> rf.r1
-    | 2 -> rf.r2
-    | 3 -> rf.r3
-    | 4 -> rf.r4
-    | 5 -> rf.r5
-    | 6 -> rf.r6
-    | 7 -> rf.r7
-    | 8 -> rf.r8
-    | 9 -> rf.r9
-    | 10 -> rf.r10
-    | 11 -> rf.r11
-    | 12 -> rf.r12
-    | 13 -> rf.r13
-    | 14 -> rf.r14
-    | 15 -> rf.r15
-    | _ -> failwith "wrong index"
+    | Ast.Reg.R0 -> rf.r0
+    | Ast.Reg.R1 -> rf.r1
+    | Ast.Reg.R2 -> rf.r2
+    | Ast.Reg.R3 -> rf.r3
+    | Ast.Reg.R4 -> rf.r4
+    | Ast.Reg.R5 -> rf.r5
+    | Ast.Reg.R6 -> rf.r6
+    | Ast.Reg.R7 -> rf.r7
+    | Ast.Reg.R8 -> rf.r8
+    | Ast.Reg.R9 -> rf.r9
+    | Ast.Reg.R10 -> rf.r10
+    | Ast.Reg.R11 -> rf.r11
+    | Ast.Reg.R12 -> rf.r12
+    | Ast.Reg.R13 -> rf.r13
+    | Ast.Reg.R14 -> rf.r14
+    | Ast.Reg.R15 -> rf.r15
 
 
 let write rf i data =
+    let masked_data = data land 0xffff in
     match i with
-    | 0 -> rf.r0 <- data
-    | 1 -> rf.r1 <- data
-    | 2 -> rf.r2 <- data
-    | 3 -> rf.r3 <- data
-    | 4 -> rf.r4 <- data
-    | 5 -> rf.r5 <- data
-    | 6 -> rf.r6 <- data
-    | 7 -> rf.r7 <- data
-    | 8 -> rf.r8 <- data
-    | 9 -> rf.r9 <- data
-    | 10 -> rf.r10 <- data
-    | 11 -> rf.r11 <- data
-    | 12 -> rf.r12 <- data
-    | 13 -> rf.r13 <- data
-    | 14 -> rf.r14 <- data
-    | 15 -> rf.r15 <- data
-    | _ -> failwith "wrong index"
+    | Ast.Reg.R0 -> rf.r0 <- masked_data
+    | Ast.Reg.R1 -> rf.r1 <- masked_data
+    | Ast.Reg.R2 -> rf.r2 <- masked_data
+    | Ast.Reg.R3 -> rf.r3 <- masked_data
+    | Ast.Reg.R4 -> rf.r4 <- masked_data
+    | Ast.Reg.R5 -> rf.r5 <- masked_data
+    | Ast.Reg.R6 -> rf.r6 <- masked_data
+    | Ast.Reg.R7 -> rf.r7 <- masked_data
+    | Ast.Reg.R8 -> rf.r8 <- masked_data
+    | Ast.Reg.R9 -> rf.r9 <- masked_data
+    | Ast.Reg.R10 -> rf.r10 <- masked_data
+    | Ast.Reg.R11 -> rf.r11 <- masked_data
+    | Ast.Reg.R12 -> rf.r12 <- masked_data
+    | Ast.Reg.R13 -> rf.r13 <- masked_data
+    | Ast.Reg.R14 -> rf.r14 <- masked_data
+    | Ast.Reg.R15 -> rf.r15 <- masked_data
 
