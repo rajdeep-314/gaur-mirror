@@ -1,5 +1,5 @@
-type addr
-type half
+type addr = int
+type half = int
 type t
 
 val max_addr : addr

@@ -13,7 +13,8 @@ let read ram addr =
     | Some data -> data
 
 let write ram addr data =
-    Hashtbl.add ram addr data
+    let masked_data = data land 0xffff in
+    Hashtbl.add ram addr masked_data
 
 let read_safe ram addr =
     if addr < 0 || addr >= max_addr then None
