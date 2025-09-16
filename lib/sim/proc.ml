@@ -59,7 +59,7 @@ let step (State (pc, rf, ram)) inst =
             State (pc + 1, rf, ram)
     | Addi (rd, rs, imm) ->
             let rsv = Rf.read rf rs in
-            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 16 in
+            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             let () = Rf.write rf rd (rsv + imm_sext) in
             State (pc + 1, rf, ram)
     | Sub (rd, rs1, rs2) ->
@@ -79,7 +79,7 @@ let step (State (pc, rf, ram)) inst =
     | Beq (rs1, rs2, imm) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
-            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 16 in
+            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             if v1 == v2 then
                 State (pc + imm_sext, rf, ram)
             else
@@ -87,22 +87,22 @@ let step (State (pc, rf, ram)) inst =
     | Blt (rs1, rs2, imm) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
-            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 16 in
+            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             if v1 < v2 then
                 State (pc + imm_sext, rf, ram)
             else
                 State (pc + 1, rf, ram)
     | Jalr (rd, rs, imm) ->
             let () = Rf.write rf rd (pc + 1) in
-            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 16 in
+            let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             State (pc + imm_sext, rf, ram)
     | Apc (rd, imm) ->
             let rdv = Rf.read rf rd in
-            let imm_sext = Bit.sign_extend (Bit.imm8_to_int imm) 16 in
+            let imm_sext = Bit.sign_extend (Bit.imm8_to_int imm) 8 in
             let () = Rf.write rf rd (rdv + pc + imm_sext) in
             State (pc + 1, rf, ram)
     | J imm ->
-            let imm_sext = Bit.sign_extend (Bit.imm12_to_int imm) 16 in
+            let imm_sext = Bit.sign_extend (Bit.imm12_to_int imm) 12 in
             State (pc + imm_sext, rf, ram)
 
 

@@ -10,7 +10,8 @@ module Rf = Cpusim.Regfile
 open Ast.Reg.Helper
 open Ast.Helper
 
-let prog : Ast.prog =
+(* Odd or even. *)
+let _prog1 : Ast.prog =
     [
         lui r1 0;
         lli r1 11;
@@ -26,7 +27,43 @@ let prog : Ast.prog =
         lli r4 1;
     ]
 
-let final = Proc.execute_prog prog
+(* Max of 3. *)
+let _prog2 : Ast.prog =
+    [
+        lli r1 4;
+        lli r2 68;
+        lli r3 68;
+
+        blt r1 r2 2;
+        j 2;
+        j 3;
+        add r4 r0 r1;
+        j 2;
+        add r4 r0 r2;
+        blt r4 r3 2;
+        j 2;
+        j 3;
+        add r10 r0 r4;
+        j 2;
+        add r10 r0 r3;
+    ]
+
+
+(* Sum of the first 250 natural numbers (starting from 1). *)
+let prog3 : Ast.prog =
+    [
+        lui r1 0;
+        lli r1 250;
+        addi r2 r0 0;
+
+        beq r1 r0 4;
+        add r2 r2 r1;
+        addi r1 r1 (-1);
+        j (-3);
+    ]
+
+
+let final = Proc.execute_prog prog3
 
 let () = print_endline ""
 let () = Rf.print (Proc.get_regfile final)
