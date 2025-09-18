@@ -1,7 +1,12 @@
 # To do
 
-- Add printer functions for RAM, instructions, programs, etc.
-- Make traces.
-- Test out programs that deal with the memory.
-- Test out more programs.
+- Printer functions
+    - For instructions in ast.ml
+    - For programs as wrappers over the instruction printer with newline after each instruction
+- Traces
+    - Make an appropriate type for traces
+    - step_with_trace
+    - execute_prog_with_trace
+- Test out more programs
+    - All from CA lab 1
 

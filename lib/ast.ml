@@ -81,6 +81,12 @@ module Reg = struct
         | R8 -> 8 | R9 -> 9 | R10 -> 10 | R11 -> 11
         | R12 -> 12 | R13 -> 13 | R14 -> 14 | R15 -> 15
 
+    let to_string = function
+        | R0 -> "r0" | R1 -> "r1" | R2 -> "r2" | R3 -> "r3"
+        | R4 -> "r4" | R5 -> "r5" | R6 -> "r6" | R7 -> "r7"
+        | R8 -> "r8" | R9 -> "r9" | R10 -> "r10" | R11 -> "r11"
+        | R12 -> "r12" | R13 -> "r13" | R14 -> "r14" | R15 -> "r15"
+
     module Helper = struct
         let r0 = R0
         let r1 = R1
@@ -104,7 +110,7 @@ module Reg = struct
 end
 
 
-type t = 
+type t =
     | Lli of Reg.t * Bit.imm8
     | Lui of Reg.t * Bit.imm8
     | Ld of Reg.t * Reg.t * Bit.imm4
@@ -122,7 +128,6 @@ type t =
 
 type prog = t list
 
-
 module Helper = struct
     let lli rd imm = Lli (rd, Bit.int_to_imm8 imm)
     let lui rd imm = Lui (rd, Bit.int_to_imm8 imm)
@@ -139,4 +144,24 @@ module Helper = struct
     let apc rd imm = Apc (rd, Bit.int_to_imm8 imm)
     let j imm = J (Bit.int_to_imm12 imm)
 end
+
+
+(* let string_of_inst = function *)
+(*     | Lli (rd, imm) -> *)
+(*             "lli " @ Reg.to_string rd @ " " @  *)
+(*     | Lui Reg.t * Bit.imm8 *)
+(*     | Ld Reg.t * Reg.t * Bit.imm4 *)
+(*     | St Reg.t * Reg.t * Bit.imm4 *)
+(*     | Add Reg.t * Reg.t * Reg.t *)
+(*     | Addi Reg.t * Reg.t * Bit.imm4 *)
+(*     | Sub Reg.t * Reg.t * Reg.t *)
+(*     | And Reg.t * Reg.t * Reg.t *)
+(*     | Not Reg.t * Reg.t *)
+(*     | Beq Reg.t * Reg.t * Bit.imm4 *)
+(*     | Blt Reg.t * Reg.t * Bit.imm4 *)
+(*     | Jalr Reg.t * Reg.t * Bit.imm4 *)
+(*     | Apc Reg.t * Bit.imm8 *)
+(*     | J Bit.imm12 *)
+
+(* let print_inst inst = print_string (string_of_inst inst) *)
 

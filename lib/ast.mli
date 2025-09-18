@@ -27,6 +27,7 @@ module Reg :
         | R12 | R13 | R14 | R15
 
     val to_int : t -> int
+    val to_string : t -> string
 
     module Helper :
         sig
