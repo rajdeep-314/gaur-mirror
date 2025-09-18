@@ -46,6 +46,7 @@ module Reg :
         val r13 : t
         val r14 : t
         val r15 : t
+        val reg_list : t list
         end
 
     end

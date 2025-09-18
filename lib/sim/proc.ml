@@ -42,13 +42,13 @@ let step (State (pc, rf, ram)) inst =
             State (pc + 1, rf, ram)
     | Ld (rd, rs, imm) ->
             let base_addr = Rf.read rf rs in
-            let offset = Bit.sign_extend (Bit.imm4_to_int imm) 16 in
+            let offset = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             let mem_data = Ram.read ram (base_addr + offset) in
             let () = Rf.write rf rd mem_data in
             State (pc + 1, rf, ram)
     | St (rs1, rs2, imm) ->
             let base_addr = Rf.read rf rs2 in
-            let offset = Bit.sign_extend (Bit.imm4_to_int imm) 16 in
+            let offset = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             let data = Rf.read rf rs1 in
             let () = Ram.write ram (base_addr + offset) data in
             State (pc + 1, rf, ram)

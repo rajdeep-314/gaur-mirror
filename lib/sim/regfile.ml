@@ -2,21 +2,21 @@ type half = int
 type reg = Ast.Reg.t
 
 type t =
-    { mutable r0 : half; mutable r1 : half; mutable r2 : half; mutable r3 : half; 
+    { mutable r1 : half; mutable r2 : half; mutable r3 : half; 
       mutable r4 : half; mutable r5 : half; mutable r6 : half; mutable r7 : half; 
       mutable r8 : half; mutable r9 : half; mutable r10 : half; mutable r11 : half; 
       mutable r12 : half; mutable r13 : half; mutable r14 : half; mutable r15 : half }
 
 
 let create () =
-    { r0 = 0; r1 = 0; r2 = 0; r3 = 0; 
+    { r1 = 0; r2 = 0; r3 = 0; 
       r4 = 0; r5 = 0; r6 = 0; r7 = 0; 
       r8 = 0; r9 = 0; r10 = 0; r11 = 0; 
       r12 = 0; r13 = 0; r14 = 0; r15 = 0 }
 
 
 let read rf = function
-    | Ast.Reg.R0 -> rf.r0
+    | Ast.Reg.R0 -> 0
     | Ast.Reg.R1 -> rf.r1
     | Ast.Reg.R2 -> rf.r2
     | Ast.Reg.R3 -> rf.r3
@@ -37,7 +37,7 @@ let read rf = function
 let write rf i data =
     let masked_data = data land 0xffff in
     match i with
-    | Ast.Reg.R0 -> rf.r0 <- masked_data
+    | Ast.Reg.R0 -> ()
     | Ast.Reg.R1 -> rf.r1 <- masked_data
     | Ast.Reg.R2 -> rf.r2 <- masked_data
     | Ast.Reg.R3 -> rf.r3 <- masked_data
@@ -55,43 +55,18 @@ let write rf i data =
     | Ast.Reg.R15 -> rf.r15 <- masked_data
 
 
+(* TODO:    Replace the pattern matching expression with Reg.to_int *)
 let print_reg rf reg =
     let data = read rf reg in
-    match reg with
-    | Ast.Reg.R0 -> Printf.printf "r0:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R1 -> Printf.printf "r1:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R2 -> Printf.printf "r2:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R3 -> Printf.printf "r3:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R4 -> Printf.printf "r4:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R5 -> Printf.printf "r5:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R6 -> Printf.printf "r6:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R7 -> Printf.printf "r7:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R8 -> Printf.printf "r8:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R9 -> Printf.printf "r9:\t\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R10 -> Printf.printf "r10:\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R11 -> Printf.printf "r11:\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R12 -> Printf.printf "r12:\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R13 -> Printf.printf "r13:\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R14 -> Printf.printf "r14:\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-    | Ast.Reg.R15 -> Printf.printf "r15:\t%04x\t\t%d\n" data (Ast.Bit.sign_extend data 16)
-
+    let data_sext = Ast.Bit.sign_extend data 16 in
+    let reg_n = Ast.Reg.to_int reg in
+    if reg_n > 9 then
+        Printf.printf "r%d:\t\t%04x\t\t%d" (Ast.Reg.to_int reg) data data_sext
+    else
+        Printf.printf "r%d:\t\t\t%04x\t\t%d" (Ast.Reg.to_int reg) data data_sext
 
 let print rf =
-    let () = print_reg rf Ast.Reg.R0 in
-    let () = print_reg rf Ast.Reg.R1 in
-    let () = print_reg rf Ast.Reg.R2 in
-    let () = print_reg rf Ast.Reg.R3 in
-    let () = print_reg rf Ast.Reg.R4 in
-    let () = print_reg rf Ast.Reg.R5 in
-    let () = print_reg rf Ast.Reg.R6 in
-    let () = print_reg rf Ast.Reg.R7 in
-    let () = print_reg rf Ast.Reg.R8 in
-    let () = print_reg rf Ast.Reg.R9 in
-    let () = print_reg rf Ast.Reg.R10 in
-    let () = print_reg rf Ast.Reg.R11 in
-    let () = print_reg rf Ast.Reg.R12 in
-    let () = print_reg rf Ast.Reg.R13 in
-    let () = print_reg rf Ast.Reg.R14 in
-    print_reg rf Ast.Reg.R15
-
+    let print_func reg =
+        let () = print_reg rf reg in print_endline "" in
+    List.iter print_func Ast.Reg.Helper.reg_list
 

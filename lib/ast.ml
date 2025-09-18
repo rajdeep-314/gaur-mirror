@@ -98,6 +98,8 @@ module Reg = struct
         let r13 = R13
         let r14 = R14
         let r15 = R15
+
+        let reg_list = [r0; r1; r2; r3; r4; r5; r6; r7; r8; r9; r10; r11; r12; r13; r14; r15]
     end
 end
 
@@ -125,7 +127,7 @@ module Helper = struct
     let lli rd imm = Lli (rd, Bit.int_to_imm8 imm)
     let lui rd imm = Lui (rd, Bit.int_to_imm8 imm)
     let ld rd rs imm = Ld (rd, rs, Bit.int_to_imm4 imm)
-    let st rs1 rs2 imm = Ld (rs1, rs2, Bit.int_to_imm4 imm)
+    let st rs1 rs2 imm = St (rs1, rs2, Bit.int_to_imm4 imm)
     let add rd rs1 rs2 = Add (rd, rs1, rs2)
     let addi rd rs imm = Addi (rd, rs, Bit.int_to_imm4 imm)
     let sub rd rs1 rs2 = Sub (rd, rs1, rs2)
