@@ -146,22 +146,49 @@ module Helper = struct
 end
 
 
-(* let string_of_inst = function *)
-(*     | Lli (rd, imm) -> *)
-(*             "lli " @ Reg.to_string rd @ " " @  *)
-(*     | Lui Reg.t * Bit.imm8 *)
-(*     | Ld Reg.t * Reg.t * Bit.imm4 *)
-(*     | St Reg.t * Reg.t * Bit.imm4 *)
-(*     | Add Reg.t * Reg.t * Reg.t *)
-(*     | Addi Reg.t * Reg.t * Bit.imm4 *)
-(*     | Sub Reg.t * Reg.t * Reg.t *)
-(*     | And Reg.t * Reg.t * Reg.t *)
-(*     | Not Reg.t * Reg.t *)
-(*     | Beq Reg.t * Reg.t * Bit.imm4 *)
-(*     | Blt Reg.t * Reg.t * Bit.imm4 *)
-(*     | Jalr Reg.t * Reg.t * Bit.imm4 *)
-(*     | Apc Reg.t * Bit.imm8 *)
-(*     | J Bit.imm12 *)
+let string_of_inst = function
+    | Lli (rd, imm) ->
+            "lli " ^ Reg.to_string rd ^ " " ^ string_of_int (Bit.imm8_to_int imm)
+    | Lui (rd,imm) -> 
+            "lui " ^ Reg.to_string rd ^ " " ^ string_of_int (Bit.imm8_to_int imm)
+    | Ld (rd,rs,imm) ->
+            "ld " ^ Reg.to_string rd ^ " " ^ Reg.to_string rs ^ " " ^
+            string_of_int (Bit.sign_extend (Bit.imm4_to_int imm) 4)
+    | St (rs1,rs2,imm) ->
+            "st " ^ Reg.to_string rs1 ^ " " ^ Reg.to_string rs2 ^ " " ^
+            string_of_int (Bit.sign_extend (Bit.imm4_to_int imm) 4)
+    | Add (rd,rs1,rs2) ->
+            "add " ^ Reg.to_string rd ^ " " ^ Reg.to_string rs1 ^ " " ^ Reg.to_string rs2
+    | Addi (rd,rs,imm) ->
+            "addi " ^ Reg.to_string rd ^ " " ^ Reg.to_string rs ^ " " ^
+            string_of_int (Bit.sign_extend (Bit.imm4_to_int imm) 4)
+    | Sub (rd,rs1,rs2) ->
+            "sub " ^ Reg.to_string rd ^ " " ^ Reg.to_string rs1 ^ " " ^ Reg.to_string rs2
+    | And (rd,rs1,rs2) ->
+            "and " ^ Reg.to_string rd ^ " " ^ Reg.to_string rs1 ^ " " ^ Reg.to_string rs2
+    | Not (rd,rs) ->
+            "not " ^ Reg.to_string rd ^ " " ^ Reg.to_string rs 
+    | Beq (rs1,rs2,imm) ->
+            "beq " ^ Reg.to_string rs1 ^ " " ^ Reg.to_string rs2 ^ " " ^
+            string_of_int (Bit.sign_extend (Bit.imm4_to_int imm) 4)
+    | Blt (rs1,rs2,imm) ->
+            "blt " ^ Reg.to_string rs1 ^ " " ^ Reg.to_string rs2 ^ " " ^
+            string_of_int (Bit.sign_extend (Bit.imm4_to_int imm) 4)
+    | Jalr (rd,rs,imm) ->
+            "jalr " ^ Reg.to_string rd ^ " " ^ Reg.to_string rs ^ " " ^
+            string_of_int (Bit.sign_extend (Bit.imm4_to_int imm) 4)
+    | Apc (rd,imm) ->
+            "apc " ^ Reg.to_string rd ^ " " ^
+            string_of_int (Bit.sign_extend (Bit.imm8_to_int imm) 8)
+    | J (imm) ->
+            "j " ^ string_of_int (Bit.sign_extend (Bit.imm12_to_int imm) 12)
 
-(* let print_inst inst = print_string (string_of_inst inst) *)
+
+let print_inst inst = print_string (string_of_inst inst)
+
+let print_prog =
+    let print_func inst =
+        let () = print_inst inst in
+        print_endline "" in
+    List.iter print_func
 

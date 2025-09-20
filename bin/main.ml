@@ -118,4 +118,4 @@ let () = Rf.print (Proc.get_regfile final)
 
 let () = print_endline "\nRAM:"
 let () = Ram.print_all_nz (Proc.get_ram final)
-
+let () = Ast.print_prog prog4
