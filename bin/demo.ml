@@ -210,3 +210,56 @@ let final = Proc.execute_prog_on_ram init_ram p5
 let () = print_endline "\nFinal RAM:"
 let () = Ram.print_all_nz (Proc.get_ram final)
 
+
+(*
+6. Generate the Fibonacci sequence and store it in the RAM.
+   Let RAM[0] and RAM[1] store n and base, respectively. The program should
+   populate the RAM from addresses base through base + n - 1 with the first n
+   elements of the Fibonacci sequence (0, 1, 1, 2, ...).
+
+    Program:
+        ld r1 r0 0
+        ld r2 r0 1
+        li r3 0
+        li r5 0
+        li r6 1
+
+        loop:
+        beq r3 r1 end
+        add r4 r2 r3
+        st r5 r4 0
+        add r7 r5 r6
+        mv r5 r6
+        mv r6 r7
+        addi r3 r3 1
+        j loop
+
+        end:
+*)
+let p6 : Ast.prog =
+    [
+        ld r1 r0 0;
+        ld r2 r0 1;
+        addi r3 r0 0;
+        addi r5 r0 0;
+        addi r6 r0 1;
+
+        beq r3 r1 2;
+        j 2;
+        j 8;
+        add r4 r2 r3;
+        st r5 r4 0;
+        add r7 r5 r6;
+        addi r5 r6 0;
+        addi r6 r7 0;
+        addi r3 r3 1;
+        j (-9);
+    ]
+
+let init_ram = Ram.init_from_mmap [(0, 10); (1, 10)]
+
+let () = print_endline "\n\nProgram 6:\n\tGenerate the Fibonacci sequence.\n"
+
+let final = Proc.execute_prog_on_ram init_ram p6
+let () = Ram.print_all_nz (Proc.get_ram final)
+
