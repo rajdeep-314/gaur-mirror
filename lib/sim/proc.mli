@@ -10,4 +10,5 @@ val get_ram : t -> Ram.t
 val step : t -> Ast.t -> t
 val execute_at_pc : t -> Ast.prog -> t
 val execute_prog : Ast.prog -> t
+val execute_prog_on_ram : Ram.t -> Ast.prog -> t
 

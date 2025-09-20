@@ -29,6 +29,12 @@ let write_safe ram addr data =
     else Some (write ram addr data)
 
 
+let init_from_mmap map =
+    let ram = create () in
+    let () = List.iter (fun (addr, data) -> write ram addr data) map in
+    ram
+
+
 (* Printer functions. *)
 
 (* Prints the data stored at address addr. *)

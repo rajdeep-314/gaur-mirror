@@ -87,8 +87,10 @@ let step (State (pc, rf, ram)) inst =
     | Blt (rs1, rs2, imm) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
+            let v1_sext = Bit.sign_extend v1 16 in
+            let v2_sext = Bit.sign_extend v2 16 in
             let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
-            if v1 < v2 then
+            if v1_sext < v2_sext then
                 State (pc + imm_sext, rf, ram)
             else
                 State (pc + 1, rf, ram)
@@ -114,5 +116,9 @@ let rec execute_at_pc (State (pc, rf, ram) as st) prog =
 
 let execute_prog prog =
     let init_st = create () in
+    execute_at_pc init_st prog
+
+let execute_prog_on_ram ram prog =
+    let init_st = State (0, Rf.create (), ram) in
     execute_at_pc init_st prog
 

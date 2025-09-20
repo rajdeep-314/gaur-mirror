@@ -1,4 +1,4 @@
-(executable
- (public_name cpusim)
- (name main)
+(executables
+ (public_names cpusim ca)
+ (names main ca)
  (libraries cpusim))
