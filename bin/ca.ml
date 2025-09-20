@@ -81,7 +81,7 @@ let p3 : Ast.prog =
         j (-3);
     ]
 
-let () = print_endline "\n\nProgram 3:\n\tSet RAM[1] to RAM[100] to 0xc001.\n"
+let () = print_endline "\n\nProgram 3:\n\tSet RAM[1] to RAM[25] to 0xc001.\n"
 let final = Proc.execute_prog p3
 
 let () = Ram.print_all_nz (Proc.get_ram final)
