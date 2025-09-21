@@ -1,4 +1,4 @@
 (executables
- (public_names cpusim test demo)
- (names main test demo)
+ (public_names cpusim test demo ptdemo)
+ (names main test demo ptdemo)
  (libraries cpusim))

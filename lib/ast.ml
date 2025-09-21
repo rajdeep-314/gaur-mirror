@@ -146,7 +146,7 @@ module Helper = struct
 end
 
 
-let string_of_inst = function
+let to_string = function
     | Lli (rd, imm) ->
             "lli " ^ Reg.to_string rd ^ " " ^ string_of_int (Bit.imm8_to_int imm)
     | Lui (rd,imm) -> 
@@ -180,11 +180,11 @@ let string_of_inst = function
     | Apc (rd,imm) ->
             "apc " ^ Reg.to_string rd ^ " " ^
             string_of_int (Bit.sign_extend (Bit.imm8_to_int imm) 8)
-    | J (imm) ->
+    | J imm ->
             "j " ^ string_of_int (Bit.sign_extend (Bit.imm12_to_int imm) 12)
 
 
-let print_inst inst = print_string (string_of_inst inst)
+let print_inst inst = print_string (to_string inst)
 
 let print_prog =
     let print_func inst =

@@ -12,3 +12,14 @@ val execute_at_pc : t -> Ast.prog -> t
 val execute_prog : Ast.prog -> t
 val execute_prog_on_ram : Ram.t -> Ast.prog -> t
 
+
+val step_with_trace : t -> Ast.t -> t * Trace.t
+
+val execute_at_pc_wt : t -> Ast.prog -> Trace.t list -> t * (Trace.t list)
+val execute_prog_wt : Ast.prog -> t * (Trace.t list)
+val execute_prog_on_ram_wt : Ram.t -> Ast.prog -> t * (Trace.t list)
+
+val execute_at_pc_pt : t -> Ast.prog -> t
+val execute_prog_pt : Ast.prog -> t
+val execute_prog_on_ram_pt : Ram.t -> Ast.prog -> t
+

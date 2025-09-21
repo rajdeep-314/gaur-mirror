@@ -89,6 +89,6 @@ module Helper :
     val j : int -> t
     end
 
-val string_of_inst : t -> string
+val to_string : t -> string
 val print_inst : t -> unit
 val print_prog : t list -> unit
