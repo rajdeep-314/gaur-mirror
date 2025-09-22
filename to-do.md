@@ -1,5 +1,11 @@
 # To do
 
+- RAM
+    - Replace hash table with array
+    - Take a look at alternate implementation of arrays as well
+    - Don't bother with optimization if all is good
+    - Maybe benchmark it with hash tables
+
 - Traces
     - Make r0 a zero-register in the traces
 - Make a lexer/parser
