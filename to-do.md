@@ -15,3 +15,6 @@
     - Have flags for trace and final state
     - Put the trace in one file, final state in another file, maybe
 
+- Maybe breakpointing in the future? maybe look at how spike does it.
+- pretty pritning and dealing with tab misalignment
+- maybe think of an output format that is easier to parse, in the future.
