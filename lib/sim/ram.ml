@@ -12,7 +12,9 @@ let valid_address ram addr =
     addr >= 0 && addr < Array.length ram
 
 let read = Array.get
-let write = Array.set
+let write ram addr data =
+    let masked_data = data land 0xffff in
+    ram.(addr) <- masked_data
 
 let read_safe ram addr =
     if valid_address ram addr then Some ram.(addr)
