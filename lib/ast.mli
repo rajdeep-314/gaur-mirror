@@ -50,6 +50,7 @@ module Reg :
         val reg_list : t list
         end
 
+    val of_int : int -> t
     end
 
 type t = 

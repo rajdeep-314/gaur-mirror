@@ -11,8 +11,10 @@
     - Look at pretty printing the output (to deal with tab misalignment, etc.)
     - Do this for all kinds of outputs (traces, RAM prints, register file prints,
       disassembly, etc.)
-- Make a lexer/parser
-    - Use Menhir
+- Lexer/parser
+    - Implement comments
+    - Make a lexer/parser
+        - Use Menhir, maybe
 - Test out VM programs
     - Write a few VM programs
     - Translate to our assembly

@@ -3,6 +3,8 @@
 (library
  (name cpusim))
 
+(ocamllex lexer)
+
 ; Disabling unused warnings as errors
 (env
  (dev
