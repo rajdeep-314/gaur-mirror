@@ -5,12 +5,12 @@ module Reg = Ast.Reg
 
 let lex_string s =
     let lexbuf = Lexing.from_string s in
-    let rec aux acc =
+    let rec aux () =
         match Lexer.token lexbuf with
-        | EOF -> List.rev (EOF :: acc)
-        | tok -> aux (tok :: acc)
+        | EOF -> []
+        | tok -> tok :: aux ()
     in
-    aux []
+    aux ()
 
 
 let parse_inst_from_toks = function

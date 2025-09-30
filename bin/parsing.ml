@@ -24,7 +24,7 @@ let sp =
 
         lui r1 0            # Load upper immediate.
         lli r1 5            # Load lower immediate.
-        lui r2 192
+                        lui   r2          192
         lli r2 1
         addi r3 r0 1
         blt r1 r3 4
