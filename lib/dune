@@ -1,8 +1,8 @@
-(coq.extraction
-  (prelude extraction)
-  (extracted_modules assembler)
-  (theories assembler)
- )
+; (coq.extraction
+;   (prelude extraction)
+;   (extracted_modules assembler)
+;   (theories assembler)
+;  )
 
 (library
  (name assembler))

@@ -1,2 +1,1 @@
 (* Coq extraction script here. *)
-

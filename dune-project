@@ -1,5 +1,5 @@
 (lang dune 3.18)
-(require coq 0.10)
+(using coq 0.10)
 
 (name assembler)
 
