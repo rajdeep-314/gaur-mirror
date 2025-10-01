@@ -16,7 +16,7 @@ j 9
 add r4 r2 r3
 ld r4 r4 0
 blt r4 r0 4
-and_ r4 r4 r5
+and r4 r4 r5
 beq r4 r5 2
 addi r10 r10 1
 

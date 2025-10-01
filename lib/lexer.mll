@@ -45,5 +45,5 @@ rule token = parse
     | integer           { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | hex               { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
-    | _                 { failwith ("Lexing error: Match failed for" ^ Lexing.lexeme lexbuf) }
+    | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }
 
