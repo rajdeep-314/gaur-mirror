@@ -52,9 +52,9 @@ Definition width (l:Set) (inst:t l):nat :=
     end.
 
 
-Definition symtable (l:Set) : Set := list (l * nat).
+(* Definition symtable (l:Set) : Set := list (l * nat). *)
 
-Fixpoint build_symtable (l : Set) (p : prog l) (count : nat) : symtable l :=
+Fixpoint build_symtable (l : Set) (p : prog l) (count : nat) : symtable.t l :=
   match p with
   | [] => symtable.empty l
   | i :: p' =>
@@ -65,14 +65,14 @@ Fixpoint build_symtable (l : Set) (p : prog l) (count : nat) : symtable l :=
       end
   end.
 
-Definition symtable_of_prog (l:Set) (p:prog l) : symtable l :=
+Definition symtable_of_prog (l:Set) (p:prog l) : symtable.t l :=
     build_symtable l p 0.
 
 
 Definition inst: t string := label string "s".
 Definition sp:prog string:= [inst; label string "l"].
 
-Compute (symtable_of_prog string sp).
+(* Compute (symtable_of_prog string sp). *)
 
 Definition sample_prog : prog string :=
   [
@@ -86,5 +86,5 @@ Definition sample_prog : prog string :=
     j string "y"
   ].
 
-Compute symtable_of_prog string sample_prog.
+(* Compute symtable_of_prog string sample_prog. *)
 

@@ -1,5 +1,5 @@
 (coq.theory
  (name assembler)
  (theories Stdlib)
- (modules symtable ast isa machine)
+ (modules symtable ast bits isa machine assemble)
 )
