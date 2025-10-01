@@ -60,3 +60,11 @@ let parse_prog s =
     parse_prog_from_toks (lex_string s)
 
 
+let parse_file ic =
+    let content = really_input_string ic (in_channel_length ic) in
+    parse_prog content
+
+
+let parse_from_path path =
+    parse_file (open_in path)
+    

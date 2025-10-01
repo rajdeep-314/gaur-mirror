@@ -10,9 +10,14 @@
 
 
 let whitespace = [' ' '\t' '\r']+
-let digit = ['0'-'9']
-let natural = digit+
+
+let dec_digit = ['0'-'9']
+let natural = dec_digit+
 let integer = '-'? natural
+
+let hex_digit = ['0'-'9' 'a'-'f' 'A'-'F']
+let hex = ("0x" | "0X") hex_digit+
+
 let reg = 'r' natural
 let comment = '#' [^'\n']*
 
@@ -37,7 +42,8 @@ rule token = parse
     | "j"               { J }
     | reg               { let s = Lexing.lexeme lexbuf in
                         REG (int_of_string (String.sub s 1 (String.length s - 1))) }
-    | integer            { IMM (int_of_string (Lexing.lexeme lexbuf)) }
+    | integer           { IMM (int_of_string (Lexing.lexeme lexbuf)) }
+    | hex               { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
     | _                 { failwith ("Lexing error: Match failed for" ^ Lexing.lexeme lexbuf) }
 
