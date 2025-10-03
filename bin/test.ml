@@ -1,7 +1,7 @@
 let () = print_endline "CPU simulator testing.\n"
 
+module Ast = Syntax.Ast
 module Proc = Cpusim.Proc
-module Ast = Cpusim.Ast
 module Rf = Cpusim.Regfile
 module Ram = Cpusim.Ram
 

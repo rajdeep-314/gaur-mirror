@@ -1,3 +1,5 @@
+open Syntax
+
 type pc = int
 type t =
     | State of pc * Regfile.t * Ram.t

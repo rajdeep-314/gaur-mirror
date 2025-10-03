@@ -1,9 +1,7 @@
-(include_subdirs unqualified)
-
 (library
- (name cpusim))
+ (name cpusim)
+ (libraries syntax))
 
-(ocamllex lexer)
 
 ; Disabling unused warnings as errors
 (env

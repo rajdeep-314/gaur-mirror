@@ -1,3 +1,5 @@
+open Syntax
+
 type half = int
 type t
 

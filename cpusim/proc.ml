@@ -6,7 +6,7 @@ To do:
       Pass that as an argument? Can have default arguments.
 *)
 
-open Ast
+open Syntax.Ast
 
 module Rf = Regfile
 
@@ -241,7 +241,7 @@ let rec execute_at_pc_pt (State (pc, rf, ram) as st) prog =
             let () = print_endline "\nHALT\n" in st
     | Some inst ->
             let (st', tc) = step_with_trace st inst in
-            let () = Printf.printf "(%08x)\t%s\n" pc (Ast.to_string inst) in
+            let () = Printf.printf "(%08x)\t%s\n" pc (to_string inst) in
             let () = print_endline ("\t" ^ Trace.to_string tc) in
             execute_at_pc_pt st' prog
 

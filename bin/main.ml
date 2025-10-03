@@ -1,5 +1,5 @@
-module Parser = Cpusim.Parser
-module Ast = Cpusim.Ast
+module Parser = Syntax.Parser
+module Ast = Syntax.Ast
 module Ram = Cpusim.Ram
 module Rf = Cpusim.Regfile
 module Proc = Cpusim.Proc
@@ -42,10 +42,6 @@ let anon_fun arg =
         end
 
 
-(* Placeholder functions: BEGIN *)
-let placeholder_func_1 _ = Ram.create ()
-(* Placeholder functions: END *)
-
 let () =
     Arg.parse speclist anon_fun usage_msg
 
@@ -53,7 +49,7 @@ let init_ram =
     if !ram_path == "" then
         Ram.create ()
     else
-        placeholder_func_1 !ram_path
+        Bram.Parser.parse_file !ram_path
 
 
 let () =

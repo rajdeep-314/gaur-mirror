@@ -1,5 +1,6 @@
 (* CPU execution traces *)
 
+open Syntax
 
 module Rf = Regfile
 

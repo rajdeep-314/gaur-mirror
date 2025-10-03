@@ -1,3 +1,5 @@
+open Syntax
+
 type t =
     | RegMod of Ast.Reg.t * Ram.half
     | RamMod of Ram.addr * Ram.half

@@ -1,5 +1,5 @@
-open Cpusim.Ast.Helper
-open Cpusim.Ast.Reg.Helper
+open Syntax.Ast.Helper
+open Syntax.Ast.Reg.Helper
 
 let () = print_endline "CPU simulator: Parser testing.\n"
 
@@ -38,9 +38,9 @@ let sp =
         # End of program. Let's hope the lexer ignores me as well."
 
 
-let p = Cpusim.Parser.parse_prog sp
+let p = Syntax.Parser.parse_prog sp
 
-let () = Cpusim.Ast.print_prog p
+let () = Syntax.Ast.print_prog p
 let () = print_endline "\n-----\n"
-let () = Cpusim.Ast.print_prog ap
+let () = Syntax.Ast.print_prog ap
 

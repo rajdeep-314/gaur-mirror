@@ -1,3 +1,5 @@
+open Syntax
+
 type addr = int             (* address *)
 type half = int             (* half word *)
 

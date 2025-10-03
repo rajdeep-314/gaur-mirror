@@ -1,6 +1,6 @@
 let () = print_endline "CA lab 1 demo\n"
 
-module Ast = Cpusim.Ast
+module Ast = Syntax.Ast
 module Ram = Cpusim.Ram
 module Rf = Cpusim.Regfile
 module Proc = Cpusim.Proc
