@@ -43,21 +43,11 @@ end.
 Fixpoint splice (m n:nat) (bvec:bv n): bv m:=
 match m, bvec with
 | O, _ => nil
-| S m', nil => cons m' b0 (splice m' 0 nil)  (* pad with zeros if bvec is too short *)
+| S m', nil => cons m' b0 (splice m' 0 nil)  
 | S m', cons n' b bvec' => cons m' b (splice m' n' bvec')
 end.
 
-(* Fixpoint split (x n:nat) (bvec:bv n) {struct x} : (bv x) * (bv (n - x)) :=
-match x with
-| O => (nil, bvec)
-| S x' => 
-    match bvec in bv n' return bv n' -> (bv (S x')) * (bv (n' - S x')) with
-    | nil => fun _ => (cons x' b0 (zeros x'), nil)  (* shouldn't happen if n >= x *)
-    | cons n' b bvec' => fun vec =>
-        let (first, rest) := split x' n' bvec' in
-        (cons x' b first, rest)
-    end bvec
-end. *)
 
+(* Compute int_to_bv_n 4 (-2). *)
 
     

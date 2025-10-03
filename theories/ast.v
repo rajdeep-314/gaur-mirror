@@ -5,11 +5,10 @@ Import ListNotations.
 Open Scope string_scope.
 
 From assembler Require symtable.
-
+From assembler Require reg.
+Import reg.
 Definition imm :Set := Z.
 
-Inductive reg : Set := 
-| r0 | r1 | r2 | r3 | r4 | r5 | r6 | r7 | r8 | r9 | r10 | r11 | r12 | r13 | r14 | r15.  
 
 
 Inductive t (l : Set) : Set :=

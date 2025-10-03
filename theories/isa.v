@@ -3,27 +3,27 @@ From Stdlib Require Import String.
 From Stdlib Require Import List.
 Open Scope string_scope.
 
-Definition imm :Set := Z.
-
-Inductive reg : Set := 
-| r0 | r1 | r2 | r3 | r4 | r5 | r6 | r7 | r8 | r9 | r10 | r11 | r12 | r13 | r14 | r15.  
+From assembler Require bits.
+From assembler Require reg.
+Import reg.
+(* Definition imm :Set := Z. *)
 
 
 Inductive t : Set :=
-    | lli : reg -> imm -> t 
-    | lui : reg -> imm -> t 
-    | ld  : reg -> reg -> imm -> t 
-    | st  : reg -> reg -> imm -> t  
+    | lli : reg -> bits.bv 8 -> t 
+    | lui : reg -> bits.bv 8  -> t 
+    | ld  : reg -> reg -> bits.bv 4 -> t 
+    | st  : reg -> reg -> bits.bv 4 -> t  
     | add : reg -> reg -> reg -> t 
-    | addi: reg -> reg -> imm -> t 
+    | addi: reg -> reg -> bits.bv 4 -> t 
     | sub : reg -> reg -> reg -> t 
     | and : reg -> reg -> reg -> t 
     | not : reg -> reg -> t 
-    | beq : reg -> reg -> imm -> t 
-    | blt : reg -> reg -> imm -> t 
-    | jalr: reg -> reg -> imm -> t 
-    | apc : reg -> imm -> t 
-    | j  : imm -> t .
+    | beq : reg -> reg -> bits.bv 4 -> t 
+    | blt : reg -> reg -> bits.bv 4 -> t 
+    | jalr: reg -> reg -> bits.bv 4 -> t 
+    | apc : reg -> bits.bv 8 -> t 
+    | j  : bits.bv 12 -> t .
 
 
 Definition prog := list t.
