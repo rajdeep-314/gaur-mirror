@@ -3,6 +3,7 @@
 
 ## Top level
 
+- Clean up bin/
 - Implement max_steps
 - RAM file
     - Make the tool?
