@@ -10,11 +10,12 @@ Definition bit_to_string (b:bits.t) : string :=
   | bits.b1 => "1"
   end.
 
+
 Fixpoint bv_to_binary_string {n:nat} (bvec:bits.bv n) : string :=
-  match bvec with
-  | bits.nil => ""
-  | bits.cons _ b rest => bv_to_binary_string rest ++ bit_to_string b
-  end.
+match bvec with
+| bits.nil => ""
+| bits.cons _ b rest => bit_to_string b ++ bv_to_binary_string rest
+end.
 
 
 Definition reg_to_string (r:reg) : string :=
@@ -27,20 +28,20 @@ Definition reg_to_string (r:reg) : string :=
 
 Definition instr_to_string (i:isa.t) : string :=
   match i with
-  | isa.lli rd imm => "lli " ++ reg_to_string rd ++ ", " ++ bv_to_binary_string imm
-  | isa.lui rd imm => "lui " ++ reg_to_string rd ++ ", " ++ bv_to_binary_string imm
-  | isa.ld rd rs imm => "ld " ++ reg_to_string rd ++ ", " ++ reg_to_string rs ++ ", " ++ bv_to_binary_string imm
-  | isa.st rs1 rs2 imm => "st " ++ reg_to_string rs1 ++ ", " ++ reg_to_string rs2 ++ ", " ++ bv_to_binary_string imm
+  | isa.lli rd imm => "lli " ++ reg_to_string rd ++ ", " ++ bv_to_binary_string (bits.reverse 8 imm)
+  | isa.lui rd imm => "lui " ++ reg_to_string rd ++ ", " ++ bv_to_binary_string (bits.reverse 8 imm)
+  | isa.ld rd rs imm => "ld " ++ reg_to_string rd ++ ", " ++ reg_to_string rs ++ ", " ++ bv_to_binary_string (bits.reverse 4 imm)
+  | isa.st rs1 rs2 imm => "st " ++ reg_to_string rs1 ++ ", " ++ reg_to_string rs2 ++ ", " ++ bv_to_binary_string (bits.reverse 4 imm)
   | isa.add rd rs1 rs2 => "add " ++ reg_to_string rd ++ ", " ++ reg_to_string rs1 ++ ", " ++ reg_to_string rs2
-  | isa.addi rd rs imm => "addi " ++ reg_to_string rd ++ ", " ++ reg_to_string rs ++ ", " ++ bv_to_binary_string imm
+  | isa.addi rd rs imm => "addi " ++ reg_to_string rd ++ ", " ++ reg_to_string rs ++ ", " ++ bv_to_binary_string (bits.reverse 4 imm)
   | isa.sub rd rs1 rs2 => "sub " ++ reg_to_string rd ++ ", " ++ reg_to_string rs1 ++ ", " ++ reg_to_string rs2
   | isa.and rd rs1 rs2 => "and " ++ reg_to_string rd ++ ", " ++ reg_to_string rs1 ++ ", " ++ reg_to_string rs2
   | isa.not rd rs => "not " ++ reg_to_string rd ++ ", " ++ reg_to_string rs
-  | isa.beq r1 r2 imm => "beq " ++ reg_to_string r1 ++ ", " ++ reg_to_string r2 ++ ", " ++ bv_to_binary_string imm
-  | isa.blt r1 r2 imm => "blt " ++ reg_to_string r1 ++ ", " ++ reg_to_string r2 ++ ", " ++ bv_to_binary_string imm
-  | isa.jalr rd rs imm => "jalr " ++ reg_to_string rd ++ ", " ++ reg_to_string rs ++ ", " ++ bv_to_binary_string imm
-  | isa.apc rd imm => "apc " ++ reg_to_string rd ++ ", " ++ bv_to_binary_string imm
-  | isa.j imm => "j " ++ bv_to_binary_string imm
+  | isa.beq r1 r2 imm => "beq " ++ reg_to_string r1 ++ ", " ++ reg_to_string r2 ++ ", " ++ bv_to_binary_string (bits.reverse 4 imm)
+  | isa.blt r1 r2 imm => "blt " ++ reg_to_string r1 ++ ", " ++ reg_to_string r2 ++ ", " ++ bv_to_binary_string (bits.reverse 4 imm)
+  | isa.jalr rd rs imm => "jalr " ++ reg_to_string rd ++ ", " ++ reg_to_string rs ++ ", " ++ bv_to_binary_string (bits.reverse 4 imm)
+  | isa.apc rd imm => "apc " ++ reg_to_string rd ++ ", " ++ bv_to_binary_string (bits.reverse 8 imm)
+  | isa.j imm => "j " ++ bv_to_binary_string (bits.reverse 12 imm)
   | _ => "error"
   end.
 
@@ -52,4 +53,10 @@ Fixpoint prog_to_string (p:isa.prog) : string :=
   | [] => ""
   | [i] => instr_to_string i
   | i :: rest => instr_to_string i ++ newline ++ prog_to_string rest
+  end.
+
+Fixpoint machine_prog_to_string (bs:list (bits.bv 16)) : string :=
+  match bs with
+  | [] => ""
+  | b :: bs' => bv_to_binary_string b ++ "\n" ++ machine_prog_to_string bs'
   end.

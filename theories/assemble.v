@@ -9,8 +9,10 @@ From assembler Require symtable.
 From assembler Require ast.
 From assembler Require isa.
 From assembler Require printer.
+From assembler Require machine.
 
 Module smt := symtable.
+Module mc := machine.
 
 Definition symtbl: smt.t string := smt.empty string.
 
@@ -63,13 +65,39 @@ match p with
      (expanded ++ expand_prog_helper l rest tbl eq pc')%list
 end.
 
-Definition assemble (l:Set) (eq:l -> l -> bool) (p:ast.prog l) : isa.prog :=
+Definition ast_to_isa (l:Set) (eq:l -> l -> bool) (p:ast.prog l) : isa.prog :=
   let tbl := ast.symtable_of_prog l p in
   expand_prog_helper l p tbl eq 0.
 
 
-Definition assemble_str (p : ast.prog string) : isa.prog :=
-  assemble string String.eqb p.
+Definition ast_to_isa_str (p : ast.prog string) : isa.prog :=
+  ast_to_isa string String.eqb p.
 
 
-Compute printer.prog_to_string (assemble_str ast.sample_prog).
+Definition isa_to_machine_inst (inst:isa.t):bits.bv 16 :=
+  match inst with 
+  | isa.lli  rd imm      => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) imm))
+  | isa.lui  rd imm      => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) imm))
+  | isa.ld   rd rs imm   => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) (bits.concat 4 4 (mc.reg_to_bv rs) imm)))
+  | isa.st   rs1 rs2 imm => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rs1) (bits.concat 4 4 (mc.reg_to_bv rs2) imm)))
+  | isa.add  rd rs1 rs2  => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) (bits.concat 4 4 (mc.reg_to_bv rs1) (mc.reg_to_bv rs2))))
+  | isa.addi rd rs imm   => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) (bits.concat 4 4 (mc.reg_to_bv rs) imm)))
+  | isa.sub  rd rs1 rs2  => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) (bits.concat 4 4 (mc.reg_to_bv rs1) (mc.reg_to_bv rs2))))
+  | isa.and  rd rs1 rs2  =>  (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) (bits.concat 4 4 (mc.reg_to_bv rs1) (mc.reg_to_bv rs2))))
+  | isa.not  rd rs       =>  (bits.concat 4 12 (mc.opcode_of inst)(bits.concat 4 8 (mc.reg_to_bv rd)(bits.concat 4 4 (mc.reg_to_bv rs) (bits.int_to_bv_n 4 0))))
+  | isa.beq  rs1 rs2 imm => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rs1) (bits.concat 4 4 (mc.reg_to_bv rs2) imm)))
+  | isa.blt  rs1 rs2 imm => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rs1) (bits.concat 4 4 (mc.reg_to_bv rs2) imm)))
+  | isa.jalr rd rs imm   => (bits.concat 4 12 (mc.opcode_of inst) (bits.concat 4 8 (mc.reg_to_bv rd) (bits.concat 4 4 (mc.reg_to_bv rs) imm)))
+  | isa.apc  rd imm      => (bits.concat 4 12 (mc.opcode_of inst)(bits.concat 4 8 (mc.reg_to_bv rd) imm))
+  | isa.j    imm          => (bits.concat 4 12 (mc.opcode_of inst) imm)
+  end.
+
+Fixpoint isa_to_machine (p:isa.prog):list (bits.bv 16):=
+  match p with 
+  | [] => []
+  | x :: rest => ((isa_to_machine_inst x) :: isa_to_machine rest)
+  end. 
+
+
+Compute printer.machine_prog_to_string (isa_to_machine (ast_to_isa_str ast.sample_prog)).
+

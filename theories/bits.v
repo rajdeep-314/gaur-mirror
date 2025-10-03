@@ -1,5 +1,7 @@
 (* Bits and Bit vector  for Int to Bit . used in isa *)
 From Stdlib Require Import ZArith.
+From Stdlib Require Import Program.
+
 Open Scope Z_scope.
 Inductive t:Set :=
     | b0 | b1.
@@ -49,5 +51,28 @@ end.
 
 
 (* Compute int_to_bv_n 4 (-2). *)
+Program Fixpoint reverse (n:nat) (x:bv n):(bv n):=
+    match x with
+    | nil => nil
+    | cons n' b bv' => concat n' 1 (reverse n' bv') (cons 0 b nil)
+    end.
+
+Lemma n_plus_1_Sn:
+    forall n : nat, (n + 1)%nat = S n.
+Proof.
+    induction n as [| n' IHn'].
+    + reflexivity.
+    + simpl. rewrite IHn'. reflexivity.
+Defined.
+
+Next Obligation.
+    induction n' as [| n'' IHn'].
+    + reflexivity.
+    + apply n_plus_1_Sn.
+Defined.
+
+
+
+
 
     
