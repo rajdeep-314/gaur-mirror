@@ -1,38 +1,53 @@
 type bit  = O | I
 type bits = bit list
 
-type name = string
+type field = string
+type value = string
+type funct = string
+type ident = string
 
 type t = 
-  | TBits   of int              (* bits n *)
-  | TRecord of (name * t) list  (* {f1: T, ...} *)
+  (* bits n *)
+  | TBits of int
+  (* {f1: T, ...} *)
+  | TRecord of (string * t) list
 
-type reference = 
-  | Field   of name               (* foo *)
-  | Dot     of name * reference   (* foo.bar *)
-  | RSplice of reference * (int * int)
-  (* | Reference of name * name list option * (int * int) option *)
+type pattern = 
+  (* foo *)
+  | Variable of value
+  (* foo.bar *)
+  | PAccess of pattern * field
+  (* foo.bar[1..6] *)
+  | PSplice of pattern * (int * int)
 
 type expr = 
-  | Constant of bits            (* 0b010, 0xfd, 0o71, 32 *)
+  (* 0b010, 0xfd, 0o71, 32 *)
+  | Constant of bits
 
-  | Access   of reference
-  | Instance of name * expr     (* not 0b1, not foo.bar, not in.a *)
-  | ERecord  of (name * expr) list (* and {a=in.a, b=in.b} *)
+  (* not 0b1, not foo.bar, not in.a *)
+  | Instance of funct * expr
 
-(* Using concat or splice on a record will throw a compiletime error message. *)
-  | Concat   of expr * expr     (* in.a ++ in.b *)
-  | ESplice  of expr * (int * int) (* in.wide_wire[0, 2] *)
+  (* in.wide_wire[0, 2] *)
+  | ESplice  of expr * (int * int)
+  (* in.a ++ in.b *)
+  | Concat of expr * expr
+  
+  (* and {a=in.a, b=in.b} *)
+  | ERecord  of (field * expr) list
+  (* foo.bar *)
+  | EAccess of expr * field
 
 type assignment = 
-  | Current of reference * expr (* Unprimed variables assignment *)
-  | Next    of reference * expr (* Primed variables assignment *)
+  (* Unprimed variables assignment *)
+  | Current of pattern * expr
+  (* Primed variables assignment *)
+  | Next    of pattern * expr
 
 type chip = {
-  name   : name;
-  input  : name * t;
-  output : name * t;
-  states : (name * t) list;
+  name   : ident;
+  input  : ident * t;
+  output : ident * t;
+  states : (ident * t) list;
   parts  : assignment list
 }
 

@@ -1,45 +1,25 @@
 %{
   open Ast
 
-  let rec separated_list sep f lexbuf =
-  match f lexbuf with
-  | x ->
-    try
-      match%lex lexbuf with
-      | sep -> x :: separated_list sep f lexbuf
-      | _ -> [x]
-    with End_of_file -> [x]
-
-    let int_to_bits = 0
+  let int_to_bits = 65535
 %}
 
-%token <string> STRING
+%token <string> IDENT
 %token <int>    INT
-%token BITS
-
-%token CHIP
-%token INPUT
-%token OUTPUT
-%token STATES
-
-%token PLUSPLUS
-%token ELLIPSIS
-
-%token LEFT_PAREN
-%token RIGHT_PAREN
-%token LEFT_BRACK
-%token RIGHT_BRACK
-
-%token DEF
-%token COLON
-%token COMMA
-%token PRIME
-
+%token BITS CHIP INPUT OUTPUT STATES
+%token EQ DOT COLON COMMA LEFT_BRACE RIGHT_BRACE LEFT_PAREN RIGHT_PAREN LEFT_BRACK RIGHT_BRACK
+%token PLUSPLUS ELLIPSIS PRIME DEF
 %token EOF
 
-%start <Ast.prog> main
+%left PLUSPLUS
+%left DOT
+%left LEFT_BRACK
+%right APP
+
+%start <Ast.program> main
 %%
 
+// main rules
 main:
   | EOF       { [] }
   | prog EOF  { $1 }
@@ -50,76 +30,98 @@ prog:
   | chip prog { $1:$2 }
   ;
 
+// chip declarations
 chip:
-  | CHIP; STRING; LEFT_BRACE; in; out; states; assigns; RIGHT_BRACE
-    { {
-      name   = $2;
-      input  = $4;
-      output = $5;
-      states = $6;
-      parts  = $7
+  | CHIP IDENT LEFT_BRACE chip_body RIGHT_BRACE
+    { $4 with Ast.name = $2 }
+  ;
+
+chip_body:
+  | in_decl out_decl opt_states_decl assigns
+    { Ast.{
+      name = "";
+      input = $1;
+      output = $2;
+      states = $3;
+      parts = $4
     } }
   ;
 
-in:
-  INPUT; name = STRING; COLON; t = type   { (name, t) }
+in_decl:
+  | INPUT IDENT COLON type      { ($2, $4) }
   ;
 
-out:
-  OUTPUT; name = STRING; COLON; t = type  { (name, t) }
+out_decl:
+  | OUTPUT IDENT COLON type     { ($2, $4) }
   ;
 
-states:
-  STATES; 
-  st_list = separated_list(COMMA, state)  { st_list }
+opt_states_decl:
+  | STATES states_list          { $2 }
+  |                             { [] }
   ;
+
+state_list:
+  | state                       { [$1] }
+  | state COMMA state_list      { $1 :: $3 }
 
 state:
-  name = STRING; COLON; t = type          { (name, t) }
+  IDENT COLON type              { ($1, $3) }
   ;
 
+// types
 type:
-  | BITS; i = INT                         { TBits i }
-  | r = separated_list(COLON, trecord)    { TRecord r }
+  | BITS INT                    { TBits $2 }
+  | LEFT_BRACE r_fields RIGHT_BRACE
+                                { TRecord $2 }
   ;
 
-trecord:
-  | name = STRING; COLON; t = type        { (name, t) }
+r_fields:
+  | r_field                     { [$1] }
+  | r_field COMMA r_fields      { $1 :: $3 }
   ;
 
+r_field:
+  | IDENT COLON type            { ($1, $3) }
+  ;
+
+// expressions
+expr:
+  | INT                         { Constant (int_to_bits $1) }
+  | LEFT_PAREN expr RIGHT_PAREN { $2 }
+  | expr DOT IDENT              { EAccess ($1, $3) }
+  | expr PLUSPLUS expr          { Concat ($1, $3) }
+  | expr LEFT_BRACK INT ELLIPSIS INT RIGHT_BRACK
+                                { ESplice ($1, ($3, $5)) }
+  | LEFT_BRACE expr_fields RIGHT_BRACE
+                                { ERecord $2 }
+  | IDENT expr                  { Instance ($1, $2) } %prec APP
+  ;
+
+expr_fields:
+  | expr_field                  { [$1] }
+  | expr_field COMMA expr_fields
+                                { $1 :: $3 }
+  ;
+
+expr_field:
+  | IDENT EQ expr               { ($1, $3) }
+  ;
+
+// patterns
+pattern:
+  | IDENT                       { Variable $1 }
+  | pattern DOT IDENT           { PAccess ($1, $3) }
+  | pattern LEFT_BRACK INT ELLIPSIS INT RIGHT_BRACK
+                                { PSplice ($1, ($3, $5)) }
+  ;
+
+// assignments
 assigns:
-  | a = assign                { [a] }
-  | a = assign; as = assigns  { a:as }
+  |                             { [] }
+  | assign assigns              { $1 :: $2 }
   ;
 
 assign:
-  | r = ref; DEF; e = expr                { Current(r, e) }
-  | r = ref; PRIME; DEF; e = expr         { Next(r, e) }
-  ;
-
-ref:
-  | f = STRING rest = ref_dots { 
-      match rest with
-      | None -> Field f
-      | Some r -> Dot(f, r)
-    }
-
-ref_dots:
-  | DOT; f = STRING; rest = ref_dots  
-    { Some(Dot(f, rest |> Option.value ~default:(Field f))) }
-  | 
-    { None }
-
-expr:
-  | i = INT                               { Constant (int_to_bits i) }
-  | r = reg                               { Access r }
-  | name = STRING; e = expr               { Instance (name, expr) }
-  | r = erecord                           { ERecord r }
-  | e1 = expr; PLUSPLUS; e2 = expr        { Concat (e1, e2) }
-  | e = expr; range;                      { ESplice (e,r ) }
-  ;
-
-range:
-  | LEFT_PAREN; f = INT; ELLIPSIS; l = INT; RIGHT_PAREN
-    { (f, l) }
+  | pattern DEF expr            { Current ($1, $3) }
+  | pattern PRIME DEF expr      { Next ($1, $4) }
   ;
