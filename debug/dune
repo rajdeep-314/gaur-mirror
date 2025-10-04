@@ -1,0 +1,11 @@
+(library
+ (name debug)
+ (libraries cpusim))
+
+(ocamllex lexer)
+
+
+; Disabling unused warnings as errors
+(env
+ (dev
+  (flags (:standard -warn-error -A-26-27-32-33-34 -w -26-27-32-33-34))))

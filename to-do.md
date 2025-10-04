@@ -56,3 +56,4 @@
     - Look at how spike and gdb do things
 - Think of a "standard output format" for the simulator, that is relatively easy
   to parse.
+- Documentation
