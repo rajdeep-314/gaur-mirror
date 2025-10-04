@@ -1,5 +1,7 @@
 (lang dune 3.20)
 
+(using menhir 3.0)
+
 (name hdl-simulator)
 
 (generate_opam_files true)

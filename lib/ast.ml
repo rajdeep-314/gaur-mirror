@@ -4,28 +4,29 @@ type bits = bit list
 type name = string
 
 type t = 
-  | TBits   of int
-  | TRecord of (name * t) list
+  | TBits   of int              (* bits n *)
+  | TRecord of (name * t) list  (* {f1: T, ...} *)
 
 type reference = 
-  | Field of name
-  | Dot   of name * reference
+  | Field   of name               (* foo *)
+  | Dot     of name * reference   (* foo.bar *)
+  | RSplice of reference * (int * int)
+  (* | Reference of name * name list option * (int * int) option *)
 
 type expr = 
-  | Constant of bits
-  | Instance of name * expr
-  | Access   of reference
-  | Var      of name
-  | ERecord  of (name * expr) list
+  | Constant of bits            (* 0b010, 0xfd, 0o71, 32 *)
 
-  (* Using concat or splice on a record will cause it to collapse to a bitvector
-     with an associated warning message. *)
-  | Concat   of expr * expr
-  | Splice   of expr * int * int
+  | Access   of reference
+  | Instance of name * expr     (* not 0b1, not foo.bar, not in.a *)
+  | ERecord  of (name * expr) list (* and {a=in.a, b=in.b} *)
+
+(* Using concat or splice on a record will throw a compiletime error message. *)
+  | Concat   of expr * expr     (* in.a ++ in.b *)
+  | ESplice  of expr * (int * int) (* in.wide_wire[0, 2] *)
 
 type assignment = 
-  | Combination of reference * expr
-  | Sequential  of reference * expr
+  | Current of reference * expr (* Unprimed variables assignment *)
+  | Next    of reference * expr (* Primed variables assignment *)
 
 type chip = {
   name   : name;
