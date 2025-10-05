@@ -1,6 +1,6 @@
 (executables
- (public_names test)
- (names test)
+ (public_names main test)
+ (names main test)
  ; (public_names cpusim test demo ptdemo parsing)
  ; (names main test demo ptdemo parsing)
  (libraries syntax cpusim bram utils debug))

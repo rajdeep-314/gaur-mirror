@@ -11,6 +11,8 @@ let ram_path = ref ""
 let trace = ref false
 let final_state = ref true
 let max_steps = ref 5000
+let debug_mode = ref false
+
 
 let speclist = [
     ("--trace", Arg.Set trace, "Set trace to ON.");
@@ -26,7 +28,10 @@ let speclist = [
     ("--max-steps", Arg.Set_int max_steps, "Set the max number of execution states.");
     ("-ms", Arg.Set_int max_steps, "Set the max number of execution states (short).");
     ("--ram", Arg.Set_string ram_path, "Specify the initial RAM file's path.");
-    ("-r", Arg.Set_string ram_path, "Specify the initial RAM file's path (short).")
+    ("-r", Arg.Set_string ram_path, "Specify the initial RAM file's path (short).");
+
+    ("--debug", Arg.Set debug_mode, "Run the simulator in debug mode.");
+    ("-g", Arg.Set debug_mode, "Run the simulator in debug mode (short).")
 ]
 
 let usage_msg = "Usage: cpusim [options] <file_path>."
@@ -64,6 +69,9 @@ let prog =
     Parser.parse_from_path !path
 
 let () =
+    if !debug_mode then
+        Debug.Repl.repl prog (Proc.State (0, Rf.create (), init_ram)) !trace
+    else
     let proc_final_state =
         if !trace then
             Proc.execute_prog_on_ram_pt init_ram prog
