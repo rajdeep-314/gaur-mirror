@@ -1,18 +1,6 @@
 # To do
 
 
-## General
-
-- Finish the script in demo/
-- Sort out some tasks (like r0 being a zero-reg in trace)
-- Make a proper top-level for ram-init
-- Merge those changes from ram-init to cpu-simulator-top-level
-- Merge changes from cpu-simulator-top-level to cpu-simulator
-- Implement max-steps in CPU simulator
-- Create branch cpu-simulator-debug-mode and start working on the debug mode
-  in that branch
-
-
 ## Debug mode
 
 - For step/steps, also print the instruction that was executed (regradless
@@ -22,13 +10,16 @@
 - Even if the PC is out of bounds, keep the repl running
 
 
-## Top level
+## General
 
 - Clean up bin/
-- Implement max_steps
-- RAM file
-    - Make the tool?
-    - Use it as a library for the simulator?
+- Finish the script in demo/
+- Sort out some tasks (like r0 being a zero-reg in trace)
+- Make a proper top-level for ram-init
+- Merge those changes from ram-init to cpu-simulator-top-level
+- Merge changes from cpu-simulator-top-level to cpu-simulator
+- Implement max-steps in CPU simulator
+
 
 ## Traces
 
