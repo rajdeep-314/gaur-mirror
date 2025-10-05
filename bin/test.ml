@@ -1,40 +1,27 @@
 let () = print_endline "CPU simulator testing.\n"
 
-module Ast = Syntax.Ast
+
 module Proc = Cpusim.Proc
-module Rf = Cpusim.Regfile
-module Ram = Cpusim.Ram
-
-open Ast.Reg.Helper
-open Ast.Helper
+open Syntax.Ast.Helper
+open Syntax.Ast.Reg.Helper
 
 
+(* Testing the debug mode. *)
 
+let prog = [
+        lui r1 0;
+        lli r1 5;
+        lui r2 0xc0;
+        lli r2 0x01;
+        addi r3 r0 1;
 
-
-
-let p5 : Ast.prog =
-    [
-        ld r1 r0 0;
-        ld r2 r0 1;
-        addi r3 r0 0;
-        addi r2 r2 (-1);
-
-        beq r3 r2 2;
-        j 2;
-        j 12;
-        add r4 r1 r3;
-        ld r5 r4 0;
-        ld r6 r4 1;
-        blt r5 r6 6;
-        st r6 r4 0;
-        st r5 r4 1;
-        addi r6 r7 0;
-        addi r3 r0 0;
-        j (-11);
+        blt r1 r3 4;
+        st r2 r3 0;
         addi r3 r3 1;
-        j (-13);
-    ]
+        j (-3);
+]
 
-let () = Ast.print_prog p5
+let proc = Proc.create ()
+
+let () = Debug.Repl.repl prog proc true
 

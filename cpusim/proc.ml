@@ -28,7 +28,7 @@ let set_lower data new_bits = (data land 0xff00) lor new_bits
 let set_upper data new_bits = (data land 0x00ff) lor (new_bits lsl 8)
 
 
-let step (State (pc, rf, ram)) inst =
+let step_inst (State (pc, rf, ram)) inst =
     match inst with
     | Lli (rd, imm) ->
             let data = Rf.read rf rd in
@@ -108,11 +108,18 @@ let step (State (pc, rf, ram)) inst =
             State (pc + imm_sext, rf, ram)
 
 
+let step_prog (State (pc, rf, ram) as st) prog =
+    match List.nth_opt prog pc with
+    | None -> None
+    | Some inst ->
+            Some (step_inst st inst)
+
+
 let rec execute_at_pc (State (pc, rf, ram) as st) prog =
     match List.nth_opt prog pc with
     | None -> st
     | Some inst ->
-            execute_at_pc (step st inst) prog
+            execute_at_pc (step_inst st inst) prog
 
 let execute_prog prog =
     let init_st = create () in
@@ -125,7 +132,7 @@ let execute_prog_on_ram ram prog =
 
 (* Execution with traces. *)
 
-let step_with_trace (State (pc, rf, ram)) inst =
+let step_inst_wt (State (pc, rf, ram)) inst =
     match inst with
     | Lli (rd, imm) ->
             let data = Rf.read rf rd in
@@ -216,12 +223,18 @@ let step_with_trace (State (pc, rf, ram)) inst =
             (State (pc + imm_sext, rf, ram), Trace.NoTrace)
 
 
+let step_prog_wt (State (pc, rf, ram) as st) prog =
+    match List.nth_opt prog pc with
+    | None -> None
+    | Some inst ->
+            Some (step_inst_wt st inst)
+
 (* tcs is the traces list. *)
 let rec execute_at_pc_wt (State (pc, rf, ram) as st) prog tcs =
     match List.nth_opt prog pc with
     | None -> (st, List.rev tcs)
     | Some inst ->
-            let (st', tc) = step_with_trace st inst in
+            let (st', tc) = step_inst_wt st inst in
             execute_at_pc_wt st' prog (tc :: tcs)
 
 let execute_prog_wt prog =
@@ -240,7 +253,7 @@ let rec execute_at_pc_pt (State (pc, rf, ram) as st) prog =
     | None ->
             let () = print_endline "\nHALT\n" in st
     | Some inst ->
-            let (st', tc) = step_with_trace st inst in
+            let (st', tc) = step_inst_wt st inst in
             let () = Printf.printf "(%08x)\t%s\n" pc (to_string inst) in
             let () = print_endline ("\t" ^ Trace.to_string tc) in
             execute_at_pc_pt st' prog

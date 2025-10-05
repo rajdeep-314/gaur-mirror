@@ -57,7 +57,6 @@ let write rf i data =
     | Ast.Reg.R15 -> rf.r15 <- masked_data
 
 
-(* TODO:    Replace the pattern matching expression with Reg.to_int *)
 let print_reg rf reg =
     let data = read rf reg in
     let data_sext = Ast.Bit.sign_extend data 16 in

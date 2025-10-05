@@ -2,9 +2,10 @@
     type token =
         | HELP | SET_TRACE | ON | OFF
         | REG | REGS | REGISTER of int
-        | MEM | STEP | STEPS 
+        | MEM | STEP | STEPS | PRINT_PROG
         | NUM of int
         | QUIT
+        | INVALID
         | EOF
 }
 
@@ -29,6 +30,7 @@ let comment = '#' [^'\n']*
 
 rule token = parse
     | whitespace        { token lexbuf }
+    | comment           { token lexbuf }
     | "help"            { HELP }
     | "set trace"       { SET_TRACE }
     | "on"              { ON }
@@ -41,10 +43,12 @@ rule token = parse
     | "steps"           { STEPS }
     | "step"            { STEP }
     | "quit"            { QUIT }
+    | "print prog"      { PRINT_PROG }
     | dec_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | hex_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
-    | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }
+    | _                 { INVALID }
+    (* | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) } *)
 
 

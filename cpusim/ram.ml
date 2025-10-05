@@ -61,5 +61,6 @@ let rec print_in_range_helper ram addr max_addr =
 let print_in_range ram low high =
     let low = max 0 low in
     let high = min max_addr high in
+    let low, high = min low high, max low high in
     print_in_range_helper ram low high
 

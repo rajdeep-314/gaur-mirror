@@ -10,28 +10,41 @@ let lex_string s =
     aux ()
 
 
-let parse_line_from_toks = function
+let parse_line_from_toks_opt = function
     | HELP :: [] ->
-            Ast.Help
+            Some Ast.Help
     | SET_TRACE :: ON :: [] ->
-            Ast.SetTrace true
+            Some (Ast.SetTrace true)
     | SET_TRACE :: OFF :: [] ->
-            Ast.SetTrace false
+            Some (Ast.SetTrace false)
     | REG :: REGISTER n :: [] ->
-            Ast.Reg n
+            Some (Ast.Reg n)
     | REGS :: [] ->
-            Ast.Regs
+            Some Ast.Regs
+    | PRINT_PROG :: [] ->
+            Some Ast.Print_prog
     | MEM :: NUM addr :: NUM data :: [] ->
-            Ast.Mem (addr, data)
+            Some (Ast.Mem (addr, data))
     | STEP :: [] ->
-            Ast.Step
+            Some Ast.Step
     | STEPS :: NUM n_steps :: [] ->
-            Ast.Steps n_steps
+            Some (Ast.Steps n_steps)
     | QUIT :: [] ->
-            Ast.Quit
+            Some Ast.Quit
+    | INVALID :: _ ->
+            None
     | _ ->
-            failwith "Parsing error: Invalid syntax."
+            None
 
+
+let parse_line_from_toks ts =
+    match parse_line_from_toks_opt ts with
+    | Some cmd -> cmd
+    | None -> failwith "Parsing error: Syntax error."
+
+
+let parse_line_opt s =
+    parse_line_from_toks_opt (lex_string s)
 
 let parse_line s =
     parse_line_from_toks (lex_string s)
