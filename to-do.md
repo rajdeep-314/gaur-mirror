@@ -1,9 +1,7 @@
 # To do
 
-- Questions
-    - An overall layout of the project?
-    - Parser? In Coq, or in OCaml?
-    - What all to prove?
-    - What semantics do we "attach" to the assembler? How do we do that?
-- Make the thing
+- Work on the extraction script
+- Make a parser (probably in OCaml)
+- Make a top-level
+- Proofs and semantics
 
