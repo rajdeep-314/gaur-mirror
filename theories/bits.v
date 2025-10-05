@@ -1,78 +1,79 @@
-(* Bits and Bit vector  for Int to Bit . used in isa *)
-From Stdlib Require Import ZArith.
-From Stdlib Require Import Program.
-
+From Stdlib Require Import ZArith String Program.
 Open Scope Z_scope.
+Open Scope string_scope.
+
+From assembler Require lemmas.
+
+
+(* Bits. *)
 Inductive t:Set :=
     | b0 | b1.
 
-Inductive bv: nat -> Set :=
-| nil : bv 0
-| cons: forall n:nat, t -> bv n -> bv (S n).
 
+(* String representation of a bit. *)
+Definition bit_to_string (b:bits.t) : string :=
+  match b with
+  | b0 => "0"
+  | b1 => "1"
+  end.
+
+
+(* Bit-vectors, indexed by their length. *)
+Inductive bv : nat -> Set :=
+    | nil   : bv 0
+    | cons  : forall n:nat, t -> bv n -> bv (S n).
+
+(* String representation of a bit-vector. *)
+Fixpoint bv_to_string (n:nat) (v:bv n) : string :=
+    match v with
+    | nil => ""
+    | cons n' b v' => bit_to_string b ++ bv_to_string n' v'
+    end.
+
+
+(* A bit-vector of size n, of all zeros. *)
 Fixpoint zeros (n:nat) : bv n :=
     match n with
     | O => nil
     | S n' => cons n' b0 (zeros n')
     end.
-    
-(* Compute zeros 5.     *)
+
+(* Concat two bit-vectors of length m and n to a bit-vector of length (m + n). *)
 Fixpoint concat (m n:nat) (x:bv m) (y:bv n):bv (m + n):=
     match x with
     | nil => y
     | cons m' b x' => cons (m' + n) b (concat m' n x' y)
     end.
 
-(* Definition a:bv 5:=zeros 5.
-Compute concat 5 5 a a : bv 10. *)
-
-Definition to_bit (z:Z):t :=
+(* b1 if z is odd, else b0. *)
+Definition bit_parity (z:Z) : t :=
     if Z.odd z then b1 else b0.
 
+
+(* Converts an integer to a bit-vector of length n.
+   NOTE:
+   The bit-vector is "reversed", compared to the conventional binary reprsentation.
+   For example,
+        int_to_bv_n 5 10    ->      ( 0 , 1 , 0 , 1 , 0 )
+        int_to_bv_n 5 (-10) ->      ( 0 , 1 , 1 , 0 , 1 )
+ *)
 Fixpoint int_to_bv_n (n:nat) (z:Z) : bv n:=
     match n with
     | O => nil
-    | S n' => cons n' (to_bit z) (int_to_bv_n n' (Z.div z 2))
+    | S n' => cons n' (bit_parity z) (int_to_bv_n n' (Z.div z 2))
     end.
 
 
-(* Compute int_to_bv_n 4 8. *)
-Definition last_bit {n:nat}(bvec:bv (S n)) : t * bv n :=
-match bvec with
-| cons n' b bvec' => (b, bvec')
-end.
-
-Fixpoint splice (m n:nat) (bvec:bv n): bv m:=
-match m, bvec with
-| O, _ => nil
-| S m', nil => cons m' b0 (splice m' 0 nil)  
-| S m', cons n' b bvec' => cons m' b (splice m' n' bvec')
-end.
-
-
-(* Compute int_to_bv_n 4 (-2). *)
-Program Fixpoint reverse (n:nat) (x:bv n):(bv n):=
-    match x with
+(* Reverse a bit-vector. *)
+Program Fixpoint reverse (n:nat) (v:bv n):(bv n):=
+    match v with
     | nil => nil
-    | cons n' b bv' => concat n' 1 (reverse n' bv') (cons 0 b nil)
+    | cons n' b v' => concat n' 1 (reverse n' v') (cons 0 b nil)
     end.
-
-Lemma n_plus_1_Sn:
-    forall n : nat, (n + 1)%nat = S n.
-Proof.
-    induction n as [| n' IHn'].
-    + reflexivity.
-    + simpl. rewrite IHn'. reflexivity.
-Defined.
 
 Next Obligation.
     induction n' as [| n'' IHn'].
     + reflexivity.
-    + apply n_plus_1_Sn.
+    + apply lemmas.add_1_r.
 Defined.
 
-
-
-
-
-    
