@@ -13,7 +13,7 @@
 }
 
 let white   = [' ' '\t']+
-let newline = ['\r' '\n' "\r\n"]
+let newline = '\r' | '\n' | "\r\n"
 
 let bin_digit = '0' | '1'
 let binary    = ("0b" | "0B") (bin_digit+)
@@ -31,14 +31,14 @@ let num       = binary | octal | int | hex
 
 let lower   = ['a'-'z']
 
-let ident   = lower+
+let ident   = (lower | '_')+
 
 rule read =
   parse
   | white     { read lexbuf }
   | newline   { next_line lexbuf; read lexbuf }
 
-  | "BITS"    { BITS }
+  | "bits"    { BITS }
   | "CHIP"    { CHIP }
   | "INPUT"   { INPUT }
   | "OUTPUT"  { OUTPUT }
@@ -56,8 +56,8 @@ rule read =
   | ']'       { RIGHT_BRACK }
 
   | "++"      { PLUSPLUS }
-  | ".."      { ELLIPSIS }
   | "'"       { PRIME }
+  | "ʹ"       { PRIME }
   | ":="      { DEF }
 
   | num       { INT (int_of_string (Lexing.lexeme lexbuf)) }

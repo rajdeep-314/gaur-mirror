@@ -14,7 +14,7 @@ type t =
 
 type pattern = 
   (* foo *)
-  | Variable of value
+  | PVariable of value
   (* foo.bar *)
   | PAccess of pattern * field
   (* foo.bar[1..6] *)
@@ -27,27 +27,29 @@ type expr =
   (* not 0b1, not foo.bar, not in.a *)
   | Instance of funct * expr
 
-  (* in.wide_wire[0, 2] *)
+  (* foo.bar[0, 2] *)
   | ESplice  of expr * (int * int)
   (* in.a ++ in.b *)
   | Concat of expr * expr
   
   (* and {a=in.a, b=in.b} *)
-  | ERecord  of (field * expr) list
+  | ERecord of (field * expr) list
+  (* foo *)
+  | EVariable of value
   (* foo.bar *)
   | EAccess of expr * field
 
 type assignment = 
-  (* Unprimed variables assignment *)
+  (* Non-state variables *)
   | Current of pattern * expr
-  (* Primed variables assignment *)
-  | Next    of pattern * expr
+  (* State variables (primed) *)
+  | Next of pattern * expr
 
 type chip = {
   name   : ident;
   input  : ident * t;
   output : ident * t;
-  states : (ident * t) list;
+  states : ((ident * t) list) option;
   parts  : assignment list
 }
 
