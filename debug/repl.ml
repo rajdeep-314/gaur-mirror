@@ -12,6 +12,7 @@ let help_string =
     set trace [on | off]    :   toggle trace
     reg x                   :   print register rx
     regs                    :   print the entire register file
+    print prog              :   print the loaded program
     mem addr count          :   print count-many RAM cells, starting from address addr
     step                    :   step through the program (one instruction)
     steps n                 :   step through the program (n instructions)

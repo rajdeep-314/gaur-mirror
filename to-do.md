@@ -3,7 +3,6 @@
 
 ## General
 
-- Start working on debug mode for the simulator
 - Finish the script in demo/
 - Sort out some tasks (like r0 being a zero-reg in trace)
 - Make a proper top-level for ram-init
@@ -12,6 +11,15 @@
 - Implement max-steps in CPU simulator
 - Create branch cpu-simulator-debug-mode and start working on the debug mode
   in that branch
+
+
+## Debug mode
+
+- For step/steps, also print the instruction that was executed (regradless
+  of trace)
+- Print PC and instruction with the trace as well
+- Maybe show current instruction with a marker while printing the program
+- Even if the PC is out of bounds, keep the repl running
 
 
 ## Top level
@@ -32,11 +40,6 @@
 - Do this for all kinds of outputs (traces, RAM prints, register file prints,
   disassembly, etc.)
 
-
-- Lexer/parser
-    - Implement comments
-    - Make a lexer/parser
-        - Use Menhir, maybe
 
 ## Testing
 
