@@ -93,3 +93,5 @@ module Helper :
 val to_string : t -> string
 val print_inst : t -> unit
 val print_prog : t list -> unit
+val print_prog_with_pc : t list -> int -> unit
+

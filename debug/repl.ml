@@ -10,6 +10,7 @@ let help_string =
 
     help                    :   display help
     set trace [on | off]    :   toggle trace
+    get trace               :   see if trace is ON or OFF
     reg x                   :   print register rx
     regs                    :   print the entire register file
     print prog              :   print the loaded program
@@ -24,28 +25,26 @@ let step prog proc trace =
     if trace then
         match Proc.step_prog_wt proc prog with
         | None ->
-                let () = print_endline "PC out of bounds. Halting execution." in
-                None
+                let () = print_endline "Error: PC out of bounds." in
+                (proc, true)
         | Some (proc', tr) -> 
                 let () = print_endline (Trace.to_string tr) in
-                Some proc'
+                (proc', false)
     else
         match Proc.step_prog proc prog with
         | None ->
-                let () = print_endline "PC out of bounds. Halting execution." in
-                None
-        | Some proc' -> 
-                Some proc'
+                let () = print_endline "Error: PC out of bounds." in
+                (proc, true)
+        | Some proc' ->
+                (proc', false)
 
 
-let rec steps prog proc_opt trace n =
-    if n <= 0 then proc_opt
+let rec steps prog proc trace n =
+    if n <= 0 then proc
     else
-    match proc_opt with
-    | None -> None
-    | Some proc ->
-            steps prog (step prog proc trace) trace (n - 1)
-
+        let (proc', out_of_bounds) = step prog proc trace in
+        if out_of_bounds then proc'
+        else steps prog proc' trace (n - 1)
 
 
 let rec repl prog proc trace =
@@ -65,6 +64,10 @@ let rec repl prog proc trace =
     | SetTrace false ->
             let () = print_endline "Traces are now OFF." in
             repl prog proc false
+    | GetTrace ->
+            let str = if trace then "ON" else "OFF" in
+            let () = Printf.printf "Traces are %s.\n" str in
+            repl prog proc trace
     | Reg i ->
             let () = Rf.print_reg (Proc.get_regfile proc) (Sast.Reg.of_int i) in
             let () = print_endline "" in
@@ -73,24 +76,17 @@ let rec repl prog proc trace =
             let () = Rf.print (Proc.get_regfile proc) in
             repl prog proc trace
     | Print_prog ->
-            let () = Sast.print_prog prog in
+            let () = Sast.print_prog_with_pc prog (Proc.get_pc proc) in
             repl prog proc trace
     | Mem (addr, count) ->
             let count = if count <= 0 then 1 else count in
             let () = Ram.print_in_range (Proc.get_ram proc) addr (addr + count - 1) in
             repl prog proc trace
     | Step ->
-            begin
-            match step prog proc trace with
-            | None -> ()
-            | Some proc' -> repl prog proc' trace
-            end
+            let (proc', _) = step prog proc trace in
+            repl prog proc' trace
     | Steps n ->
-            begin
-            match steps prog (Some proc) trace n with
-            | None -> ()
-            | Some proc' -> repl prog proc' trace
-            end
+            repl prog (steps prog proc trace n) trace
     | Quit ->
             print_endline "Exiting.\n"
 

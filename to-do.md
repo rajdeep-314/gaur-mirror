@@ -1,15 +1,6 @@
 # To do
 
 
-## Debug mode
-
-- For step/steps, also print the instruction that was executed (regradless
-  of trace)
-- Print PC and instruction with the trace as well
-- Maybe show current instruction with a marker while printing the program
-- Even if the PC is out of bounds, keep the repl running
-
-
 ## General
 
 - Clean up bin/

@@ -138,54 +138,54 @@ let step_inst_wt (State (pc, rf, ram)) inst =
             let data = Rf.read rf rd in
             let data' = set_lower data (Bit.imm8_to_int imm) in
             let () = Rf.write rf rd data' in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, data'))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, data'))
     | Lui (rd, imm) ->
             let data = Rf.read rf rd in
             let data' = set_upper data (Bit.imm8_to_int imm) in
             let () = Rf.write rf rd data' in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, data'))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, data'))
     | Ld (rd, rs, imm) ->
             let base_addr = Rf.read rf rs in
             let offset = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             let mem_data = Ram.read ram (base_addr + offset) in
             let () = Rf.write rf rd mem_data in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, mem_data))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, mem_data))
     | St (rs1, rs2, imm) ->
             let base_addr = Rf.read rf rs2 in
             let offset = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             let addr = base_addr + offset in
             let data = Rf.read rf rs1 in
             let () = Ram.write ram addr data in
-            (State (pc + 1, rf, ram), Trace.RamMod (addr, data))
+            (State (pc + 1, rf, ram), Trace.RamMod (pc, inst, addr, data))
     | Add (rd, rs1, rs2) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
             let sum = v1 + v2 in
             let () = Rf.write rf rd sum in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, sum))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, sum))
     | Addi (rd, rs, imm) ->
             let rsv = Rf.read rf rs in
             let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
             let sum = rsv + imm_sext in
             let () = Rf.write rf rd sum in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, sum))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, sum))
     | Sub (rd, rs1, rs2) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
             let diff = v1 - v2 in
             let () = Rf.write rf rd diff in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, diff))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, diff))
     | And (rd, rs1, rs2) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
             let conj = v1 land v2 in
             let () = Rf.write rf rd conj in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, conj))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, conj))
     | Not (rd, rs) ->
             let rsv = Rf.read rf rs in
             let not = lnot rsv in
             let () = Rf.write rf rd not in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, not))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, not))
     | Beq (rs1, rs2, imm) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
@@ -195,7 +195,7 @@ let step_inst_wt (State (pc, rf, ram)) inst =
                     State (pc + imm_sext, rf, ram)
                 else
                     State (pc + 1, rf, ram) in
-            (st', Trace.NoTrace)
+            (st', Trace.NoTrace (pc, inst))
     | Blt (rs1, rs2, imm) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
@@ -207,20 +207,20 @@ let step_inst_wt (State (pc, rf, ram)) inst =
                     State (pc + imm_sext, rf, ram)
                 else
                     State (pc + 1, rf, ram) in
-            (st', Trace.NoTrace)
+            (st', Trace.NoTrace (pc, inst))
     | Jalr (rd, rs, imm) ->
             let () = Rf.write rf rd (pc + 1) in
             let imm_sext = Bit.sign_extend (Bit.imm4_to_int imm) 4 in
-            (State (pc + imm_sext, rf, ram), Trace.RegMod (rd, pc + 1))
+            (State (pc + imm_sext, rf, ram), Trace.RegMod (pc, inst, rd, pc + 1))
     | Apc (rd, imm) ->
             let rdv = Rf.read rf rd in
             let imm_sext = Bit.sign_extend (Bit.imm8_to_int imm) 8 in
             let rdv' = rdv + pc + imm_sext in
             let () = Rf.write rf rd rdv' in
-            (State (pc + 1, rf, ram), Trace.RegMod (rd, rdv'))
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, rdv'))
     | J imm ->
             let imm_sext = Bit.sign_extend (Bit.imm12_to_int imm) 12 in
-            (State (pc + imm_sext, rf, ram), Trace.NoTrace)
+            (State (pc + imm_sext, rf, ram), Trace.NoTrace (pc, inst))
 
 
 let step_prog_wt (State (pc, rf, ram) as st) prog =
@@ -254,8 +254,7 @@ let rec execute_at_pc_pt (State (pc, rf, ram) as st) prog =
             let () = print_endline "\nHALT\n" in st
     | Some inst ->
             let (st', tc) = step_inst_wt st inst in
-            let () = Printf.printf "(%08x)\t%s\n" pc (to_string inst) in
-            let () = print_endline ("\t" ^ Trace.to_string tc) in
+            let () = print_endline (Trace.to_string tc) in
             execute_at_pc_pt st' prog
 
 let execute_prog_pt prog =

@@ -1,7 +1,7 @@
 {
     type token =
         | HELP | SET_TRACE | ON | OFF
-        | REG | REGS | REGISTER of int
+        | GET_TRACE | REG | REGS | REGISTER of int
         | MEM | STEP | STEPS | PRINT_PROG
         | NUM of int
         | QUIT
@@ -33,6 +33,7 @@ rule token = parse
     | comment           { token lexbuf }
     | "help"            { HELP }
     | "set trace"       { SET_TRACE }
+    | "get trace"       { GET_TRACE }
     | "on"              { ON }
     | "off"             { OFF }
     | "regs"            { REGS }

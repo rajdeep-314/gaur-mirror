@@ -6,16 +6,20 @@ module Rf = Regfile
 
 
 type t =
-    | RegMod of Ast.Reg.t * Ram.half
-    | RamMod of Ram.addr * Ram.half
-    | NoTrace
+    | RegMod of Ram.half * Ast.t * Ast.Reg.t * Ram.half
+    | RamMod of Ram.half * Ast.t * Ram.addr * Ram.half
+    | NoTrace of Ram.half * Ast.t
 
 
 let to_string = function
-    | RegMod (r, v) ->
-            Printf.sprintf "%s\t%04x" (Ast.Reg.to_string r) v
-    | RamMod (addr, v) ->
-            Printf.sprintf "%04x\t%04x" addr v
-    | NoTrace -> "-"
+    | RegMod (pc, inst, r, v) ->
+            let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
+            Printf.sprintf "\t%s\t%04x" (Ast.Reg.to_string r) v
+    | RamMod (pc, inst, addr, v) ->
+            let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
+            Printf.sprintf "\t%04x\t%04x" addr v
+    | NoTrace (pc, inst) ->
+            let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
+            "\t-"
 
 

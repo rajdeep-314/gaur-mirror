@@ -17,6 +17,8 @@ let parse_line_from_toks_opt = function
             Some (Ast.SetTrace true)
     | SET_TRACE :: OFF :: [] ->
             Some (Ast.SetTrace false)
+    | GET_TRACE :: [] ->
+            Some Ast.GetTrace
     | REG :: REGISTER n :: [] ->
             Some (Ast.Reg n)
     | REGS :: [] ->
@@ -33,6 +35,8 @@ let parse_line_from_toks_opt = function
             Some Ast.Quit
     | INVALID :: _ ->
             None
+    | EOF :: [] ->
+            Some Ast.Quit
     | _ ->
             None
 
