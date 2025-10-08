@@ -6,11 +6,13 @@ type value = string
 type funct = string
 type ident = string
 
-type t = 
+type typ = 
   (* bits n *)
   | TBits of int
-  (* {f1: T, ...} *)
-  | TRecord of (string * t) list
+  (* {f1: T, f2: T, ...} *)
+  | TRecord of (field * typ) list
+  (* bits n -> bits m *)
+  | TApply of typ * typ
 
 type pattern = 
   (* foo *)
@@ -19,6 +21,11 @@ type pattern =
   | PAccess of pattern * field
   (* foo.bar[1..6] *)
   | PSplice of pattern * (int * int)
+
+type typed_pattern =
+  { p: pattern;
+    t: typ
+  }
 
 type expr = 
   (* 0b010, 0xfd, 0o71, 32 *)
@@ -39,6 +46,11 @@ type expr =
   (* foo.bar *)
   | EAccess of expr * field
 
+type typed_expr =
+  { e: expr;
+    t: typ
+  }
+
 type assignment = 
   (* Non-state variables *)
   | Current of pattern * expr
@@ -47,9 +59,9 @@ type assignment =
 
 type chip = {
   name   : ident;
-  input  : ident * t;
-  output : ident * t;
-  states : ((ident * t) list) option;
+  input  : ident * typ;
+  output : ident * typ;
+  states : ((ident * typ) list) option;
   parts  : assignment list
 }
 

@@ -1,6 +1,6 @@
 (library
  (name pHDL)
- (modules ast parser lexer)
+ (modules ast env parser lexer)
  (libraries menhirLib))
 
 (menhir

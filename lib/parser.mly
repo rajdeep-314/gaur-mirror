@@ -26,23 +26,18 @@
 
 // main rules
 main:
-  | EOF       { [] }
-  | prog EOF  { $1 }
-  ;
-
-prog:
-  | chip      { [$1] }
-  | chip prog { $1 :: $2 }
+  | EOF                         { [] }
+  | nonempty_list(chip) EOF     { $1 }
   ;
 
 // chip declarations
 chip:
   | CHIP IDENT LEFT_BRACE chip_body RIGHT_BRACE
-    {{ $4 with Ast.name = $2 }}
+    { { $4 with Ast.name = $2 } }
   ;
 
 chip_body:
-  | in_decl out_decl option(states_decl) assigns
+  | in_decl out_decl option(states_decl) list(assign)
     { Ast.{
       name = "";
       input = $1;
@@ -61,13 +56,8 @@ out_decl:
   ;
 
 states_decl:
-  | STATES state_list           { $2 }
-  ;
-
-state_list:
-  | state                       { [$1] }
-  | state COMMA state_list      { $1 :: $3 }
-  ;
+  | STATES separated_nonempty_list(COMMA, state)
+                                { $2 }
 
 state:
   IDENT COLON typ               { ($1, $3) }
@@ -81,8 +71,8 @@ typ :
   ;
 
 r_fields:
-  | r_field                     { [$1] }
-  | r_field COMMA r_fields      { $1 :: $3 }
+  | separated_nonempty_list(COMMA, r_field)
+                                { $1 }
   ;
 
 r_field:
@@ -104,13 +94,12 @@ expr:
   ;
 
 expr_fields:
-  | expr_field                  { [$1] }
-  | expr_field COMMA expr_fields
-                                { $1 :: $3 }
+  | separated_nonempty_list(COMMA, expr_field)
+                                { $1 }
   ;
 
 expr_field:
-  | IDENT EQ expr               { ($1, $3) }
+  | IDENT "=" expr               { ($1, $3) }
   ;
 
 // patterns
@@ -119,12 +108,6 @@ pattern:
   | pattern DOT IDENT           { PAccess ($1, $3) }
   | pattern LEFT_BRACK INT COLON INT RIGHT_BRACK
                                 { PSplice ($1, ($3, $5)) }
-  ;
-
-// assignments
-assigns:
-  |                             { [] }
-  | assign assigns              { $1 :: $2 }
   ;
 
 assign:

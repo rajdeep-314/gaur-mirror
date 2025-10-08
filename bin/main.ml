@@ -1,5 +1,4 @@
 open PHDL
-(* exception VMError of string *)
 
 (** [parse s] parses [s] into an AST *)
 let _parse (s : string) : Ast.program = 
@@ -74,12 +73,12 @@ let _reg = "CHIP register {
     out[3:3] := bit {in = in[3:3], load = load}
 }"
 
-(* let _notp = _parse _not *)
-(* let _andp = _parse _not *)
-(* let _orp = _parse _or *)
-(* let _muxp = _parse _mux *)
+let _notp = _parse _not
+let _andp = _parse _not
+let _orp = _parse _or
+let _muxp = _parse _mux
 let _bitp = _parse _bit
-(* let _regp = _parse _reg *)
+let _regp = _parse _reg
 
 (* 
 (** [read_file ic] reads contents of in-channel [ic] as a string and closes it. *)
