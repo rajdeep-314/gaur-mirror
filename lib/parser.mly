@@ -8,109 +8,98 @@
     b :: int_to_bits (n / 2)
 %}
 
-%token <string> IDENT
-%token <int>    INT
+%token <string> LID (* lowercase identifier *)
+%token <string> PID (* PascalCase identifier *)
+%token <int>    INT (* integer literal *)
+
 %token BITS CHIP INPUT OUTPUT STATES
-%token EQ DOT COLON COMMA LEFT_BRACE RIGHT_BRACE LEFT_PAREN RIGHT_PAREN LEFT_BRACK RIGHT_BRACK
-%token PLUSPLUS PRIME DEF
+
+%token FIELD_ASSIGN "="
+%token DOT          "."
+%token COLON        ":"
+%token COMMA        ","
+
+%token LBRACE "{" RBRACE "}" 
+%token LPAREN "(" RPAREN ")"
+%token LSQURE "[" RSQURE "]"
+
+%token PLUSPLUS    "++"
+%token PRIME       "'"
+%token COMB_DEF    ":="
+%token SEQ_DEF     "<-"
+
 %token EOF
 
-%left PLUSPLUS
-%left DOT
-%left LEFT_BRACK
-%right IDENT
-%left APP
+%left  PLUSPLUS
+%left  DOT
+%left  LSQURE
+%left  APP
 
 %start <Ast.program> main
+
 %%
 
-// main rules
 main:
-  | EOF                         { [] }
-  | nonempty_list(chip) EOF     { $1 }
-  ;
+  // | EOF
+  //   { [] }
+  | cs = chip* EOF
+    { cs }
 
-// chip declarations
 chip:
-  | CHIP IDENT LEFT_BRACE chip_body RIGHT_BRACE
-    { { $4 with Ast.name = $2 } }
-  ;
+  | CHIP name = PID "{" body = chip_body "}"
+    { { body with Ast.name = name } }
 
 chip_body:
-  | in_decl out_decl option(states_decl) list(assign)
+  | ind = in_decl outd = out_decl sts = states_decl? asgn = assign*
     { Ast.{
-      name = "";
-      input = $1;
-      output = $2;
-      states = $3;
-      parts = $4
+      name   = "";
+      input  = ind;
+      output = outd;
+      states = sts;
+      parts  = asgn;
     } }
-  ;
 
 in_decl:
-  | INPUT IDENT COLON typ       { ($2, $4) }
-  ;
+  | INPUT id = LID ":" t = typ              { (id, t) }
 
 out_decl:
-  | OUTPUT IDENT COLON typ      { ($2, $4) }
-  ;
+  | OUTPUT id = LID ":" t = typ             { (id, t) }
 
 states_decl:
-  | STATES separated_nonempty_list(COMMA, state)
-                                { $2 }
+  | STATES ss = separated_nonempty_list(",", state) { ss }
 
 state:
-  IDENT COLON typ               { ($1, $3) }
-  ;
+  | id = LID ":" t = typ                    { (id, t) }
 
-// types
-typ :
-  | BITS INT                    { TBits $2 }
-  | LEFT_BRACE r_fields RIGHT_BRACE
-                                { TRecord $2 }
-  ;
+typ:
+  | BITS n = INT                            { TBits n }
+  | "{" r = record_t "}"                    { TRecord r }
 
-r_fields:
-  | separated_nonempty_list(COMMA, r_field)
-                                { $1 }
-  ;
+record_t:
+  | r = separated_nonempty_list(",", record_t_fields) { r }
 
-r_field:
-  | IDENT COLON typ             { ($1, $3) }
-  ;
+record_t_fields:
+  | field = LID ":" t = typ                 { (field, t) }
 
-// expressions
-expr:
-  | INT                         { Constant (int_to_bits $1) }
-  | LEFT_PAREN expr RIGHT_PAREN { $2 }
-  | expr DOT IDENT              { EAccess ($1, $3) }
-  | expr PLUSPLUS expr          { Concat ($1, $3) }
-  | expr LEFT_BRACK INT COLON INT RIGHT_BRACK
-                                { ESplice ($1, ($3, $5)) }
-  | LEFT_BRACE expr_fields RIGHT_BRACE
-                                { ERecord $2 }
-  | IDENT expr                  { Instance ($1, $2) } %prec APP
-  | IDENT                       { EVariable $1 }
-  ;
+expression:
+  | i = INT                                 { Constant (int_to_bits i) }
+  | "(" expr = expression ")"               { expr }
+  | expr = expression "." field = LID       { Member (expr, field) }
+  | expr1 = expression "++" expr2 = expression
+                                            { Concat (expr1, expr2) }
+  | expr = expression "[" start_index = INT ":" end_index = INT "]" 
+                                            { Splice (expr, (start_index, end_index)) }
+  | expr = expression "[" i = INT "]"       { Splice (expr, (i, i)) }
+  | "{" fs = record_fields "}"              { Record fs }
+  | chip = PID expr = expression            { Instance (chip, expr) } %prec APP
+  | id = LID                                { Access id }
 
-expr_fields:
-  | separated_nonempty_list(COMMA, expr_field)
-                                { $1 }
-  ;
+record_fields:
+  | separated_nonempty_list(",", record_field) { $1 }
 
-expr_field:
-  | IDENT "=" expr               { ($1, $3) }
-  ;
-
-// patterns
-pattern:
-  | IDENT                       { PVariable $1 }
-  | pattern DOT IDENT           { PAccess ($1, $3) }
-  | pattern LEFT_BRACK INT COLON INT RIGHT_BRACK
-                                { PSplice ($1, ($3, $5)) }
-  ;
+record_field:
+  | field = LID "=" expr = expression       { (field, expr) }
 
 assign:
-  | pattern DEF expr            { Current ($1, $3) }
-  | pattern PRIME DEF expr      { Next ($1, $4) }
-  ;
+  | id = LID     ":=" expr = expression     { Current (id, expr) }
+  | id = LID "'" "<-" expr = expression     { Next    (id, expr) }

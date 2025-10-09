@@ -1,0 +1,568 @@
+main: STATES
+##
+## Ends in an error in state: 0.
+##
+## main' -> . main [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 1>
+
+main: CHIP STATES
+##
+## Ends in an error in state: 1.
+##
+## chip -> CHIP . PID LBRACE chip_body RBRACE [ EOF CHIP ]
+##
+## The known suffix of the stack is as follows:
+## CHIP
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 2>
+
+main: CHIP PID STATES
+##
+## Ends in an error in state: 2.
+##
+## chip -> CHIP PID . LBRACE chip_body RBRACE [ EOF CHIP ]
+##
+## The known suffix of the stack is as follows:
+## CHIP PID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 3>
+
+main: CHIP PID LBRACE STATES
+##
+## Ends in an error in state: 3.
+##
+## chip -> CHIP PID LBRACE . chip_body RBRACE [ EOF CHIP ]
+##
+## The known suffix of the stack is as follows:
+## CHIP PID LBRACE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 4>
+
+main: CHIP PID LBRACE INPUT STATES
+##
+## Ends in an error in state: 4.
+##
+## in_decl -> INPUT . LID COLON typ [ OUTPUT ]
+##
+## The known suffix of the stack is as follows:
+## INPUT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 5>
+
+main: CHIP PID LBRACE INPUT LID STATES
+##
+## Ends in an error in state: 5.
+##
+## in_decl -> INPUT LID . COLON typ [ OUTPUT ]
+##
+## The known suffix of the stack is as follows:
+## INPUT LID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 6>
+
+main: CHIP PID LBRACE INPUT LID COLON STATES
+##
+## Ends in an error in state: 6.
+##
+## in_decl -> INPUT LID COLON . typ [ OUTPUT ]
+##
+## The known suffix of the stack is as follows:
+## INPUT LID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 7>
+
+main: CHIP PID LBRACE INPUT LID COLON LBRACE STATES
+##
+## Ends in an error in state: 7.
+##
+## typ -> LBRACE . record_t RBRACE [ STATES RBRACE OUTPUT LID COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LBRACE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 8>
+
+main: CHIP PID LBRACE INPUT LID COLON LBRACE LID STATES
+##
+## Ends in an error in state: 8.
+##
+## record_t_fields -> LID . COLON typ [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 9>
+
+main: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON STATES
+##
+## Ends in an error in state: 9.
+##
+## record_t_fields -> LID COLON . typ [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 10>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS STATES
+##
+## Ends in an error in state: 10.
+##
+## typ -> BITS . INT [ STATES RBRACE OUTPUT LID COMMA ]
+##
+## The known suffix of the stack is as follows:
+## BITS
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 11>
+
+main: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON BITS INT STATES
+##
+## Ends in an error in state: 14.
+##
+## separated_nonempty_list(COMMA,record_t_fields) -> record_t_fields . [ RBRACE ]
+## separated_nonempty_list(COMMA,record_t_fields) -> record_t_fields . COMMA separated_nonempty_list(COMMA,record_t_fields) [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## record_t_fields
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 12>
+
+main: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON BITS INT COMMA STATES
+##
+## Ends in an error in state: 15.
+##
+## separated_nonempty_list(COMMA,record_t_fields) -> record_t_fields COMMA . separated_nonempty_list(COMMA,record_t_fields) [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## record_t_fields COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 13>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT STATES
+##
+## Ends in an error in state: 20.
+##
+## chip_body -> in_decl . out_decl option(states_decl) list(assign) [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## in_decl
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 14>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT STATES
+##
+## Ends in an error in state: 21.
+##
+## out_decl -> OUTPUT . LID COLON typ [ STATES RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## OUTPUT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 15>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID STATES
+##
+## Ends in an error in state: 22.
+##
+## out_decl -> OUTPUT LID . COLON typ [ STATES RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## OUTPUT LID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 16>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON STATES
+##
+## Ends in an error in state: 23.
+##
+## out_decl -> OUTPUT LID COLON . typ [ STATES RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## OUTPUT LID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 17>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT SEQ_DEF
+##
+## Ends in an error in state: 25.
+##
+## chip_body -> in_decl out_decl . option(states_decl) list(assign) [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## in_decl out_decl
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 18>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES STATES
+##
+## Ends in an error in state: 26.
+##
+## states_decl -> STATES . separated_nonempty_list(COMMA,state) [ RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## STATES
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 19>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID STATES
+##
+## Ends in an error in state: 27.
+##
+## state -> LID . COLON typ [ RBRACE LID COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 20>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID COLON STATES
+##
+## Ends in an error in state: 28.
+##
+## state -> LID COLON . typ [ RBRACE LID COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 21>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID COLON BITS INT STATES
+##
+## Ends in an error in state: 30.
+##
+## separated_nonempty_list(COMMA,state) -> state . [ RBRACE LID ]
+## separated_nonempty_list(COMMA,state) -> state . COMMA separated_nonempty_list(COMMA,state) [ RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## state
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 22>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID COLON BITS INT COMMA STATES
+##
+## Ends in an error in state: 31.
+##
+## separated_nonempty_list(COMMA,state) -> state COMMA . separated_nonempty_list(COMMA,state) [ RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## state COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 23>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID STATES
+##
+## Ends in an error in state: 36.
+##
+## assign -> LID . COMB_DEF expression [ RBRACE LID ]
+## assign -> LID . PRIME SEQ_DEF expression [ RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## LID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 24>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID PRIME STATES
+##
+## Ends in an error in state: 37.
+##
+## assign -> LID PRIME . SEQ_DEF expression [ RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## LID PRIME
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 25>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID PRIME SEQ_DEF STATES
+##
+## Ends in an error in state: 38.
+##
+## assign -> LID PRIME SEQ_DEF . expression [ RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## LID PRIME SEQ_DEF
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 26>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF PID STATES
+##
+## Ends in an error in state: 39.
+##
+## expression -> PID . expression [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## PID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 27>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LPAREN STATES
+##
+## Ends in an error in state: 40.
+##
+## expression -> LPAREN . expression RPAREN [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 28>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE STATES
+##
+## Ends in an error in state: 42.
+##
+## expression -> LBRACE . record_fields RBRACE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LBRACE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 29>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID STATES
+##
+## Ends in an error in state: 43.
+##
+## record_field -> LID . FIELD_ASSIGN expression [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 30>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID FIELD_ASSIGN STATES
+##
+## Ends in an error in state: 44.
+##
+## record_field -> LID FIELD_ASSIGN . expression [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LID FIELD_ASSIGN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 31>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID FIELD_ASSIGN INT RPAREN
+##
+## Ends in an error in state: 46.
+##
+## expression -> expression . DOT LID [ RBRACE PLUSPLUS LSQURE DOT COMMA ]
+## expression -> expression . PLUSPLUS expression [ RBRACE PLUSPLUS LSQURE DOT COMMA ]
+## expression -> expression . LSQURE INT COLON INT RSQURE [ RBRACE PLUSPLUS LSQURE DOT COMMA ]
+## expression -> expression . LSQURE INT RSQURE [ RBRACE PLUSPLUS LSQURE DOT COMMA ]
+## record_field -> LID FIELD_ASSIGN expression . [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LID FIELD_ASSIGN expression
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 32>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT PLUSPLUS STATES
+##
+## Ends in an error in state: 47.
+##
+## expression -> expression PLUSPLUS . expression [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## expression PLUSPLUS
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 33>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT PLUSPLUS INT STATES
+##
+## Ends in an error in state: 48.
+##
+## expression -> expression . DOT LID [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+## expression -> expression . PLUSPLUS expression [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+## expression -> expression PLUSPLUS expression . [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+## expression -> expression . LSQURE INT COLON INT RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+## expression -> expression . LSQURE INT RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## expression PLUSPLUS expression
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 34>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQURE STATES
+##
+## Ends in an error in state: 49.
+##
+## expression -> expression LSQURE . INT COLON INT RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+## expression -> expression LSQURE . INT RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## expression LSQURE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 35>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQURE INT STATES
+##
+## Ends in an error in state: 50.
+##
+## expression -> expression LSQURE INT . COLON INT RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+## expression -> expression LSQURE INT . RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## expression LSQURE INT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 36>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQURE INT COLON STATES
+##
+## Ends in an error in state: 52.
+##
+## expression -> expression LSQURE INT COLON . INT RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## expression LSQURE INT COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 37>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQURE INT COLON INT STATES
+##
+## Ends in an error in state: 53.
+##
+## expression -> expression LSQURE INT COLON INT . RSQURE [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## expression LSQURE INT COLON INT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 38>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT DOT STATES
+##
+## Ends in an error in state: 55.
+##
+## expression -> expression DOT . LID [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## expression DOT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 39>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID FIELD_ASSIGN INT COMMA STATES
+##
+## Ends in an error in state: 61.
+##
+## separated_nonempty_list(COMMA,record_field) -> record_field COMMA . separated_nonempty_list(COMMA,record_field) [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## record_field COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 40>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LPAREN INT RBRACE
+##
+## Ends in an error in state: 63.
+##
+## expression -> LPAREN expression . RPAREN [ RPAREN RBRACE PLUSPLUS LSQURE LID DOT COMMA ]
+## expression -> expression . DOT LID [ RPAREN PLUSPLUS LSQURE DOT ]
+## expression -> expression . PLUSPLUS expression [ RPAREN PLUSPLUS LSQURE DOT ]
+## expression -> expression . LSQURE INT COLON INT RSQURE [ RPAREN PLUSPLUS LSQURE DOT ]
+## expression -> expression . LSQURE INT RSQURE [ RPAREN PLUSPLUS LSQURE DOT ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN expression
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 41>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID PRIME SEQ_DEF INT RPAREN
+##
+## Ends in an error in state: 66.
+##
+## assign -> LID PRIME SEQ_DEF expression . [ RBRACE LID ]
+## expression -> expression . DOT LID [ RBRACE PLUSPLUS LSQURE LID DOT ]
+## expression -> expression . PLUSPLUS expression [ RBRACE PLUSPLUS LSQURE LID DOT ]
+## expression -> expression . LSQURE INT COLON INT RSQURE [ RBRACE PLUSPLUS LSQURE LID DOT ]
+## expression -> expression . LSQURE INT RSQURE [ RBRACE PLUSPLUS LSQURE LID DOT ]
+##
+## The known suffix of the stack is as follows:
+## LID PRIME SEQ_DEF expression
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 42>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF STATES
+##
+## Ends in an error in state: 67.
+##
+## assign -> LID COMB_DEF . expression [ RBRACE LID ]
+##
+## The known suffix of the stack is as follows:
+## LID COMB_DEF
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 43>
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT RPAREN
+##
+## Ends in an error in state: 68.
+##
+## assign -> LID COMB_DEF expression . [ RBRACE LID ]
+## expression -> expression . DOT LID [ RBRACE PLUSPLUS LSQURE LID DOT ]
+## expression -> expression . PLUSPLUS expression [ RBRACE PLUSPLUS LSQURE LID DOT ]
+## expression -> expression . LSQURE INT COLON INT RSQURE [ RBRACE PLUSPLUS LSQURE LID DOT ]
+## expression -> expression . LSQURE INT RSQURE [ RBRACE PLUSPLUS LSQURE LID DOT ]
+##
+## The known suffix of the stack is as follows:
+## LID COMB_DEF expression
+##
+
+Can not apply '$0' to any expression.
+Is this supposed to be a chip instance?
+Chip instances must begin with a capital letter.
+
+
+main: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT RBRACE STATES
+##
+## Ends in an error in state: 77.
+##
+## list(chip) -> chip . list(chip) [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## chip
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE 45>
+

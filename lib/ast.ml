@@ -2,67 +2,31 @@ type bit  = O | I
 type bits = bit list
 
 type field = string
-type value = string
-type funct = string
 type ident = string
+type funct = string
 
 type typ = 
-  (* bits n *)
-  | TBits of int
-  (* {f1: T, f2: T, ...} *)
-  | TRecord of (field * typ) list
-  (* bits n -> bits m *)
-  | TApply of typ * typ
-
-type pattern = 
-  (* foo *)
-  | PVariable of value
-  (* foo.bar *)
-  | PAccess of pattern * field
-  (* foo.bar[1..6] *)
-  | PSplice of pattern * (int * int)
-
-type typed_pattern =
-  { p: pattern;
-    t: typ
-  }
+  | TBits    of int                     (* bits n *)
+  | TRecord  of (field * typ) list      (* {f1: T, f2: T, ...} *)
 
 type expr = 
-  (* 0b010, 0xfd, 0o71, 32 *)
-  | Constant of bits
-
-  (* not 0b1, not foo.bar, not in.a *)
-  | Instance of funct * expr
-
-  (* foo.bar[0, 2] *)
-  | ESplice  of expr * (int * int)
-  (* in.a ++ in.b *)
-  | Concat of expr * expr
-  
-  (* and {a=in.a, b=in.b} *)
-  | ERecord of (field * expr) list
-  (* foo *)
-  | EVariable of value
-  (* foo.bar *)
-  | EAccess of expr * field
-
-type typed_expr =
-  { e: expr;
-    t: typ
-  }
+  | Constant of bits                    (* 0b010, 0xfd, 0o71, 32 *)
+  | Instance of funct * expr            (* not 0b1, not foo.bar, not in.a *)
+  | Splice   of expr * (int * int)      (* foo.bar[0, 2], foo.bar[0,0] *)
+  | Concat   of expr * expr             (* in.a ++ in.b *)
+  | Record   of (field * expr) list      (* and {a=in.a, b=in.b} *)
+  | Access   of ident                   (* foo *)
+  | Member   of expr * field            (* foo.bar *)
 
 type assignment = 
-  (* Non-state variables *)
-  | Current of pattern * expr
-  (* State variables (primed) *)
-  | Next of pattern * expr
+  | Current  of ident * expr          (* Current-state binding *)
+  | Next     of ident * expr          (* Next-State binding *)
 
-type chip = {
-  name   : ident;
-  input  : ident * typ;
-  output : ident * typ;
-  states : ((ident * typ) list) option;
-  parts  : assignment list
-}
+type chip = { name   :   ident
+            ; input  :   ident * typ
+            ; output :   ident * typ
+            ; states : ((ident * typ) list) option
+            ; parts  : assignment list
+            }
 
 type program = chip list
