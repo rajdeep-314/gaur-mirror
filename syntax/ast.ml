@@ -204,13 +204,12 @@ let rec print_prog_with_pc prog pc =
     else
         match prog with
         | [] ->
-                if pc = 0 then print_endline ">"
+                if pc = 0 then print_endline "<- PC"
                 else ()
         | inst :: prog' ->
                 if pc = 0 then
-                    let () = print_endline ">" in
                     let () = print_inst inst in
-                    let () = print_endline "\n>" in
+                    let () = print_endline "\t\t<- PC" in
                     print_prog prog'
                 else
                     let () = print_inst inst in
