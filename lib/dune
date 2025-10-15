@@ -1,6 +1,6 @@
 (library
   (name pHDL)
-  (modules ast parser lexer parseHelper unitActionsParser parserMessages)
+  (modules ast parser lexer parseHelper typecheck gast unitActionsParser parserMessages)
   (libraries menhirLib)
 )
 
