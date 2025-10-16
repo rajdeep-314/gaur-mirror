@@ -2,72 +2,99 @@ open Ast
 
 module Env = Map.Make(String)
 
+let (let*) = Result.bind
+
 type tenv = typ Env.t (* Typing envorinment *)
 type cenv = (typ *typ) Env.t (* Chip environment *)
 
-let rec infer e (tenv: tenv) (cenv: cenv) : typed_expr = 
+type typeError = 
+  | EmptyBitVector
+  | UnboundChip
+  | InstanceArgTypeMismatch
+  | RecordSplicing
+  | SpliceIndexOutOfRange
+  | RecordConcat
+  | UnboundIdentifier
+  | BitVectorMemberAccess
+  | UnknownField
+  | RepeatingFieldName
+
+
+let rec infer (tenv: tenv) (cenv: cenv) e = 
   match e with
   | Constant b ->
     let l = List.length b in
     if l >= 1
-    then { e=e; t=TBits l }
-    else failwith "Non positive bits"
+    then Ok (TBits l)
+    else Error EmptyBitVector
 
   | Instance (f, e) ->
-    let te = infer e tenv cenv in
+    let* te = infer tenv cenv e in
     begin match Env.find_opt f cenv with
-      | None -> failwith ("Unbound chip " ^ f)
-      | Some (t1, t2) ->
-        if t1 = te.t
-        then {e=e; t=t2 }
-        else failwith "type mismatch"
+      | None -> Error UnboundChip
+      | Some (t1, t2) -> 
+        if t1 = te
+        then Ok t2
+        else Error InstanceArgTypeMismatch
     end
 
   | Splice (e, (i, j)) -> 
-    let te = infer e tenv cenv in
-    begin match te.t with
-      | TRecord _ -> failwith "can not splice a record"
+    let* te = infer tenv cenv e in
+    begin match te with
+      | TRecord _ -> Error RecordSplicing
       | TBits n ->
-        if n <= 0
-        then failwith "Bitvctor has to be non empty"
-        else 
-          if (0 <= i) && (i <= j) && (j < n)
-          then { e=e; t=TBits (j - i + 1) }
-          else failwith "Bitvector splicing out of range"
+        if (0 <= i) && (i <= j) && (j < n)
+        then Ok (TBits (j - i + 1))
+        else Error SpliceIndexOutOfRange
     end
 
   | Concat (e1, e2) -> 
-    let te1 = infer e1 tenv cenv in
-    let te2 = infer e2 tenv cenv in
-    begin match (te1.t, te2.t) with
-      | TBits n, TBits m -> { e=e; t=TBits (n + m) }
+    let* te1 = infer tenv cenv e1 in
+    let* te2 = infer tenv cenv e2 in
+    begin match (te1, te2) with
+      | TBits n, TBits m -> Ok (TBits (n + m))
       | TRecord _, TBits _ 
       | TBits _, TRecord _
-      | TRecord _, TRecord _ -> failwith "can not concat records"
+      | TRecord _, TRecord _ -> Error RecordConcat
     end
 
   | Record r -> 
-    (* TODO the field names must be unique *)
     let fields = List.map fst r in
     let values = List.map snd r in
-    let inferred = List.map (fun e -> infer e tenv cenv) values in
-    let es = List.map (fun x -> x.t) inferred in
-    let tr = List.map2 (fun x y -> (x, y)) fields es in
-    { e=e; t=TRecord tr }
+
+    (* check uniqueness *)
+    let has_dupes l =
+      let rec aux seen l =
+        match l with
+        | [] -> false
+        | x::xs -> if List.mem x seen then true else aux (x::seen) xs
+      in aux [] l
+    in
+    if has_dupes fields 
+    then Error RepeatingFieldName
+    else
+      let inferred = List.map (infer tenv cenv) values in
+
+      if List.for_all Result.is_ok inferred
+      then 
+        let safe_inferred = List.map Result.get_ok inferred in
+        let tr = List.map2 (fun x y -> (x, y)) fields safe_inferred in
+        Ok (TRecord tr)
+      else List.find Result.is_error inferred
 
   | Access i -> 
     begin match Env.find_opt i tenv with
-      | Some t -> { e=e; t=t }
-      | None -> failwith ("Unbound variable " ^ i)
+      | Some t -> Ok t
+      | None -> Error UnboundIdentifier
     end
 
   | Member (e, f) -> 
-    let te = infer e tenv cenv in
-    begin match te.t with
-      | TBits _ -> failwith "Bits type has no members"
+    let* te = infer tenv cenv e in
+    begin match te with
+      | TBits _ -> Error BitVectorMemberAccess
       | TRecord r -> 
         begin match List.assoc_opt f r with
-          | Some t -> { e=e; t=t }
-          | None -> failwith ("Unknown field" ^ f)
+          | Some t -> Ok t
+          | None -> Error UnknownField
         end
     end
