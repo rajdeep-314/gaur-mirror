@@ -1,5 +1,6 @@
 open Lexing
 open Printf
+open Utils
 
 module E = MenhirLib.ErrorReports
 module L = MenhirLib.LexerUtil
@@ -39,6 +40,16 @@ let attempt1 filename : string =
     (* Show the tokens just before and just after the error. *)
     let indication = sprintf "Syntax error.\n" in
     (* Show these three components. *)
+    eprintf "%s%s%s%!" location indication message;
+    exit 1
+
+  | exception (DuplicateKey (key, loc)) ->
+    (* A duplicate key error has occurred. *)
+
+    let buffer = loc in
+    let location = L.range buffer in
+    let indication = sprintf "Error: duplicate key.\n" in
+    let message = sprintf "The key '%s' appears more than once.\n" key in
     eprintf "%s%s%s%!" location indication message;
     exit 1
 

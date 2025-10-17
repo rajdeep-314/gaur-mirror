@@ -1,12 +1,9 @@
 %{
   open Ast
-
-  let rec int_to_bits n =
-  if n = 0 then []
-  else
-    let b = if n mod 2 = 0 then O else I in
-    b :: int_to_bits (n / 2)
+  open Utils
+  open Bits
 %}
+
 
 %token <string> LID (* lowercase identifier *)
 %token <string> PID (* PascalCase identifier *)
@@ -66,20 +63,32 @@ out_decl:
   | OUTPUT id = LID ":" t = typ             { (id, t) }
 
 states_decl:
-  | STATES ss = separated_nonempty_list(",", state) { ss }
+  | STATES ss = separated_nonempty_list(",", state)
+    {
+      List.fold_left
+        (fun acc (k, loc, v) -> add_to_map acc k loc v)
+        StrMap.empty
+        ss
+    }
 
 state:
-  | id = LID ":" t = typ                    { (id, t) }
+  | id = LID ":" t = typ                    { (id, ($startpos(id), $endpos(id)), t) }
 
 typ:
   | BITS n = INT                            { TBits n }
   | "{" r = record_t "}"                    { TRecord r }
 
 record_t:
-  | r = separated_nonempty_list(",", record_t_fields) { r }
+  | r = separated_nonempty_list(",", record_t_fields)
+    {
+      List.fold_left
+        (fun acc (k, loc, v) -> add_to_map acc k loc v)
+        StrMap.empty
+        r
+    }
 
 record_t_fields:
-  | field = LID ":" t = typ                 { (field, t) }
+  | field = LID ":" t = typ                 { (field, ($startpos(field), $endpos(field)), t) }
 
 expression:
   | i = INT                                 { Constant (int_to_bits i) }
