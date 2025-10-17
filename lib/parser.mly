@@ -2,6 +2,7 @@
   open Ast
   open Utils
   open Bits
+  open Location
 %}
 
 
@@ -11,19 +12,19 @@
 
 %token BITS CHIP INPUT OUTPUT STATES
 
-%token FIELD_ASSIGN "="
-%token DOT          "."
-%token COLON        ":"
-%token COMMA        ","
+%token FIELD_ASSIGN
+%token DOT
+%token COLON
+%token COMMA
 
-%token LBRACE "{" RBRACE "}" 
-%token LPAREN "(" RPAREN ")"
-%token LSQURE "[" RSQURE "]"
+%token LBRACE RBRACE
+%token LPAREN RPAREN
+%token LSQURE RSQURE
 
-%token PLUSPLUS    "++"
-%token PRIME       "'"
-%token COMB_DEF    ":="
-%token SEQ_DEF     "<-"
+%token PLUSPLUS
+%token PRIME
+%token COMB_DEF
+%token SEQ_DEF
 
 %token EOF
 
@@ -37,78 +38,164 @@
 %%
 
 main:
-  // | EOF
-  //   { [] }
-  | cs = chip* EOF
-    { cs }
+    | cs = chip* EOF
+        { cs }
 
 chip:
-  | CHIP name = PID "{" body = chip_body "}"
-    { { body with Ast.name = name } }
+    | CHIP name=PID LBRACE body=chip_body RBRACE
+        { { body with Ast.name=name } }
 
 chip_body:
-  | ind = in_decl outd = out_decl sts = states_decl? asgn = assign*
-    { Ast.{
-      name   = "";
-      input  = ind;
-      output = outd;
-      states = sts;
-      parts  = asgn;
-    } }
+    | ind=in_decl outd=out_decl sts=states_decl? asgn=assign*
+        { {
+            name="";
+            input=ind;
+            output=outd;
+            states=sts;
+            parts=asgn;
+        } }
 
 in_decl:
-  | INPUT id = LID ":" t = typ              { (id, t) }
+    | INPUT id=LID COLON t=typ
+        { (id, t) }
 
 out_decl:
-  | OUTPUT id = LID ":" t = typ             { (id, t) }
+    | OUTPUT id=LID COLON t=typ
+        { (id, t) }
 
 states_decl:
-  | STATES ss = separated_nonempty_list(",", state)
-    {
-      List.fold_left
-        (fun acc (k, loc, v) -> add_to_map acc k loc v)
-        StrMap.empty
-        ss
-    }
+    | STATES states_list=separated_nonempty_list(COMMA, state)
+        {
+            List.fold_left
+                add_to_map
+            (*  (fun acc (k, loc, v) -> add_to_map acc k loc v)  *)
+                StrMap.empty
+                states_list
+        }
 
 state:
-  | id = LID ":" t = typ                    { (id, ($startpos(id), $endpos(id)), t) }
+    | id=LID COLON t=typ
+        {
+            let loc = mk_loc ($startpos(id)) ($endpos(id)) in
+            wrap_loc ~loc:loc (id, t)
+        }
 
 typ:
-  | BITS n = INT                            { TBits n }
-  | "{" r = record_t "}"                    { TRecord r }
+    | BITS n=INT
+        { TBits n }
+    
+    | LBRACE body=typ_record_body RBRACE
+        { TRecord body }
 
-record_t:
-  | r = separated_nonempty_list(",", record_t_fields)
-    {
-      List.fold_left
-        (fun acc (k, loc, v) -> add_to_map acc k loc v)
-        StrMap.empty
-        r
-    }
+typ_record_body:
+    | typ_record_field_list = separated_nonempty_list(COMMA, typ_record_field)
+        {
+            List.fold_left
+                add_to_map
+            (*  (fun acc (k, loc, v) -> add_to_map acc k loc v)  *)
+                StrMap.empty
+                typ_record_field_list
+        }
 
-record_t_fields:
-  | field = LID ":" t = typ                 { (field, ($startpos(field), $endpos(field)), t) }
+typ_record_field:
+    | field=LID COLON t=typ
+        {
+            let loc = mk_loc ($startpos(field)) ($endpos(field)) in
+            wrap_loc ~loc:loc (field, t)
+        }
 
 expression:
-  | i = INT                                 { Constant (int_to_bits i) }
-  | "(" expr = expression ")"               { expr }
-  | expr = expression "." field = LID       { Member (expr, field) }
-  | expr1 = expression "++" expr2 = expression
-                                            { Concat (expr1, expr2) }
-  | expr = expression "[" start_index = INT ":" end_index = INT "]" 
-                                            { Splice (expr, (start_index, end_index)) }
-  | expr = expression "[" i = INT "]"       { Splice (expr, (i, i)) }
-  | "{" fs = record_fields "}"              { Record fs }
-  | chip = PID expr = expression            { Instance (chip, expr) } %prec APP
-  | id = LID                                { Access id }
+    | i = INT
+        (* 0b010, 0xfd, 0o71, 32 *)
+        {
+            (* TODO: What do i need this for ? *)
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Constant (int_to_bits i))
+        }
+    
+    | LPAREN expr=expression RPAREN
+        (* (expr) *)
+        {
+            (* Pass parenthesized expression as is *)
+            expr
+        }
 
-record_fields:
-  | separated_nonempty_list(",", record_field) { $1 }
+    | expr=expression DOT field=LID
+        (* foo.bar *)
+        {
+            (* TODO: Should this be location of the field ? *)
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Member (expr, field))
+        }
+    
+    | expr1=expression PLUSPLUS expr2=expression
+        (* foo1 ++ bar2 *)
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Concat (expr1, expr2))
+        }
 
-record_field:
-  | field = LID "=" expr = expression       { (field, expr) }
+    | expr=expression LSQURE start_index=INT COLON end_index=INT RSQURE
+        (* foo.bar[0:2] *)
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Splice (expr, start_index, end_index))
+        }
+
+    | expr=expression LSQURE index=INT RSQURE
+        (* foo.bar[0] *)
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Splice (expr, index, index))
+        }
+    
+    | LBRACE body=exp_record_body RBRACE
+        (* {f1=e1, f2=e2, ..., fn=en} *)
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Record body)
+        }
+    
+    | chip=PID expr=expression
+        (* Chip expr *)
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Instance (chip, expr))
+        } %prec APP
+    
+    | id=LID
+        (* foo *)
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_expr ~loc:loc (Access id)
+        }
+
+exp_record_body:
+    | expr_record_field_list = separated_nonempty_list(COMMA, exp_record_field)
+        {
+            List.fold_left
+                add_to_map
+            (*  (fun acc (k, loc, v) -> add_to_map acc k loc v)  *)
+                StrMap.empty
+                expr_record_field_list
+        }
+
+exp_record_field:
+    | field=LID FIELD_ASSIGN expr=expression
+        {
+            let loc = mk_loc ($startpos(field)) ($endpos(field)) in
+            wrap_loc ~loc:loc (field, expr)
+        }
 
 assign:
-  | id = LID     ":=" expr = expression     { Current (id, expr) }
-  | id = LID "'" "<-" expr = expression     { Next    (id, expr) }
+    | id=LID COMB_DEF expr=expression
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_assign ~loc:loc (Current(id, expr))
+        }
+
+    | id=LID PRIME SEQ_DEF expr=expression
+        {
+            let loc = mk_loc ($startpos) ($endpos) in
+            mk_assign ~loc:loc (Next(id, expr))
+        }

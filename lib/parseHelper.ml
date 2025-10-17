@@ -46,7 +46,7 @@ let attempt1 filename : string =
   | exception (DuplicateKey (key, loc)) ->
     (* A duplicate key error has occurred. *)
 
-    let buffer = loc in
+    let buffer = (loc.loc_start, loc.loc_end) in
     let location = L.range buffer in
     let indication = sprintf "Error: duplicate key.\n" in
     let message = sprintf "The key '%s' appears more than once.\n" key in
