@@ -2,6 +2,7 @@
  (name pHDL)
  (modules
   ast
+  asttypes
   parser
   lexer
   parseHelper

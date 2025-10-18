@@ -1,4 +1,5 @@
 open Ast
+open Asttypes
 
 type error = 
   | Splice_non_bits of typ
@@ -81,25 +82,30 @@ let report_error ~loc = function
       "Can not sequentially assign the non-state variable %s.\n"
       var
 
-
 exception Error of Location.loc * Env.t * error
 
-let rec infer env expr = 
+let rec infer (env:Env.t) (expr:expr) : typ = 
   match expr.expr_desc with
   | Constant b ->
     let l = NonEmpty.length b in
     (TBits l)
 
-  | Instance (chip, expr_arg) ->
-    begin match Env.lookup chip env with  
+  | Instance (chip, arg) ->
+    let symbol_info = Env.lookup chip env in
+    begin match symbol_info with  
       | None -> raise (Error (expr.expr_loc, env, Unknown_chip chip))
-      | Some (TBits _)
-      | Some (TRecord _) -> raise (Error (expr.expr_loc, env, Not_a_chip chip))
-      | Some (TChip (typ_in, typ_out)) -> 
-        let expr_arg_typ = infer env expr_arg in 
-        if typ_equal expr_arg_typ typ_in
-        then typ_out
-        else raise (Error (expr_arg.expr_loc, env, Chip_argument_type_mismatch (chip, (typ_in, typ_out), expr_arg_typ)))
+      | Some symbol_info -> 
+        begin match symbol_info.typ with
+          | TChip (typ_in, typ_out) ->
+            let arg_typ = infer env arg in 
+            if typ_equal arg_typ typ_in
+            then
+              ( Env.mark_used chip env;
+                typ_out
+              )
+            else raise (Error (arg.expr_loc, env, Chip_argument_type_mismatch (chip, (typ_in, typ_out), arg_typ)))
+          | _ -> raise (Error (expr.expr_loc, env, Not_a_chip chip))
+        end
     end
 
   | Splice (splice_expr, start_index, end_index) ->
@@ -125,20 +131,24 @@ let rec infer env expr =
     TRecord typs
 
   | Access ident ->
-    begin match Env.lookup ident env with
-      | Some t -> t
+    let ident_info = Env.lookup ident env in
+    begin match ident_info with
+      | Some t -> 
+        ( Env.mark_used ident env;
+          t.typ
+        )
       | None -> raise (Error (expr.expr_loc, env, Unbound_variable ident))
     end
 
-  | Member (expr_mem, field) ->
-    let typ_expr_mem = infer env expr_mem in
-    begin match typ_expr_mem with
+  | Member (record, field) ->
+    let typ_record = infer env record in
+    begin match typ_record with
       | TRecord r -> 
         begin match StrMap.find_opt field r with
           | Some t -> t
           | None -> raise (Error (expr.expr_loc, env, Unknown_record_field (field)))
         end
-      | _ -> raise (Error (expr.expr_loc, env, Member_access_non_record (typ_expr_mem)))
+      | _ -> raise (Error (expr.expr_loc, env, Member_access_non_record (typ_record)))
     end
 
 
@@ -163,18 +173,20 @@ let type_check_assignment states env assignment =
     if is_state_var var states
     then raise (Error (assignment.assign_loc, env, Current_assignment_state_var var))
     else 
+    if Env.mem var env
+    then raise (Error (assignment.assign_loc, env, Multiple_bound_variable var))
+    else 
       let expr_typ = infer env expr in
-      Env.extend var expr_typ env
+      let expr_info = { typ=expr_typ; used=Unused; bound=Bound; updated=Unupdated } in
+      Env.extend var expr_info env
 
   | Next -> 
     if not (is_state_var var states)
     then raise (Error (assignment.assign_loc, env, Next_assignment_non_state_var var))
     else
-    if Env.mem var env
-    then raise (Error (assignment.assign_loc, env, Multiple_bound_variable var))
-    else 
-      let expr_typ = infer env expr in
-      Env.extend var expr_typ env
+      ( Env.mark_updated var env;
+        env
+      )
 
 
 let extend_ports chip env = 
