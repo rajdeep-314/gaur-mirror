@@ -115,19 +115,29 @@ let step_prog (State (pc, rf, ram) as st) prog =
             Some (step_inst st inst)
 
 
-let rec execute_at_pc (State (pc, rf, ram) as st) prog =
-    match List.nth_opt prog pc with
-    | None -> st
-    | Some inst ->
-            execute_at_pc (step_inst st inst) prog
+let rec execute_at_pc ?(max_steps = None) (State (pc, rf, ram) as st) prog =
+    match max_steps with
+    | None -> 
+        begin
+        match List.nth_opt prog pc with
+        | None -> st
+        | Some inst ->
+                execute_at_pc (step_inst st inst) prog
+        end
+    | Some n ->
+        if n <= 0 then st else
+        match List.nth_opt prog pc with
+        | None -> st
+        | Some inst ->
+                execute_at_pc ~max_steps:(Some (n - 1)) (step_inst st inst) prog
 
-let execute_prog prog =
+let execute_prog ?(max_steps = None) prog =
     let init_st = create () in
-    execute_at_pc init_st prog
+    execute_at_pc ~max_steps:max_steps init_st prog
 
-let execute_prog_on_ram ram prog =
+let execute_prog_on_ram ?(max_steps = None) ram prog =
     let init_st = State (0, Rf.create (), ram) in
-    execute_at_pc init_st prog
+    execute_at_pc ~max_steps:max_steps init_st prog
 
 
 (* Execution with traces. *)
@@ -230,39 +240,65 @@ let step_prog_wt (State (pc, rf, ram) as st) prog =
             Some (step_inst_wt st inst)
 
 (* tcs is the traces list. *)
-let rec execute_at_pc_wt (State (pc, rf, ram) as st) prog tcs =
-    match List.nth_opt prog pc with
-    | None -> (st, List.rev tcs)
-    | Some inst ->
-            let (st', tc) = step_inst_wt st inst in
-            execute_at_pc_wt st' prog (tc :: tcs)
+let rec execute_at_pc_wt ?(max_steps = None) (State (pc, rf, ram) as st) prog tcs =
+    match max_steps with
+    | None ->
+            begin
+            match List.nth_opt prog pc with
+            | None -> (st, List.rev tcs)
+            | Some inst ->
+                    let (st', tc) = step_inst_wt st inst in
+                    execute_at_pc_wt st' prog (tc :: tcs)
+            end
+    | Some n ->
+            if n <= 0 then (st, List.rev tcs) else
+            match List.nth_opt prog pc with
+            | None -> (st, List.rev tcs)
+            | Some inst ->
+                    let (st', tc) = step_inst_wt st inst in
+                    execute_at_pc_wt ~max_steps:(Some (n - 1)) st' prog (tc :: tcs)
 
-let execute_prog_wt prog =
+
+let execute_prog_wt ?(max_steps = None) prog =
     let init_st = create () in
-    execute_at_pc_wt init_st prog []
+    execute_at_pc_wt ~max_steps:max_steps init_st prog []
 
-let execute_prog_on_ram_wt ram prog =
+let execute_prog_on_ram_wt ?(max_steps = None) ram prog =
     let init_st = State (0, Rf.create (), ram) in
-    execute_at_pc_wt init_st prog []
+    execute_at_pc_wt ~max_steps:max_steps init_st prog []
 
 
 (* Executing and printing the trace. *)
 
-let rec execute_at_pc_pt (State (pc, rf, ram) as st) prog =
-    match List.nth_opt prog pc with
+let rec execute_at_pc_pt ?(max_steps = None) (State (pc, rf, ram) as st) prog =
+    match max_steps with
     | None ->
-            let () = print_endline "\nHALT\n" in st
-    | Some inst ->
-            let (st', tc) = step_inst_wt st inst in
-            let () = print_endline (Trace.to_string tc) in
-            execute_at_pc_pt st' prog
+            begin
+            match List.nth_opt prog pc with
+            | None ->
+                    let () = print_endline "\nHALT\n" in st
+            | Some inst ->
+                    let (st', tc) = step_inst_wt st inst in
+                    let () = print_endline (Trace.to_string tc) in
+                    execute_at_pc_pt st' prog
+            end
+    | Some n ->
+            if n <= 0 then st else
+            match List.nth_opt prog pc with
+            | None ->
+                    let () = print_endline "\nHALT\n" in st
+            | Some inst ->
+                    let (st', tc) = step_inst_wt st inst in
+                    let () = print_endline (Trace.to_string tc) in
+                    execute_at_pc_pt ~max_steps:(Some (n - 1)) st' prog
 
-let execute_prog_pt prog =
+
+let execute_prog_pt ?(max_steps = None) prog =
     let init_st = create () in
-    execute_at_pc_pt init_st prog
+    execute_at_pc_pt ~max_steps:max_steps init_st prog
 
-let execute_prog_on_ram_pt ram prog =
+let execute_prog_on_ram_pt ?(max_steps = None) ram prog =
     let init_st = State (0, Rf.create (), ram) in
-    execute_at_pc_pt init_st prog
+    execute_at_pc_pt ~max_steps:max_steps init_st prog
 
 

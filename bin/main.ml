@@ -10,7 +10,7 @@ let path = ref ""
 let ram_path = ref ""
 let trace = ref false
 let final_state = ref true
-let max_steps = ref 5000
+let max_steps = ref 2000
 let debug_mode = ref false
 
 
@@ -74,9 +74,9 @@ let () =
     else
     let proc_final_state =
         if !trace then
-            Proc.execute_prog_on_ram_pt init_ram prog
+            Proc.execute_prog_on_ram_pt ~max_steps:(Some !max_steps) init_ram prog
         else
-            Proc.execute_prog_on_ram init_ram prog
+            Proc.execute_prog_on_ram ~max_steps:(Some !max_steps) init_ram prog
     in
     if !final_state then
         begin

@@ -13,8 +13,12 @@ type t =
 
 let to_string = function
     | RegMod (pc, inst, r, v) ->
+            let rval = 
+                match r with
+                | Ast.Reg.R0 -> 0
+                | _ -> v in
             let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
-            Printf.sprintf "\t%s\t%04x" (Ast.Reg.to_string r) v
+            Printf.sprintf "\t%s\t%04x" (Ast.Reg.to_string r) rval
     | RamMod (pc, inst, addr, v) ->
             let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
             Printf.sprintf "\t%04x\t%04x" addr v

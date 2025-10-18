@@ -1,4 +1,4 @@
 (executables
- (public_names cpusim test)
- (names main test)
+ (public_names cpusim)
+ (names main)
  (libraries syntax cpusim bram utils debug))
