@@ -23,6 +23,8 @@ let parse_line_from_toks_opt = function
             Some (Ast.Reg n)
     | REGS :: [] ->
             Some Ast.Regs
+    | PRINT_INST :: [] ->
+            Some Ast.Print_inst
     | PRINT_PROG :: [] ->
             Some Ast.Print_prog
     | MEM :: NUM addr :: NUM data :: [] ->

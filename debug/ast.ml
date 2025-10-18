@@ -6,6 +6,7 @@ type t =
     | GetTrace
     | Reg of int
     | Regs
+    | Print_inst
     | Print_prog
     | Mem of addr * int
     | Step
@@ -21,6 +22,7 @@ let to_string = function
     | GetTrace -> "get trace"
     | Reg i -> "reg r" ^ string_of_int i
     | Regs -> "regs"
+    | Print_inst -> "print inst"
     | Print_prog -> "print prog"
     | Mem (addr, count) -> "mem " ^ string_of_int addr ^ " " ^ string_of_int count
     | Step -> "step"

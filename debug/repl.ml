@@ -13,6 +13,7 @@ let help_string =
     get trace               :   see if trace is ON or OFF
     reg x                   :   print register rx
     regs                    :   print the entire register file
+    print inst              :   print the instruction that PC currently points to
     print prog              :   print the loaded program
     mem addr count          :   print count-many RAM cells, starting from address addr
     step                    :   step through the program (one instruction)
@@ -74,6 +75,13 @@ let rec repl prog proc trace =
             repl prog proc trace
     | Regs ->
             let () = Rf.print (Proc.get_regfile proc) in
+            repl prog proc trace
+    | Print_inst ->
+            let () = 
+            match List.nth_opt prog (Proc.get_pc proc) with
+            | None -> print_endline "Error: PC out of bounds, no instruction to display."
+            | Some inst -> print_endline (Sast.to_string inst)
+            in
             repl prog proc trace
     | Print_prog ->
             let () = Sast.print_prog_with_pc prog (Proc.get_pc proc) in

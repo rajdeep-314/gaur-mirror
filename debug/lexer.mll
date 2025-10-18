@@ -2,7 +2,7 @@
     type token =
         | HELP | SET_TRACE | ON | OFF
         | GET_TRACE | REG | REGS | REGISTER of int
-        | MEM | STEP | STEPS | PRINT_PROG
+        | MEM | STEP | STEPS | PRINT_INST | PRINT_PROG
         | NUM of int
         | QUIT
         | INVALID
@@ -44,12 +44,12 @@ rule token = parse
     | "steps"           { STEPS }
     | "step"            { STEP }
     | "quit"            { QUIT }
+    | "print inst"      { PRINT_INST }
     | "print prog"      { PRINT_PROG }
     | dec_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | hex_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
     | _                 { INVALID }
-    (* | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) } *)
 
 

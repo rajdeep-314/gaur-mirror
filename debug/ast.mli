@@ -6,6 +6,7 @@ type t =
     | GetTrace
     | Reg of int
     | Regs
+    | Print_inst
     | Print_prog
     | Mem of addr * int
     | Step
