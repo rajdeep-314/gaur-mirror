@@ -5,6 +5,8 @@
 
 - Odoc documentation.
 - Maybe have Syntax.Ast.t involve ints rather than lists of bits.
+- Mode for taking both assembly and binary as input and having labels as
+  breakpoints for assembly inputs.
 
 
 ## Pretty printing
