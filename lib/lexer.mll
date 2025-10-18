@@ -1,6 +1,6 @@
 {
     type token =
-        | NUM of int
+        | NUM of Big_int.big_int
         | COLON
         | NEWLINE
         | EOF
@@ -28,9 +28,9 @@ rule token = parse
     | whitespace            { token lexbuf }
     | comment               { token lexbuf }
     | '\n'                  { NEWLINE }
-    | bin_integer           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
-    | hex_integer           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
-    | dec_integer           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
+    | bin_integer           { NUM (Big_int.big_int_of_string (Lexing.lexeme lexbuf)) }
+    | hex_integer           { NUM (Big_int.big_int_of_string (Lexing.lexeme lexbuf)) }
+    | dec_integer           { NUM (Big_int.big_int_of_string (Lexing.lexeme lexbuf)) }
     | ':'                   { COLON }
     | eof                   { EOF }
     | _                     { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }

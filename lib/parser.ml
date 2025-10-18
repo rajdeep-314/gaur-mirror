@@ -1,4 +1,6 @@
 open Lexer
+open Big_int
+
 
 let lex_string s =
     let lexbuf = Lexing.from_string s in
@@ -12,7 +14,7 @@ let lex_string s =
 
 let parse_line_from_toks = function
     | NUM addr :: COLON :: NUM data :: ts->
-            (Ast.Map (addr, data land 0xffff), ts)
+            (Ast.Map (int_of_big_int addr, data), ts)
     | _ ->
             failwith "Parsing error: Invalid syntax."
 

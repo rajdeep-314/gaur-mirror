@@ -1,5 +1,7 @@
+open Big_int
+
 type addr = int
-type half = int
+type half = big_int
 
 type t =
     | Map of addr * half
