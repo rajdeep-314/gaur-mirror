@@ -26,3 +26,13 @@ let rec of_list_opt = function
 let rec length = function
   | Single _ -> 1
   | Cons (_, xs) -> 1 + length xs
+
+let rec fold_left f accu l =
+  match l with
+  | Single x -> f accu x
+  | Cons (x, xs) -> fold_left f (f accu x) xs
+
+let rec fold_right f l accu =
+  match l with
+  | Single x -> f accu x
+  | Cons (x, xs) -> f x (fold_right f xs accu)
