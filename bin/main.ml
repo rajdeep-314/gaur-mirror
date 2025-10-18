@@ -81,9 +81,3 @@ let () =
             ~finally:(fun () -> close_out_noerr oc)
             (fun () -> output_string oc (Binary.to_string bs))
 
-let () =
-    if lendianb then
-        print_endline "Little endian"
-    else
-        print_endline "Big endian"
-
