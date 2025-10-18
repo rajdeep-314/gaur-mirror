@@ -29,9 +29,9 @@
 %token EOF
 
 %left  PLUSPLUS
-%left  DOT
+%right  APP
+%right  DOT
 %left  LSQURE
-%left  APP
 
 %start <Ast.program> main
 
@@ -57,11 +57,17 @@ chip_body:
 
 in_decl:
     | INPUT id=LID COLON t=typ
-        { (id, t) }
+        { {
+            port_name=id;
+            port_type=t
+        } }
 
 out_decl:
     | OUTPUT id=LID COLON t=typ
-        { (id, t) }
+        { {
+            port_name=id;
+            port_type=t
+        } }
 
 states_decl:
     | STATES states_list=separated_nonempty_list(COMMA, state)
@@ -191,11 +197,13 @@ assign:
     | id=LID COMB_DEF expr=expression
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_assign ~loc:loc (Current(id, expr))
+            let assign_desc = mk_assign_desc id expr Current in
+            mk_assign ~loc:loc assign_desc
         }
 
     | id=LID PRIME SEQ_DEF expr=expression
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_assign ~loc:loc (Next(id, expr))
+            let assign_desc = mk_assign_desc id expr Next in
+            mk_assign ~loc:loc assign_desc
         }
