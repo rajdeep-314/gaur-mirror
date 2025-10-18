@@ -14,14 +14,13 @@ let padding = ref "0"
 let speclist = [
     ("--out", Arg.Set_string out_path, "Path of the output file, if any.");
     ("-o", Arg.Set_string out_path, "Path of the output file, if any (short).");
-    ("-rsz", Arg.Set_int ram_size, "The RAM size, in number of words/cells (short).");
     ("--ram-size", Arg.Set_int ram_size, "The RAM size, in number of words/cells.");
     ("-rsz", Arg.Set_int ram_size, "The RAM size, in number of words/cells (short).");
     ("--word-size", Arg.Set_int word_size, "The word size, in number of bytes.");
     ("-wsz", Arg.Set_int word_size, "The word size, in number of bytes (short).");
     ("--endianness", Arg.Set_string endianness, "The endianness (little/big).");
     ("-e", Arg.Set_string endianness, "The endianness (little/big) (short).");
-    ("--offset ", Arg.Set_int offset, "The address offset for the RAM.");
+    ("--offset", Arg.Set_int offset, "The address offset for the RAM.");
     ("-off", Arg.Set_int offset, "The address offset for the RAM (short).");
     ("--padding", Arg.Set_string padding, "Data to be loaded at unspecified addresses.");
     ("-p", Arg.Set_string padding, "Data to be loaded at unspecified addresses (short).");
