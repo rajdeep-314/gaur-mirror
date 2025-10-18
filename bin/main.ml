@@ -8,6 +8,12 @@ let _parse (s : string) : Ast.program =
   ast
 
 let () =
-  let filename = Sys.argv.(1) in
-  let text = attempt1 filename in
-  attempt2 filename text
+  for i = 1 to Array.length Sys.argv - 1 do
+    let filename = Sys.argv.(i) in
+    let result = attempt1 filename in
+    match result with
+    | Error text -> ignore (attempt2 filename text)
+    | Ok program -> 
+      let env = Init_env.init_chip program in
+      ignore (Typecheck.type_check_program env program)
+  done

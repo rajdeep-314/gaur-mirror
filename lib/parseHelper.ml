@@ -20,15 +20,15 @@ let show text positions =
 (* The function call [attempt1 filename] returns normally only if a syntax
    error has occurred while parsing [filename]. In that case, it returns the
    content of the file. *)
-let attempt1 filename : string =
+let attempt1 filename : (Ast.program, string) Result.t =
 
   (* Read the file; allocate and initialize a lexing buffer. *)
   let text, lexbuf = L.read filename in
   (* Run the parser. *)
   match Parser.main Lexer.read lexbuf with
-  | _ ->
+  | program ->
     (* Success. The parser has produced a semantic value [v]. *)
-    exit 0
+    Ok program
 
   | exception Lexer.SyntaxError message ->
     (* A lexical error has occurred. *)
@@ -55,7 +55,7 @@ let attempt1 filename : string =
 
   | exception Parser.Error ->
     (* A syntax error has occurred. *)
-    text
+    Error text
 
 (* -------------------------------------------------------------------------- *)
 
