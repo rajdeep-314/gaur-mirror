@@ -9,7 +9,11 @@
   utils
   bits
   location
+  typecheck
+  env
+  init_env
   unitActionsParser
+  pretty
   parserMessages)
  (libraries menhirLib))
 
@@ -29,7 +33,8 @@
 
 (menhir
  (modules parser)
- ; (flags --exn-carries-state --trace --dump)
+ ;; (flags --exn-carries-state --trace --dump)
+ ;; (flags --trace --dump)
  ;; (flags --strict)
  ;; (flags -lg 1 -la 1 -lc 2)
  )
