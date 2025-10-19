@@ -1,4 +1,6 @@
-open Ast
+open Asttypes
+open Parsetree
+open Utils
 
 let initial : Env.t =
   let nand_in_record =

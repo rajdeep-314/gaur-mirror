@@ -1,5 +1,6 @@
 %{
-  open Ast
+  open Asttypes
+  open Parsetree
   open Utils
   open Bits
   open Location
@@ -33,7 +34,7 @@
 %right  DOT
 %left  LSQURE
 
-%start <Ast.program> main
+%start <Parsetree.program> main
 
 %%
 
@@ -43,7 +44,7 @@ main:
 
 chip:
     | CHIP name=PID LBRACE body=chip_body RBRACE
-        { { body with Ast.name=name } }
+        { { body with Parsetree.name=name } }
 
 chip_body:
     | ind=in_decl outd=out_decl sts=states_decl? asgn=assign*
@@ -89,7 +90,7 @@ state:
 typ:
     | BITS n=INT
         { TBits n }
-    
+
     | LBRACE body=typ_record_body RBRACE
         { TRecord body }
 
@@ -116,9 +117,9 @@ expression:
         {
             (* TODO: What do i need this for ? *)
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Constant (int_to_bits i))
+            mk_expr ~loc:loc (Pexpr_constant (int_to_bits i))
         }
-    
+
     | LPAREN expr=expression RPAREN
         (* (expr) *)
         {
@@ -131,49 +132,49 @@ expression:
         {
             (* TODO: Should this be location of the field ? *)
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Member (expr, field))
+            mk_expr ~loc:loc (Pexpr_member (expr, field))
         }
-    
+
     | expr1=expression PLUSPLUS expr2=expression
         (* foo1 ++ bar2 *)
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Concat (expr1, expr2))
+            mk_expr ~loc:loc (Pexpr_concat (expr1, expr2))
         }
 
     | expr=expression LSQURE start_index=INT COLON end_index=INT RSQURE
         (* foo.bar[0:2] *)
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Splice (expr, start_index, end_index))
+            mk_expr ~loc:loc (Pexpr_splice (expr, start_index, end_index))
         }
 
     | expr=expression LSQURE index=INT RSQURE
         (* foo.bar[0] *)
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Splice (expr, index, index))
+            mk_expr ~loc:loc (Pexpr_splice (expr, index, index))
         }
-    
+
     | LBRACE body=exp_record_body RBRACE
         (* {f1=e1, f2=e2, ..., fn=en} *)
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Record body)
+            mk_expr ~loc:loc (Pexpr_record body)
         }
-    
+
     | chip=PID expr=expression
         (* Chip expr *)
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Instance (chip, expr))
+            mk_expr ~loc:loc (Pexpr_apply (chip, expr))
         } %prec APP
-    
+
     | id=LID
         (* foo *)
         {
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Access id)
+            mk_expr ~loc:loc (Pexpr_access id)
         }
 
 exp_record_body:

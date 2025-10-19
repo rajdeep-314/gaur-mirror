@@ -20,7 +20,7 @@ let show text positions =
 (* The function call [attempt1 filename] returns normally only if a syntax
    error has occurred while parsing [filename]. In that case, it returns the
    content of the file. *)
-let attempt1 filename : (Ast.program, string) Result.t =
+let attempt1 filename : (Parsetree.program, string) Result.t =
 
   (* Read the file; allocate and initialize a lexing buffer. *)
   let text, lexbuf = L.read filename in

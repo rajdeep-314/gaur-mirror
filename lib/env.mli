@@ -1,4 +1,4 @@
-open Ast
+open Asttypes
 
 type t
 
@@ -11,3 +11,5 @@ val empty_env : t
 val mem : ident -> t -> bool
 
 val fold : (ident -> typ -> 'a -> 'a) -> t -> 'a -> 'a
+
+val print : t -> unit
