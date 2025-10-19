@@ -15,5 +15,5 @@ let () =
     | Error text -> ignore (attempt2 filename text)
     | Ok program -> 
       let env = Init_env.init_chip program in
-      ignore (Typecheck.type_check_program env program)
+      ignore (Typecheck.tc_program env program)
   done

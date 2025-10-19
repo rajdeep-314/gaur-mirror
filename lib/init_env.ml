@@ -1,5 +1,4 @@
 open Ast
-open Asttypes
 
 let initial : Env.t =
   let nand_in_record =
@@ -9,31 +8,11 @@ let initial : Env.t =
   in
 
   let nand_typ = TChip (TRecord nand_in_record, TBits 1) in
-  let nand_info =
-    { typ=nand_typ;
-      category=Chip;
-      used=Unused;
-      bound=Bound;
-      updated=Unupdated
-    }
-  in
-
-  Env.empty_env
-  |> Env.extend "Nand" nand_info
+  Env.extend "Nand" nand_typ Env.empty_env
 
 let extend_chip env chip =
   let chip_typ = TChip (chip.input.port_type, chip.output.port_type) in
-  let chip_info =
-    { typ=chip_typ;
-      category=Chip;
-      used=Unused;
-      bound=Bound;
-      updated=Unupdated
-    }
-  in
-
-  env
-  |> Env.extend chip.name chip_info
+  Env.extend chip.name chip_typ env
 
 let init_chip program =
   List.fold_left

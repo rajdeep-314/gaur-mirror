@@ -1,7 +1,6 @@
 open Ast
-open Asttypes
 
-type error = 
+type error =
   | Splice_non_bits of typ
   | Splice_index_out_of_range of int * int * int
   | Concat_non_bits of typ * typ
@@ -11,12 +10,10 @@ type error =
   | Not_a_chip of ident (* This exception should not be raised under the current design. *)
   | Unknown_chip of ident
   | Chip_argument_type_mismatch of ident * (typ * typ) * typ
-  | Multiple_bound_variable of ident
-  | Current_assignment_state_var of ident
-  | Next_assignment_non_state_var of ident
+  | Assignment_type_clash of typ * typ
 
 let report_error ~loc = function
-  | Splice_non_bits typ -> 
+  | Splice_non_bits typ ->
     Location.errorf ~loc:loc
       "Can not splice an expression of type %s.\n"
       (Pretty.pp_typ typ)
@@ -59,163 +56,119 @@ let report_error ~loc = function
   | Chip_argument_type_mismatch (chip, (t_in, _), t_arg) ->
     Location.errorf ~loc:loc
       "The chip %s expects an expression of type: %s.\n\
-      \ But an expression was passed of type: %s.\n\
-      \ The type %s is not compatible with type %s.\n"
+      \ But an expression was passed of type: %s.\n"
       chip
       (Pretty.pp_typ t_in)
       (Pretty.pp_typ t_arg)
-      (Pretty.pp_typ t_in)
-      (Pretty.pp_typ t_arg)
 
-  | Multiple_bound_variable var ->
+  | Assignment_type_clash (typ_var, typ_expr) ->
     Location.errorf ~loc:loc
-      "The variable %s is bound multiple times.\n"
-      var
+      "An expresison of type %s can not be assigned to a variable of type %s.\n"
+      (Pretty.pp_typ typ_expr)
+      (Pretty.pp_typ typ_var)
 
-  | Current_assignment_state_var var ->
-    Location.errorf ~loc:loc
-      "Can not combinationally assign the state variable %s.\n"
-      var
-
-  | Next_assignment_non_state_var var ->
-    Location.errorf ~loc:loc
-      "Can not sequentially assign the non-state variable %s.\n"
-      var
 
 exception Error of Location.loc * Env.t * error
 
-let rec infer (env:Env.t) (expr:expr) : typ = 
+
+let rec infer_or_raise env expr =
+  let loc = expr.expr_loc in
   match expr.expr_desc with
   | Constant b ->
-    let l = NonEmpty.length b in
-    (TBits l)
+    let l  = NonEmpty.length b in
+    TBits l
 
   | Instance (chip, arg) ->
-    let symbol_info = Env.lookup chip env in
-    begin match symbol_info with  
-      | None -> raise (Error (expr.expr_loc, env, Unknown_chip chip))
-      | Some symbol_info -> 
-        begin match symbol_info.typ with
-          | TChip (typ_in, typ_out) ->
-            let arg_typ = infer env arg in 
-            if typ_equal arg_typ typ_in
-            then
-              ( Env.mark_used chip env;
-                typ_out
-              )
-            else raise (Error (arg.expr_loc, env, Chip_argument_type_mismatch (chip, (typ_in, typ_out), arg_typ)))
-          | _ -> raise (Error (expr.expr_loc, env, Not_a_chip chip))
-        end
+    let typ_arg = infer_or_raise env arg in
+    let typ_chip_opt = Env.lookup chip env in
+    begin match typ_chip_opt with
+      | None -> raise (Error (loc, env, Unknown_chip chip))
+      | Some (TBits _)
+      | Some (TRecord _) -> raise (Error (loc, env, Not_a_chip chip))
+      | Some (TChip (typ_in, typ_out)) ->
+        if typ_equal typ_in typ_arg
+        then typ_out
+        else raise (Error (loc, env, Chip_argument_type_mismatch (chip, (typ_in, typ_out), typ_arg)))
     end
 
-  | Splice (splice_expr, start_index, end_index) ->
-    let typ_splice_expr = infer env splice_expr in
-    begin match typ_splice_expr with
-      | TBits n -> 
+  | Splice (expr, start_index, end_index) ->
+    let typ_expr = infer_or_raise env expr in
+    begin match typ_expr with
+      | TRecord _
+      | TChip _ -> raise (Error (loc, env, Splice_non_bits typ_expr))
+      | TBits n ->
         if (0 <= start_index) && (start_index <= end_index) && (end_index < n)
         then TBits (end_index - start_index + 1)
-        else raise (Error (expr.expr_loc, env, Splice_index_out_of_range (start_index, end_index, n)))
-      | _ -> raise (Error (expr.expr_loc, env, Splice_non_bits (typ_splice_expr)))
+        else raise (Error (loc, env, Splice_index_out_of_range (start_index, end_index, n)))
     end
 
   | Concat (expr1, expr2) ->
-    let typ_expr1 = infer env expr1 in
-    let typ_expr2 = infer env expr2 in
+    let typ_expr1 = infer_or_raise env expr1 in
+    let typ_expr2 = infer_or_raise env expr2 in
     begin match typ_expr1, typ_expr2 with
       | TBits n, TBits m -> TBits (n + m)
-      | _ -> raise (Error (expr.expr_loc, env, Concat_non_bits (typ_expr1, typ_expr2)))
+      | _ -> raise (Error (loc, env, Concat_non_bits (typ_expr1, typ_expr2)))
     end
 
-  | Record expr_record ->
-    let typs = StrMap.map (infer env) expr_record in
+  | Record rec_expr ->
+    let typs = StrMap.map (infer_or_raise env) rec_expr in
     TRecord typs
 
-  | Access ident ->
-    let ident_info = Env.lookup ident env in
-    begin match ident_info with
-      | Some t -> 
-        ( Env.mark_used ident env;
-          t.typ
-        )
-      | None -> raise (Error (expr.expr_loc, env, Unbound_variable ident))
+  | Access var ->
+    let typ_var_opt = Env.lookup var env in
+    begin match typ_var_opt with
+      | None -> raise (Error (loc, env, Unbound_variable var))
+      | Some typ_var -> typ_var
     end
 
-  | Member (record, field) ->
-    let typ_record = infer env record in
-    begin match typ_record with
-      | TRecord r -> 
-        begin match StrMap.find_opt field r with
-          | Some t -> t
-          | None -> raise (Error (expr.expr_loc, env, Unknown_record_field (field)))
+  | Member (expr, field) ->
+    let typ_expr = infer_or_raise env expr in
+    begin match typ_expr with
+      | TBits _
+      | TChip _ -> raise (Error (loc, env, Member_access_non_record typ_expr))
+      | TRecord r ->
+        let typ_field_opt = StrMap.find_opt field r in
+        begin match typ_field_opt with
+          | None -> raise (Error (loc, env, Unknown_record_field field))
+          | Some typ_field -> typ_field
         end
-      | _ -> raise (Error (expr.expr_loc, env, Member_access_non_record (typ_record)))
     end
 
 
-(** [is_state_var c s] checks if variable [v] is a state variable in the map [s] *)
-let is_state_var var states = 
-  match states with
-  | None -> false
-  | Some ss -> StrMap.mem var ss
+let tc_assignment env assignment =
+  let loc = assignment.assign_loc in
+  let desc = assignment.assign_desc in
+  let typ_expr = infer_or_raise env desc.expr in
+  let typ_var_opt = Env.lookup desc.var env in
+  match typ_var_opt with
+  | None -> Env.extend desc.var typ_expr env
+  | Some typ_var ->
+    if typ_equal typ_var typ_expr
+    then env
+    else raise (Error (loc, env, Assignment_type_clash (typ_var, typ_expr)))
 
 
-(** [type_check_assignment env states assign] checks if the new assignment
-    [assign] is safe under environment [env] by assuring that a stateful
-    assignment is done if and only if it is a state variable, and that
-    no variable is assigned twice.
-*)
-let type_check_assignment states env assignment = 
-  let var = assignment.assign_desc.var in
-  let expr = assignment.assign_desc.expr in
-  let state = assignment.assign_desc.state in
-  match state with
-  | Current -> 
-    if is_state_var var states
-    then raise (Error (assignment.assign_loc, env, Current_assignment_state_var var))
-    else 
-    if Env.mem var env
-    then raise (Error (assignment.assign_loc, env, Multiple_bound_variable var))
-    else 
-      let expr_typ = infer env expr in
-      let expr_info = { typ=expr_typ; used=Unused; bound=Bound; updated=Unupdated } in
-      Env.extend var expr_info env
-
-  | Next -> 
-    if not (is_state_var var states)
-    then raise (Error (assignment.assign_loc, env, Next_assignment_non_state_var var))
-    else
-      ( Env.mark_updated var env;
-        env
-      )
-
-
-let extend_ports chip env = 
+let extend_ports env chip =
   env
   |> Env.extend chip.input.port_name chip.input.port_type
   |> Env.extend chip.output.port_name chip.output.port_type
 
-let extend_states chip env = 
+
+let extend_states env chip =
   match chip.states with
   | None -> env
-  | Some ss -> Env.fold Env.extend ss env
+  | Some ss -> StrMap.fold Env.extend ss env
 
-let type_check_chip env chip = 
-  let env' = 
-    env
-    |> extend_ports chip
-    |> extend_states chip
-  in
-
-  List.fold_left
-    (type_check_assignment chip.states)
-    env'
-    chip.parts
+let tc_chip env chip =
+  let env' = extend_ports env chip in
+  let env'' = extend_states env' chip in
+  List.fold_left tc_assignment env'' chip.parts
 
 
-let type_check_program env program = 
+let tc_program env program =
   try
     List.fold_left
-      type_check_chip
+      tc_chip
       env
       program
   with Error (loc, _, error) ->
