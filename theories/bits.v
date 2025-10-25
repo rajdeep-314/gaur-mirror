@@ -54,7 +54,7 @@ Definition bit_parity (z:Z) : t :=
    NOTE:
    The bit-vector is "reversed", compared to the conventional binary reprsentation.
    For example,
-        int_to_bv_n 5 10    ->      ( 0 , 1 , 0 , 1 , 0 )
+        int_to_bv_n 4 10    ->      ( 0 , 1 , 0 , 1 )
         int_to_bv_n 5 (-10) ->      ( 0 , 1 , 1 , 0 , 1 )
  *)
 Fixpoint int_to_bv_n (n:nat) (z:Z) : bv n:=
@@ -65,10 +65,10 @@ Fixpoint int_to_bv_n (n:nat) (z:Z) : bv n:=
 
 
 (* Reverse a bit-vector. *)
-Program Fixpoint reverse (n:nat) (v:bv n):(bv n):=
+Program Fixpoint reverse {n:nat} (v:bv n):(bv n):=
     match v with
     | nil => nil
-    | cons n' b v' => concat n' 1 (reverse n' v') (cons 0 b nil)
+    | cons n' b v' => concat n' 1 (reverse v') (cons 0 b nil)
     end.
 
 Next Obligation.

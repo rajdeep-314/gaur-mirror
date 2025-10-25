@@ -1,6 +1,9 @@
 # To do
 
-- Make a new branch as a backup, called assembler-old
+- Make implicit arguments
+- Made the code more readable (alignments, etc.)
+- Add some basic comments
+
 - Modify this to get rid of multi-isa pseudo-instructions
 - Write a lexer, maybe in Coq itself, or in OCaml
 - Write a parser

@@ -1,5 +1,5 @@
 (coq.theory
  (name assembler)
  (theories Stdlib)
- (modules lemmas symtable reg ast bits isa machine assemble demo)
+ (modules lemmas result symtable reg ast bits isa machine assemble demo)
 )

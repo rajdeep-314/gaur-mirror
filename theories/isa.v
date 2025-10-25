@@ -25,22 +25,25 @@ Inductive t : Set :=
 (* A program is a list of (ISA) instructions. *)
 Definition prog := list t.
 
+(* Number of instructions in a program. *)
+Definition num_insts (p:prog) : nat := List.length p.
+
 
 (* String representation of an instruction. *)
 Definition inst_to_string (i:t) : string :=
     match i with
     | lli rd imm =>
-		 "lli " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 (bits.reverse 8 imm)
+		 "lli " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 imm
     | lui rd imm =>
-		 "lui " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 (bits.reverse 8 imm)
+		 "lui " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 imm
     | ld rd rs imm =>
-		 "ld " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 (bits.reverse 4 imm)
+		 "ld " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 imm
     | st rs1 rs2 imm =>
-		 "st " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2 ++ ", " ++ bits.bv_to_string 4 (bits.reverse 4 imm)
+		 "st " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2 ++ ", " ++ bits.bv_to_string 4 imm
     | add rd rs1 rs2 =>
 		 "add " ++ reg.to_string rd ++ ", " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2
     | addi rd rs imm =>
-		 "addi " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 (bits.reverse 4 imm)
+		 "addi " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 imm
     | sub rd rs1 rs2 =>
 		 "sub " ++ reg.to_string rd ++ ", " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2
     | and rd rs1 rs2 =>
@@ -48,15 +51,15 @@ Definition inst_to_string (i:t) : string :=
     | not rd rs =>
 		 "not " ++ reg.to_string rd ++ ", " ++ reg.to_string rs
     | beq r1 r2 imm =>
-		 "beq " ++ reg.to_string r1 ++ ", " ++ reg.to_string r2 ++ ", " ++ bits.bv_to_string 4 (bits.reverse 4 imm)
+		 "beq " ++ reg.to_string r1 ++ ", " ++ reg.to_string r2 ++ ", " ++ bits.bv_to_string 4 imm
     | blt r1 r2 imm =>
-		 "blt " ++ reg.to_string r1 ++ ", " ++ reg.to_string r2 ++ ", " ++ bits.bv_to_string 4 (bits.reverse 4 imm)
+		 "blt " ++ reg.to_string r1 ++ ", " ++ reg.to_string r2 ++ ", " ++ bits.bv_to_string 4 imm
     | jalr rd rs imm =>
-		 "jalr " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 (bits.reverse 4 imm)
+		 "jalr " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 imm
     | apc rd imm =>
-		 "apc " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 (bits.reverse 8 imm)
+		 "apc " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 imm
     | j imm =>
-		 "j " ++ bits.bv_to_string 12 (bits.reverse 12 imm)
+		 "j " ++ bits.bv_to_string 12 imm
     end.
 
 
