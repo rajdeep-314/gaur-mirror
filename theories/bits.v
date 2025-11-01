@@ -34,23 +34,23 @@ Inductive bv : nat -> Set :=
 (* String representation of a bit-vector. *)
 Fixpoint bv_to_string (n:nat) (v:bv n) : string :=
     match v with
-    | nil => ""
-    | cons n' b v' => bit_to_string b ++ bv_to_string n' v'
+    | nil           => ""
+    | cons n' b v'  => bit_to_string b ++ bv_to_string n' v'
     end.
 
 
 (* A bit-vector of size n, of all zeros. *)
 Fixpoint zeros (n:nat) : bv n :=
     match n with
-    | O => nil
-    | S n' => cons n' b0 (zeros n')
+    | O     => nil
+    | S n'  => cons n' b0 (zeros n')
     end.
 
 (* Concat two bit-vectors of length m and n to a bit-vector of length (m + n). *)
 Fixpoint concat (m n:nat) (x:bv m) (y:bv n):bv (m + n):=
     match x with
-    | nil => y
-    | cons m' b x' => cons (m' + n) b (concat m' n x' y)
+    | nil           => y
+    | cons m' b x'  => cons (m' + n) b (concat m' n x' y)
     end.
 
 (* b1 if z is odd, else b0. *)
@@ -67,16 +67,16 @@ Definition bit_parity (z:Z) : t :=
  *)
 Fixpoint int_to_bv_n (n:nat) (z:Z) : bv n:=
     match n with
-    | O => nil
-    | S n' => cons n' (bit_parity z) (int_to_bv_n n' (Z.div z 2))
+    | O     => nil
+    | S n'  => cons n' (bit_parity z) (int_to_bv_n n' (Z.div z 2))
     end.
 
 
 (* Reverse a bit-vector. *)
 Program Fixpoint reverse {n:nat} (v:bv n):(bv n):=
     match v with
-    | nil => nil
-    | cons n' b v' => concat n' 1 (reverse v') (cons 0 b nil)
+    | nil           => nil
+    | cons n' b v'  => concat n' 1 (reverse v') (cons 0 b nil)
     end.
 
 Next Obligation.

@@ -21,15 +21,15 @@ This is used to resolve labels. *)
 Definition width (l:Set) (inst:ast.t l) : nat :=
     match inst with
     | ast.label _ _ => 0
-    | _ => 1
+    | _             => 1
     end.
 
 (* Builds a symbol table out of the labels in a program, with count as the
    base line number. *)
 Fixpoint build_symtable (l:Set) (p:ast.prog l) (count:nat) : symtable.t l :=
     match p with
-    | [] => symtable.empty l
-    | i :: p' =>
+    | []        => symtable.empty l
+    | i :: p'   =>
             let count' := count + width l i in
             match i with
             | ast.label _ name => symtable.add l (build_symtable l p' count') name count
@@ -45,68 +45,68 @@ Definition symtable_of_prog (l:Set) (p:ast.prog l) : symtable.t l :=
 (* Translate an assembly instruction to it's corresponding ISA instruction. *)
 Definition ast_to_isa (l:Set) (eqb:l -> l -> bool) (inst:ast.t l) (tbl:symtable.t l) (pc:nat) : result (option isa.t) string :=
     match inst with
-    | ast.lli _ rd imm => Ok (Some (isa.lli rd (bits.int_to_bv_n 8 imm)))
-    | ast.lui _ rd imm => Ok (Some (isa.lui rd (bits.int_to_bv_n 8 imm)))
-    | ast.ld _ rd rs imm => Ok (Some (isa.ld rd rs (bits.int_to_bv_n 4 imm)))
-    | ast.st _ rs1 rs2 imm => Ok (Some (isa.st rs1 rs2 (bits.int_to_bv_n 4 imm)))
-    | ast.add _ rd rs1 rs2 => Ok (Some (isa.add rd rs1 rs2))
-    | ast.addi _ rd rs imm => Ok (Some (isa.addi rd rs (bits.int_to_bv_n 4 imm)))
-    | ast.sub _ rd rs1 rs2 => Ok (Some (isa.sub rd rs1 rs2))
-    | ast.and _ rd rs1 rs2 => Ok (Some (isa.and rd rs1 rs2))
-    | ast.not _ rd rs => Ok (Some (isa.not rd rs))
+    | ast.lli _ rd imm      => Ok (Some (isa.lli rd (bits.int_to_bv_n 8 imm)))
+    | ast.lui _ rd imm      => Ok (Some (isa.lui rd (bits.int_to_bv_n 8 imm)))
+    | ast.ld _ rd rs imm    => Ok (Some (isa.ld rd rs (bits.int_to_bv_n 4 imm)))
+    | ast.st _ rs1 rs2 imm  => Ok (Some (isa.st rs1 rs2 (bits.int_to_bv_n 4 imm)))
+    | ast.add _ rd rs1 rs2  => Ok (Some (isa.add rd rs1 rs2))
+    | ast.addi _ rd rs imm  => Ok (Some (isa.addi rd rs (bits.int_to_bv_n 4 imm)))
+    | ast.sub _ rd rs1 rs2  => Ok (Some (isa.sub rd rs1 rs2))
+    | ast.and _ rd rs1 rs2  => Ok (Some (isa.and rd rs1 rs2))
+    | ast.not _ rd rs       => Ok (Some (isa.not rd rs))
     | ast.beq _ rs1 rs2 lbl =>
             match symtable.find_opt l eqb tbl lbl with
-            | Some n =>
+            | Some n    =>
                     let n_z := Z.of_nat n in
                     let pc_z := Z.of_nat pc in
                     let delta := (n_z - pc_z)%Z in
                     if andb (Z.leb (-8) delta) (Z.leb delta 7) then
                         Ok (Some (isa.beq rs1 rs2 (bits.int_to_bv_n 4 delta)))
                     else Error "Branch offset outside the [-8, 7] interval (beq)"
-            | None => Error "Label not found (beq)"
+            | None      => Error "Label not found (beq)"
             end
     | ast.blt _ rs1 rs2 lbl =>
             match symtable.find_opt l eqb tbl lbl with
-            | Some n =>
+            | Some n    =>
                     let n_z := Z.of_nat n in
                     let pc_z := Z.of_nat pc in
                     let delta := (n_z - pc_z)%Z in
                     if andb (Z.leb (-8) delta) (Z.leb delta 7) then
                         Ok (Some (isa.blt rs1 rs2 (bits.int_to_bv_n 4 delta)))
                     else Error "Branch offset outside the [-8, 7] interval (blt)"
-            | None => Error "Label not found (blt)"
+            | None      => Error "Label not found (blt)"
             end
-    | ast.jalr _ rd rs imm => Ok (Some (isa.jalr rd rs (bits.int_to_bv_n 4 imm)))
-    | ast.apc _ rd imm => Ok (Some (isa.apc rd (bits.int_to_bv_n 8 imm)))
-    | ast.j _ lbl =>
+    | ast.jalr _ rd rs imm  => Ok (Some (isa.jalr rd rs (bits.int_to_bv_n 4 imm)))
+    | ast.apc _ rd imm      => Ok (Some (isa.apc rd (bits.int_to_bv_n 8 imm)))
+    | ast.j _ lbl           =>
             match symtable.find_opt l eqb tbl lbl with
-            | Some n =>
+            | Some n    =>
                     let n_z := Z.of_nat n in
                     let pc_z := Z.of_nat pc in
                     let delta := (n_z - pc_z)%Z in
                     if andb (Z.leb (-2048) delta) (Z.leb delta 2047) then
                         Ok (Some (isa.j (bits.int_to_bv_n 12 delta)))
                     else Error "Jump offset outside the [-2048, 2047] interval (j)"
-            | None => Error "Label not found (j)"
+            | None      => Error "Label not found (j)"
             end
-    | ast.label _ _ => Ok None
-    | ast.spin _ => Ok (Some (isa.j (bits.int_to_bv_n 12 0)))
+    | ast.label _ _         => Ok None
+    | ast.spin _            => Ok (Some (isa.j (bits.int_to_bv_n 12 0)))
     end.
 
 
 Fixpoint ast_prog_to_isa_prog_helper (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) (tbl:symtable.t l) (pc:nat) : result isa.prog string :=
     match p with
-    | [] =>  Ok []
-    | ast.label _ _ :: p' => ast_prog_to_isa_prog_helper l eqb p' tbl pc
+    | []                    =>  Ok []
+    | ast.label _ _ :: p'   => ast_prog_to_isa_prog_helper l eqb p' tbl pc
     | i :: p' =>
             match ast_to_isa l eqb i tbl pc with
-            | Ok None => ast_prog_to_isa_prog_helper l eqb p' tbl pc
-            | Ok (Some inst) =>
+            | Ok None           => ast_prog_to_isa_prog_helper l eqb p' tbl pc
+            | Ok (Some inst)    =>
                     match ast_prog_to_isa_prog_helper l eqb p' tbl (S pc) with
-                    | Ok prog => Ok (inst :: prog)
-                    | error => error
+                    | Ok prog   => Ok (inst :: prog)
+                    | error     => error
                     end
-            | Error e => Error e
+            | Error e           => Error e
             end
     end.
 
@@ -115,6 +115,11 @@ Fixpoint ast_prog_to_isa_prog_helper (l:Set) (eqb:l -> l -> bool) (p:ast.prog l)
 Definition ast_prog_to_isa_prog (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result isa.prog string :=
     let tbl := symtable_of_prog l p in
     ast_prog_to_isa_prog_helper l eqb p tbl 0.
+
+
+(* Translate a list of assembly programs to their corresponding ISA program. *)
+Definition ast_progs_to_isa_prog (l:Set) (eqb:l -> l -> bool) (ps:list (ast.prog l)) : result isa.prog string :=
+    ast_prog_to_isa_prog l eqb (List.concat ps).
 
 
 
@@ -188,8 +193,8 @@ Definition isa_prog_to_machine_prog : isa.prog -> machine.prog :=
 (* Translate an assembly program to a machine program. *)
 Definition assemble_prog (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result machine.prog string :=
     match ast_prog_to_isa_prog l eqb p with
-    | Ok isa_p => Ok (isa_prog_to_machine_prog isa_p)
-    | Error e => Error e
+    | Ok isa_p  => Ok (isa_prog_to_machine_prog isa_p)
+    | Error e   => Error e
     end.
 
 (* Assemble multiple assembly programs to a machine program.

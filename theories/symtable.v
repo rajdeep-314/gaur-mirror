@@ -22,8 +22,8 @@ Definition add (A:Set) (tbl:t A) (lbl:A) (n:nat) : t A :=
    eq is the equality function for A. *)
 Fixpoint find_opt (A:Set) (eq:A -> A -> bool) (tbl:t A) (lbl:A): option nat :=
     match tbl with
-    | [] => None
-    | (l, n) :: tbl' =>
+    | []                => None
+    | (l, n) :: tbl'    =>
             if eq l lbl then Some n
             else find_opt A eq tbl' lbl
     end.

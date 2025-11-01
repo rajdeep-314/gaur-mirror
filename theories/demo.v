@@ -28,7 +28,7 @@ Definition machine_prog_r : result machine.prog string := assemble.assemble_prog
 
 Compute
     match machine_prog_r with
-    | Error e => e
-    | Ok mp => machine.prog_to_string mp
+    | Error e   => e
+    | Ok mp     => machine.prog_to_string mp
     end.
 

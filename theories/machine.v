@@ -24,7 +24,7 @@ Definition inst_to_string : t -> string := bits.bv_to_string 16.
 (* String representation of a machine program. *)
 Fixpoint prog_to_string (p:prog) : string :=
     match p with
-    | [] => ""
-    | inst :: p' => inst_to_string inst ++ "\n" ++ prog_to_string p'
+    | []            => ""
+    | inst :: p'    => inst_to_string inst ++ "\n" ++ prog_to_string p'
     end.
 

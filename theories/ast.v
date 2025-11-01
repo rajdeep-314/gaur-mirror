@@ -46,8 +46,8 @@ Definition num_insts (l:Set) (p:prog l) : nat := List.length p.
 (* Number of label definitions in a program. *)
 Fixpoint num_labels (l:Set) (p:prog l) : nat :=
     match p with
-    | [] => 0
-    | label _ _ :: p' => S (num_labels l p')
-    | _ :: p' => num_labels l p'
+    | []                => 0
+    | label _ _ :: p'   => S (num_labels l p')
+    | _ :: p'           => num_labels l p'
     end.
 
