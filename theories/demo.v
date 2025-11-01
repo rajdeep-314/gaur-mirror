@@ -24,7 +24,7 @@ Definition ast_prog : ast.prog string :=
 
 Compute assemble.symtable_of_prog string ast_prog.
 
-Definition machine_prog_r : result machine.prog string := assemble.assemble string String.eqb ast_prog.
+Definition machine_prog_r : result machine.prog string := assemble.assemble_prog string String.eqb ast_prog.
 
 Compute
     match machine_prog_r with

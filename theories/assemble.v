@@ -1,3 +1,12 @@
+(*
+    assemble.v
+
+    Functions for translating programs from assembly to
+    - ISA programs
+    - Machine programs
+*)
+
+
 From Stdlib Require Import ZArith String List.
 Import ListNotations.
 Open Scope string_scope.
@@ -7,8 +16,8 @@ Import result.
 
 
 (* Width of an instruction represents how many ISA instructions it
-   expands to.
-   This is used to resolve labels. *)
+expands to.
+This is used to resolve labels. *)
 Definition width (l:Set) (inst:ast.t l) : nat :=
     match inst with
     | ast.label _ _ => 0
@@ -176,9 +185,15 @@ Definition isa_prog_to_machine_prog : isa.prog -> machine.prog :=
     List.map isa_to_machine.
 
 
-Definition assemble (l:Set) (eqb: l -> l -> bool) (p:ast.prog l) : result machine.prog string :=
+(* Translate an assembly program to a machine program. *)
+Definition assemble_prog (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result machine.prog string :=
     match ast_prog_to_isa_prog l eqb p with
     | Ok isa_p => Ok (isa_prog_to_machine_prog isa_p)
     | Error e => Error e
     end.
+
+(* Assemble multiple assembly programs to a machine program.
+   The entry point is assumed to be the starting of the first program in the list. *)
+Definition assemble_progs (l:Set) (eqb:l -> l -> bool) (ps:list (ast.prog l)) : result machine.prog string :=
+    assemble_prog l eqb (List.concat ps).
 

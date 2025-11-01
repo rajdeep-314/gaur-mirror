@@ -1,3 +1,10 @@
+(*
+    symtable.v
+
+    Type for a symbol table and some basic functions for the same.
+*)
+
+
 From Stdlib Require Import List.
 Import ListNotations.
 

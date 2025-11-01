@@ -1,4 +1,9 @@
-(* The result type from OCaml. *)
+(*
+    result.v
+
+    The result type from OCaml.
+*)
+
 
 Inductive result (A E:Set) : Set :=
     | Ok    : A -> result A E

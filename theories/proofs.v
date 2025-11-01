@@ -1,4 +1,8 @@
-(* Proofs related to the assembler. *)
+(*
+    proofs.v
+
+    Proofs related to the assembler.
+*)
 
 (* Here are some rudimentary ideas. *)
 (*Lemma eq_len_ast_isa:*)

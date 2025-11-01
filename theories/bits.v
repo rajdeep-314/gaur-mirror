@@ -1,3 +1,11 @@
+(*
+    bits.v
+
+    Type for bits and binary numbers as length-indexed bit-vectors, along
+    with functions to work with them.
+*)
+
+
 From Stdlib Require Import ZArith String Program.
 Open Scope Z_scope.
 Open Scope string_scope.

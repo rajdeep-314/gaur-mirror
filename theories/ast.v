@@ -1,3 +1,10 @@
+(*
+    ast.v
+
+    Type for the abstract syntax of PASM and some functions on the same.
+*)
+
+
 From Stdlib Require Import ZArith String List.
 Import ListNotations.
 Open Scope string_scope.
@@ -32,14 +39,15 @@ Inductive t (l:Set) : Set :=
 (* A program is a list of instructions. *)
 Definition prog (l:Set) : Set := list (t l).
 
+
 (* Number of instructions in a program. *)
 Definition num_insts (l:Set) (p:prog l) : nat := List.length p.
 
+(* Number of label definitions in a program. *)
 Fixpoint num_labels (l:Set) (p:prog l) : nat :=
     match p with
     | [] => 0
     | label _ _ :: p' => S (num_labels l p')
     | _ :: p' => num_labels l p'
     end.
-
 

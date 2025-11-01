@@ -1,3 +1,10 @@
+(*
+    reg.v
+
+    Type for registers.
+*)
+
+
 From Stdlib Require Import String.
 Open Scope string_scope.
 

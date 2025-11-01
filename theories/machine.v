@@ -1,4 +1,9 @@
-(* Representation for binary files, etc. *)
+(*
+    machine.v
+
+    Representation of binary instructions and programs.
+*)
+
 
 From Stdlib Require Import List String.
 Import ListNotations.
