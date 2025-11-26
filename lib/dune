@@ -7,4 +7,6 @@
 (library
  (name assembler))
 
+(ocamllex lexer)
+
 (env (dev (flags (:standard -warn-error -33-39))))
