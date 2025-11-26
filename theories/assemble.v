@@ -202,3 +202,9 @@ Definition assemble_prog (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result ma
 Definition assemble_progs (l:Set) (eqb:l -> l -> bool) (ps:list (ast.prog l)) : result machine.prog string :=
     assemble_prog l eqb (List.concat ps).
 
+
+(* For extraction. *)
+
+Definition assemble_prog_extr (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result machine.prog_erased string :=
+    result.apply (List.map (bits.erase 16)) (assemble_prog l eqb p).
+

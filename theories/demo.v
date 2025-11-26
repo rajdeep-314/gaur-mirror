@@ -1,3 +1,4 @@
+(*
 From Stdlib Require Import ZArith List String.
 Import ListNotations.
 Open Scope string_scope.
@@ -31,4 +32,5 @@ Compute
     | Error e   => e
     | Ok mp     => machine.prog_to_string mp
     end.
+*)
 

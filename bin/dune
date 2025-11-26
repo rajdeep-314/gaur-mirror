@@ -1,4 +1,4 @@
-(executable
- (public_name as)
- (name main)
+(executables
+ (public_names as test)
+ (names main test)
  (libraries assembler))

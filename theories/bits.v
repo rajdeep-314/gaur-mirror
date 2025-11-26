@@ -6,7 +6,8 @@
 *)
 
 
-From Stdlib Require Import ZArith String Program.
+From Stdlib Require Import ZArith String Program List.
+Import ListNotations.
 Open Scope Z_scope.
 Open Scope string_scope.
 
@@ -38,6 +39,12 @@ Fixpoint bv_to_string (n:nat) (v:bv n) : string :=
     | cons n' b v'  => bit_to_string b ++ bv_to_string n' v'
     end.
 
+(* Bit-vector to a list of bits. *)
+Fixpoint bv_to_list (n:nat) (v:bv n) : list t :=
+    match v with
+    | nil           => []
+    | cons n' b v'  => b :: bv_to_list n' v'
+    end.
 
 (* A bit-vector of size n, of all zeros. *)
 Fixpoint zeros (n:nat) : bv n :=
@@ -84,4 +91,12 @@ Next Obligation.
     + reflexivity.
     + apply lemmas.add_1_r.
 Defined.
+
+
+(* For extraction. *)
+
+Inductive bv_:Set :=
+    | BV : list t -> bv_.
+
+Definition erase (n:nat) (v:bv n) : bv_ := BV (bv_to_list n v).
 

@@ -13,9 +13,12 @@ From assembler Require bits.
 
 
 (* Represents a 16-bit unit of the binary file - corresponds to an instruction. *)
-Definition t : Set := bits.bv 16.
+Definition t:Set := bits.bv 16.
 
-Definition prog : Set := list t.
+Definition prog:Set := list t.
+
+(* For extraction. *)
+Definition prog_erased:Set := list bits.bv_.
 
 
 (* String representation of a machine instruction. *)
