@@ -4,8 +4,6 @@ open Assembler.Helpers
 open Assembler.Printers
 
 
-let () = print_endline "Testing.\n"
-
 let p : string asm_prog =
     [
         label "x";
@@ -22,6 +20,6 @@ let mp : (machine_prog, string) Result.t = assemble_prog p
 
 let () =
     match mp with
-    | Ok mp     -> print_endline (machine_prog_to_ascii mp)
+    | Ok mp     -> print_endline (machine_prog_to_bin mp)
     | Error e   -> print_endline e
 
