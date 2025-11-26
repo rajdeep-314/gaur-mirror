@@ -1,5 +1,3 @@
-(* Coq extraction script here. *)
-
 From Stdlib Require Extraction.
 From assembler Require result bits reg machine assemble.
 
@@ -23,7 +21,6 @@ Extract Inductive ast.t         => "Types.asm_inst"
         "Types.Addi" "Types.Sub" "Types.And" "Types.Not" "Types.Beq"
         "Types.Blt" "Types.Jalr" "Types.Apc" "Types.J" "Types.Label" "Types.Spin"
     ].
-(*Extract Constant ast.prog               => "Types.asm_prog".*)
 Extract Constant machine.prog_erased    => "Types.machine_prog".
 Extract Constant ast.imm                => "int".
 
