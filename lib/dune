@@ -17,8 +17,10 @@
   unitActionsParser
   pretty
   misc
-  parserMessages)
- (libraries menhirLib))
+  parserMessages
+  usedef_check
+  usedef_tree)
+ (libraries menhirLib ocamlgraph))
 
 ;; -----------------------------------------------------------------------------
 

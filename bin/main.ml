@@ -25,9 +25,37 @@ let foo =
   let files = Array.to_list Sys.argv in
   List.fold_left accu [] (List.tl files)
 
+module Dot = Graph.Graphviz.Dot(struct
+    include Usedef_tree.UDGraph
+    let edge_attributes _ = []
+    let vertex_attributes _ = []
+    let default_edge_attributes _ = []
+    let default_vertex_attributes _ = []
+    let graph_attributes _ = []
+    let get_subgraph _ = None
+    let vertex_name v =
+      Format.sprintf
+        "\"%s\""
+        (Usedef_tree.UDGraphV.string_of_vertex v)
+  end)
+
+
+let draw_graph (dgi: Usedef_tree.ud_graph_info) =
+  let g = dgi.graph in
+  let name = dgi.chip ^ ".dot" in
+  let oc = open_out name in
+  Dot.output_graph oc g;
+  close_out oc
+
+
 let () =
   let env = Init_env.init_chip foo in
-  ignore (Typecheck.tc_program env foo)
+  let tcp = Typecheck.tc_program env foo in
+  (* let udtl = Usedef_check.mk_graph_program tcp in *)
+  let udtl = Usedef_check.ud_check_program tcp in
+  (
+    List.iter draw_graph udtl;
+  )
 
 
 (* let () =
