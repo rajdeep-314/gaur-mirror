@@ -39,7 +39,9 @@ let out = ref ""
 
 let speclist = [
     ("--format",Arg.Set_string format,"Set format of output (bin,inter,ascii)");
-    ("--out",Arg.Set_string out,"Setting Output file")
+    ("--fmt",Arg.Set_string format,"Set format of output (bin,inter,ascii) (short)");
+    ("--out",Arg.Set_string out,"Setting Output file");
+    ("--o",Arg.Set_string out,"Setting Output file (short)")
 ]
 
 let usage_msg = "Usage: as [options] <file_path>."
@@ -78,7 +80,7 @@ let () =
   )
 
 let outfile =
-  if !out <> "" then default_output_name !out else default_output_name !path
+  if !out <> "" then !out else default_output_name !path
 
 let prog =
     Parser.parse_prog_from_path !path
