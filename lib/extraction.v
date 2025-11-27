@@ -21,10 +21,16 @@ Extract Inductive ast.t         => "Types.asm_inst"
         "Types.Addi" "Types.Sub" "Types.And" "Types.Not" "Types.Beq"
         "Types.Blt" "Types.Jalr" "Types.Apc" "Types.J" "Types.Label" "Types.Spin"
     ].
+Extract Inductive isa.t_        => "Types.isa_inst"
+    [
+        "Types.I_lli" "Types.I_lui" "Types.I_ld" "Types.I_st" "Types.I_add"
+        "Types.I_addi" "Types.I_sub" "Types.I_and" "Types.I_not" "Types.I_beq"
+        "Types.I_blt" "Types.I_jalr" "Types.I_apc" "Types.I_j"
+    ].
 Extract Constant machine.prog_erased    => "Types.machine_prog".
 Extract Constant ast.imm                => "int".
 
 
 Set Extraction Output Directory ".".
-Extraction "assembler_extr.ml" assemble.assemble_prog_extr.
+Extraction "assembler_extr.ml" assemble.ast_prog_to_isa_prog_extr assemble.assemble_prog_extr.
 

@@ -1,5 +1,55 @@
 (* Pretty printers. *)
 
+open Types
+
+
+(* Register printing. *)
+
+let reg_to_string = function
+    | R0    -> "r0"
+    | R1    -> "r1"
+    | R2    -> "r2"
+    | R3    -> "r3"
+    | R4    -> "r4"
+    | R5    -> "r5"
+    | R6    -> "r6"
+    | R7    -> "r7"
+    | R8    -> "r8"
+    | R9    -> "r9"
+    | R10   -> "r10"
+    | R11   -> "r11"
+    | R12   -> "r12"
+    | R13   -> "r13"
+    | R14   -> "r14"
+    | R15   -> "r15"
+
+
+(* ISA format printers. *)
+
+let isa_inst_to_string inst =
+    let rts = reg_to_string in
+    let its = string_of_int in
+    match inst with
+    | I_lli (rd, imm)       -> String.concat " " ["lli"; rts rd; its imm]
+    | I_lui (rd, imm)       -> String.concat " " ["lui"; rts rd; its imm]
+    | I_ld (rd, rs, imm)    -> String.concat " " ["ld"; rts rd; rts rs; its imm]
+    | I_st (rd, rs, imm)    -> String.concat " " ["st"; rts rd; rts rs; its imm]
+    | I_add (rd, rs1, rs2)  -> String.concat " " ["add"; rts rd; rts rs1; rts rs2]
+    | I_addi (rd, rs1, imm) -> String.concat " " ["addi"; rts rd; rts rs1; its imm]
+    | I_sub (rd, rs1, rs2)  -> String.concat " " ["sub"; rts rd; rts rs1; rts rs2]
+    | I_and (rd, rs1, rs2)  -> String.concat " " ["and"; rts rd; rts rs1; rts rs2]
+    | I_not (rd, rs)        -> String.concat " " ["not"; rts rd; rts rs]
+    | I_beq (rs1, rs2, imm) -> String.concat " " ["beq"; rts rs1; rts rs2; its imm]
+    | I_blt (rs1, rs2, imm) -> String.concat " " ["blt"; rts rs1; rts rs2; its imm]
+    | I_jalr (rd, rs, imm)  -> String.concat " " ["jarl"; rts rd; rts rs; its imm]
+    | I_apc (rd, imm)       -> String.concat " " ["apc"; rts rd; its imm]
+    | I_j imm               -> String.concat " " ["j"; its imm]
+
+let isa_prog_to_string prog = String.concat "\n" (List.map isa_inst_to_string prog)
+
+
+
+(* Machine format printers. *)
 
 (* ASCII mode:
     Each instruction is printed as a 16-character string of ASCII

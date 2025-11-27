@@ -205,6 +205,9 @@ Definition assemble_progs (l:Set) (eqb:l -> l -> bool) (ps:list (ast.prog l)) : 
 
 (* For extraction. *)
 
+Definition ast_prog_to_isa_prog_extr (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result isa.prog_erased string :=
+    result.apply (List.map isa.erase) (ast_prog_to_isa_prog l eqb p).
+
 Definition assemble_prog_extr (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result machine.prog_erased string :=
     result.apply (List.map (bits.erase 16)) (assemble_prog l eqb p).
 

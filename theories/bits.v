@@ -19,25 +19,11 @@ Inductive t:Set :=
     | b0 | b1.
 
 
-(* String representation of a bit. *)
-Definition bit_to_string (b:bits.t) : string :=
-  match b with
-  | b0 => "0"
-  | b1 => "1"
-  end.
-
-
 (* Bit-vectors, indexed by their length. *)
 Inductive bv : nat -> Set :=
     | nil   : bv 0
     | cons  : forall n:nat, t -> bv n -> bv (S n).
 
-(* String representation of a bit-vector. *)
-Fixpoint bv_to_string (n:nat) (v:bv n) : string :=
-    match v with
-    | nil           => ""
-    | cons n' b v'  => bit_to_string b ++ bv_to_string n' v'
-    end.
 
 (* Bit-vector to a list of bits. *)
 Fixpoint bv_to_list (n:nat) (v:bv n) : list t :=
@@ -76,6 +62,26 @@ Fixpoint int_to_bv_n (n:nat) (z:Z) : bv n:=
     match n with
     | O     => nil
     | S n'  => cons n' (bit_parity z) (int_to_bv_n n' (Z.div z 2))
+    end.
+
+(* Helper function to convert bit-vector to an unsigned integer *)
+Fixpoint bv_to_unsigned (n:nat) (v:bv n) : Z :=
+    match v with
+    | nil => 0
+    | cons n' b v' =>
+        let bit_val := match b with b0 => 0 | b1 => 1 end in
+        bit_val + 2 * (bv_to_unsigned n' v')
+    end.
+
+(* Convert bit-vector to signed integer using two's complement *)
+Definition bv_to_int (n:nat) (v:bv n) : Z :=
+    match n with
+    | O => 0
+    | S n' =>
+        let unsigned := bv_to_unsigned n v in
+        let modulus := 2 ^ (Z.of_nat (S n')) in
+        let half_modulus := 2 ^ (Z.of_nat n') in
+        if Z.ltb unsigned half_modulus then unsigned else unsigned - modulus
     end.
 
 

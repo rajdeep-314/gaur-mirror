@@ -5,14 +5,14 @@
 *)
 
 
-From Stdlib Require Import List String.
+From Stdlib Require Import ZArith List String.
 Import ListNotations.
 Open Scope string_scope.
 
 From assembler Require bits reg.
 
 
-Inductive t : Set :=
+Inductive t:Set :=
     | lli   : reg.t -> bits.bv 8 -> t 
     | lui   : reg.t -> bits.bv 8  -> t 
     | ld    : reg.t -> reg.t -> bits.bv 4 -> t 
@@ -36,30 +36,43 @@ Definition prog := list t.
 Definition num_insts (p:prog) : nat := List.length p.
 
 
-(* String representation of an instruction. *)
-Definition inst_to_string (i:t) : string :=
-    match i with
-    | lli rd imm        => "lli " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 imm
-    | lui rd imm        => "lui " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 imm
-    | ld rd rs imm      => "ld " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 imm
-    | st rs1 rs2 imm    => "st " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2 ++ ", " ++ bits.bv_to_string 4 imm
-    | add rd rs1 rs2    => "add " ++ reg.to_string rd ++ ", " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2
-    | addi rd rs imm    => "addi " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 imm
-    | sub rd rs1 rs2    => "sub " ++ reg.to_string rd ++ ", " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2
-    | and rd rs1 rs2    => "and " ++ reg.to_string rd ++ ", " ++ reg.to_string rs1 ++ ", " ++ reg.to_string rs2
-    | not rd rs         => "not " ++ reg.to_string rd ++ ", " ++ reg.to_string rs
-    | beq r1 r2 imm     => "beq " ++ reg.to_string r1 ++ ", " ++ reg.to_string r2 ++ ", " ++ bits.bv_to_string 4 imm
-    | blt r1 r2 imm     => "blt " ++ reg.to_string r1 ++ ", " ++ reg.to_string r2 ++ ", " ++ bits.bv_to_string 4 imm
-    | jalr rd rs imm    => "jalr " ++ reg.to_string rd ++ ", " ++ reg.to_string rs ++ ", " ++ bits.bv_to_string 4 imm
-    | apc rd imm        => "apc " ++ reg.to_string rd ++ ", " ++ bits.bv_to_string 8 imm
-    | j imm             => "j " ++ bits.bv_to_string 12 imm
-    end.
+(* For extraction. *)
 
+(* The ISA type with integers instead of imms. *)
+Inductive t_:Set :=
+    | lli_  : reg.t -> Z -> t_
+    | lui_  : reg.t -> Z  -> t_
+    | ld_   : reg.t -> reg.t -> Z -> t_
+    | st_   : reg.t -> reg.t -> Z -> t_
+    | add_  : reg.t -> reg.t -> reg.t -> t_
+    | addi_ : reg.t -> reg.t -> Z -> t_
+    | sub_  : reg.t -> reg.t -> reg.t -> t_
+    | and_  : reg.t -> reg.t -> reg.t -> t_
+    | not_  : reg.t -> reg.t -> t_
+    | beq_  : reg.t -> reg.t -> Z -> t_
+    | blt_  : reg.t -> reg.t -> Z -> t_
+    | jalr_ : reg.t -> reg.t -> Z -> t_
+    | apc_  : reg.t -> Z -> t_
+    | j_    : Z -> t_.
 
-(* String representation of a program. *)
-Fixpoint prog_to_string (p:prog) : string :=
-    match p with
-    | []            => ""
-    | inst :: p'    => inst_to_string inst ++ "\n" ++ prog_to_string p'
+Definition prog_erased := list t_.
+
+Definition erase (inst:t) : t_ :=
+    let f := bits.bv_to_int in
+    match inst with
+    | lli rd imm        => lli_ rd (f 8 imm)
+    | lui rd imm        => lui_ rd (f 8 imm)
+    | ld rd rs imm      => ld_ rd rs (f 4 imm)
+    | st rd rs imm      => st_ rd rs (f 4 imm)
+    | add rd rs1 rs2    => add_ rd rs1 rs2
+    | addi rd rs1 imm   => addi_ rd rs1 (f 4 imm)
+    | sub rd rs1 rs2    => sub_ rd rs1 rs2
+    | and rd rs1 rs2    => and_ rd rs1 rs2
+    | not rd rs         => not_ rd rs
+    | beq rs1 rs2 imm   => beq_ rs1 rs2 (f 4 imm)
+    | blt rs1 rs2 imm   => blt_ rs1 rs2 (f 4 imm)
+    | jalr rd rs imm    => jalr_ rd rs (f 4 imm)
+    | apc rd imm        => apc_ rd (f 8 imm)
+    | j imm             => j_ (f 12 imm)
     end.
 
