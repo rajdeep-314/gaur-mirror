@@ -82,17 +82,23 @@ let outfile =
 
 let prog =
     Parser.parse_prog_from_path !path
-    
+
+let inter : (Types.isa_prog, string) Result.t = Assemble.to_inter prog
 let mp : (Types.machine_prog, string) Result.t = Assemble.assemble_prog prog
 
 let output_str = 
     match mp with 
     | Error e -> print_endline ("Error: " ^ e);
                 exit 1
-    | Ok mp -> match !format with 
+    | Ok mp -> match !format with
         | "ascii" -> Printers.machine_prog_to_ascii mp
         | "bin"   -> Printers.machine_prog_to_bin mp
-        (* | "inter" -> Printers.machine_prog_to_inter mp *)
+        | "inter" ->
+                begin
+                match inter with
+                | Error e   -> print_endline ("Error: " ^ e); exit 1
+                | Ok inter  -> Printers.isa_prog_to_string inter
+                end
         | _ ->
             print_endline ("Unknown format: " ^ !format);
             exit 1
