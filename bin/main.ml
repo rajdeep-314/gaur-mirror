@@ -93,18 +93,18 @@ let output_str =
     | Error e -> print_endline ("Error: " ^ e);
                 exit 1
     | Ok mp -> match !format with
-        | "ascii" -> Printers.machine_prog_to_ascii mp
+        | "ascii" -> Printers.machine_prog_to_ascii mp ^ "\n"
         | "bin"   -> Printers.machine_prog_to_bin mp
         | "inter" ->
                 begin
                 match inter with
                 | Error e   -> print_endline ("Error: " ^ e); exit 1
-                | Ok inter  -> Printers.isa_prog_to_string inter
+                | Ok inter  -> Printers.isa_prog_to_string inter ^ "\n"
                 end
         | _ ->
             print_endline ("Unknown format: " ^ !format);
             exit 1
-    
+
 let () =
   let oc = open_out outfile in
   output_string oc output_str;
