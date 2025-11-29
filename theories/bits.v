@@ -25,6 +25,10 @@ Inductive bv : nat -> Set :=
     | cons  : forall n:nat, t -> bv n -> bv (S n).
 
 
+(* Length of a bit-vector. *)
+Definition length (n:nat) (_:bv n) : nat := n.
+
+
 (* Bit-vector to a list of bits. *)
 Fixpoint bv_to_list (n:nat) (v:bv n) : list t :=
     match v with
