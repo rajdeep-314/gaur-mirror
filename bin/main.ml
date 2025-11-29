@@ -39,9 +39,9 @@ let out = ref ""
 
 let speclist = [
     ("--format",Arg.Set_string format,"Set format of output (bin,inter,ascii)");
-    ("--fmt",Arg.Set_string format,"Set format of output (bin,inter,ascii) (short)");
+    ("-fmt",Arg.Set_string format,"Set format of output (bin,inter,ascii) (short)");
     ("--out",Arg.Set_string out,"Setting Output file");
-    ("--o",Arg.Set_string out,"Setting Output file (short)")
+    ("-o",Arg.Set_string out,"Setting Output file (short)")
 ]
 
 let usage_msg = "Usage: as [options] <file_path>."
