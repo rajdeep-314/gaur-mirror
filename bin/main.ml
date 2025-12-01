@@ -90,7 +90,7 @@ let mp : (Types.machine_prog, string) Result.t = Assemble.assemble_prog prog
 
 let output_str = 
     match mp with 
-    | Error e -> print_endline ("Error: " ^ e);
+    | Error e -> print_endline e;
                 exit 1
     | Ok mp -> match !format with
         | "ascii" -> Printers.machine_prog_to_ascii mp ^ "\n"
@@ -98,7 +98,7 @@ let output_str =
         | "inter" ->
                 begin
                 match inter with
-                | Error e   -> print_endline ("Error: " ^ e); exit 1
+                | Error e   -> print_endline e; exit 1
                 | Ok inter  -> Printers.isa_prog_to_string inter ^ "\n"
                 end
         | _ ->

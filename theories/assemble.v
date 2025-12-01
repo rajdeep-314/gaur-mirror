@@ -11,7 +11,7 @@ From Stdlib Require Import ZArith String List.
 Import ListNotations.
 Open Scope string_scope.
 
-From assembler Require result reg symtable ast isa machine.
+From assembler Require utils result reg symtable ast isa machine.
 Import result.
 
 
@@ -112,14 +112,23 @@ Fixpoint ast_prog_to_isa_prog_helper (l:Set) (eqb:l -> l -> bool) (p:ast.prog l)
 
 
 (* Translate an assembly program to it's corresponding ISA program. *)
-Definition ast_prog_to_isa_prog (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result isa.prog string :=
+Definition ast_prog_to_isa_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (p:ast.prog l) : result isa.prog string :=
     let tbl := symtable_of_prog l p in
-    ast_prog_to_isa_prog_helper l eqb p tbl 0.
+    match symtable.dup l eqb tbl with
+    | None              => ast_prog_to_isa_prog_helper l eqb p tbl 0
+    | Some (lbl, n, n') =>
+            let n_str   := utils.nat_to_string n in
+            let n'_str  := utils.nat_to_string n' in
+            let nl      := utils.new_line in
+            let tab     := utils.tab in
+            result.Error ( "Error:" ++ nl ++ tab ++ "Label " ++ sf lbl ++ " is defined at multiple places." ++
+                    nl ++ tab ++ "Corresponds to line numbers " ++ n_str ++ " and " ++ n'_str ++ ", for example." ++ nl )
+    end.
 
 
 (* Translate a list of assembly programs to their corresponding ISA program. *)
-Definition ast_progs_to_isa_prog (l:Set) (eqb:l -> l -> bool) (ps:list (ast.prog l)) : result isa.prog string :=
-    ast_prog_to_isa_prog l eqb (List.concat ps).
+Definition ast_progs_to_isa_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (ps:list (ast.prog l)) : result isa.prog string :=
+    ast_prog_to_isa_prog l eqb sf (List.concat ps).
 
 
 
@@ -191,23 +200,23 @@ Definition isa_prog_to_machine_prog : isa.prog -> machine.prog :=
 
 
 (* Translate an assembly program to a machine program. *)
-Definition assemble_prog (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result machine.prog string :=
-    match ast_prog_to_isa_prog l eqb p with
+Definition assemble_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (p:ast.prog l) : result machine.prog string :=
+    match ast_prog_to_isa_prog l eqb sf p with
     | Ok isa_p  => Ok (isa_prog_to_machine_prog isa_p)
     | Error e   => Error e
     end.
 
 (* Assemble multiple assembly programs to a machine program.
    The entry point is assumed to be the starting of the first program in the list. *)
-Definition assemble_progs (l:Set) (eqb:l -> l -> bool) (ps:list (ast.prog l)) : result machine.prog string :=
-    assemble_prog l eqb (List.concat ps).
+Definition assemble_progs (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (ps:list (ast.prog l)) : result machine.prog string :=
+    assemble_prog l eqb sf (List.concat ps).
 
 
 (* For extraction. *)
 
-Definition ast_prog_to_isa_prog_extr (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result isa.prog_erased string :=
-    result.apply (List.map isa.erase) (ast_prog_to_isa_prog l eqb p).
+Definition ast_prog_to_isa_prog_extr (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (p:ast.prog l) : result isa.prog_erased string :=
+    result.apply (List.map isa.erase) (ast_prog_to_isa_prog l eqb sf p).
 
-Definition assemble_prog_extr (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) : result machine.prog_erased string :=
-    result.apply (List.map (bits.erase 16)) (assemble_prog l eqb p).
+Definition assemble_prog_extr (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (p:ast.prog l) : result machine.prog_erased string :=
+    result.apply (List.map (bits.erase 16)) (assemble_prog l eqb sf p).
 
