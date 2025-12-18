@@ -5,11 +5,11 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (gitlab rajdeep-314/ram-init-pisa))
 
-(authors "Author Name <author@example.com>")
+(authors "Rajdeep <rajdeep31415@gmail.com>")
 
-(maintainers "Maintainer Name <maintainer@example.com>")
+(maintainers "Rajdeep <rajdeep31415@gmail.com>")
 
 (license LICENSE)
 
@@ -17,10 +17,8 @@
 
 (package
  (name raminit)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml)
- (tags
-  ("add topics" "to describe" your project)))
+ (synopsis "RAM image initializer")
+ (description "A tool to convert a textual description of an initial RAM state to a binary image. Made to be used in the CPU simulator for PISA.")
+ (depends ocaml dune ocamllex num))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
