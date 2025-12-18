@@ -44,7 +44,7 @@ let speclist = [
     ("-o",Arg.Set_string out,"Setting Output file (short)")
 ]
 
-let usage_msg = "Usage: as [options] <file_path>."
+let usage_msg = "Usage: assembler [options] <file_path>."
 
 let remove_extension filename =
   match String.rindex_opt filename '.' with
