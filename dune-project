@@ -6,11 +6,11 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (gitlab rajdeep-314/assembler-pisa))
 
-(authors "Author Name <author@example.com>")
+(authors "Rajdeep <rajdeep31415@gmail.com>" "M Sreenath Karthick <msreenathkarthick2005@gmail.com>")
 
-(maintainers "Maintainer Name <maintainer@example.com>")
+(maintainers "Rajdeep <rajdeep31415@gmail.com>" "M Sreenath Karthick <msreenathkarthick2005@gmail.com>")
 
 (license LICENSE)
 
@@ -18,10 +18,15 @@
 
 (package
  (name assembler)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml)
+ (synopsis "Assembler for PASM")
+ (description
+  "A Rocq-based assembler for PASM - a RISC-V style assembly based on PISA.
+   Generates binary, intermediate assembly and ASCII translations.")
+ (depends
+   (ocaml (>= 4.14))
+   (rocq (>= 9.0))
+   dune ocamllex)
  (tags
-  ("add topics" "to describe" your project)))
+  ("assembler" "rocq" "coq" "formal verification")))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
