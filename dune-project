@@ -5,11 +5,11 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (gitlab rajdeep-314/cpu-simulator-pisa))
 
-(authors "Author Name <author@example.com>")
+(authors "Rajdeep <rajdeep31415@gmail.com>" "M Sreenath Karthick <msreenathkarthick2005@gmail.com>")
 
-(maintainers "Maintainer Name <maintainer@example.com>")
+(maintainers "Rajdeep <rajdeep31415@gmail.com>" "M Sreenath Karthick <msreenathkarthick2005@gmail.com>")
 
 (license LICENSE)
 
@@ -17,10 +17,10 @@
 
 (package
  (name cpusim)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml)
+ (synopsis "CPU simulator for PISA")
+ (description "A simple CPU simulator for PISA - a RISC-V style 16-bit ISA for teaching purposes.")
+ (depends ocaml dune ocamllex)
  (tags
-  ("add topics" "to describe" your project)))
+  ("cpu simulator" "simulator" "isa")))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
