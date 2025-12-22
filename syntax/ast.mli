@@ -1,5 +1,9 @@
-(* Add comments. *)
+(*
+    ast.mli
+*)
 
+
+(* Bits. *)
 module Bit :
     sig
         type t
@@ -18,6 +22,7 @@ module Bit :
     end
 
 
+(* Registers. *)
 module Reg :
     sig
     type t =
@@ -29,6 +34,7 @@ module Reg :
     val to_int : t -> int
     val to_string : t -> string
 
+    (* Helper module for registers. *)
     module Helper :
         sig
         val r0 : t
@@ -53,6 +59,8 @@ module Reg :
     val of_int : int -> t
     end
 
+
+(* Base instructions of PISA. *)
 type t = 
     | Lli of Reg.t * Bit.imm8
     | Lui of Reg.t * Bit.imm8
@@ -72,6 +80,7 @@ type t =
 type prog = t list
 
 
+(* Helper functions to generate AST programs. *)
 module Helper :
     sig
     val lli : Reg.t -> int -> t
@@ -89,6 +98,9 @@ module Helper :
     val apc : Reg.t -> int -> t
     val j : int -> t
     end
+
+
+(* String representation and printing functions. *)
 
 val to_string : t -> string
 val print_inst : t -> unit

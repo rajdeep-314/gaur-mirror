@@ -1,3 +1,10 @@
+(*
+    ram.ml
+
+    Type for the RAM and functions on it.
+*)
+
+
 open Syntax
 
 type addr = int             (* address *)

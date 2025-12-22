@@ -1,3 +1,10 @@
+(*
+    parser.ml
+
+    Praser for the debug mode.
+*)
+
+
 open Lexer
 
 let lex_string s =
@@ -8,7 +15,6 @@ let lex_string s =
         | tok -> tok :: aux ()
     in
     aux ()
-
 
 let parse_line_from_toks_opt = function
     | HELP :: [] ->
@@ -54,5 +60,4 @@ let parse_line_opt s =
 
 let parse_line s =
     parse_line_from_toks (lex_string s)
-
 

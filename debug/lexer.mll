@@ -1,3 +1,10 @@
+(*
+    lexer.mll
+
+    Lexer for the debug mode.
+*)
+
+
 {
     type token =
         | HELP | SET_TRACE | ON | OFF
@@ -51,5 +58,4 @@ rule token = parse
     | bin_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
     | _                 { INVALID }
-
 

@@ -1,3 +1,10 @@
+(*
+    parser.ml
+
+    Parser for PISA programs.
+*)
+
+
 open Lexer
 open Ast.Helper
 

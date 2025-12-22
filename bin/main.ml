@@ -1,17 +1,23 @@
+(*
+    main.ml
+
+    The top-level script of the simulator.
+*)
+
+
+(* Module aliases. *)
 module Parser = Syntax.Parser
 module Ast = Syntax.Ast
 module Ram = Cpusim.Ram
 module Rf = Cpusim.Regfile
 module Proc = Cpusim.Proc
 
-
-(* Parameters. *)
-let path = ref ""
-let ram_path = ref ""
-let trace = ref false
-let final_state = ref true
-let max_steps = ref 2000
-let debug_mode = ref false
+let path = ref ""               (* Input file path. *)
+let ram_path = ref ""           (* Initial RAM image path. *)
+let trace = ref false           (* Traces on? *)
+let final_state = ref true      (* Final state printing on? *)
+let max_steps = ref 2000        (* Max instructions to execute. *)
+let debug_mode = ref false      (* Enter the debug mode? *)
 
 
 let speclist = [
@@ -60,24 +66,25 @@ let init_ram =
 let () =
     if !path == "" then
         begin
-        print_endline "Error: File path not passed as argument.";
+        print_endline "Error: Input file path not passed as argument.";
         Arg.usage speclist usage_msg;
         exit 2;
         end
 
-let prog =
-    Parser.parse_from_path !path
+let prog_ast = Parser.parse_from_path !path
 
 let () =
+    (* If invoked with --debug or -g. *)
     if !debug_mode then
-        Debug.Repl.repl prog (Proc.State (0, Rf.create (), init_ram)) !trace
+        Debug.Repl.repl prog_ast (Proc.State (0, Rf.create (), init_ram)) !trace
     else
     let proc_final_state =
         if !trace then
-            Proc.execute_prog_on_ram_pt ~max_steps:(Some !max_steps) init_ram prog
+            Proc.execute_prog_on_ram_pt ~max_steps:(Some !max_steps) init_ram prog_ast
         else
-            Proc.execute_prog_on_ram ~max_steps:(Some !max_steps) init_ram prog
+            Proc.execute_prog_on_ram ~max_steps:(Some !max_steps) init_ram prog_ast
     in
+    (* If not involed with --final-state or -fs. *)
     if !final_state then
         begin
         print_endline "\n\nFinal state\n----------------\n";

@@ -1,3 +1,10 @@
+(*
+    lexer.mll
+
+    Lexer for PISA programs.
+*)
+
+
 {
     type token =
         | LLI | LUI | LD | ST | ADD | ADDI | SUB

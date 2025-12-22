@@ -1,7 +1,7 @@
 (*
     ast.ml
 
-    Captures the abstract syntax of PASM.
+    Captures the AST of PASM.
 *)
 
 
@@ -215,5 +215,4 @@ let rec print_prog_with_pc prog pc =
                     let () = print_inst inst in
                     let () = print_endline "" in
                     print_prog_with_pc prog' (pc - 1)
-
 

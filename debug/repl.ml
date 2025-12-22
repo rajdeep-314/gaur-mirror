@@ -1,3 +1,11 @@
+(*
+    repl.ml
+
+    The debug mode's REPL.
+*)
+
+
+(* Module aliases. *)
 module Sast = Syntax.Ast
 module Trace = Cpusim.Trace
 module Ram = Cpusim.Ram
@@ -19,7 +27,6 @@ let help_string =
     step                    :   step through the program (one instruction)
     steps n                 :   step through the program (n instructions)
     quit                    :   exit the program"
-
 
 
 let step prog proc trace =

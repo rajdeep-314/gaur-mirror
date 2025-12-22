@@ -1,5 +1,12 @@
+(*
+    ast.mli
+*)
+
+
+(* Addresses. *)
 type addr = int
 
+(* Instructions in the debug mode. *)
 type t =
     | Help
     | SetTrace of bool
@@ -13,7 +20,9 @@ type t =
     | Steps of int
     | Quit
 
-
+(* String representation of instructions. *)
 val to_string : t -> string
-val p : t -> unit
+
+(* Print an instruction. *)
+val print : t -> unit
 

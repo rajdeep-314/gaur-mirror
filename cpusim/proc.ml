@@ -1,18 +1,16 @@
 (*
-To do:
-    - Make all this cleaner. Delegate work to helper functions.
-    - Fetching the instruction itself in step? A wrapper function for that?
-    - imm to int conversion functions for signed and unsigned immediates?
-      Pass that as an argument? Can have default arguments.
+    proc.ml
+
+    Simulating the processor.
 *)
+
 
 open Syntax.Ast
 
 module Rf = Regfile
 
 type pc = int
-type t =
-    | State of pc * Regfile.t * Ram.t
+type t = State of pc * Regfile.t * Ram.t
 
 let create () = State (0, Regfile.create (), Ram.create ())
 
@@ -300,5 +298,4 @@ let execute_prog_pt ?(max_steps = None) prog =
 let execute_prog_on_ram_pt ?(max_steps = None) ram prog =
     let init_st = State (0, Rf.create (), ram) in
     execute_at_pc_pt ~max_steps:max_steps init_st prog
-
 

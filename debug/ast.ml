@@ -1,3 +1,10 @@
+(*
+    ast.ml
+
+    AST for the debug mode.
+*)
+
+
 type addr = int
 
 type t =
@@ -14,7 +21,6 @@ type t =
     | Quit
 
 
-(* Remove later. *)
 let to_string = function
     | Help -> "help"
     | SetTrace true -> "set trace on"
@@ -29,6 +35,5 @@ let to_string = function
     | Steps n -> "steps " ^ string_of_int n
     | Quit -> "quit"
 
-
-let p s = print_endline (to_string s)
+let print i = print_endline (to_string i)
 
