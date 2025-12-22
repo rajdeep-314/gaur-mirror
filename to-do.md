@@ -1,14 +1,18 @@
 # To do
 
-- Make implicit arguments
-- Made the code more readable (alignments, etc.)
-- Add some basic comments
 
-- Modify this to get rid of multi-isa pseudo-instructions
-- Write a lexer, maybe in Coq itself, or in OCaml
-- Write a parser
-- Write the extraction script
-- Make an OCaml top-level
-
-- Proofs and semantics, maybe
+- Write some tests for
+    - Lexer
+    - Parser
+    - Assembler
+- Better error messages
+    - Improve the lexer and parser (maybe use Menhir)
+    - Improve the aseembler error messages
+- Proofs
+    - Attach some semantics, maybe the ISA's semantics?
+      (Where should the ISA semantics be present? In the assembler, or elsewhere?)
+    - Write some proofs
+- Documentation
+    - Write a basic README file
+    - Write documentation (odoc)
 

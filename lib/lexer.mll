@@ -1,3 +1,10 @@
+(*
+    lexer.mll
+
+    Lexer specification for PASM.
+*)
+
+
 {
     type token =
         | LLI | LUI | LD | ST | ADD | ADDI | SUB

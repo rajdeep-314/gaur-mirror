@@ -131,7 +131,6 @@ Definition ast_progs_to_isa_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (
     ast_prog_to_isa_prog l eqb sf (List.concat ps).
 
 
-
 (* The opcode corresponding to an instruction. *)
 Definition opcode_of_inst (inst:isa.t) : bits.bv 4 :=
     match inst with
@@ -176,7 +175,7 @@ Definition reg_to_bv (r:reg.t) : bits.bv 4 :=
 
 (* ISA instruction representation to machine representation. *)
 Definition isa_to_machine (inst:isa.t) : machine.t :=
-    match inst with 
+    match inst with
     | isa.lli  rd imm       => bits.concat 4 12 (opcode_of_inst inst) (bits.concat 4 8 (reg_to_bv rd) (bits.reverse imm))
     | isa.lui  rd imm       => bits.concat 4 12 (opcode_of_inst inst) (bits.concat 4 8 (reg_to_bv rd) (bits.reverse imm))
     | isa.ld   rd rs imm    => bits.concat 4 12 (opcode_of_inst inst) (bits.concat 4 8 (reg_to_bv rd) (bits.concat 4 4 (reg_to_bv rs) (bits.reverse imm)))

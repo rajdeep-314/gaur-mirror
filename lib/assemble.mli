@@ -1,3 +1,8 @@
+(*
+    assemble.mli
+*)
+
+
 (* Assemble a program to an intermediate assembly stage where all labels are
    resolved and there are no pseudo-instructions. *)
 val to_inter : string Types.asm_prog -> (Types.isa_prog, string) Result.t

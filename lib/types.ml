@@ -1,3 +1,11 @@
+(*
+    types.ml
+
+    OCaml types for assembly instructions and programs, ISA instructuctions
+    and programs, etc.
+    The Rocq types are mapped to these in extraction.v
+*)
+
 (* Registers. *)
 type reg =
     | R0 | R1 | R2 | R3
@@ -45,8 +53,8 @@ type isa_inst =
     | I_apc   of  reg * int
     | I_j     of  int
 
-type isa_prog = isa_inst list                   (* ISA program. *)
+type isa_prog = isa_inst list                   (* ISA programs. *)
 
-type machine_inst = bool list                   (* Machine instruction. *)
-type machine_prog = machine_inst list           (* Machine program.     *)
+type machine_inst = bool list                   (* Machine instructions. *)
+type machine_prog = machine_inst list           (* Machine programs.     *)
 

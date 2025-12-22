@@ -1,62 +1,44 @@
 (*
     main.ml
 
-    Make a basic top-level here.
-    Just take input file name as cmd line input and an optional output file name.
+    The top-level script.
 *)
 
 
-(*
-Parameters:
-    - Output file, by default the file name without an extension (remove the last
-      dot and the characters after that)
-    - Output format (ascii or inter or bin, default bin)
-        - ascii: each line is a 16-character ASCII string with 0s and 1s
-        - inter: the assembly, with labels resolved
-        - bin:   the binary format
-
-Example invocations:
-    as foo.pasm
-        => makes foo.pmac - the assembled binary
-    as bar.pasm --format=inter --out=meow
-        => makes meow - the intermediate assembly
-    as baz.meow.purr --format=ascii
-        => makes baz.meow.pasc - the ASCII representation
-*)
-
-
-module Types = Assembler.Types
+(* Module aliases. *)
+module Types    = Assembler.Types
 module Assemble = Assembler.Assemble
 module Parser   =  Assembler.Parser
 module Printers = Assembler.Printers
 
 
+(* Parameters. *)
 
-(* Parameters*)
-let path = ref ""
-let format = ref "bin"
-let out = ref ""
+let path = ref ""               (* Input file path. *)
+let format = ref "bin"          (* Output file format. *)
+let out = ref ""                (* Output file path. *)
 
 let speclist = [
-    ("--format",Arg.Set_string format,"Set format of output (bin,inter,ascii)");
-    ("-fmt",Arg.Set_string format,"Set format of output (bin,inter,ascii) (short)");
-    ("--out",Arg.Set_string out,"Setting Output file");
-    ("-o",Arg.Set_string out,"Setting Output file (short)")
+    ("--format",Arg.Set_string format,"Output format (bin | inter | ascii)");
+    ("-fmt",Arg.Set_string format,"Output format (bin | inter | ascii) (short)");
+    ("--out",Arg.Set_string out,"Output file path");
+    ("-o",Arg.Set_string out,"Output file path (short)")
 ]
 
 let usage_msg = "Usage: assembler [options] <file_path>."
 
+
 let remove_extension filename =
-  match String.rindex_opt filename '.' with
-  | None -> filename
-  | Some idx -> String.sub filename 0 idx
+    match String.rindex_opt filename '.' with
+    | None      -> filename
+    | Some idx  -> String.sub filename 0 idx
 
 let default_output_name str =
-  match !format with
-  | "bin" -> remove_extension str ^ ".pmac"
-  | "ascii" -> remove_extension str ^ ".pasc"
-  | "inter" -> remove_extension str ^ ".pasm.inter"
-  | _ -> failwith "unknown format"
+    match !format with
+    | "bin"     -> remove_extension str ^ ".pmac"
+    | "ascii"   -> remove_extension str ^ ".pasc"
+    | "inter"   -> remove_extension str ^ ".pasm.inter"
+    | _         -> failwith "unknown format"
 
 
 let anon_fun arg =
@@ -73,40 +55,44 @@ let () =
     Arg.parse speclist anon_fun usage_msg
 
 let () =
-     if !path = "" then (
-    print_endline "Error: missing input file.";
+    if !path = "" then
+    begin
+    print_endline "Error: Missing input file path.";
     Arg.usage speclist usage_msg;
     exit 1
-  )
+    end
 
 let outfile =
   if !out <> "" then !out else default_output_name !path
 
-let prog =
-    Parser.parse_prog_from_path !path
 
-let inter : (Types.isa_prog, string) Result.t = Assemble.to_inter prog
-let mp : (Types.machine_prog, string) Result.t = Assemble.assemble_prog prog
+let prog_ast = Parser.parse_prog_from_path !path
+let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
+let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
+
 
 let output_str = 
-    match mp with 
-    | Error e -> print_endline e;
-                exit 1
-    | Ok mp -> match !format with
-        | "ascii" -> Printers.machine_prog_to_ascii mp ^ "\n"
-        | "bin"   -> Printers.machine_prog_to_bin mp
-        | "inter" ->
-                begin
-                match inter with
-                | Error e   -> print_endline e; exit 1
-                | Ok inter  -> Printers.isa_prog_to_string inter ^ "\n"
-                end
-        | _ ->
-            print_endline ("Unknown format: " ^ !format);
+    match mach_prog with
+    | Error e   ->
+            print_endline e;
             exit 1
+    | Ok mp     ->
+            match !format with
+            | "ascii" -> Printers.machine_prog_to_ascii mp ^ "\n"
+            | "bin"   -> Printers.machine_prog_to_bin mp
+            | "inter" ->
+                    begin
+                    match inter_prog with
+                    | Error e   -> print_endline e; exit 1
+                    | Ok inter  -> Printers.isa_prog_to_string inter ^ "\n"
+                    end
+            | _       ->
+                print_endline ("Unknown format: " ^ !format);
+                exit 1
 
 let () =
-  let oc = open_out outfile in
-  output_string oc output_str;
-  close_out oc;
-  Printf.printf "Wrote: %s\n" outfile
+    let oc = open_out outfile in
+    output_string oc output_str;
+    close_out oc;
+    Printf.printf "Wrote: %s\n" outfile
+
