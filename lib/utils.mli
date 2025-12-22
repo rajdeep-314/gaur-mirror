@@ -1,4 +1,13 @@
-val big_int_256 : Big_int.big_int
+(*
+    utils.mli
+*)
 
-val chars_of_big_int : int -> Big_int.big_int -> char list
+
+open Big_int
+
+(* The constant 256 of type big_int. *)
+val big_int_256 : big_int
+
+(* Convert a big_int to a list of characters (equivalent to a list of bytes). *)
+val chars_of_big_int : int -> big_int -> char list
 

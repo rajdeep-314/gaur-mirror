@@ -1,5 +1,11 @@
-open Utils
+(*
+    translate.ml
 
+    Translating memory maps to a binary format.
+*)
+
+
+open Utils
 
 let add_map bs (Ast.Map (addr, data)) word_size lendianb offset =
     let base_addr = (offset + addr) * word_size in
@@ -14,7 +20,6 @@ let add_map bs (Ast.Map (addr, data)) word_size lendianb offset =
         List.iteri
             (fun i c ->
                 Bytes.set bs (base_addr + i) c) cs
-
 
 let translate_maps ms ram_size word_size lendianb offset padding =
     let nbytes = ram_size * word_size in

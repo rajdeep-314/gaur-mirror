@@ -1,3 +1,10 @@
+(*
+    lexer.mll
+
+    Lexer for the textual RAM file.
+*)
+
+
 {
     type token =
         | NUM of Big_int.big_int
@@ -34,5 +41,4 @@ rule token = parse
     | ':'                   { COLON }
     | eof                   { EOF }
     | _                     { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }
-
 

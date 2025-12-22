@@ -1,11 +1,16 @@
+(*
+    ast.ml
+
+    AST for the textual RAM file.
+*)
+
+
 open Big_int
 
 type addr = int
 type half = big_int
 
-type t =
-    | Map of addr * half
-
+type t = Map of addr * half
 type maps = t list
 
 let print_map (Map (addr, data)) =

@@ -1,14 +1,20 @@
+(*
+    main.ml
+
+    The top-level script.
+*)
+
+
 open Big_int
 open Raminit
 
-
-let path = ref ""
-let out_path = ref ""
-let ram_size = ref 16384
-let word_size = ref 2
-let endianness = ref "big"
-let offset = ref 0
-let padding = ref "0"
+let path = ref ""               (* Input file path. *)
+let out_path = ref ""           (* Output file path. *)
+let ram_size = ref 16384        (* RAM size in bytes. *)
+let word_size = ref 2           (* Word size in bytes. *)
+let endianness = ref "big"      (* Endianness (little | big). *)
+let offset = ref 0              (* Offset in number of bytes. *)
+let padding = ref "0"           (* Padding bytes. *)
 
 
 let speclist = [
@@ -39,10 +45,8 @@ let anon_fun arg =
         exit 1;
         end
 
-
 let () =
     Arg.parse speclist anon_fun usage_msg
-
 
 let () =
     if !path == "" then
@@ -52,6 +56,7 @@ let () =
         exit 2;
         end
 
+(* Left endian? *)
 let lendianb = 
     let endianness_lc = String.lowercase_ascii !endianness in
     if endianness_lc = "little" then true
@@ -61,7 +66,6 @@ let lendianb =
         print_endline "Error: Invalid endianness. Only little and big are supported right now.";
         exit 3;
         end
-
 
 let maps =
     let inc = open_in !path in

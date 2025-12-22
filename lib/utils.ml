@@ -1,5 +1,11 @@
-open Big_int
+(*
+    utils.ml
 
+    Utility functions.
+*)
+
+
+open Big_int
 
 let big_int_256 = big_int_of_int 256
 
