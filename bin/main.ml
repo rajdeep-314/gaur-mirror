@@ -6,7 +6,7 @@
 
 
 (* Module aliases. *)
-module Parser = Syntax.Parser
+module Parser = Syntax.Parse
 module Ast = Syntax.Ast
 module Ram = Cpusim.Ram
 module Rf = Cpusim.Regfile
@@ -72,6 +72,7 @@ let () =
         end
 
 let prog_ast = Parser.parse_from_path !path
+
 
 let () =
     (* If invoked with --debug or -g. *)

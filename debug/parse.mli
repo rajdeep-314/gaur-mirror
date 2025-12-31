@@ -1,5 +1,5 @@
 (*
-    parser.mli
+    parse.mli
 *)
 
 

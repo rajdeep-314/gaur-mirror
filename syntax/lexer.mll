@@ -6,13 +6,7 @@
 
 
 {
-    type token =
-        | LLI | LUI | LD | ST | ADD | ADDI | SUB
-        | AND | NOT | BEQ | BLT | JALR | APC | J
-        | REG of int
-        | IMM of int
-        | NEWLINE
-        | EOF
+    open Parser
 }
 
 
@@ -34,9 +28,9 @@ let reg = 'r' dec_natural
 let comment = '#' [^'\n']*
 
 
-rule token = parse
-    | whitespace        { token lexbuf }
-    | comment           { token lexbuf }
+rule read_tok = parse
+    | whitespace        { read_tok lexbuf }
+    | comment           { read_tok lexbuf }
     | '\n'              { NEWLINE }
     | "lli"             { LLI }
     | "lui"             { LUI }

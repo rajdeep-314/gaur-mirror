@@ -9,7 +9,9 @@
 
 
 %type <Ast.t> inst
-%start inst
+%type <Ast.t> line
+
+%start line
 
 
 %%
@@ -28,4 +30,7 @@ inst:
     | STEP                  { Step }
     | STEPS n = NUM         { Steps n }
     | QUIT                  { Quit }
+
+line:
+    | i = inst; EOF         { i }
 
