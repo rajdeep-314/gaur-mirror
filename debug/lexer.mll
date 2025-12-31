@@ -6,14 +6,7 @@
 
 
 {
-    type token =
-        | HELP | SET_TRACE | ON | OFF
-        | GET_TRACE | REG | REGS | REGISTER of int
-        | MEM | STEP | STEPS | PRINT_INST | PRINT_PROG
-        | NUM of int
-        | QUIT
-        | INVALID
-        | EOF
+    open Parser
 }
 
 
@@ -35,9 +28,9 @@ let register = 'r' dec_natural
 let comment = '#' [^'\n']*
 
 
-rule token = parse
-    | whitespace        { token lexbuf }
-    | comment           { token lexbuf }
+rule read_tok = parse
+    | whitespace        { read_tok lexbuf }
+    | comment           { read_tok lexbuf }
     | "help"            { HELP }
     | "set trace"       { SET_TRACE }
     | "get trace"       { GET_TRACE }
@@ -57,5 +50,5 @@ rule token = parse
     | hex_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
-    | _                 { INVALID }
+    | _                 { failwith "Lexer error." }
 

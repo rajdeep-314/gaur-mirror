@@ -57,7 +57,7 @@ let rec steps prog proc trace n =
 
 let rec repl prog proc trace =
     let () = print_string "\ncpusim> " in
-    match Parser.parse_line_opt (read_line ()) with
+    match Parse.parse_line_opt (read_line ()) with
     | None ->
             let () = print_endline "Syntax error." in
             repl prog proc trace

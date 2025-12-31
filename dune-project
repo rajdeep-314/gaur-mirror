@@ -1,4 +1,5 @@
 (lang dune 3.18)
+(using menhir 2.0)
 
 (name cpusim)
 
@@ -19,7 +20,7 @@
  (name cpusim)
  (synopsis "CPU simulator for PISA")
  (description "A simple CPU simulator for PISA - a RISC-V style 16-bit ISA for teaching purposes.")
- (depends ocaml dune ocamllex)
+ (depends ocaml dune ocamllex menhir)
  (tags
   ("cpu simulator" "simulator" "isa")))
 

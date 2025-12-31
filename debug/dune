@@ -4,6 +4,9 @@
 
 (ocamllex lexer)
 
+(menhir
+  (modules parser))
+
 ; Disabling unused warnings as errors
 (env
  (dev

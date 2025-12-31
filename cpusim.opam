@@ -20,6 +20,7 @@ depends: [
   "ocaml"
   "dune" {>= "3.18"}
   "ocamllex"
+  "menhir"
   "odoc" {with-doc}
 ]
 build: [
