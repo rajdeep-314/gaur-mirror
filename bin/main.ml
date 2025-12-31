@@ -71,7 +71,7 @@ let maps =
     let inc = open_in !path in
     really_input_string inc (in_channel_length inc)
 
-let ms = Parser.parse_maps maps
+let ms = Parse.parse_maps maps
 
 let bs = Translate.translate_maps ms !ram_size !word_size lendianb !offset (big_int_of_string !padding)
 

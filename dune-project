@@ -1,4 +1,5 @@
 (lang dune 3.20)
+(using menhir 2.0)
 
 (name raminit)
 
@@ -19,6 +20,6 @@
  (name raminit)
  (synopsis "RAM image initializer")
  (description "A tool to convert a textual description of an initial RAM state to a binary image. Made to be used in the CPU simulator for PISA.")
- (depends ocaml dune ocamllex num))
+ (depends ocaml dune menhir ocamllex num))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html

@@ -12,6 +12,7 @@ bug-reports: "https://gitlab.com/rajdeep-314/ram-init-pisa/-/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.20"}
+  "menhir"
   "ocamllex"
   "num"
   "odoc" {with-doc}

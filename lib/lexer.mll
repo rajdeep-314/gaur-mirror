@@ -6,11 +6,7 @@
 
 
 {
-    type token =
-        | NUM of Big_int.big_int
-        | COLON
-        | NEWLINE
-        | EOF
+    open Parser
 }
 
 
@@ -31,9 +27,9 @@ let bin_integer = '-'? bin_natural
 let comment = '#' [^'\n']*
 
 
-rule token = parse
-    | whitespace            { token lexbuf }
-    | comment               { token lexbuf }
+rule read_toks = parse
+    | whitespace            { read_toks lexbuf }
+    | comment               { read_toks lexbuf }
     | '\n'                  { NEWLINE }
     | bin_integer           { NUM (Big_int.big_int_of_string (Lexing.lexeme lexbuf)) }
     | hex_integer           { NUM (Big_int.big_int_of_string (Lexing.lexeme lexbuf)) }
