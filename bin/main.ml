@@ -8,7 +8,7 @@
 (* Module aliases. *)
 module Types    = Assembler.Types
 module Assemble = Assembler.Assemble
-module Parser   =  Assembler.Parser
+module Parser   = Assembler.Parse
 module Printers = Assembler.Printers
 
 

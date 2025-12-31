@@ -1,4 +1,5 @@
 (lang dune 3.18)
+(using menhir 2.0)
 (using coq 0.10)
 
 (name assembler)
@@ -23,6 +24,7 @@
   "A Rocq-based assembler for PASM - a RISC-V style assembly based on PISA.
    Generates binary, intermediate assembly and ASCII translations.")
  (depends
+   (menhir (>= 2.0))
    (ocaml (>= 4.14))
    (rocq (>= 9.0))
    dune ocamllex)

@@ -58,3 +58,24 @@ type isa_prog = isa_inst list                   (* ISA programs. *)
 type machine_inst = bool list                   (* Machine instructions. *)
 type machine_prog = machine_inst list           (* Machine programs.     *)
 
+
+(* Helper functions to write AST programs. *)
+module Helper = struct
+    let lli rd n = Lli (rd, n)
+    let lui rd n = Lui (rd, n)
+    let ld rd rs1 n = Ld (rd, rs1, n)
+    let st rd rs1 n = St (rd, rs1, n)
+    let add rd rs1 rs2 = Add (rd, rs1, rs2)
+    let addi rd rs1 n = Addi (rd, rs1, n)
+    let sub rd rs1 rs2 = Sub (rd, rs1, rs2)
+    let and' rd rs1 rs2 = And (rd, rs1, rs2)
+    let not rd rs1 = Not (rd, rs1)
+    let beq rs1 rs2 l = Beq (rs1, rs2, l)
+    let blt rs1 rs2 l = Blt (rs1, rs2, l)
+    let jalr rd rs1 n = Jalr (rd, rs1, n)
+    let apc rd n = Apc (rd, n)
+    let j l = J l
+    let label l = Label l
+    let spin = Spin
+end
+

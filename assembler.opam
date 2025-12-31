@@ -18,6 +18,7 @@ homepage: "https://gitlab.com/rajdeep-314/assembler-pisa"
 doc: "https://url/to/documentation"
 bug-reports: "https://gitlab.com/rajdeep-314/assembler-pisa/-/issues"
 depends: [
+  "menhir" {>= "2.0"}
   "ocaml" {>= "4.14"}
   "rocq" {>= "9.0"}
   "dune" {>= "3.18"}

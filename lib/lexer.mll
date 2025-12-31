@@ -6,21 +6,13 @@
 
 
 {
-    type token =
-        | LLI | LUI | LD | ST | ADD | ADDI | SUB
-        | AND | NOT | BEQ | BLT | JALR | APC | J
-        | SPIN | LABEL of string
-        | REG of int
-        | IMM of int
-        | NEWLINE
-        | EOF
+    open Parser
 }
 
 
 let whitespace = [' ' '\t' '\r']+
 let ascii = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
 let label_name = ['a'-'z' 'A'-'Z' '_' '.'] ascii
-let label_def = label_name ":"
 
 let dec_digit = ['0'-'9']
 let dec_natural = dec_digit+
@@ -38,10 +30,11 @@ let reg = 'r' dec_natural
 let comment = '#' [^'\n']*
 
 
-rule token = parse
-    | whitespace        { token lexbuf }
-    | comment           { token lexbuf }
+rule read_token = parse
+    | whitespace        { read_token lexbuf }
+    | comment           { read_token lexbuf }
     | '\n'              { NEWLINE }
+    | ':'               { COLON }
     | "lli"             { LLI }
     | "lui"             { LUI }
     | "ld"              { LD }
@@ -59,8 +52,6 @@ rule token = parse
     | "spin"            { SPIN }
     | reg               { let s = Lexing.lexeme lexbuf in
                         REG (int_of_string (String.sub s 1 (String.length s - 1))) }
-    | label_def         { let s = Lexing.lexeme lexbuf in
-                          LABEL (String.sub s 0 (String.length s - 1)) }
     | label_name        { LABEL (Lexing.lexeme lexbuf) } 
     | dec_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | hex_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }

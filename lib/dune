@@ -9,4 +9,7 @@
 
 (ocamllex lexer)
 
+(menhir
+  (modules parser))
+
 (env (dev (flags (:standard -warn-error -33-39))))
