@@ -1,0 +1,4 @@
+(executable
+ (public_name disassembler)
+ (name main)
+ (libraries dis))
