@@ -1,6 +1,14 @@
 # To do
 
 
+## Bugs
+
+- `reg r100`, for example, in the debug mode, causes the simulator to quit. Change the responsible `failwith`.
+
+
+## Improvements
+
+- Go through the entire codebase and clean things up. They're somewhat messy after the assembler-dependency-rework.
 - Pretty printing
     - Use some pretty printing library to deal with the tab misalignment
       issues, etc.

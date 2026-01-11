@@ -5,10 +5,13 @@
 *)
 
 
+module M = Utils.Math
+module H = Syntax.Ast.Helper
 open Syntax
 
+
 type half = int         (* Half-word. *)
-type reg = Ast.Reg.t    (* Register   *)
+type reg = Ast.reg      (* Register   *)
 
 (* Register-file. *)
 type t =
@@ -26,38 +29,38 @@ let create () =
 
 
 let read rf = function
-    | Ast.Reg.R0 -> 0       | Ast.Reg.R1 -> rf.r1   | Ast.Reg.R2 -> rf.r2
-    | Ast.Reg.R3 -> rf.r3   | Ast.Reg.R4 -> rf.r4   | Ast.Reg.R5 -> rf.r5
-    | Ast.Reg.R6 -> rf.r6   | Ast.Reg.R7 -> rf.r7   | Ast.Reg.R8 -> rf.r8
-    | Ast.Reg.R9 -> rf.r9   | Ast.Reg.R10 -> rf.r10 | Ast.Reg.R11 -> rf.r11
-    | Ast.Reg.R12 -> rf.r12 | Ast.Reg.R13 -> rf.r13 | Ast.Reg.R14 -> rf.r14
-    | Ast.Reg.R15 -> rf.r15
+    | Ast.R0 -> 0       | Ast.R1 -> rf.r1   | Ast.R2 -> rf.r2
+    | Ast.R3 -> rf.r3   | Ast.R4 -> rf.r4   | Ast.R5 -> rf.r5
+    | Ast.R6 -> rf.r6   | Ast.R7 -> rf.r7   | Ast.R8 -> rf.r8
+    | Ast.R9 -> rf.r9   | Ast.R10 -> rf.r10 | Ast.R11 -> rf.r11
+    | Ast.R12 -> rf.r12 | Ast.R13 -> rf.r13 | Ast.R14 -> rf.r14
+    | Ast.R15 -> rf.r15
 
 
 let write rf i data =
     let masked_data = data land 0xffff in
     match i with
-    | Ast.Reg.R0 -> ()
-    | Ast.Reg.R1 -> rf.r1 <- masked_data  | Ast.Reg.R2 -> rf.r2 <- masked_data
-    | Ast.Reg.R3 -> rf.r3 <- masked_data  | Ast.Reg.R4 -> rf.r4 <- masked_data
-    | Ast.Reg.R5 -> rf.r5 <- masked_data  | Ast.Reg.R6 -> rf.r6 <- masked_data
-    | Ast.Reg.R7 -> rf.r7 <- masked_data  | Ast.Reg.R8 -> rf.r8 <- masked_data
-    | Ast.Reg.R9 -> rf.r9 <- masked_data  | Ast.Reg.R10 -> rf.r10 <- masked_data
-    | Ast.Reg.R11 -> rf.r11 <- masked_data | Ast.Reg.R12 -> rf.r12 <- masked_data
-    | Ast.Reg.R13 -> rf.r13 <- masked_data | Ast.Reg.R14 -> rf.r14 <- masked_data
-    | Ast.Reg.R15 -> rf.r15 <- masked_data
+    | Ast.R0 -> ()
+    | Ast.R1 -> rf.r1 <- masked_data   | Ast.R2 -> rf.r2 <- masked_data
+    | Ast.R3 -> rf.r3 <- masked_data   | Ast.R4 -> rf.r4 <- masked_data
+    | Ast.R5 -> rf.r5 <- masked_data   | Ast.R6 -> rf.r6 <- masked_data
+    | Ast.R7 -> rf.r7 <- masked_data   | Ast.R8 -> rf.r8 <- masked_data
+    | Ast.R9 -> rf.r9 <- masked_data   | Ast.R10 -> rf.r10 <- masked_data
+    | Ast.R11 -> rf.r11 <- masked_data | Ast.R12 -> rf.r12 <- masked_data
+    | Ast.R13 -> rf.r13 <- masked_data | Ast.R14 -> rf.r14 <- masked_data
+    | Ast.R15 -> rf.r15 <- masked_data
 
 let print_reg rf reg =
     let data = read rf reg in
-    let data_sext = Ast.Bit.sign_extend data 16 in
-    let reg_n = Ast.Reg.to_int reg in
+    let data_sext = M.sign_extend data 16 in
+    let reg_n = H.reg_to_int reg in
     if reg_n > 9 then
-        Printf.printf "r%d:\t\t%04x\t\t%d" (Ast.Reg.to_int reg) data data_sext
+        Printf.printf "r%d:\t\t%04x\t\t%d" (H.reg_to_int reg) data data_sext
     else
-        Printf.printf "r%d:\t\t\t%04x\t\t%d" (Ast.Reg.to_int reg) data data_sext
+        Printf.printf "r%d:\t\t\t%04x\t\t%d" (H.reg_to_int reg) data data_sext
 
 let print rf =
     let print_func reg =
         let () = print_reg rf reg in print_endline "" in
-    List.iter print_func Ast.Reg.Helper.reg_list
+    List.iter print_func H.reg_list
 

@@ -7,7 +7,7 @@ open Syntax
 
 (* Traces. *)
 type t =
-    | RegMod of Ram.half * Ast.t * Ast.Reg.t * Ram.half
+    | RegMod of Ram.half * Ast.t * Ast.reg * Ram.half
     | RamMod of Ram.half * Ast.t * Ram.addr * Ram.half
     | NoTrace of Ram.half * Ast.t
 

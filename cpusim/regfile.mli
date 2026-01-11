@@ -11,12 +11,12 @@ type t              (* Register-file. *)
 (* Create an all-zero register-file. *)
 val create : unit -> t
 (* Read the value of a register. *)
-val read : t -> Ast.Reg.t -> half
+val read : t -> Ast.reg -> half
 (* Write a value to a register. *)
-val write : t -> Ast.Reg.t -> half -> unit
+val write : t -> Ast.reg -> half -> unit
 
 (* Print the value of a register. *)
-val print_reg : t -> Ast.Reg.t -> unit
+val print_reg : t -> Ast.reg -> unit
 (* Print the contents of the entire register file. *)
 val print : t -> unit
 

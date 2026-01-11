@@ -8,10 +8,11 @@
 open Syntax
 
 module Rf = Regfile
+module P = Assembler.Printers
 
 (* Traces. *)
 type t =
-    | RegMod of Ram.half * Ast.t * Ast.Reg.t * Ram.half
+    | RegMod of Ram.half * Ast.t * Ast.reg * Ram.half
     | RamMod of Ram.half * Ast.t * Ram.addr * Ram.half
     | NoTrace of Ram.half * Ast.t
 
@@ -19,14 +20,14 @@ let to_string = function
     | RegMod (pc, inst, r, v) ->
             let rval = 
                 match r with
-                | Ast.Reg.R0 -> 0
+                | Ast.R0 -> 0
                 | _ -> v in
-            let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
-            Printf.sprintf "\t%s\t%04x" (Ast.Reg.to_string r) rval
+            let () = Printf.printf "(%04x)\t%s\n" pc (P.isa_inst_to_string inst) in
+            Printf.sprintf "\t%s\t%04x" (P.reg_to_string r) rval
     | RamMod (pc, inst, addr, v) ->
-            let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
+            let () = Printf.printf "(%04x)\t%s\n" pc (P.isa_inst_to_string inst) in
             Printf.sprintf "\t%04x\t%04x" addr v
     | NoTrace (pc, inst) ->
-            let () = Printf.printf "(%04x)\t%s\n" pc (Ast.to_string inst) in
+            let () = Printf.printf "(%04x)\t%s\n" pc (P.isa_inst_to_string inst) in
             "\t-"
 

@@ -1,11 +1,6 @@
 (library
  (name syntax)
- (libraries utils))
-
-(ocamllex lexer)
-
-(menhir
-  (modules parser))
+ (libraries utils assembler))
 
 ; Disabling unused warnings as errors
 (env
