@@ -14,3 +14,6 @@
 	path = hdl-simulator
 	url = https://gitlab.com/raagamparmar/hdl-simulator
 	branch = master
+[submodule "disassembler"]
+	path = disassembler
+	url = git@gitlab.com:SreenathKarthick11/disassembler.git
