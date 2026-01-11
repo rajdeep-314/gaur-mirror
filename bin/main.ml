@@ -66,7 +66,7 @@ let outfile =
   if !out <> "" then !out else default_output_name !path
 
 
-let prog_ast = Parser.parse_prog_from_path !path
+let prog_ast = Parser.parse_asm_prog_from_path !path
 let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
 let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
 

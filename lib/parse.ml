@@ -5,7 +5,14 @@
 
 open Utils
 
-let parse_prog s = Parser.prog Lexer.read_token (Lexing.from_string s)
+(* Parsing PISA programs. *)
 
-let parse_prog_from_path path = parse_prog (read_file path)
+let parse_isa_prog s = Parser_isa.prog Lexer_isa.read_token (Lexing.from_string s)
+let parse_isa_prog_from_path path = parse_isa_prog (read_file path)
+
+
+(* Parsing PASM programs. *)
+
+let parse_asm_prog s = Parser_asm.prog Lexer_asm.read_token (Lexing.from_string s)
+let parse_asm_prog_from_path path = parse_asm_prog (read_file path)
 

@@ -5,11 +5,12 @@
  )
 
 (library
- (name assembler))
+ (name assembler)
+ (public_name assembler))
 
-(ocamllex lexer)
+(ocamllex lexer_isa lexer_asm)
 
 (menhir
-  (modules parser))
+  (modules parser_isa parser_asm))
 
 (env (dev (flags (:standard -warn-error -33-39))))

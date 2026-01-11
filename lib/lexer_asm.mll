@@ -6,7 +6,7 @@
 
 
 {
-    open Parser
+    open Parser_asm
 }
 
 

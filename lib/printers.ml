@@ -40,6 +40,29 @@ let isa_inst_to_string inst =
 let isa_prog_to_string prog = String.concat "\n" (List.map isa_inst_to_string prog)
 
 
+(* Some printing functions for ISA instructions and programs. *)
+
+let print_isa_inst inst = print_string (isa_inst_to_string inst)
+let print_isa_prog p = print_string (isa_prog_to_string p)
+
+let rec print_isa_prog_with_pc prog pc =
+    if pc < 0 then print_isa_prog prog
+    else
+        match prog with
+        | [] ->
+                if pc = 0 then print_endline "<- PC"
+                else ()
+        | inst :: prog' ->
+                if pc = 0 then
+                    let () = print_isa_inst inst in
+                    let () = print_endline "\t\t<- PC" in
+                    print_isa_prog prog'
+                else
+                    let () = print_isa_inst inst in
+                    let () = print_endline "" in
+                    print_isa_prog_with_pc prog' (pc - 1)
+
+
 
 (* Machine format printers. *)
 
