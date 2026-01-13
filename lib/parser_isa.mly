@@ -48,7 +48,7 @@ inst:
     | ADD; rd = reg; rs1 = reg; rs2 = reg   { iadd rd rs1 rs2 }
     | ADDI; rd = reg; rs1 = reg; n = imm    { iaddi rd rs1 n }
     | SUB; rd = reg; rs1 = reg; rs2 = reg   { isub rd rs1 rs2 }
-    | AND; rd = reg; rs1 = reg; rs2 = reg   { iand' rd rs1 rs2 }
+    | AND; rd = reg; rs1 = reg; rs2 = reg   { iand rd rs1 rs2 }
     | NOT; rd = reg; rs1 = reg              { inot rd rs1 }
     | BEQ; rs1 = reg; rs2 = reg; n = imm    { ibeq rs1 rs2 n }
     | BLT; rs1 = reg; rs2 = reg; n = imm    { iblt rs1 rs2 n }
