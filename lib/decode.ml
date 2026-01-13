@@ -1,105 +1,117 @@
 (*
-  decode.ml
+    decode.ml
 *)
 
-open Assembler.Types
-module E = Err
+
+module E = Errors
 module U = Utils
 
+open Assembler.Types
+open Assembler.Types.Helper
+
+
 let int_to_reg = function
-  | 0  -> R0  | 1  -> R1  | 2  -> R2  | 3  -> R3
-  | 4  -> R4  | 5  -> R5  | 6  -> R6  | 7  -> R7
-  | 8  -> R8  | 9  -> R9  | 10 -> R10 | 11 -> R11
-  | 12 -> R12 | 13 -> R13 | 14 -> R14 | 15 -> R15
-  | _  -> failwith "Invalid register index"
+    | 0  -> Ok (R0)  | 1  -> Ok (R1)  | 2  -> Ok (R2)  | 3  -> Ok (R3)
+    | 4  -> Ok (R4)  | 5  -> Ok (R5)  | 6  -> Ok (R6)  | 7  -> Ok (R7)
+    | 8  -> Ok (R8)  | 9  -> Ok (R9)  | 10 -> Ok (R10) | 11 -> Ok (R11)
+    | 12 -> Ok (R12) | 13 -> Ok (R13) | 14 -> Ok (R14) | 15 -> Ok (R15)
+    | n  -> Error (E.InvalidRegNum n)
 
 
 let disassemble_inst instr =
-  let gb = U.get_bits in
-  let sext = U.sign_extend in
-  let opcode = gb instr 15 12 in
-  match opcode with
-  | 0x0 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let imm = gb instr 7 0 in
-      Ok (I_lli (rd, imm))
+    let gb = U.get_bits in
+    let gr hi lo = int_to_reg (gb instr hi lo) in
+    let sext = U.sign_extend in
 
-  | 0x1 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let imm = gb instr 7 0 in
-      Ok (I_lui (rd, imm))
+    let ( >>= ) r f =
+        match r with
+        | Ok x      -> f x
+        | Error e   -> Error e
+    in
 
-  | 0x2 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let rs  = int_to_reg (gb instr 7 4) in
-      let imm = sext (gb instr 3 0) 4 in
-      Ok (I_ld (rd, rs, imm))
+    let opcode = gb instr 15 12 in
+    match opcode with
+    | 0x0 ->
+        gr 11 8 >>= fun rd ->
+        let imm = gb instr 7 0 in
+        Ok (illi rd imm)
 
-  | 0x3 ->
-      let rs1 = int_to_reg (gb instr 11 8) in
-      let rs2 = int_to_reg (gb instr 7 4) in
-      let imm = sext (gb instr 3 0) 4 in
-      Ok (I_st (rs1, rs2, imm))
+    | 0x1 ->
+        gr 11 8 >>= fun rd ->
+        let imm = gb instr 7 0 in
+        Ok (ilui rd imm)
 
-  | 0x4 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let rs1 = int_to_reg (gb instr 7 4) in
-      let rs2 = int_to_reg (gb instr 3 0) in
-      Ok (I_add (rd, rs1, rs2))
+    | 0x2 ->
+        gr 11 8 >>= fun rd ->
+        gr 7 4 >>= fun rs ->
+        let imm = sext (gb instr 3 0) 4 in
+        Ok (ild rd rs imm)
 
-  | 0x5 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let rs  = int_to_reg (gb instr 7 4) in
-      let imm = sext (gb instr 3 0) 4 in
-      Ok (I_addi (rd, rs, imm))
+    | 0x3 ->
+        gr 11 8 >>= fun rs1 ->
+        gr 7 4 >>= fun rs2 ->
+        let imm = sext (gb instr 3 0) 4 in
+        Ok (ist rs1 rs2 imm)
 
-  | 0x6 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let rs1 = int_to_reg (gb instr 7 4) in
-      let rs2 = int_to_reg (gb instr 3 0) in
-      Ok (I_sub (rd, rs1, rs2))
+    | 0x4 ->
+        gr 11 8 >>= fun rd ->
+        gr 7 4 >>= fun rs1 ->
+        gr 3 0 >>= fun rs2 ->
+        Ok (iadd rd rs1 rs2)
 
-  | 0x7 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let rs1 = int_to_reg (gb instr 7 4) in
-      let rs2 = int_to_reg (gb instr 3 0) in
-      Ok (I_and (rd, rs1, rs2))
+    | 0x5 ->
+        gr 11 8 >>= fun rd ->
+        gr 7 4 >>= fun rs ->
+        let imm = sext (gb instr 3 0) 4 in
+        Ok (iaddi rd rs imm)
 
-  | 0x8 ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let rs  = int_to_reg (gb instr 7 4) in
-      Ok (I_not (rd, rs))
+    | 0x6 ->
+        gr 11 8 >>= fun rd ->
+        gr 7 4 >>= fun rs1 ->
+        gr 3 0 >>= fun rs2 ->
+        Ok (isub rd rs1 rs2)
 
-  | 0x9 ->
-      let rs1 = int_to_reg (gb instr 11 8) in
-      let rs2 = int_to_reg (gb instr 7 4) in
-      let imm = sext (gb instr 3 0) 4 in
-      Ok (I_beq (rs1, rs2, imm))
+    | 0x7 ->
+        gr 11 8 >>= fun rd ->
+        gr 7 4 >>= fun rs1 ->
+        gr 3 0 >>= fun rs2 ->
+        Ok (iand rd rs1 rs2)
 
-  | 0xA ->
-      let rs1 = int_to_reg (gb instr 11 8) in
-      let rs2 = int_to_reg (gb instr 7 4) in
-      let imm = sext (gb instr 3 0) 4 in
-      Ok (I_blt (rs1, rs2, imm))
+    | 0x8 ->
+        gr 11 8 >>= fun rd ->
+        gr 7 4 >>= fun rs ->
+        Ok (inot rd rs)
 
-  | 0xB ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let rs  = int_to_reg (gb instr 7 4) in
-      let imm = sext (gb instr 3 0) 4 in
-      Ok (I_jalr (rd, rs, imm))
+    | 0x9 ->
+        gr 11 8 >>= fun rs1 ->
+        gr 7 4 >>= fun rs2 ->
+        let imm = sext (gb instr 3 0) 4 in
+        Ok (ibeq rs1 rs2 imm)
 
-  | 0xC ->
-      let rd  = int_to_reg (gb instr 11 8) in
-      let imm = sext (gb instr 7 0) 8 in
-      Ok (I_apc (rd, imm))
+    | 0xA ->
+        gr 11 8 >>= fun rs1 ->
+        gr 7 4 >>= fun rs2 ->
+        let imm = sext (gb instr 3 0) 4 in
+        Ok (iblt rs1 rs2 imm)
 
-  | 0xD ->
-      let imm = sext (gb instr 11 0) 12 in
-      Ok (I_j imm)
+    | 0xB ->
+        gr 11 8 >>= fun rs1 ->
+        gr 7 4 >>= fun rs2 ->
+        let imm = sext (gb instr 3 0) 4 in
+        Ok (ijalr rs1 rs2 imm)
 
-  | _ ->
-      Error E.InvalidOpcode
+    | 0xC ->
+        gr 11 8 >>= fun rd ->
+        let imm = sext (gb instr 7 0) 8 in
+        Ok (iapc rd imm)
+
+    | 0xD ->
+        let imm = sext (gb instr 11 0) 12 in
+        Ok (ij imm)
+
+    | _ ->
+        Error E.InvalidOpcode
 
 let disassemble_prog instrs =
-  U.flatten_results (List.map disassemble_inst instrs)
+    U.flatten_results (List.map disassemble_inst instrs)
 
