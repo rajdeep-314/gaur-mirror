@@ -18,26 +18,31 @@ let trace = ref false           (* Traces on? *)
 let final_state = ref true      (* Final state printing on? *)
 let max_steps = ref 2000        (* Max instructions to execute. *)
 let debug_mode = ref false      (* Enter the debug mode? *)
+let help = ref false            (* Asking for help? *)
 
 
 let speclist = [
-    ("--trace", Arg.Set trace, "Set trace to ON.");
-    ("-t", Arg.Set trace, "Set trace to ON (short).");
-    ("--no-trace", Arg.Clear trace, "Set trace to OFF.");
-    ("-nt", Arg.Clear trace, "Set trace to OFF (short).");
+    ("--trace", Arg.Set trace, "\n\tSet trace to ON.");
+    ("-t", Arg.Set trace, "\n\tShort for --trace");
+    ("--no-trace", Arg.Clear trace, "\n\tSet trace to OFF");
+    ("-nt", Arg.Clear trace, "\n\tShort for --no-trace");
 
-    ("--final-state", Arg.Set final_state, "Set displaying final state to ON.");
-    ("-fs", Arg.Set final_state, "Set displaying final state to ON (short).");
-    ("--no-final-state", Arg.Clear final_state, "Set displaying final state to OFF.");
-    ("-nfs", Arg.Clear final_state, "Set displaying final state to OFF (short).");
+    ("--final-state", Arg.Set final_state, "\n\tSet displaying final state to ON");
+    ("-fs", Arg.Set final_state, "\n\tShort for --final-state");
+    ("--no-final-state", Arg.Clear final_state, "\n\tSet displaying final state to OFF");
+    ("-nfs", Arg.Clear final_state, "\n\tShort for --no-final-state");
 
-    ("--max-steps", Arg.Set_int max_steps, "Set the max number of execution states.");
-    ("-ms", Arg.Set_int max_steps, "Set the max number of execution states (short).");
-    ("--ram", Arg.Set_string ram_path, "Specify the initial RAM file's path.");
-    ("-r", Arg.Set_string ram_path, "Specify the initial RAM file's path (short).");
+    ("--max-steps", Arg.Set_int max_steps, "\n\tSet the max number of execution states");
+    ("-ms", Arg.Set_int max_steps, "\n\tShort for --max-steps");
+    ("--ram", Arg.Set_string ram_path, "\n\tSpecify the initial RAM file's path");
+    ("-r", Arg.Set_string ram_path, "\n\tShort for --ram");
 
-    ("--debug", Arg.Set debug_mode, "Run the simulator in debug mode.");
-    ("-g", Arg.Set debug_mode, "Run the simulator in debug mode (short).")
+    ("--debug", Arg.Set debug_mode, "\n\tRun the simulator in debug mode");
+    ("-g", Arg.Set debug_mode, "\n\tShort for --debug") ;
+
+    ( "--help", Arg.Set help, "\n\tDisplay this list of options" ) ;
+    ( "-help", Arg.Set help, "\n\tDisplay this list of options" ) ;
+    ( "-h", Arg.Set help, "\n\tShort for --help / -help" )
 ]
 
 let usage_msg = "Usage: cpusim [options] <file_path>."
@@ -55,6 +60,14 @@ let anon_fun arg =
 
 let () =
     Arg.parse speclist anon_fun usage_msg
+
+let () =
+    if !help then
+        begin
+        Arg.usage speclist usage_msg ;
+        exit 0
+        end
+
 
 let init_ram =
     if !ram_path == "" then
