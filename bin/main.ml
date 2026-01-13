@@ -17,12 +17,18 @@ module Printers = Assembler.Printers
 let path = ref ""               (* Input file path. *)
 let format = ref "bin"          (* Output file format. *)
 let out = ref ""                (* Output file path. *)
+let help = ref false            (* Asking for help? *)
 
 let speclist = [
-    ("--format",Arg.Set_string format,"Output format (bin | inter | ascii)");
-    ("-fmt",Arg.Set_string format,"Output format (bin | inter | ascii) (short)");
-    ("--out",Arg.Set_string out,"Output file path");
-    ("-o",Arg.Set_string out,"Output file path (short)")
+    ("--format",Arg.Set_string format,"\n\tOutput format (bin | inter | ascii)");
+    ("-fmt",Arg.Set_string format,"\n\tShort for --format");
+
+    ("--out",Arg.Set_string out,"\n\tOutput file path");
+    ("-o",Arg.Set_string out,"\n\tShort for --out") ;
+
+    ( "--help", Arg.Set help, "\n\tDisplay this list of options" ) ;
+    ( "-help", Arg.Set help, "\n\tDisplay this list of options" ) ;
+    ( "-h", Arg.Set help, "\n\tShort for --help / -help" )
 ]
 
 let usage_msg = "Usage: assembler [options] <file_path>."
@@ -53,6 +59,14 @@ let anon_fun arg =
 
 let () =
     Arg.parse speclist anon_fun usage_msg
+
+(* Checking if help was asked for. *)
+let () =
+    if !help then
+        begin
+        Arg.usage speclist usage_msg ;
+        exit 0
+        end
 
 let () =
     if !path = "" then
