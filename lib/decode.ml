@@ -18,90 +18,93 @@ let int_to_reg = function
     | n  -> Error (E.InvalidRegNum n)
 
 
+let ( let* ) = Result.bind
+
 let disassemble_inst instr =
     let gb = U.get_bits in
     let gr hi lo = int_to_reg (gb instr hi lo) in
     let sext = U.sign_extend in
 
-    let ( >>= ) r f =
-        match r with
-        | Ok x      -> f x
-        | Error e   -> Error e
-    in
+    (*let ( >>= ) r f =*)
+    (*    match r with*)
+    (*    | Ok x      -> f x*)
+    (*    | Error e   -> Error e*)
+    (*in*)
 
     let opcode = gb instr 15 12 in
     match opcode with
     | 0x0 ->
-        gr 11 8 >>= fun rd ->
+        let* rd = gr 11 8 in
         let imm = gb instr 7 0 in
         Ok (illi rd imm)
 
     | 0x1 ->
-        gr 11 8 >>= fun rd ->
+        let* rd = gr 11 8 in
         let imm = gb instr 7 0 in
         Ok (ilui rd imm)
 
     | 0x2 ->
-        gr 11 8 >>= fun rd ->
-        gr 7 4 >>= fun rs ->
+        let* rd = gr 11 8 in
+        let* rs = gr 7 4 in
         let imm = sext (gb instr 3 0) 4 in
         Ok (ild rd rs imm)
 
     | 0x3 ->
-        gr 11 8 >>= fun rs1 ->
-        gr 7 4 >>= fun rs2 ->
+        let* rd = gr 11 8 in
+        let* rs = gr 7 4 in
         let imm = sext (gb instr 3 0) 4 in
-        Ok (ist rs1 rs2 imm)
+        Ok (ist rd rs imm)
 
     | 0x4 ->
-        gr 11 8 >>= fun rd ->
-        gr 7 4 >>= fun rs1 ->
-        gr 3 0 >>= fun rs2 ->
+        let* rd = gr 11 8 in
+        let* rs1 = gr 7 4 in
+        let* rs2 = gr 3 0 in
         Ok (iadd rd rs1 rs2)
 
     | 0x5 ->
-        gr 11 8 >>= fun rd ->
-        gr 7 4 >>= fun rs ->
+        let* rd = gr 11 8 in
+        let* rs = gr 7 4 in
         let imm = sext (gb instr 3 0) 4 in
         Ok (iaddi rd rs imm)
 
     | 0x6 ->
-        gr 11 8 >>= fun rd ->
-        gr 7 4 >>= fun rs1 ->
-        gr 3 0 >>= fun rs2 ->
+        let* rd = gr 11 8 in
+        let* rs1 = gr 7 4 in
+        let* rs2 = gr 3 0 in
         Ok (isub rd rs1 rs2)
 
     | 0x7 ->
-        gr 11 8 >>= fun rd ->
-        gr 7 4 >>= fun rs1 ->
-        gr 3 0 >>= fun rs2 ->
+        let* rd = gr 11 8 in
+        let* rs1 = gr 7 4 in
+        let* rs2 = gr 3 0 in
         Ok (iand rd rs1 rs2)
 
+    (* TODO:    Add check for the remaining bits being 0. *)
     | 0x8 ->
-        gr 11 8 >>= fun rd ->
-        gr 7 4 >>= fun rs ->
+        let* rd = gr 11 8 in
+        let* rs = gr 7 4 in
         Ok (inot rd rs)
 
     | 0x9 ->
-        gr 11 8 >>= fun rs1 ->
-        gr 7 4 >>= fun rs2 ->
+        let* rs1 = gr 11 8 in
+        let* rs2 = gr 7 4 in
         let imm = sext (gb instr 3 0) 4 in
         Ok (ibeq rs1 rs2 imm)
 
     | 0xA ->
-        gr 11 8 >>= fun rs1 ->
-        gr 7 4 >>= fun rs2 ->
+        let* rs1 = gr 11 8 in
+        let* rs2 = gr 7 4 in
         let imm = sext (gb instr 3 0) 4 in
         Ok (iblt rs1 rs2 imm)
 
     | 0xB ->
-        gr 11 8 >>= fun rs1 ->
-        gr 7 4 >>= fun rs2 ->
+        let* rs1 = gr 11 8 in
+        let* rs2 = gr 7 4 in
         let imm = sext (gb instr 3 0) 4 in
         Ok (ijalr rs1 rs2 imm)
 
     | 0xC ->
-        gr 11 8 >>= fun rd ->
+        let* rd = gr 11 8 in
         let imm = sext (gb instr 7 0) 8 in
         Ok (iapc rd imm)
 
