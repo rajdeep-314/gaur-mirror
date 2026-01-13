@@ -18,3 +18,6 @@ val flatten_results : ('a,'e) result list -> ('a list, 'e) result
 (** [read_program p] reads the binary file with path [p] and returns a list of integers, each integer corresponding to a {i PISA} instruction. *)
 val read_program : string -> int list
 
+(** [write_file p x] writes a file to path [p] wtih content [x]. *)
+val write_file : string -> string -> unit
+

@@ -37,3 +37,8 @@ let read_program file_path =
             List.rev acc
     in loop []
 
+let write_file out_path out_content =
+    let oc = open_out out_path in
+    output_string oc (out_content ^ "\n") ;
+    close_out oc
+
