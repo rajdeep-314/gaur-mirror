@@ -16,4 +16,5 @@
 	branch = master
 [submodule "disassembler"]
 	path = disassembler
-	url = git@gitlab.com:SreenathKarthick11/disassembler.git
+	url = https://gitlab.com/SreenathKarthick11/disassembler-pisa
+	branch = main
