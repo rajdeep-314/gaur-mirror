@@ -15,21 +15,31 @@ let word_size = ref 2           (* Word size in bytes. *)
 let endianness = ref "big"      (* Endianness (little | big). *)
 let offset = ref 0              (* Offset in number of bytes. *)
 let padding = ref "0"           (* Padding bytes. *)
+let help = ref false            (* Asking for help? *)
 
 
 let speclist = [
-    ("--out", Arg.Set_string out_path, "Path of the output file, if any.");
-    ("-o", Arg.Set_string out_path, "Path of the output file, if any (short).");
-    ("--ram-size", Arg.Set_int ram_size, "The RAM size, in number of words/cells.");
-    ("-rsz", Arg.Set_int ram_size, "The RAM size, in number of words/cells (short).");
-    ("--word-size", Arg.Set_int word_size, "The word size, in number of bytes.");
-    ("-wsz", Arg.Set_int word_size, "The word size, in number of bytes (short).");
-    ("--endianness", Arg.Set_string endianness, "The endianness (little/big).");
-    ("-e", Arg.Set_string endianness, "The endianness (little/big) (short).");
-    ("--offset", Arg.Set_int offset, "The address offset for the RAM.");
-    ("-off", Arg.Set_int offset, "The address offset for the RAM (short).");
-    ("--padding", Arg.Set_string padding, "Data to be loaded at unspecified addresses.");
-    ("-p", Arg.Set_string padding, "Data to be loaded at unspecified addresses (short).");
+    ("--out", Arg.Set_string out_path, "\n\tPath of the output file, if any") ;
+    ("-o", Arg.Set_string out_path, "\n\tShort for --out") ;
+
+    ("--ram-size", Arg.Set_int ram_size, "\n\tThe RAM size, in number of words/cells") ;
+    ("-rsz", Arg.Set_int ram_size, "\n\tShort for --ram-size") ;
+
+    ("--word-size", Arg.Set_int word_size, "\n\tThe word size, in number of bytes") ;
+    ("-wsz", Arg.Set_int word_size, "\n\tShort for --word-size") ;
+
+    ("--endianness", Arg.Set_string endianness, "\n\tThe endianness (little/big)") ;
+    ("-e", Arg.Set_string endianness, "\n\tShort for --endianness") ;
+
+    ("--offset", Arg.Set_int offset, "\n\tThe address offset for the RAM") ;
+    ("-off", Arg.Set_int offset, "\n\tShort for --offset") ;
+
+    ("--padding", Arg.Set_string padding, "\n\tData to be loaded at unspecified addresses") ;
+    ("-p", Arg.Set_string padding, "\n\tShort for --padding") ;
+
+    ( "--help", Arg.Set help, "\n\tDisplay this list of options" ) ;
+    ( "-help", Arg.Set help, "\n\tDisplay this list of options" ) ;
+    ( "-h", Arg.Set help, "\n\tShort for --help / -help" )
 ]
 
 
@@ -47,6 +57,13 @@ let anon_fun arg =
 
 let () =
     Arg.parse speclist anon_fun usage_msg
+
+let () =
+    if !help then
+        begin
+        Arg.usage speclist usage_msg ;
+        exit 0
+        end
 
 let () =
     if !path == "" then
