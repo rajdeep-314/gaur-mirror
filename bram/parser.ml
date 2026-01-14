@@ -27,6 +27,5 @@ let parse_bytes bs size =
 let parse_file path =
     let bs = Bytes.of_string (Utils.Files.read_file path) in
     let size = Bytes.length bs in
-    let () = Printf.printf "size: %d\n" size in
     parse_bytes bs size
 
