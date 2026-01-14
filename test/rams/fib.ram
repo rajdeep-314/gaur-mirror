@@ -1,0 +1,5 @@
+# Initial RAM configuration for fib.pasm
+
+0	:	5		# How many numbers?
+1	:	42		# Starting address.
+
