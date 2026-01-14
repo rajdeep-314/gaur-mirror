@@ -19,11 +19,14 @@ let rec process_bytes bs ram n max_n =
         let () = Ram.write ram n data in
         process_bytes bs ram (n + 1) max_n
 
-let parse_bytes bs =
+let parse_bytes bs size =
     let ram = Ram.create () in
-    let () = process_bytes bs ram 0 16383 in
+    let () = process_bytes bs ram 0 (size / 2 - 1) in
     ram
 
 let parse_file path =
-    parse_bytes (Bytes.of_string (Utils.Files.read_file path))
+    let bs = Bytes.of_string (Utils.Files.read_file path) in
+    let size = Bytes.length bs in
+    let () = Printf.printf "size: %d\n" size in
+    parse_bytes bs size
 
