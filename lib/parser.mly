@@ -28,6 +28,6 @@ map:
         { Map (a, h) }
 
 prog:
-    | ms = list(terminated(map, NEWLINE*)); EOF 
+    | NEWLINE*; ms = list(terminated(map, NEWLINE*)); EOF 
         { ms }
 
