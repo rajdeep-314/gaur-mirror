@@ -3,7 +3,7 @@
 *)
 
 
-open Utils
+open Utils.Files
 
 (* Parsing PISA programs. *)
 

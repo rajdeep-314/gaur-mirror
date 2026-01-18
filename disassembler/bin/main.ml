@@ -3,7 +3,7 @@
 *)
 
 
-module U = Dis.Utils
+module UF = Utils.Files
 module D = Dis.Decode
 
 module IP = Assembler.Printers
@@ -67,7 +67,7 @@ let () =
     exit 1
     end
 
-let instrs = U.read_program !input_path
+let instrs = UF.read_program !input_path
 
 let () =
     match D.disassemble_prog instrs with
@@ -79,6 +79,6 @@ let () =
     | Ok p ->
         let string_p = IP.isa_prog_to_string p in
         let out_path = default_output_path !input_path !output_path in
-        let () = U.write_file out_path string_p in
+        let () = UF.write_file out_path string_p in
         print_endline ("Wrote: " ^ out_path)
 

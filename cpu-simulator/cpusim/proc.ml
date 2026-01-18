@@ -8,7 +8,7 @@
 open Syntax.Ast
 
 module Rf = Regfile
-module M = Utils.Math
+module M = Utils.Bitwise
 
 
 type pc = int

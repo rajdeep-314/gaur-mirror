@@ -5,7 +5,7 @@
 *)
 
 
-module M = Utils.Math
+module M = Utils.Bitwise
 module H = Syntax.Ast.Helper
 open Syntax
 

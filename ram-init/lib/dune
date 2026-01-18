@@ -1,6 +1,6 @@
 (library
  (name raminit)
- (libraries num))
+ (libraries num ptools.utils))
 
 (ocamllex 
   (modules lexer))

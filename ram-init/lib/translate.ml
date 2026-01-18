@@ -5,7 +5,7 @@
 *)
 
 
-open Utils
+open Utils.Bigint
 
 let add_map bs (Ast.Map (addr, data)) word_size lendianb offset =
     let base_addr = (offset + addr) * word_size in

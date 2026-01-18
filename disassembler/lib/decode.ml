@@ -4,7 +4,8 @@
 
 
 module E = Errors
-module U = Utils
+module UB = Utils.Bitwise
+module UR = Utils.Results
 
 open Assembler.Types
 open Assembler.Types.Helper
@@ -21,9 +22,9 @@ let int_to_reg = function
 let ( let* ) = Result.bind
 
 let disassemble_inst instr =
-    let gb = U.get_bits in
+    let gb = UB.get_bits in
     let gr hi lo = int_to_reg (gb instr hi lo) in
-    let sext = U.sign_extend in
+    let sext = UB.sign_extend in
 
     (*let ( >>= ) r f =*)
     (*    match r with*)
@@ -116,5 +117,5 @@ let disassemble_inst instr =
         Error E.InvalidOpcode
 
 let disassemble_prog instrs =
-    U.flatten_results (List.map disassemble_inst instrs)
+    UR.flatten_results (List.map disassemble_inst instrs)
 

@@ -1,7 +1,7 @@
 (*
-    utils.ml
+    bigint.ml
 
-    Utility functions.
+    Utility functions related to BigInt.
 *)
 
 

@@ -6,7 +6,8 @@
 
 (library
  (name assembler)
- (public_name ptools.assembler))
+ (public_name ptools.assembler)
+ (libraries ptools.utils))
 
 (ocamllex 
   (modules lexer_isa lexer_asm))
