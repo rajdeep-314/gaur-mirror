@@ -14,4 +14,3 @@ let get_bits value high low =
     let mask = (1 lsl (high - low + 1)) - 1 in
     (value lsr low) land mask
 
-

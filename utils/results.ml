@@ -1,3 +1,10 @@
+(*
+    results.ml
+
+    Utility functions related to the result type.
+*)
+
+
 let rec flatten_results = function
     | []          -> Ok []
     | Ok v :: rs  ->
