@@ -1,5 +1,5 @@
 (cram
   (deps (source_tree ./ram-imgs)
         (source_tree ./snippets))
-  (package cpusim))
+)
 

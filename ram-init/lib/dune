@@ -2,7 +2,8 @@
  (name raminit)
  (libraries num))
 
-(ocamllex lexer)
+(ocamllex 
+  (modules lexer))
 
 (menhir
   (modules parser))

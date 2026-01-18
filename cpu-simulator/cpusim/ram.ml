@@ -32,7 +32,6 @@ let read_safe ram addr =
 let write_safe ram addr data =
     if not (valid_address ram addr) then None
     else
-        let masked_data = data land 0xffff in
         Some (ram.(addr) <- data)
 
 let init_from_mmap map =

@@ -1,4 +1,7 @@
-(lang dune 3.20)
+(lang dune 3.21)
+(using menhir 3.0)
+(using rocq 0.11)
+
 
 (name ptools)
 
@@ -17,7 +20,6 @@
 
 (package
  (name ptools)
- (allow_empty)
  (synopsis "A toolchain made for teaching purposes.")
  (description
   "This project contains the toolchain meant to be used for teaching third semester CSE students at IIT Palakkad. The toolchain currently includes a CPU simulator, an HDL simulator, an assembler and a RAM initialization tool (for the CPU simulator)." )

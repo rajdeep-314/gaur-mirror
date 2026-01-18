@@ -6,11 +6,11 @@
 
 (library
  (name assembler)
- (public_name assembler))
+ (public_name ptools.assembler))
 
-(ocamllex lexer_isa lexer_asm)
+(ocamllex 
+  (modules lexer_isa lexer_asm))
 
 (menhir
   (modules parser_isa parser_asm))
 
-(env (dev (flags (:standard -warn-error -33-39))))

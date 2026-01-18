@@ -1,6 +1,6 @@
 (library
  (name dis)
- (public_name disassembler)
+ (public_name ptools.disassembler)
  (libraries assembler))
 
 (documentation
