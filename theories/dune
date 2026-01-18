@@ -1,4 +1,4 @@
-(coq.theory
+(rocq.theory
  (name assembler)
  (theories Stdlib)
  (modules utils lemmas result symtable reg ast bits isa machine assemble proofs)

@@ -1,4 +1,4 @@
-(coq.extraction
+(rocq.extraction
   (prelude extraction)
   (extracted_modules assembler_extr)
   (theories Stdlib assembler)
