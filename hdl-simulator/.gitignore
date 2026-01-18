@@ -1,8 +1,0 @@
-# Build files for dune
-_build/
-
-# Temporary folders
-_*
-
-# Local vscode settings
-.vscode/
