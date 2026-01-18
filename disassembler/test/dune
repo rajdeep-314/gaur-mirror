@@ -1,0 +1,4 @@
+(cram
+  (deps (source_tree ./binaries/))
+  (package disassembler))
+

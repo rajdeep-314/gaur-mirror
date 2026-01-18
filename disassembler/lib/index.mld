@@ -1,0 +1,12 @@
+{0 Disassembler library}
+
+This library implements the core functionality to disassemble PISA binaries to PASM programs.
+
+The following modules are exposed:
+
+- {{!Dis.Decode} Decode}: Decoding integer representation of PISA instructions and programs to their corresponding AST representations.
+
+- {{!Dis.Errors} Errors}: Errors produced by the disassembler.
+
+- {{!Dis.Utils} Utils}: Utility functions used by the disassembler.
+

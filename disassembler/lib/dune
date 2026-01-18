@@ -1,0 +1,8 @@
+(library
+ (name dis)
+ (public_name disassembler)
+ (libraries assembler))
+
+(documentation
+  (mld_files index))
+
