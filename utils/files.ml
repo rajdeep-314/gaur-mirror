@@ -14,7 +14,7 @@ let write_file out_path out_content =
     output_string oc (out_content ^ "\n") ;
     close_out oc
 
-let read_program file_path =
+let half_words_of_path file_path =
     let ic = open_in_bin file_path in
     let rec loop acc =
         try
