@@ -1,0 +1,5 @@
+(executable
+  (public_name hdl-simulator)
+  (name main)
+  (libraries pHDL)
+)
