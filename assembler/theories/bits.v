@@ -1,10 +1,14 @@
 (*
     bits.v
-
-    Type for bits and binary numbers as length-indexed bit-vectors, along
-    with functions to work with them.
 *)
 
+
+(** 
+    {1 Bits Module}
+
+    This module defines the type for bits and bit-vectors, along with
+    functions to manipulate and convert them.
+*)
 
 From Stdlib Require Import ZArith String Program List.
 Import ListNotations.
@@ -14,48 +18,48 @@ Open Scope string_scope.
 From assembler Require lemmas.
 
 
-(* Bits. *)
+(** Definition of Bit *)
 Inductive t:Set :=
     | b0 | b1.
 
 
-(* Bit-vectors, indexed by their length. *)
+(** Bit-vectors, indexed by their length. *)
 Inductive bv : nat -> Set :=
     | nil   : bv 0
     | cons  : forall n:nat, t -> bv n -> bv (S n).
 
 
-(* Length of a bit-vector. *)
+(** Length of a bit-vector. *)
 Definition length (n:nat) (_:bv n) : nat := n.
 
 
-(* Bit-vector to a list of bits. *)
+(** Bit-vector to a list of bits. *)
 Fixpoint bv_to_list (n:nat) (v:bv n) : list t :=
     match v with
     | nil           => []
     | cons n' b v'  => b :: bv_to_list n' v'
     end.
 
-(* A bit-vector of size n, of all zeros. *)
+(** A bit-vector of size n, of all zeros. *)
 Fixpoint zeros (n:nat) : bv n :=
     match n with
     | O     => nil
     | S n'  => cons n' b0 (zeros n')
     end.
 
-(* Concat two bit-vectors of length m and n to a bit-vector of length (m + n). *)
+(** Concat two bit-vectors of length m and n to a bit-vector of length (m + n). *)
 Fixpoint concat (m n:nat) (x:bv m) (y:bv n):bv (m + n):=
     match x with
     | nil           => y
     | cons m' b x'  => cons (m' + n) b (concat m' n x' y)
     end.
 
-(* b1 if z is odd, else b0. *)
+(** b1 if z is odd, else b0. *)
 Definition bit_parity (z:Z) : t :=
     if Z.odd z then b1 else b0.
 
 
-(* Converts an integer to a bit-vector of length n.
+(** Converts an integer to a bit-vector of length n.
    NOTE:
    The bit-vector is "reversed", compared to the conventional binary reprsentation.
    For example,
@@ -68,7 +72,7 @@ Fixpoint int_to_bv_n (n:nat) (z:Z) : bv n:=
     | S n'  => cons n' (bit_parity z) (int_to_bv_n n' (Z.div z 2))
     end.
 
-(* Helper function to convert bit-vector to an unsigned integer *)
+(** Helper function to convert bit-vector to an unsigned integer *)
 Fixpoint bv_to_unsigned (n:nat) (v:bv n) : Z :=
     match v with
     | nil => 0
@@ -77,7 +81,7 @@ Fixpoint bv_to_unsigned (n:nat) (v:bv n) : Z :=
         bit_val + 2 * (bv_to_unsigned n' v')
     end.
 
-(* Convert bit-vector to signed integer using two's complement *)
+(** Convert bit-vector to signed integer using two's complement *)
 Definition bv_to_int (n:nat) (v:bv n) : Z :=
     match n with
     | O => 0
@@ -89,7 +93,7 @@ Definition bv_to_int (n:nat) (v:bv n) : Z :=
     end.
 
 
-(* Reverse a bit-vector. *)
+(** Reverse a bit-vector. *)
 Program Fixpoint reverse {n:nat} (v:bv n):(bv n):=
     match v with
     | nil           => nil

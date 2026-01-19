@@ -1,12 +1,15 @@
 (*
     types.ml
-
-    OCaml types for assembly instructions and programs, ISA instructuctions
-    and programs, etc.
-    The Rocq types are mapped to these in extraction.v
 *)
 
-(* Registers. *)
+(** {1 Types} *)
+
+(**
+This module contains OCaml types for PISA and PASM instructinos and programs.
+The Rocq types in the project's theories are mapped to these using an extraction script.
+*)
+
+(** Registers. *)
 type reg =
     | R0  | R1  | R2  | R3
     | R4  | R5  | R6  | R7
@@ -14,29 +17,29 @@ type reg =
     | R12 | R13 | R14 | R15
 
 
-(* PASM instructions with labels of type 'l. *)
+(** PASM instructions with labels of type ['l]. *)
 type 'l asm_inst =
-    | Lli   of  reg * int
-    | Lui   of  reg * int
-    | Ld    of  reg * reg * int
-    | St    of  reg * reg * int
-    | Add   of  reg * reg * reg
-    | Addi  of  reg * reg * int
-    | Sub   of  reg * reg * reg
-    | And   of  reg * reg * reg
-    | Not   of  reg * reg
-    | Beq   of  reg * reg * 'l
-    | Blt   of  reg * reg * 'l
-    | Jalr  of  reg * reg * int
-    | Apc   of  reg * int
-    | J     of  'l
-    | Label of  'l
-    | Spin
+    | Lli   of  reg * int       (** Load lower immediate. *)
+    | Lui   of  reg * int       (** Load upper imediate. *)
+    | Ld    of  reg * reg * int (** Load. *)
+    | St    of  reg * reg * int (** Store. *)
+    | Add   of  reg * reg * reg (** Add two registers. *)
+    | Addi  of  reg * reg * int (** Add register and immediate. *)
+    | Sub   of  reg * reg * reg (** Subtract two registers. *)
+    | And   of  reg * reg * reg (** Bitwise and between two registers. *)
+    | Not   of  reg * reg       (** Bitwise negation of a register. *)
+    | Beq   of  reg * reg * 'l  (** Branch if equal-to. *)
+    | Blt   of  reg * reg * 'l  (** Branch if less-than. *)
+    | Jalr  of  reg * reg * int (** Jump and link register. *)
+    | Apc   of  reg * int       (** Add to PC and store in a register. *)
+    | J     of  'l              (** (Unconditional) jump. *)
+    | Label of  'l              (** Define a label. *)
+    | Spin                      (** Spin endlessly. *)
 
-(* PASM programs. *)
+(** PASM programs. *)
 type 'l asm_prog = ('l asm_inst) list
 
-(* ISA instructions. *)
+(** PISA instructions, without labels. *)
 type isa_inst =
     | I_lli   of  reg * int
     | I_lui   of  reg * int
@@ -53,15 +56,20 @@ type isa_inst =
     | I_apc   of  reg * int
     | I_j     of  int
 
-type isa_prog = isa_inst list                   (* ISA programs. *)
+(** PISA programs. *)
+type isa_prog = isa_inst list
 
-type machine_inst = bool list                   (* Machine instructions. *)
-type machine_prog = machine_inst list           (* Machine programs.     *)
+(** Machine instructions. *)
+type machine_inst = bool list
+
+(** Machine programs. *)
+type machine_prog = machine_inst list
 
 
-(* Helper functions to write AST programs. *)
+(** Helper functions to write AST programs. *)
 module Helper = struct
-    (* Registers. *)
+    (** Registers. *)
+
     let r0 = R0
     let r1 = R1
     let r2 = R2
@@ -79,7 +87,8 @@ module Helper = struct
     let r14 = R14
     let r15 = R15
 
-    (* PASM. *)
+    (** PASM instructions. *)
+
     let lli rd n = Lli (rd, n)
     let lui rd n = Lui (rd, n)
     let ld rd rs1 n = Ld (rd, rs1, n)
@@ -97,7 +106,8 @@ module Helper = struct
     let label l = Label l
     let spin = Spin
 
-    (* PISA. *)
+    (** PISA instructions. *)
+
     let illi rd n = I_lli (rd, n)
     let ilui rd n = I_lui (rd, n)
     let ild rd rs1 n = I_ld (rd, rs1, n)
@@ -113,4 +123,5 @@ module Helper = struct
     let iapc rd n = I_apc (rd, n)
     let ij l = I_j l
 end
+
 

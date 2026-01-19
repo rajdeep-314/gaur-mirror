@@ -1,7 +1,13 @@
 (*
     isa.v
+*)
 
-    Representation for the ISA instructions of PISA.
+
+(**
+    {1 ISA Module}
+
+    This module defines the representation of the PISA instructions
+    and programs in the assembler.
 *)
 
 
@@ -11,7 +17,7 @@ Open Scope string_scope.
 
 From assembler Require bits reg.
 
-
+(** Type definition for ISA instructions. *)
 Inductive t:Set :=
     | lli   : reg.t -> bits.bv 8 -> t 
     | lui   : reg.t -> bits.bv 8  -> t 
@@ -29,16 +35,16 @@ Inductive t:Set :=
     | j     : bits.bv 12 -> t .
 
 
-(* A program is a list of (ISA) instructions. *)
+(** A program is a list of (ISA) instructions. *)
 Definition prog := list t.
 
-(* Number of instructions in a program. *)
+(** Number of instructions in a program. *)
 Definition num_insts (p:prog) : nat := List.length p.
 
 
-(* For extraction. *)
+(** For extraction. *)
 
-(* The ISA type with integers instead of imms. *)
+(** The ISA type with integers instead of imms. *)
 Inductive t_:Set :=
     | lli_  : reg.t -> Z -> t_
     | lui_  : reg.t -> Z  -> t_

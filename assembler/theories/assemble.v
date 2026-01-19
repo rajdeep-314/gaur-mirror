@@ -1,9 +1,13 @@
 (*
     assemble.v
+*)
 
-    Functions for translating programs from assembly to
-    - ISA programs
-    - Machine programs
+
+(**
+    {1 Assemble Module}
+
+    This module contains functions to translate assembly programs
+    to ISA programs and machine programs.
 *)
 
 
@@ -15,17 +19,20 @@ From assembler Require utils result reg symtable ast isa machine.
 Import result.
 
 
-(* Width of an instruction represents how many ISA instructions it
-expands to.
-This is used to resolve labels. *)
+(**
+    width : Given an assembly instruction, returns the number of ISA instructions.
+    Used to reslove labels.
+*)
 Definition width (l:Set) (inst:ast.t l) : nat :=
     match inst with
     | ast.label _ _ => 0
     | _             => 1
     end.
 
-(* Builds a symbol table out of the labels in a program, with count as the
-   base line number. *)
+(**
+    Builds a symbol table out of the labels in a program, with count as the
+    base line number. 
+*)
 Fixpoint build_symtable (l:Set) (p:ast.prog l) (count:nat) : symtable.t l :=
     match p with
     | []        => symtable.empty l
@@ -37,12 +44,14 @@ Fixpoint build_symtable (l:Set) (p:ast.prog l) (count:nat) : symtable.t l :=
             end
     end.
 
-(* Builds a symbol table of a program (with base line number as 0). *)
+(**
+    Builds a symbol table of a program (with base line number as 0). 
+*)
 Definition symtable_of_prog (l:Set) (p:ast.prog l) : symtable.t l :=
     build_symtable l p 0.
 
 
-(* Translate an assembly instruction to it's corresponding ISA instruction. *)
+(** Translate an assembly instruction to it's corresponding PISA instruction. *)
 Definition ast_to_isa (l:Set) (eqb:l -> l -> bool) (inst:ast.t l) (tbl:symtable.t l) (pc:nat) : result (option isa.t) string :=
     match inst with
     | ast.lli _ rd imm      => Ok (Some (isa.lli rd (bits.int_to_bv_n 8 imm)))
@@ -93,7 +102,7 @@ Definition ast_to_isa (l:Set) (eqb:l -> l -> bool) (inst:ast.t l) (tbl:symtable.
     | ast.spin _            => Ok (Some (isa.j (bits.int_to_bv_n 12 0)))
     end.
 
-
+(** Helper function for translating ast to isa *)
 Fixpoint ast_prog_to_isa_prog_helper (l:Set) (eqb:l -> l -> bool) (p:ast.prog l) (tbl:symtable.t l) (pc:nat) : result isa.prog string :=
     match p with
     | []                    =>  Ok []
@@ -111,7 +120,7 @@ Fixpoint ast_prog_to_isa_prog_helper (l:Set) (eqb:l -> l -> bool) (p:ast.prog l)
     end.
 
 
-(* Translate an assembly program to it's corresponding ISA program. *)
+(** Translate an assembly program to it's corresponding ISA program. *)
 Definition ast_prog_to_isa_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (p:ast.prog l) : result isa.prog string :=
     let tbl := symtable_of_prog l p in
     match symtable.dup l eqb tbl with
@@ -126,12 +135,12 @@ Definition ast_prog_to_isa_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (p
     end.
 
 
-(* Translate a list of assembly programs to their corresponding ISA program. *)
+(** Translate a list of assembly programs to their corresponding ISA program. *)
 Definition ast_progs_to_isa_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (ps:list (ast.prog l)) : result isa.prog string :=
     ast_prog_to_isa_prog l eqb sf (List.concat ps).
 
 
-(* The opcode corresponding to an instruction. *)
+(** The opcode corresponding to an instruction. *)
 Definition opcode_of_inst (inst:isa.t) : bits.bv 4 :=
     match inst with
     | isa.lli  _ _      => bits.reverse (bits.int_to_bv_n 4 0)
@@ -151,7 +160,7 @@ Definition opcode_of_inst (inst:isa.t) : bits.bv 4 :=
     end.
 
 
-(* The bit-vector corresponding to a register's index. *)
+(** The bit-vector corresponding to a register's index. *)
 Definition reg_to_bv (r:reg.t) : bits.bv 4 :=
     match r with 
     | reg.r0    => bits.reverse (bits.int_to_bv_n 4 0)
@@ -173,7 +182,7 @@ Definition reg_to_bv (r:reg.t) : bits.bv 4 :=
     end.
 
 
-(* ISA instruction representation to machine representation. *)
+(** ISA instruction representation to machine representation. *)
 Definition isa_to_machine (inst:isa.t) : machine.t :=
     match inst with
     | isa.lli  rd imm       => bits.concat 4 12 (opcode_of_inst inst) (bits.concat 4 8 (reg_to_bv rd) (bits.reverse imm))
@@ -193,19 +202,19 @@ Definition isa_to_machine (inst:isa.t) : machine.t :=
     end.
 
 
-(* ISA program to it's machine representation. *)
+(** ISA program to it's machine representation. *)
 Definition isa_prog_to_machine_prog : isa.prog -> machine.prog :=
     List.map isa_to_machine.
 
 
-(* Translate an assembly program to a machine program. *)
+(** Translate an assembly program to a machine program. *)
 Definition assemble_prog (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (p:ast.prog l) : result machine.prog string :=
     match ast_prog_to_isa_prog l eqb sf p with
     | Ok isa_p  => Ok (isa_prog_to_machine_prog isa_p)
     | Error e   => Error e
     end.
 
-(* Assemble multiple assembly programs to a machine program.
+(** Assemble multiple assembly programs to a machine program.
    The entry point is assumed to be the starting of the first program in the list. *)
 Definition assemble_progs (l:Set) (eqb:l -> l -> bool) (sf:l -> string) (ps:list (ast.prog l)) : result machine.prog string :=
     assemble_prog l eqb sf (List.concat ps).
