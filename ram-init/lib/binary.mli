@@ -3,9 +3,14 @@
 *)
 
 
+(** {1 Binary Module}*)
+
+(** Type for binary. *)
 type t = Bytes.t
 
-(* String representation of binary data and printing function for the same. *)
+(** [to_string b] converts the binary [b] to string. *)
 val to_string : t -> string
+
+(** [print b] prints the binary [b] to the standard output. *)
 val print : t -> unit
 
