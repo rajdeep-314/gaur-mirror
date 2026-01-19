@@ -25,8 +25,8 @@
   "This project contains the toolchain meant to be used for teaching third semester CSE students at IIT Palakkad. The toolchain currently includes a CPU simulator, an HDL simulator, an assembler and a RAM initialization tool (for the CPU simulator)." )
  (depends
    (ocaml (>= 4.14))
-   (rocq (>= 9.0))
-   dune ocamllex num menhir ocamlgraph)
+   (rocq-core (>= 9.0.0))
+   dune num menhir ocamlgraph)
  (tags
   ("toolchain" "rocq" "coq" "formal verification" "assembler"
    "simulator" "cpu simulator" "hdl" "hdl simulator")))
