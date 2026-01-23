@@ -1,0 +1,90 @@
+{1 RAM Init}
+
+
+[ram-init] was created to convert textual descriptions of the initial RAM state for a [PISA] processor into a simple binary format, which is used by [cpusim] to execute programs on an initial RAM state.
+
+However, the tool is general and can be configured to produce RAM images outside of usage for this toolchain.
+
+{2 Usage}
+
+The [ram-init] executable can be invoked with various flags. To see an exhaustive list of the same, invoke it with the [--help] flag.
+
+{v
+λ:⟩ ram-init --help
+Usage: ram-init [options] <file_path>.
+  --out 
+        Path of the output file, if any
+  -o 
+        Short for --out
+  --ram-size 
+        The RAM size, in number of words/cells
+  -rsz 
+        Short for --ram-size
+  --word-size 
+        The word size, in number of bytes
+  -wsz 
+        Short for --word-size
+  --endianness 
+        The endianness (little/big)
+  -e 
+        Short for --endianness
+  --offset 
+        The address offset for the RAM
+  -off 
+        Short for --offset
+  --padding 
+        Data to be loaded at unspecified addresses
+  -p 
+        Short for --padding
+  --help 
+        Display this list of options
+  -help 
+        Display this list of options
+  -h 
+        Short for --help / -help
+v}
+
+
+{2 Example}
+
+Consider the following textual description of the RAM, on which the [fib.pasm] program from [assembler/examples] is to be executed.
+
+{v
+# Initial RAM configuration for fib.pasm
+
+0    :    5        # How many numbers?
+1    :    42       # Starting address.
+v}
+
+
+To create a RAM image out of this, with the following parameters
+
+- Word size: 2 bytes
+- RAM size: 32 words (64 bytes)
+- Endianness: Little
+- Padding: -1
+
+invoke the [ram-init] executable like so
+
+{v
+λ:⟩ ram-init fib.ram -wsz=2 -rsz=32 -e=little -p=-1 -o fib.bram
+
+λ:⟩ xxd fib.bram
+00000000: 0500 2a00 ffff ffff ffff ffff ffff ffff  ..*.............
+00000010: ffff ffff ffff ffff ffff ffff ffff ffff  ................
+00000020: ffff ffff ffff ffff ffff ffff ffff ffff  ................
+00000030: ffff ffff ffff ffff ffff ffff ffff ffff  ................
+v}
+
+
+{2 Source code and documentation}
+
+The source code for the [ram-init] tool can be found on our {{:https://gitlab.com/rajdeep-314/ptools/} GitLab repository}, in the [ram-init] directory.
+
+The [odoc] generated documentation for the libraries involved can be read here:
+
+- {!Raminit.Ast}: AST for the textual RAM description.
+- {!Raminit.Parse}: Functions to parse the textual description to the AST. These are wrappers over those generated using [ocamllex] and [Menhir].
+- {!Raminit.Binary}: Types related to the binary encoding.
+- {!Raminit.Translate}: Translating the AST mappings to binary RAM images.
+

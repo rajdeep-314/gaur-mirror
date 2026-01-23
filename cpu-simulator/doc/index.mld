@@ -1,0 +1,54 @@
+{1 CPU simulator}
+
+
+The CPU simulator is meant to take [PISA] binaries (for now), and simulate how the binaries would execute on a [PISA] processor. The initial RAM state can be specified in a binary format. The [ram-init] tool can be used to generate these binaries.
+
+
+{2 Usage}
+
+The [cpusim] executable can be invoked with various flags. To see an exhaustive list of the same, invoke it with the [--help] flag. The output will be something like this:
+
+{v
+λ⟩ cpusim --help
+Usage: cpusim [options] <file_path>.
+  --trace 
+        Set trace to ON.
+  -t 
+        Short for --trace
+  --no-trace 
+        Set trace to OFF
+  -nt 
+        Short for --no-trace
+  --final-state 
+        Set displaying final state to ON
+  -fs 
+        Short for --final-state
+  --no-final-state 
+        Set displaying final state to OFF
+  -nfs 
+        Short for --no-final-state
+  --max-steps 
+        Set the max number of execution states
+  -ms 
+        Short for --max-steps
+  --ram 
+        Specify the initial RAM file's path
+  -r 
+        Short for --ram
+  --debug 
+        Run the simulator in debug mode
+  -g 
+        Short for --debug
+  --help 
+        Display this list of options
+  -help 
+        Display this list of options
+  -h 
+        Short for --help / -help
+v}
+
+
+{2 Source code}
+
+Source code for the CPU simulator can be found on our {{:https://gitlab.com/rajdeep-314/ptools/} GitLab repository}, in the [cpu-simulator] directory.
+

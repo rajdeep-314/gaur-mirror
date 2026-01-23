@@ -1,0 +1,4 @@
+(documentation
+  (package hdl-simulator)
+  (mld_files index))
+
