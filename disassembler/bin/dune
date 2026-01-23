@@ -1,4 +1,5 @@
 (executable
+ (package disassembler)
  (public_name dis)
  (name main)
  (libraries dis))
