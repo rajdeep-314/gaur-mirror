@@ -34,7 +34,7 @@ HDL simulator    :    Build successful.
 Building successful. Placing executables in ./executables
 Script executed.
 
-λ:~/ptools⟩⟩⟩ ls -l executables
+λ:~/ptools⟩ ls -l executables
 assembler
 cpusim
 dis
