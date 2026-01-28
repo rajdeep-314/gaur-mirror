@@ -1,5 +1,5 @@
 (rocq.theory
   (name vm_translator)
-  (theories Stdlib)
+  (theories Stdlib assembler)
 )
 
