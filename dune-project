@@ -65,4 +65,13 @@
    (ocaml (>= 4.14))
    dune num menhir))
 
+(package
+  (name vm-translator)
+  (allow_empty)
+  (synopsis "Translate VM programs to PASM programs")
+  (depends
+    (ocaml (>= 4.14))
+    (rocq-core (>= 9.0.0))
+    dune menhir))
+
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
