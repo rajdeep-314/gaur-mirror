@@ -1,19 +1,4 @@
----
-title: "PASM"
-colorlinks: true
-linkcolor: blue
-urlcolor: blue
-toccolor: blue
-citecolor: blue
-geometry: top=1cm, left=1cm, right=1cm, bottom=2cm
-mainfont: "Ubuntu Mono"
-header-includes:
-  - \renewcommand{\familydefault}{\ttdefault}
-  - \usepackage{xcolor}
-  - \definecolor{shadecolor}{RGB}{237, 233, 204}
-  - \usepackage{framed}
-  - \renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
----
+# PASM
 
 
 ## Description
