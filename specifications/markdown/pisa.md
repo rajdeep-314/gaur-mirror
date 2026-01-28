@@ -3,7 +3,7 @@
 
 ## Description
 
-A PISA processor has 16 general-purpose integer registers, named r0 through r15. It also includes an integer PC register -- the program counter, which is implicit in all instructions. The design is inspired by [RISC-V](https://riscv.org/).
+A `PISA` processor has 16 general-purpose integer registers, named r0 through r15. It also includes an integer PC register -- the program counter, which is implicit in all instructions. The design is inspired by [RISC-V](https://riscv.org/).
 
 Each register is 16 bits wide. The main memory is word-addressable, with each word being 2 bytes. Thus, the processor can address $2^{16}$ words, corresponding to 128 KB of main memory.
 
@@ -43,14 +43,14 @@ Each register is 16 bits wide. The main memory is word-addressable, with each wo
 
 ## Binary files
 
-The binary encoding of PISA programs is simple and direct. A PISA program is simply a sequence of PISA instructions. Mapping each PISA instruction to two bytes in big-endian and concatenating them together transforms a PISA program into its binary representation.
+The binary encoding of `PISA` programs is simple and direct. A `PISA` program is simply a sequence of `PISA` instructions. Mapping each `PISA` instruction to two bytes in big-endian and concatenating them together transforms a `PISA` program into its binary representation.
 
 
 ## Example
 
-Following is textual representation of a PISA program to compute the first `n` Fibonacci numbers and place them in the main memory, starting at address `k`, where initially, `RAM[0] = n` and `RAM[1] = k`.
+Following is textual representation of a `PISA` program to compute the first `n` Fibonacci numbers and place them in the main memory, starting at address `k`, where initially, `RAM[0] = n` and `RAM[1] = k`.
 
-```
+```pisa
 ld r1 r0 0
 ld r2 r0 1
 addi r3 r0 0
@@ -68,7 +68,7 @@ j 0
 
 Mapping each instruction to the ASCII representation of it's binary layout gives the following program:
 
-```
+```text
 0010000100000000
 0010001000000001
 0101001100000000
