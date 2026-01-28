@@ -1,0 +1,10 @@
+title: "Title"
+colorlinks: true
+linkcolor: blue
+urlcolor: blue
+toccolor: blue
+citecolor: blue
+geometry: top=1cm, left=0.9cm, right=0.9cm, bottom=2cm
+mainfont: "Ubuntu Mono"
+header-includes:
+  - \renewcommand{\familydefault}{\ttdefault}
