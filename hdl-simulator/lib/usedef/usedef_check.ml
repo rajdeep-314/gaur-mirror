@@ -1,6 +1,6 @@
 open Parse.Asttypes
 open Usedef_tree
-open Typing
+open Type_check
 
 module StrSet = Set.Make(String)
 

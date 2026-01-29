@@ -1,5 +1,5 @@
 open Dep_tree
-open Typing
+open Type_check
 
 let report_cycle c =
   Printf.eprintf
