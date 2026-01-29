@@ -1,5 +1,5 @@
 (executable
   (public_name hdl-simulator)
   (name main)
-  (libraries pHDL)
+  (libraries parse type_check usedef detect_cycle)
 )

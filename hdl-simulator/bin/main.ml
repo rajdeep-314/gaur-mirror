@@ -1,5 +1,8 @@
-open PHDL
-open PHDL.ParseHelper
+open Parse
+open Parse.ParseHelper
+open Type_check
+open Detect_cycle
+open Usedef
 
 (** [parse s] parses [s] into an AST *)
 let _parse s =
