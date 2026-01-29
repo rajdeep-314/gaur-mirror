@@ -1,5 +1,4 @@
 open Parsing.Asttypes
-open Utils
 
 (** A variable is either an [INPUT], [OUTPUT], [CURRENT_STATE], [NEXT_STATE] or
     an [INTERNAL] variable.*)
@@ -152,5 +151,5 @@ type ud_graph_info =
 
     states_info : var_state_info StrMap.t;
 
-    bound_internals : StrSet.t
+    bound_internals : Set.Make(String).t
   }

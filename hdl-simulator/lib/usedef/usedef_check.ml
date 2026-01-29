@@ -1,7 +1,10 @@
 open Parsing.Asttypes
-open Utils
 open Usedef_tree
 open Typing
+
+module StrSet = Set.Make(String)
+
+exception UnreachablePath of string
 
 type error =
   (* Use-Def Errors *)

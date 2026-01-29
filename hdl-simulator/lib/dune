@@ -1,8 +1,0 @@
-(library
- (name pHDL)
- (modules
-  utils
-  misc
-  usedef_check
-  usedef_tree)
- (libraries ocamlgraph parsing typing))
