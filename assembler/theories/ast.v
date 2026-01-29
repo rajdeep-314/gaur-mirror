@@ -22,52 +22,52 @@ Definition imm : Set := Z.
 
 (** Type for The assembly's AST.
    l is the type of labels. *)
-Inductive t (l:Set) : Set :=
+Inductive t {l:Set} : Set :=
     (** Load lower immediate *)
-    | lli   : reg.t -> imm -> t l
+    | lli   : reg.t -> imm -> t
     (** Load upper immediate *)
-    | lui   : reg.t -> imm -> t l
+    | lui   : reg.t -> imm -> t
     (** Load *)
-    | ld    : reg.t -> reg.t -> imm -> t l
+    | ld    : reg.t -> reg.t -> imm -> t
     (** Store *)
-    | st    : reg.t -> reg.t -> imm -> t l
+    | st    : reg.t -> reg.t -> imm -> t
     (** Add two registers *) 
-    | add   : reg.t -> reg.t -> reg.t -> t l
+    | add   : reg.t -> reg.t -> reg.t -> t
     (** Add immediate  to register *)
-    | addi  : reg.t -> reg.t -> imm -> t l
+    | addi  : reg.t -> reg.t -> imm -> t
     (** Subtract two registers *)
-    | sub   : reg.t -> reg.t -> reg.t -> t l
+    | sub   : reg.t -> reg.t -> reg.t -> t
     (** Bitwise And two registers *)
-    | and   : reg.t -> reg.t -> reg.t -> t l
+    | and   : reg.t -> reg.t -> reg.t -> t
     (** Bitwise not two registers *)
-    | not   : reg.t -> reg.t -> t l
+    | not   : reg.t -> reg.t -> t
     (** Branch equal*)
-    | beq   : reg.t -> reg.t -> l -> t l
+    | beq   : reg.t -> reg.t -> l -> t
     (** Branch less than *)
-    | blt   : reg.t -> reg.t -> l -> t l
+    | blt   : reg.t -> reg.t -> l -> t
     (** Jump and link register *)
-    | jalr  : reg.t -> reg.t -> imm -> t l
+    | jalr  : reg.t -> reg.t -> imm -> t
     (** Add PC to immediate. *)
-    | apc   : reg.t -> imm -> t l
+    | apc   : reg.t -> imm -> t
     (** Jump to label. *)
-    | j     : l -> t l
+    | j     : l -> t
     (** Defining Label. *)
-    | label : l -> t l
+    | label : l -> t
     (** Spin endlessly. *)
-    | spin  : t l.
+    | spin  : t.
 
 
 (** A program is a list of instructions. *)
-Definition prog (l:Set) : Set := list (t l).
+Definition prog {l:Set} : Set := list (@t l).
 
 
 (** Number of instructions in a program. *)
-Definition num_insts (l:Set) (p:prog l) : nat := List.length p.
+Definition num_insts {l:Set} (p:@prog l) : nat := List.length p.
 
 (** Number of label definitions in a program. *)
-Fixpoint num_labels (l:Set) (p:prog l) : nat :=
+Fixpoint num_labels {l:Set} (p:@prog l) : nat :=
     match p with
-    | []                => 0
-    | label _ _ :: p'   => S (num_labels l p')
-    | _ :: p'           => num_labels l p'
+    | []            => 0
+    | label _ :: p' => S (num_labels p')
+    | _ :: p'       => num_labels p'
     end.
