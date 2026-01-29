@@ -1,6 +1,7 @@
 open Parsing.Asttypes
 open Utils
 open Usedef_tree
+open Typing
 
 type error =
   (* Use-Def Errors *)

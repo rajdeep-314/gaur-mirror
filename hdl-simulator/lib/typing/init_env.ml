@@ -1,6 +1,5 @@
 open Parsing.Asttypes
 open Parsing.Parsetree
-open Utils
 
 let initial : Env.t =
   let nand_in_record =

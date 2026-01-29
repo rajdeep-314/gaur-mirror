@@ -1,12 +1,8 @@
 (library
  (name pHDL)
  (modules
-  typedtree
   utils
-  typecheck
-  env
-  init_env
   misc
   usedef_check
   usedef_tree)
- (libraries ocamlgraph parsing))
+ (libraries ocamlgraph parsing typing))

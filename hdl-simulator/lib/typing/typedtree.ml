@@ -1,6 +1,5 @@
 open Parsing.Asttypes
 open Parsing.Bits
-open Utils
 
 type expr =
   { expr_desc : expr_desc;
