@@ -1,6 +1,5 @@
 open Asttypes
 open Parsetree
-open Utils
 open Bits
 
 let rec pp_typ = function

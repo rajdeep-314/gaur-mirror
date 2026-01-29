@@ -1,5 +1,5 @@
-open Asttypes
-open Parsetree
+open Parsing.Asttypes
+open Parsing.Parsetree
 open Utils
 
 let initial : Env.t =

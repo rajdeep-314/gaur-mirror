@@ -1,6 +1,5 @@
 open Asttypes
 open Bits
-open Utils
 
 type expr =
   { expr_desc : expr_desc;

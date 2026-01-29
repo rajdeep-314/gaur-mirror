@@ -1,7 +1,6 @@
 %{
   open Asttypes
   open Parsetree
-  open Utils
   open Bits
   open Location
 %}

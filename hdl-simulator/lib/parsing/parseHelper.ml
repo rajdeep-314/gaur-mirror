@@ -1,6 +1,6 @@
 open Lexing
 open Printf
-open Utils
+open Location
 
 module E = MenhirLib.ErrorReports
 module L = MenhirLib.LexerUtil

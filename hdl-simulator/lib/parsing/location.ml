@@ -3,12 +3,14 @@ type loc =
     loc_end : Lexing.position;
   }
 
+exception DuplicateKey of string * loc
+
 type 'a wrapped =
   { txt : 'a;
     loc : loc
   }
 
-let mk_loc loc_start loc_end = 
+let mk_loc loc_start loc_end =
   { loc_start=loc_start;
     loc_end=loc_end
   }
@@ -29,7 +31,18 @@ let range loc =
     file line (char1 + 1) (char2 + 1)
 (* use [char1 + 1] and [char2 + 1] if *not* using Caml mode *)
 
-let errorf ~loc fmt = 
+let errorf ~loc fmt =
   output_string stderr (range loc);
   Printf.eprintf "Error: ";
   Printf.eprintf fmt
+
+let add_to_map map kvl =
+  let module StrMap = Map.Make(String) in
+  let key = fst (kvl.txt) in
+  let value = snd (kvl.txt) in
+  let loc = kvl.loc in
+
+  if StrMap.mem key map then
+    raise (DuplicateKey (key, loc))
+  else
+    StrMap.add key value map

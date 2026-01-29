@@ -1,4 +1,4 @@
-open Asttypes
+open Parsing.Asttypes
 open Utils
 
 (** A variable is either an [INPUT], [OUTPUT], [CURRENT_STATE], [NEXT_STATE] or

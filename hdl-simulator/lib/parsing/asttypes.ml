@@ -1,4 +1,4 @@
-open Utils
+module StrMap = Map.Make(String)
 
 type ident = string
 

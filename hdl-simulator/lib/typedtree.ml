@@ -1,16 +1,16 @@
-open Asttypes
-open Bits
+open Parsing.Asttypes
+open Parsing.Bits
 open Utils
 
 type expr =
   { expr_desc : expr_desc;
-    expr_loc : Location.loc;
+    expr_loc : Parsing.Location.loc;
     expr_typ : typ;
     expr_env : Env.t
   }
 
 and expr_desc =
-  | Texpr_constant of bit NonEmpty.t
+  | Texpr_constant of bit Parsing.NonEmpty.t
   (** 0b010, 0xfd, 0o71, 32 *)
   | Texpr_apply of ident * expr
   (** Not 0b1, Not foo.bar, Not in.a *)
@@ -34,7 +34,7 @@ let mk_expr ~loc desc typ env =
 
 type assign =
   { assign_desc : assign_desc;
-    assign_loc : Location.loc;
+    assign_loc : Parsing.Location.loc;
     assign_env : Env.t
   }
 
