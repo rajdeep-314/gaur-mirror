@@ -1,4 +1,4 @@
-open Parsing.Asttypes
+open Parse.Asttypes
 
 module StrMap = Map.Make(String)
 
@@ -16,6 +16,6 @@ let fold = StrMap.fold
 
 let print =
   let print_pair s t =
-    Printf.printf "%s: %s\n" s (Parsing.Pretty.pp_typ t)
+    Printf.printf "%s: %s\n" s (Parse.Pretty.pp_typ t)
   in
   StrMap.iter print_pair;

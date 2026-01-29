@@ -1,5 +1,5 @@
-open Parsing.Asttypes
-open Parsing
+open Parse.Asttypes
+open Parse
 
 type error =
   (* Type Errors *)

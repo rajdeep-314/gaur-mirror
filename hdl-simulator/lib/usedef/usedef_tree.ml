@@ -1,4 +1,4 @@
-open Parsing.Asttypes
+open Parse.Asttypes
 
 (** A variable is either an [INPUT], [OUTPUT], [CURRENT_STATE], [NEXT_STATE] or
     an [INTERNAL] variable.*)

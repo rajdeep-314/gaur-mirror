@@ -1,4 +1,4 @@
-open Parsing.Asttypes
+open Parse.Asttypes
 open Usedef_tree
 open Typing
 
