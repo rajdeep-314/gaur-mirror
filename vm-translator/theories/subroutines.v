@@ -17,15 +17,19 @@ Module A := assembler.ast.
 Module V := vm_translator.ast.
 
 
-(* Load 16-bit immediate n into rd. *)
+(* Load 16-bit immediate n into rd using two instructions. *)
 Definition li {L:Set} (rd:R.t) (n:Z) : @A.prog L :=
+    let lo := Z.land n 255 in
+    let hi := Z.land (Z.shiftr n 8) 255 in
+    [ A.lli rd lo ;
+      A.lui rd hi ].
+
+(* Load 16-bit immediate n into rd using one instruction when possible, else two. *)
+Definition li_opt {L:Set} (rd:R.t) (n:Z) : @A.prog L :=
     if andb (Z.leb (-8) n) (Z.leb n 6) then
         [ A.addi rd zero n ]
     else
-        let lo := Z.land n 255 in
-        let hi := Z.land (Z.shiftr n 8) 255 in
-        [ A.lli rd lo ;
-          A.lui rd hi ].
+        li rd n.
 
 (* Move value from register rs to rd. *)
 Definition mv {L:Set} (rd rs:R.t) : @A.prog L :=
@@ -46,8 +50,8 @@ Definition pop {L:Set} (r:R.t) : @A.prog L :=
 Definition load_base_addr {L:Set} (rd:R.t) (s:V.segment) : @A.prog L :=
     match s with
     | V.constant  => []
-    | V.temp      => li rd 0
-    | V.static    => li rd 16
+    | V.temp      => li_opt rd 0
+    | V.static    => li_opt rd 16
     | V.local     => mv rd lp
     | V.argument  => mv rd ap
     end.
@@ -125,7 +129,7 @@ Definition comp {L:Set} (op:comp_op) : @A.prog L :=
     | lt    => pop w1 ++ pop w2
     | gt    => pop w2 ++ pop w1
     end ++
-    li w3 32768 ++ [
+    li_opt w3 32768 ++ [
     A.not w4 w3 ;
     A.sub w1 w1 w2 ;
     A.and w1 w1 w3 ;

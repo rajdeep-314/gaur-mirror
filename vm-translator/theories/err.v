@@ -8,5 +8,5 @@
 Variant t:Set :=
     | PopToConst
     | UnboundLabel
-    | NotImplemented.
+    | UnboundFunction.
 

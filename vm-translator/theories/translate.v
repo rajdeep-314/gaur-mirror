@@ -33,12 +33,95 @@ Arguments:
     ls          :   List of labels declared inside the function body
     btl         :   Branch taken label for line number n
     bntl        :   Branch not taken label for line number n
+    feqb        :   Equality between function names
+    fs          :   List of function names and nVars
+    fl          :   PASM label corresponding to VM function name
     ln          :   Line number
+*)
+(*
+NOTE:
+
+The function frame looks like this:
+
+                +---------------------------+
+      ARG ->    |                           |
+                |    Function arguments     |
+                |                           |
+                +---------------------------+
+                |      Return address       |
+                +---------------------------+
+                |       Callee's LCL        |
+                +---------------------------+
+                |       Callee's ARG        |
+                +---------------------------+
+      LCL ->    |                           |
+                |      Local variables      |
+                |                           |
+                +---------------------------+
+                |    working stack value    |
+                +---------------------------+
+                |    working stack value    |
+                +---------------------------+
+                |    working stack value    |
+                +---------------------------+
+      sp ->
+
+
+Translation for `call f nargs`:
+
+    # Saving callee's LCL and ARG
+    st lp sp 1
+    st ap sp 2
+
+    # Setting up caller's LCL and ARG
+    addi lp sp 3
+    li w1 n_args
+    sub ap sp w1
+
+    # Saving return address and updating stack pointer
+    addi w2 zero 0
+    apc w2 6
+    st w2 sp 0
+    li w1 (3 + n_vars)
+    add sp sp w1
+
+    # Jumping to caller
+    j target_f_label
+
+
+Translation for `ret`:
+
+    # Put return value in w1
+    pop w1
+
+    # Make sp point to return address entry in frame
+    addi sp lp -3
+
+    # Store current ARG to w2
+    ld w2 sp 2
+
+    # Make ap and lp point to caller's ARG and LCL
+    ld lp sp 1
+    addi ap w2 0
+
+    # Store return address in w3
+    ld w3 sp 0
+
+    # Point sp to top of frame
+    addi sp w2 0
+
+    # Push return value to stack
+    push w1
+
+    # Jump to caller
+    jalr zero w3 0
 *)
 Definition translate_inst {L F L':Set}
     (f_name:F) (lbl_f:F -> L -> L')
     (leqb:L -> L -> bool) (ls:list L)
     (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
+    (feqb:F -> F -> bool) (fs:list (F * nat))
+    (fl:F -> L')
     (ln:nat)
     (i:@V.inst L F) : prog_res L' :=
     match i with
@@ -48,10 +131,10 @@ Definition translate_inst {L F L':Set}
         Ok (
         (* Loading the value to push into w1. *)
         match seg with
-        | V.constant  => S.li w1 indexz
+        | V.constant  => S.li_opt w1 indexz
         | s =>
             S.load_base_addr w1 s ++
-            S.li w2 indexz ++
+            S.li_opt w2 indexz ++
             [ A.add w1 w1 w2 ;
               A.ld w1 w1 0%Z ]
         end
@@ -64,7 +147,7 @@ Definition translate_inst {L F L':Set}
         | s =>
             Ok (
             S.load_base_addr w1 s ++
-            S.li w2 indexz ++
+            S.li_opt w2 indexz ++
             [ A.add w1 w1 w2 ] ++
             S.pop w2 ++
             [ A.st w2 w1 0%Z ])
@@ -105,7 +188,36 @@ Definition translate_inst {L F L':Set}
     | V.and => Ok ( S.bin S.and )
     | V.or  => Ok ( S.bin S.or )
     | V.not => Ok ( S.unary S.not )
-    | _ => Error E.NotImplemented
+    (* Functional instructions. *)
+    | V.call f n_args =>
+        match List.find (fun '(fn, _) => feqb fn f) fs with
+        | Some (_, n_vars) =>
+            Ok (
+            [ A.st lp sp 1%Z ;
+              A.st ap sp 2%Z ;
+              A.addi lp sp 3%Z ] ++
+              S.li_opt w1 (Z.of_nat n_args) ++
+            [ A.sub ap sp w1 ;
+              A.addi w2 zero 0%Z ;
+              A.apc w2 6%Z ;
+              A.st w2 sp 0%Z ] ++
+              S.li w1 (Z.of_nat (3 + n_vars)) ++
+            [ A.add sp sp w1 ;
+              A.j (fl f) ])
+        | None =>
+            Error E.UnboundFunction
+        end
+    | V.ret =>
+        Ok (
+          S.pop w1 ++
+        [ A.addi sp lp (-3)%Z ;
+          A.ld w2 sp 2%Z ;
+          A.ld lp sp 1%Z ;
+          A.addi ap w2 0%Z ;
+          A.ld w3 sp 0%Z ;
+          A.addi sp w2 0%Z ] ++
+          S.push w1 ++
+        [ A.jalr zero w3 0%Z ])
     end.
 
 
