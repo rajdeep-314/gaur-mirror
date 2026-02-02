@@ -1,0 +1,63 @@
+{1 Disassembler}
+
+
+The disassembler is, in some sense, an inverse of the assembler. It takes [PISA] binaries as input and generates the corresponding [PASM] assembly files. However, the assembly files generated lack labels and pseudo-instructions (for now).
+
+{2 Usage}
+
+The [dis] executable can be invoked with various flags. To see an exhaustive list of the same, invoke it with the [--help] flag. The output will be something like this:
+
+{v
+λ⟩ dis --help
+Usage: dis [options] <input_file_path>.
+  --out 
+        Path for the generated PASM output
+  -o 
+        Short for --out
+  --help 
+        Display this list of options
+  -help 
+        Display this list of options
+  -h 
+        Short for --help / -help
+v}
+
+
+{2 Example}
+
+Assume that [fib.pmac] is the binary file corresponding to the [fib.pasm] program from [assembler/examples], generated using [assembler] with the [-fmt=bin] flag.
+
+It can be disassembled as follows:
+
+{v
+λ⟩ dis fib.pmac -o fib-disassembled.pasm
+Wrote: fib-disassembled.pasm
+
+λ⟩ cat fib-disassembled.pasm 
+ld r1 r0 0
+ld r2 r0 1
+addi r3 r0 0
+addi r5 r0 0
+addi r6 r0 1
+beq r3 r1 7
+add r4 r2 r3
+st r5 r4 0
+add r6 r6 r5
+sub r5 r6 r5
+addi r3 r3 1
+j -6
+j 0
+v}
+
+
+{2 Source code and documentation}
+
+The source code for the assembler can be found on our {{:https://gitlab.com/rajdeep-314/ptools/} GitLab repository}, in the [disassembler] directory.
+
+The [odoc] generated documentation for the libraries involved can be read here:
+
+- {!Dis.Errors}: The errors that can be thrown by the disassembler.
+- {!Dis.Decode}: Functions to decode [PISA] instructions and programs.
+
+{b {i NOTE:}} The disassembler makes use of types and printers defined in the assembler.
+

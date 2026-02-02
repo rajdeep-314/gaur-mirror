@@ -6,7 +6,7 @@
 
 (library
  (name assembler)
- (public_name ptools.assembler)
+ (public_name assembler)
  (libraries ptools.utils))
 
 (ocamllex 

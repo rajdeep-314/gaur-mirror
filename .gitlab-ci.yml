@@ -1,0 +1,35 @@
+default:
+  image: registry.gitlab.com/rajdeep-314/ptools:latest
+
+stages:
+  - build
+  - test
+  - deploy
+
+build-project:
+  stage: build
+  script:
+    - dune build
+  artifacts:
+    paths:
+      - _build
+
+cram-tests:
+  stage: test
+  dependencies:
+    - build-project
+  script:
+    - dune runtest
+
+host-documentation:
+  stage: deploy
+  dependencies:
+    - build-project
+  script:
+    - dune build @doc
+    - mkdir public
+    - cp -r _build/default/_doc/_html/* public/
+    - rm -f public/index.html
+    - ln -s ptools/index.html public/index.html
+  pages: true
+

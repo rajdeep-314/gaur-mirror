@@ -20,9 +20,7 @@
 
 (package
  (name ptools)
- (synopsis "A toolchain made for teaching purposes.")
- (description
-  "This project contains the toolchain meant to be used for teaching third semester CSE students at IIT Palakkad. The toolchain currently includes a CPU simulator, an HDL simulator, an assembler and a RAM initialization tool (for the CPU simulator)." )
+ (synopsis "A toolchain made for teaching purposes")
  (depends
    (ocaml (>= 4.14))
    (rocq-core (>= 9.0.0))
@@ -30,5 +28,41 @@
  (tags
   ("toolchain" "rocq" "coq" "formal verification" "assembler"
    "simulator" "cpu simulator" "hdl" "hdl simulator")))
+
+(package
+  (name assembler)
+  (synopsis "Assembler for PASM")
+  (depends
+   (ocaml (>= 4.14))
+   (rocq-core (>= 9.0.0))
+   dune menhir))
+
+(package
+  (name disassembler)
+  (synopsis "Disassembler for PISA binaries")
+ (depends
+   (ocaml (>= 4.14))
+   dune menhir))
+
+(package
+  (name cpu-simulator)
+  (synopsis "CPU simulator for a PISA processor")
+  (depends
+   (ocaml (>= 4.14))
+   dune menhir))
+
+(package
+  (name hdl-simulator)
+  (synopsis "HDL simulator for PHDL")
+  (depends
+   (ocaml (>= 4.14))
+   dune menhir ocamlgraph))
+
+(package
+  (name ram-init)
+  (synopsis "RAM image initializer for the PISA CPU simulator")
+  (depends
+   (ocaml (>= 4.14))
+   dune num menhir))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html

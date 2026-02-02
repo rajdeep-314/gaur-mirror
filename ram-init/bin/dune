@@ -1,4 +1,5 @@
 (executable
+ (package ram-init)
  (public_name ram-init)
  (name main)
  (libraries raminit))

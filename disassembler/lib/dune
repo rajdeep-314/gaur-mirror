@@ -1,8 +1,5 @@
 (library
  (name dis)
- (public_name ptools.disassembler)
+ (public_name disassembler)
  (libraries assembler))
-
-(documentation
-  (mld_files index))
 
