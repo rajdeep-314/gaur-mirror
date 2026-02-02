@@ -34,7 +34,7 @@ Arguments:
     btl         :   Branch taken label for line number n
     bntl        :   Branch not taken label for line number n
     feqb        :   Equality between function names
-    fs          :   List of function names and nVars
+    fs          :   List of function names
     fl          :   PASM label corresponding to VM function name
     ln          :   Line number
 *)
@@ -80,10 +80,9 @@ Translation for `call f nargs`:
 
     # Saving return address and updating stack pointer
     addi w2 zero 0
-    apc w2 6
+    apc w2 4
     st w2 sp 0
-    li w1 (3 + n_vars)
-    add sp sp w1
+    addi sp sp 3
 
     # Jumping to caller
     j target_f_label
@@ -120,7 +119,7 @@ Definition translate_inst {L F L':Set}
     (f_name:F) (lbl_f:F -> L -> L')
     (leqb:L -> L -> bool) (ls:list L)
     (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
-    (feqb:F -> F -> bool) (fs:list (F * nat))
+    (feqb:F -> F -> bool) (fs:list F)
     (fl:F -> L')
     (ln:nat)
     (i:@V.inst L F) : prog_res L' :=
@@ -190,8 +189,8 @@ Definition translate_inst {L F L':Set}
     | V.not => Ok ( S.unary S.not )
     (* Functional instructions. *)
     | V.call f n_args =>
-        match List.find (fun '(fn, _) => feqb fn f) fs with
-        | Some (_, n_vars) =>
+        match List.find (feqb f) fs with
+        | Some _ =>
             Ok (
             [ A.st lp sp 1%Z ;
               A.st ap sp 2%Z ;
@@ -200,10 +199,9 @@ Definition translate_inst {L F L':Set}
             [ A.sub ap sp w1 ;
               A.addi w2 zero 0%Z ;
               A.apc w2 6%Z ;
-              A.st w2 sp 0%Z ] ++
-              S.li w1 (Z.of_nat (3 + n_vars)) ++
-            [ A.add sp sp w1 ;
-              A.j (fl f) ])
+              A.st w2 sp 0%Z ;
+              A.addi sp sp 3%Z ;
+              A.j (fl f) ] )
         | None =>
             Error E.UnboundFunction
         end
