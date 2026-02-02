@@ -26,7 +26,7 @@ Definition li {L:Set} (rd:R.t) (n:Z) : @A.prog L :=
 
 (* Load 16-bit immediate n into rd using one instruction when possible, else two. *)
 Definition li_opt {L:Set} (rd:R.t) (n:Z) : @A.prog L :=
-    if andb (Z.leb (-8) n) (Z.leb n 6) then
+    if andb (Z.leb (-8) n) (Z.leb n 7) then
         [ A.addi rd zero n ]
     else
         li rd n.
