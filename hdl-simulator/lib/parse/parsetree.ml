@@ -1,5 +1,5 @@
 open Asttypes
-open Bits
+open Hdlutils
 
 type expr =
   { expr_desc : expr_desc;
@@ -7,7 +7,7 @@ type expr =
   }
 
 and expr_desc =
-  | Pexpr_constant of bit NonEmpty.t
+  | Pexpr_constant of Bit.t NonEmpty.t
   (** 0b010, 0xfd, 0o71, 32 *)
   | Pexpr_apply of ident * expr
   (** Not 0b1, Not foo.bar, Not in.a *)

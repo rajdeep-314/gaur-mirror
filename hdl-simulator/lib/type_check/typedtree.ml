@@ -1,5 +1,5 @@
 open Parse.Asttypes
-open Parse.Bits
+open Hdlutils
 
 type expr =
   { expr_desc : expr_desc;
@@ -9,7 +9,7 @@ type expr =
   }
 
 and expr_desc =
-  | Texpr_constant of bit Parse.NonEmpty.t
+  | Texpr_constant of Bit.t NonEmpty.t
   (** 0b010, 0xfd, 0o71, 32 *)
   | Texpr_apply of ident * expr
   (** Not 0b1, Not foo.bar, Not in.a *)

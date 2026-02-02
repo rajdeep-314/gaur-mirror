@@ -1,6 +1,6 @@
 open Asttypes
 open Parsetree
-open Bits
+open Hdlutils
 
 let rec pp_typ = function
   | TBits n ->
@@ -18,7 +18,7 @@ let rec pp_typ = function
 
 let rec pp_expr = function
   | Pexpr_constant b ->
-    Printf.sprintf "%d" (bits_to_int b)
+    Printf.sprintf "%d" (Bitvec.to_int b)
 
   | Pexpr_apply (chip, expr) ->
     Printf.sprintf "%s %s" chip (pp_expr expr.expr_desc)

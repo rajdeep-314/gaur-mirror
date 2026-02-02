@@ -1,7 +1,7 @@
 %{
   open Asttypes
   open Parsetree
-  open Bits
+  open Hdlutils
   open Location
 %}
 
@@ -116,7 +116,7 @@ expression:
         {
             (* TODO: What do i need this for ? *)
             let loc = mk_loc ($startpos) ($endpos) in
-            mk_expr ~loc:loc (Pexpr_constant (int_to_bits i))
+            mk_expr ~loc:loc (Pexpr_constant (Bitvec.of_int i))
         }
 
     | LPAREN expr=expression RPAREN

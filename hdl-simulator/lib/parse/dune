@@ -2,8 +2,6 @@
  (name parse)
  (modules
   location
-  bits
-  nonEmpty
   asttypes
   lexer
   parseHelper
@@ -12,7 +10,7 @@
   parsetree
   pretty
   unitActionsParser)
- (libraries menhirLib))
+ (libraries menhirLib hdlutils))
 
 ;; -----------------------------------------------------------------------------
 

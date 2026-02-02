@@ -1,5 +1,6 @@
 open Parse.Asttypes
 open Parse
+open Hdlutils
 
 type error =
   (* Type Errors *)
