@@ -47,7 +47,7 @@ type ('l,'f) func = {
 type ('l,'f) prog = ('l,'f) func list
 
 (* Errors that the VM translator can produce.
-   'l is the type of PASM label names. *)
+   'l is the type of VM label names. *)
 type 'l err =
     | PopToConst
     | UnboundLabel
