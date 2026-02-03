@@ -5,8 +5,10 @@
 *)
 
 
-Variant t:Set :=
+(* Errors where the VM labels are from L. *)
+Variant t (L:Set) : Set :=
     | PopToConst
     | UnboundLabel
-    | UnboundFunction.
+    | UnboundFunction
+    | DuplicateLabel (l:L).
 

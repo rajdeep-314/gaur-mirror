@@ -20,7 +20,7 @@ Module E := vm_translator.err.
 Module U := vm_translator.utils.
 
 
-Definition prog_res (L:Set) : Set := @result (@A.prog L) E.t.
+Definition prog_res (L L':Set) : Set := @result (@A.prog L') (E.t L).
 
 
 (*
@@ -121,7 +121,7 @@ Definition translate_inst {L F L':Set}
     (f_name:F) (lbl_f:F -> L -> L') (leqb:L -> L -> bool) (ls:list L)
     (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L') (feqb:F -> F -> bool)
     (fs:list F) (fl:F -> L') (ln:nat)
-    (i:@V.inst L F) : prog_res L' :=
+    (i:@V.inst L F) : prog_res L L' :=
     match i with
     (* Stack-operation instructions. *)
     | V.push seg index =>
@@ -141,7 +141,7 @@ Definition translate_inst {L F L':Set}
     | V.pop seg index =>
         let indexz := Z.of_nat index in
         match seg with
-        | V.constant => Error E.PopToConst
+        | V.constant => Error (E.PopToConst L)
         | s =>
             Ok (
             S.load_base_addr w1 s ++
@@ -156,7 +156,7 @@ Definition translate_inst {L F L':Set}
     | V.goto l =>
         match List.find (leqb l) ls with
         | Some _    => Ok [ A.j (lbl_f f_name l) ]
-        | None      => Error E.UnboundLabel
+        | None      => Error (E.UnboundLabel L)
         end
     | V.ifgoto l =>
         match List.find (leqb l) ls with
@@ -168,7 +168,7 @@ Definition translate_inst {L F L':Set}
             ( S.pop w1 ++
             [ A.not w1 w1 ] ++
               S.beq w1 zero target_label tl ntl)
-        | None      => Error E.UnboundLabel
+        | None      => Error (E.UnboundLabel L)
         end
     (* Arithmetic instructions. *)
     | V.add => Ok ( S.bin S.add )
@@ -202,7 +202,7 @@ Definition translate_inst {L F L':Set}
               A.addi sp sp 3%Z ;
               A.j (fl f) ] )
         | None =>
-            Error E.UnboundFunction
+            Error (E.UnboundFunction L)
         end
     | V.ret =>
         Ok (
@@ -218,16 +218,29 @@ Definition translate_inst {L F L':Set}
     end.
 
 
+(*
+The preamble of a function with the name f_name consists of the label for that
+function, followed by instructions to push 0 n_vars times into the working
+stack.
+*)
 Definition preamble {L F L':Set} (f_name:F) (n_vars:nat)
     (fl:F -> L') : @A.prog L' :=
     A.label (fl f_name) ::
-    List.concat (U.list_repeat (S.push zero) n_vars).
+    List.concat (List.repeat (S.push zero) n_vars).
+
+Definition get_labels {L F:Set} (is:@V.insts L F) : list L :=
+    let update_f (acc_ls:list L) (i:@V.inst L F) : list L :=
+        match i with
+        | V.label l => l :: acc_ls
+        | _         => acc_ls
+        end in
+    List.fold_left update_f is [].
 
 Fixpoint translate_func_body {L F L':Set}
     (f_name:F) (lbl_f:F -> L -> L') (leqb:L -> L -> bool) (ls:list L)
     (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L') (feqb:F -> F -> bool)
     (fs:list F) (fl:F -> L') (ln:nat)
-    (pacc:@A.prog L') (is:@V.insts L F): prog_res L' :=
+    (pacc:@A.prog L') (is:@V.insts L F): prog_res L L' :=
     match is with
     | []        => Ok pacc
     | i :: is'  =>
@@ -240,17 +253,27 @@ Fixpoint translate_func_body {L F L':Set}
         end
     end.
 
-Definition translate_function {L F L':Set} (f:@V.function L F)
+Definition translate_function {L F L':Set}
+    '(V.Function f_name n_vars body : @V.function L F)
     (lbl_f:F -> L -> L') (leqb:L -> L -> bool)
     (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
-    (feqb:F -> F -> bool) (fs:list F) (ls:list L)
-    (fl:F -> L') : prog_res L' :=
-    match f with
-    | V.Function f_name n_vars body =>
-        match translate_func_body f_name lbl_f leqb ls btl bntl feqb fs fl 0 [] body with
+    (feqb:F -> F -> bool) (fs:list F) (fl:F -> L')
+    : prog_res L L' :=
+    (* ls is list of labels in the function. *)
+    let ls : list L := get_labels body in
+    match U.list_dup leqb ls with
+    (* If no duplicate labels are present. *)
+    | None =>
+        match
+        translate_func_body f_name lbl_f leqb ls btl bntl
+        feqb fs fl 0 [] body with
+        (* If all instructions translate without errors. *)
         | Ok p      =>
             Ok (@preamble L F L' f_name n_vars fl ++ p)
+        (* If translating an instruction gives an error. *)
         | Error e   => Error e
         end
+    (* If there exists a duplicate label. *)
+    | Some l => Error (E.DuplicateLabel L l)
     end.
 
