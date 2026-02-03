@@ -228,6 +228,7 @@ Definition preamble {L F L':Set} (f_name:F) (n_vars:nat)
     A.label (fl f_name) ::
     List.concat (List.repeat (S.push zero) n_vars).
 
+(* Get list of labels from a function body. *)
 Definition get_labels {L F:Set} (is:@V.insts L F) : list L :=
     let update_f (acc_ls:list L) (i:@V.inst L F) : list L :=
         match i with
@@ -236,6 +237,7 @@ Definition get_labels {L F:Set} (is:@V.insts L F) : list L :=
         end in
     List.fold_left update_f is [].
 
+(* Translate a function body. *)
 Fixpoint translate_func_body {L F L':Set}
     (f_name:F) (lbl_f:F -> L -> L') (leqb:L -> L -> bool) (ls:list L)
     (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L') (feqb:F -> F -> bool)
@@ -253,6 +255,7 @@ Fixpoint translate_func_body {L F L':Set}
         end
     end.
 
+(* Translate a VM function. *)
 Definition translate_function {L F L':Set}
     '(V.Function f_name n_vars body : @V.function L F)
     (lbl_f:F -> L -> L') (leqb:L -> L -> bool)
