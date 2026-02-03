@@ -9,7 +9,7 @@ From Stdlib Require Import List ZArith.
 Import ListNotations.
 
 From assembler Require ast result.
-From vm_translator Require ast subroutines alias err.
+From vm_translator Require utils ast subroutines alias err.
 Import result alias.
 
 (* Module aliases. *)
@@ -17,27 +17,12 @@ Module A := assembler.ast.
 Module V := vm_translator.ast.
 Module S := vm_translator.subroutines.
 Module E := vm_translator.err.
+Module U := vm_translator.utils.
 
 
 Definition prog_res (L:Set) : Set := @result (@A.prog L) E.t.
 
-(*
-Arguments:
-    L           :   VM program's label name type
-    F           :   VM program's function name type
-    L'          :   PASM program's label name type
-    f_name      :   Function whose body the instruction is part of
-    lbl_f       :   Combine VM function name and label name to obtain PASM
-                    label name
-    leqb        :   Boolean equality function for VM program labels
-    ls          :   List of labels declared inside the function body
-    btl         :   Branch taken label for line number n
-    bntl        :   Branch not taken label for line number n
-    feqb        :   Equality between function names
-    fs          :   List of function names
-    fl          :   PASM label corresponding to VM function name
-    ln          :   Line number
-*)
+
 (*
 NOTE:
 
@@ -115,13 +100,27 @@ Translation for `ret`:
     # Jump to caller
     jalr zero w3 0
 *)
+(*
+Arguments:
+    L           :   VM program's label name type
+    F           :   VM program's function name type
+    L'          :   PASM program's label name type
+    f_name      :   Function whose body the instruction is part of
+    lbl_f       :   Combine VM function name and label name to obtain PASM
+                    label name
+    leqb        :   Boolean equality function for VM program labels
+    ls          :   List of labels declared inside the function body
+    btl         :   Branch taken label for line number n
+    bntl        :   Branch not taken label for line number n
+    feqb        :   Equality between function names
+    fs          :   List of function names
+    fl          :   PASM label corresponding to VM function name
+    ln          :   Line number
+*)
 Definition translate_inst {L F L':Set}
-    (f_name:F) (lbl_f:F -> L -> L')
-    (leqb:L -> L -> bool) (ls:list L)
-    (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
-    (feqb:F -> F -> bool) (fs:list F)
-    (fl:F -> L')
-    (ln:nat)
+    (f_name:F) (lbl_f:F -> L -> L') (leqb:L -> L -> bool) (ls:list L)
+    (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L') (feqb:F -> F -> bool)
+    (fs:list F) (fl:F -> L') (ln:nat)
     (i:@V.inst L F) : prog_res L' :=
     match i with
     (* Stack-operation instructions. *)
@@ -218,4 +217,40 @@ Definition translate_inst {L F L':Set}
         [ A.jalr zero w3 0%Z ])
     end.
 
+
+Definition preamble {L F L':Set} (f_name:F) (n_vars:nat)
+    (fl:F -> L') : @A.prog L' :=
+    A.label (fl f_name) ::
+    List.concat (U.list_repeat (S.push zero) n_vars).
+
+Fixpoint translate_func_body {L F L':Set}
+    (f_name:F) (lbl_f:F -> L -> L') (leqb:L -> L -> bool) (ls:list L)
+    (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L') (feqb:F -> F -> bool)
+    (fs:list F) (fl:F -> L') (ln:nat)
+    (pacc:@A.prog L') (is:@V.insts L F): prog_res L' :=
+    match is with
+    | []        => Ok pacc
+    | i :: is'  =>
+        match translate_inst f_name lbl_f leqb ls btl bntl feqb fs fl ln i with
+        | Ok p  =>
+            let pacc' := pacc ++ p in
+            translate_func_body f_name lbl_f leqb ls btl bntl feqb fs fl
+            (ln + 1) pacc' is'
+        | Error e => Error e
+        end
+    end.
+
+Definition translate_function {L F L':Set} (f:@V.function L F)
+    (lbl_f:F -> L -> L') (leqb:L -> L -> bool)
+    (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
+    (feqb:F -> F -> bool) (fs:list F) (ls:list L)
+    (fl:F -> L') : prog_res L' :=
+    match f with
+    | V.Function f_name n_vars body =>
+        match translate_func_body f_name lbl_f leqb ls btl bntl feqb fs fl 0 [] body with
+        | Ok p      =>
+            Ok (@preamble L F L' f_name n_vars fl ++ p)
+        | Error e   => Error e
+        end
+    end.
 
