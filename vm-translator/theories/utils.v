@@ -23,7 +23,20 @@ Definition nat_list (n:nat) : list nat := List.rev (nat_list_rev n).
 Definition list_init {A:Set} (n:nat) (f:nat -> A) : list A :=
     List.map f (nat_list n).
 
-(* List of size n, each element being x. *)
-Definition list_repeat {A:Set} (x:A) (n:nat) : list A :=
-    list_init n (fun _ => x).
+
+(* Helper function for list_dup. *)
+Fixpoint list_dup_h {A:Set} (eqb:A -> A -> bool) (uniques xs:list A)
+    : option A :=
+    match xs with
+    | []        => None
+    | x :: xs'  =>
+        match List.find (eqb x) uniques with
+        | Some x'   => Some x'
+        | None      => list_dup_h eqb (x :: uniques) xs'
+        end
+    end.
+
+(* true if xs has no duplicates, false otherwise. *)
+Definition list_dup {A:Set} (eqb:A -> A -> bool) (xs:list A) : option A :=
+    list_dup_h eqb [] xs.
 
