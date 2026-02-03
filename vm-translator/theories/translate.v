@@ -257,10 +257,10 @@ Fixpoint translate_func_body {L F L':Set}
 
 (* Translate a VM function. *)
 Definition translate_function {L F L':Set}
-    '(V.Function f_name n_vars body : @V.function L F)
     (lbl_f:F -> L -> L') (leqb:L -> L -> bool)
     (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
     (feqb:F -> F -> bool) (fs:list F) (fl:F -> L')
+    '(V.Function f_name n_vars body : @V.function L F)
     : prog_res L L' :=
     (* ls is list of labels in the function. *)
     let ls : list L := get_labels body in
@@ -278,5 +278,98 @@ Definition translate_function {L F L':Set}
         end
     (* If there exists a duplicate label. *)
     | Some l => Error (E.DuplicateLabel L l)
+    end.
+
+
+(* Translate a list of functions. *)
+Fixpoint translate_functions {L F L':Set}
+    (lbl_f:F -> L -> L') (leqb:L -> L -> bool)
+    (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
+    (feqb:F -> F -> bool) (fs:list F) (fl:F -> L')
+    (pacc:@A.prog L') (p:@V.prog L F) : prog_res L L' :=
+    match p with
+    | []        => Ok pacc
+    | f :: p'   =>
+        match translate_function lbl_f leqb btl bntl feqb fs fl f with
+        | Ok prog   =>
+            let pacc' := pacc ++ prog in
+            translate_functions lbl_f leqb btl bntl feqb fs fl pacc' p'
+        | Error e   => Error e
+        end
+    end.
+
+
+Definition find_main {L F:Set} (mainb:F -> bool) (p:@V.prog L F)
+    : result F (E.t L) :=
+    (* Update function used in List.fold_left. *)
+    let update_f (fns:list F) := fun '(V.Function fn _ _) =>
+        match mainb fn with
+        | true  => fn :: fns
+        | false => fns
+        end in
+    let ms : list F := List.fold_left update_f p [] in
+    match ms with
+    | []            => Error (E.NoMainFunction L)
+    | mf :: []      => Ok mf
+    | _ :: _ :: _   => Error (E.MultipleMainFunctions L)
+    end.
+
+
+(*
+Initialization assembly code.
+
+This PASM snippet sets up frame for the main function, and makes sp point to
+this frame's working stack (address 259).
+
+The frame of the main function has an empty ARG segment, the previous LCL
+and ARG pointers point to 0, and the return address points to a `spin`
+instruction.
+
+The initialization code in (roughly) PASM syntax is:
+    # Setting up ap and lp.
+    li w1 256
+    mv sp w1
+    mv ap w1
+    addi lp w1 3
+
+    # Putting 0 in previous ARG and LCL entries of the frame.
+    st zero sp 1
+    st zero sp 2
+
+    # Setting up the return address entry in main's frame.
+    apc w1 4
+    st w1 sp 0
+    addi sp sp 3                # Making sp point to 259.
+    j main_function_label       # Jumping to the main function's code.
+    spin                        # Spin forever. Returns from main come here.
+*)
+Definition init {L:Set} (mainfl:L) : @A.prog L :=
+    S.li w1 256%Z ++
+    S.mv sp w1 ++
+    S.mv ap w1 ++
+  [ A.addi lp w1 3%Z ;
+    A.st zero sp 1%Z ;
+    A.st zero sp 2%Z ;
+    A.apc w1 4%Z ;
+    A.st w1 sp 0%Z ;
+    A.addi sp sp 3%Z ;
+    A.j mainfl ;
+    A.spin ].
+
+
+(* Translating a VM program. *)
+Definition translate_prog {L F L':Set}
+    (lbl_f:F -> L -> L') (leqb:L -> L -> bool)
+    (btl:F -> L -> nat -> L') (bntl:F -> L -> nat -> L')
+    (feqb:F -> F -> bool) (fs:list F) (fl:F -> L') (mainb:F -> bool)
+    (p:@V.prog L F) : prog_res L L' :=
+    match find_main mainb p with
+    | Ok mainfn     =>
+        let mainfl : L' := fl mainfn in
+        match translate_functions lbl_f leqb btl bntl feqb fs fl [] p with
+        | Ok p      => Ok (init mainfl ++ p)
+        | Error e   => Error e
+        end
+    | Error e       => Error e
     end.
 

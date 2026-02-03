@@ -10,5 +10,7 @@ Variant t (L:Set) : Set :=
     | PopToConst
     | UnboundLabel
     | UnboundFunction
-    | DuplicateLabel (l:L).
+    | DuplicateLabel (l:L)
+    | NoMainFunction
+    | MultipleMainFunctions.
 
