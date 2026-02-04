@@ -1,5 +1,11 @@
-open Dep_tree
 open Type_check
+
+module DepGraphV = String
+
+module DepGraph = Graph.Persistent.Digraph.Concrete(DepGraphV)
+
+module DepGraphJohnson = Graph.Cycles.Johnson(DepGraph)
+
 
 module Dependencies = struct
   let of_assign t_assign =
