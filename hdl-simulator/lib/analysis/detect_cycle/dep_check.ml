@@ -39,18 +39,19 @@ module MkGraph = struct
       t_program
 end
 
-let find_cycles g =
-  DepGraphJohnson.fold_cycles
-    (fun c cs -> c :: cs)
-    g
-    []
 
-let dep_check_program t_program =
-  let open Errors in
-  let g = MkGraph.of_program t_program in
-  let cycles = find_cycles g in
-  match cycles with
-  | [] -> ()
-  | _ ->
-    Printf.eprintf "%s" (Printers.err (Cycles cycles));
-    exit 1
+module Check = struct
+  let find_cycles g =
+    DepGraphJohnson.fold_cycles
+      (fun c cs -> c :: cs)
+      g
+      []
+
+  let program t_program =
+    let open Errors in
+    let g = MkGraph.of_program t_program in
+    let cycles = find_cycles g in
+    match cycles with
+    | [] -> None
+    | _ -> Some (Cycles cycles)
+end
