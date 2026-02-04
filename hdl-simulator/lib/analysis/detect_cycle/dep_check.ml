@@ -1,28 +1,31 @@
 open Dep_tree
 open Type_check
 
-let chip_from_assign cl (t_assign: Typedtree.assign)  =
-  let expr = t_assign.assign_desc.expr.expr_desc in
-  match expr with
-  | Texpr_constant _
-  | Texpr_splice (_, _, _)
-  | Texpr_concat (_, _)
-  | Texpr_record _
-  | Texpr_access _
-  | Texpr_member (_, _) -> cl
-  | Texpr_apply (chip, _) -> chip :: cl
+module Dependencies = struct
+  let of_assign t_assign =
+    let open Typedtree in
+    let expr = t_assign.assign_desc.expr.expr_desc in
+    match expr with
+    | Texpr_constant _
+    | Texpr_splice (_, _, _)
+    | Texpr_concat (_, _)
+    | Texpr_record _
+    | Texpr_access _
+    | Texpr_member (_, _) -> []
+    | Texpr_apply (chip, _) -> [chip]
 
-
-let dependents_chip (t_chip: Typedtree.chip) =
-  List.fold_left
-    chip_from_assign
-    []
-    t_chip.parts
+  let of_chip t_chip =
+    let open Typedtree in
+    List.fold_left
+      (fun cs a -> cs @ of_assign a)
+      []
+      t_chip.parts
+end
 
 
 let md_graph_chip g (t_chip: Typedtree.chip) =
   let chip = t_chip.name in
-  let deps = dependents_chip t_chip in
+  let deps = Dependencies.of_chip t_chip in
   List.fold_left
     (fun g v -> DepGraph.add_edge g v chip)
     g
