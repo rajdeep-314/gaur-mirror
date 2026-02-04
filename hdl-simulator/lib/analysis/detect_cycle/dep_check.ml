@@ -23,21 +23,21 @@ module Dependencies = struct
 end
 
 
-let md_graph_chip g (t_chip: Typedtree.chip) =
-  let chip = t_chip.name in
-  let deps = Dependencies.of_chip t_chip in
-  List.fold_left
-    (fun g v -> DepGraph.add_edge g v chip)
-    g
-    deps
+module MkGraph = struct
+  let of_chip g t_chip =
+    let deps = Dependencies.of_chip t_chip in
+    let name = t_chip.name in
+    List.fold_left
+      (fun g v -> DepGraph.add_edge g v name)
+      g
+      deps
 
-
-let mk_graph_program (t_program: Typedtree.program) =
-  List.fold_left
-    md_graph_chip
-    DepGraph.empty
-    t_program
-
+  let of_program (t_program: Typedtree.program) =
+    List.fold_left
+      of_chip
+      DepGraph.empty
+      t_program
+end
 
 let find_cycles g =
   DepGraphJohnson.fold_cycles
@@ -45,9 +45,9 @@ let find_cycles g =
     g
     []
 
-let dep_check_program (t_program: Typedtree.program) =
+let dep_check_program t_program =
   let open Errors in
-  let g = mk_graph_program t_program in
+  let g = MkGraph.of_program t_program in
   let cycles = find_cycles g in
   match cycles with
   | [] -> ()
