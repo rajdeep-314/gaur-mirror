@@ -1,22 +1,6 @@
 open Dep_tree
 open Type_check
 
-let report_cycle c =
-  Printf.eprintf
-    (* "Error: Cyclic chip dependency between:\n%s\n" *)
-    "%s\n"
-    (List.fold_left
-       (fun s c -> Printf.sprintf "%s -- %s"s c)
-       (List.hd c)
-       (List.tl c)
-    )
-
-let report_cycles cs =
-  Printf.eprintf "Error: Cyclic chip dependency between:\n";
-  List.iter
-    report_cycle
-    cs
-
 let chip_from_assign cl (t_assign: Typedtree.assign)  =
   let expr = t_assign.assign_desc.expr.expr_desc in
   match expr with
@@ -59,10 +43,11 @@ let find_cycles g =
     []
 
 let dep_check_program (t_program: Typedtree.program) =
+  let open Errors in
   let g = mk_graph_program t_program in
   let cycles = find_cycles g in
   match cycles with
   | [] -> ()
   | _ ->
-    report_cycles cycles;
+    Printf.eprintf "%s" (Printers.err (Cycles cycles));
     exit 1
