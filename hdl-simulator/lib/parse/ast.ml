@@ -43,4 +43,10 @@ module Pretty = struct
     Fmt.pf ppf "%s: %a@"
       p.name
       Pretty.pp_dump_t p.typ
+
+  let pp_dump_states : states Fmt.t = fun ppf ss ->
+    Fmt.pf ppf "%a@"
+      (Fmt.list ~sep:Fmt.comma Pretty.pp_dump_f)
+      (StrMap.to_list ss)
+
 end
