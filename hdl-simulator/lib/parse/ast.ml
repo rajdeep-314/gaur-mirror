@@ -49,4 +49,34 @@ module Pretty = struct
       (Fmt.list ~sep:Fmt.comma Pretty.pp_dump_f)
       (StrMap.to_list ss)
 
+  let rec pp_dump_f : (string * string expr) Fmt.t =
+    fun ppf f ->
+    Fmt.pair ~sep:(Fmt.any ":@ ") Fmt.string pp_dump_expr
+      ppf
+      f
+
+  and pp_dump_expr : string expr Fmt.t = fun ppf e ->
+    match e with
+    | Const b           -> Fmt.int ppf (Bitvec.to_int b)
+
+    | Apply (id, e)     -> Fmt.pf ppf "%s %a" id pp_dump_expr e
+
+    | Splice (e, i, j)  -> Fmt.pf ppf "%a[%d:%d]"
+                             pp_dump_expr e
+                             i
+                             j
+
+    | Concat (e1, e2)   -> Fmt.pf ppf "%a@++@%a"
+                             pp_dump_expr e1
+                             pp_dump_expr e2
+
+    | Record r          -> Fmt.braces
+                             (Fmt.list ~sep:Fmt.comma pp_dump_f)
+                             ppf
+                             (StrMap.to_list r)
+
+    | Access id         -> Fmt.string ppf id
+
+    | Member (e, id)    -> Fmt.pf ppf "%a.%s" pp_dump_expr e id
+
 end
