@@ -1,8 +1,8 @@
-open Parse.Types
+open Parse
 
 module StrMap = Map.Make(String)
 
-type t = typ StrMap.t
+type t = Types.t StrMap.t
 
 let lookup = StrMap.find_opt
 

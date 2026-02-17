@@ -54,7 +54,7 @@ type chip =
   { name : ident;
     input : port;
     output : port;
-    states : (typ StrMap.t) option;
+    states : (t StrMap.t) option;
     parts : assign list;
   }
 

@@ -4,13 +4,13 @@ open Hdlutils
 
 type error =
   (* Type Errors *)
-  | Splice_non_bits of typ
+  | Splice_non_bits of t
   | Splice_index_out_of_range of int * int * int
-  | Concat_non_bits of typ * typ
+  | Concat_non_bits of t * t
   | Not_a_chip of ident (* This exception should not be raised under the current design. *)
-  | Chip_argument_type_mismatch of ident * (typ * typ) * typ
-  | Assignment_type_clash of typ * typ
-  | Member_access_non_record of typ
+  | Chip_argument_type_mismatch of ident * (t * t) * t
+  | Assignment_type_clash of t * t
+  | Member_access_non_record of t
   | Unbound_record_field of ident
 
   (* Lookup Errors *)
@@ -18,10 +18,10 @@ type error =
   | Unbound_chip of ident
 
 let report_error ~loc = function
-  | Splice_non_bits typ ->
+  | Splice_non_bits t ->
     Location.errorf ~loc:loc
       "Can not splice an expression of type %s.\n"
-      (Pretty.pp_typ typ)
+      (Pretty.pp_typ t)
 
   | Splice_index_out_of_range (start_index, end_index, width) ->
     Location.errorf ~loc:loc
@@ -38,10 +38,10 @@ let report_error ~loc = function
       "This expression has no field named %s.\n"
       field
 
-  | Member_access_non_record typ ->
+  | Member_access_non_record t ->
     Location.errorf ~loc:loc
       "Can not access members of expression of type %s.\n"
-      (Pretty.pp_typ typ)
+      (Pretty.pp_typ t)
 
   | Unbound_variable var ->
     Location.errorf ~loc:loc
@@ -92,7 +92,7 @@ let rec infer_or_raise env (p_expr:Parsetree.expr) =
       | Some (TBits _)
       | Some (TRecord _) -> raise (Error (loc, env, Not_a_chip chip))
       | Some (TChip (typ_in, typ_out)) ->
-        if typ_equal typ_in typ_arg
+        if eq typ_in typ_arg
         then Typedtree.mk_expr ~loc:loc (Texpr_apply (chip, typed_arg)) typ_out env
         else raise (Error (loc, env, Chip_argument_type_mismatch (chip, (typ_in, typ_out), typ_arg)))
     end
@@ -161,7 +161,7 @@ let tc_assignment env (p_assign:Parsetree.assign) =
     assign
   (* | None -> Typedtree.mk_assign ~loc:loc var desc (Env.extend desc.var typ_expr env) *)
   | Some typ_var ->
-    if typ_equal typ_var typ_expr
+    if eq typ_var typ_expr
     then Typedtree.mk_assign ~loc:loc assign_desc env
     else raise (Error (loc, env, Assignment_type_clash (typ_var, typ_expr)))
 

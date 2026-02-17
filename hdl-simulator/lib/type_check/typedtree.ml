@@ -4,7 +4,7 @@ open Hdlutils
 type expr =
   { expr_desc : expr_desc;
     expr_loc : Parse.Location.loc;
-    expr_typ : typ;
+    expr_typ : t;
     expr_env : Env.t
   }
 
@@ -60,7 +60,7 @@ type chip =
   { name : ident;
     input : port;
     output : port;
-    states : (typ StrMap.t) option;
+    states : (t StrMap.t) option;
     parts : assign list;
     env : Env.t
   }

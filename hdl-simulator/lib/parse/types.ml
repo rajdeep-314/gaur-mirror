@@ -2,22 +2,23 @@ module StrMap = Map.Make(String)
 
 type ident = string
 
-type typ =
-  | TBits of int
+type t =
+  | TBits     of int
   (** bits n *)
-  | TRecord of typ StrMap.t
+  | TRecord   of t StrMap.t
   (** {f1: T, f2: T, ...} *)
-  | TChip of typ * typ
+  | TChip     of t * t
   (** And, Or, Mux, Register *)
 
-let rec typ_equal typ1 typ2 =
-  match typ1, typ2 with
-  | TBits n, TBits m ->
-    n == m
-  | TRecord r1, TRecord r2 ->
-    StrMap.equal typ_equal r1 r2
-  | TChip (tin1, tout1), TChip (tin2, tout2) ->
-    (typ_equal tin1 tin2) && (typ_equal tout1 tout2)
+let rec eq t1 t2 =
+  match t1, t2 with
+  | TBits n, TBits m -> n == m
+
+  | TRecord r1, TRecord r2 -> StrMap.equal eq r1 r2
+
+  | TChip (tin1, tout1), TChip (tin2, tout2) -> (eq tin1  tin2 ) &&
+                                                (eq tout1 tout2)
+
   | _ -> false
 
 type state_desc =
@@ -28,5 +29,5 @@ type state_desc =
 
 type port =
   { port_name : ident;
-    port_type : typ
+    port_type : t
   }
