@@ -1,4 +1,4 @@
-open Parse.Asttypes
+open Parse.Types
 open Parse.Parsetree
 
 let initial : Env.t =

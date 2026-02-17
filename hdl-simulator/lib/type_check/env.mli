@@ -1,4 +1,4 @@
-open Parse.Asttypes
+open Parse.Types
 
 (** The typing environment, with keys as strings and values as HDL types. *)
 type t

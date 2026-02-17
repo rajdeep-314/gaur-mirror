@@ -1,4 +1,4 @@
-open Asttypes
+open Types
 open Parsetree
 open Hdlutils
 

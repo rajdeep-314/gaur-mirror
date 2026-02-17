@@ -1,4 +1,4 @@
-open Parse.Asttypes
+open Parse.Types
 
 module StrMap = Map.Make(String)
 

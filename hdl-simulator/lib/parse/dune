@@ -2,7 +2,7 @@
  (name parse)
  (modules
   location
-  asttypes
+  types
   lexer
   parseHelper
   parser

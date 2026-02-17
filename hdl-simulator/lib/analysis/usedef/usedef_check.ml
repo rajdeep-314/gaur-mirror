@@ -1,4 +1,4 @@
-open Parse.Asttypes
+open Parse.Types
 open Usedef_tree
 open Type_check
 
