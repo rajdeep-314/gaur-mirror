@@ -1,6 +1,7 @@
 (library
  (name parse)
  (modules
+  ast
   location
   types
   lexer
