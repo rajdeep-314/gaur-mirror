@@ -29,13 +29,14 @@ type port =
 
 module Pretty : sig
   val pp_dump_t : t Fmt.t
+  val pp_dump_f : (string * t) Fmt.t
 end = struct
   let arrow = Fmt.any " ->@ "
   let rec pp_dump_t ppf = function
     | TBits n           -> Fmt.pf ppf "bits %d" n
 
     | TRecord r         -> Fmt.braces
-                             (Fmt.list ~sep:Fmt.comma pp_f)
+                             (Fmt.list ~sep:Fmt.comma pp_dump_f)
                              ppf
                              (StrMap.to_list r)
 
@@ -43,5 +44,5 @@ end = struct
                              ppf
                              (tin, tout)
 
-  and pp_f ppf v = Fmt.pair ~sep:(Fmt.any ":@ ") (Fmt.string) (pp_dump_t) ppf v
+  and pp_dump_f ppf v = Fmt.pair ~sep:(Fmt.any ":@ ") (Fmt.string) (pp_dump_t) ppf v
 end
