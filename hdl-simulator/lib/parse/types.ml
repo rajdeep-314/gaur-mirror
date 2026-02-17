@@ -4,11 +4,8 @@ type ident = string
 
 type t =
   | TBits     of int
-  (** bits n *)
   | TRecord   of t StrMap.t
-  (** {f1: T, f2: T, ...} *)
   | TChip     of t * t
-  (** And, Or, Mux, Register *)
 
 let rec eq t1 t2 =
   match t1, t2 with
@@ -23,9 +20,7 @@ let rec eq t1 t2 =
 
 type state_desc =
   | Current
-  (* Current-state binding *)
   | Next
-  (* Next-State binding *)
 
 type port =
   { port_name : ident;
