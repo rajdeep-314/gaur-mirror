@@ -79,4 +79,9 @@ module Pretty = struct
 
     | Member (e, id)    -> Fmt.pf ppf "%a.%s" pp_dump_expr e id
 
+  let pp_dump_assign : (string, unit) assign Fmt.t =
+    fun ppf a ->
+    match a with
+    | Current (id, expr) -> Fmt.pf ppf "%s' <- %a@" id pp_dump_expr expr.payl
+    | Next    (id, expr) -> Fmt.pf ppf "%s := %a@" id pp_dump_expr expr.payl
 end
