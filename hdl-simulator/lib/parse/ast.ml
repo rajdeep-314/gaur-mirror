@@ -37,3 +37,10 @@ type ('i, 'f) chip =
   ; states  : states option
   ; parts   : ('i, 'f) assign_info list
   }
+
+module Pretty = struct
+  let pp_dump_port : string port Fmt.t = fun ppf p ->
+    Fmt.pf ppf "%s: %a@"
+      p.name
+      Pretty.pp_dump_t p.typ
+end
