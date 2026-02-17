@@ -10,7 +10,7 @@
   parsetree
   pretty
   unitActionsParser)
- (libraries menhirLib hdlutils))
+ (libraries menhirLib hdlutils fmt))
 
 ;; -----------------------------------------------------------------------------
 

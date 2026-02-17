@@ -31,3 +31,22 @@ type port =
   { port_name : ident;
     port_type : t
   }
+
+module Pretty : sig
+  val pp_dump_t : t Fmt.t
+end = struct
+  let arrow = Fmt.any " ->@ "
+  let rec pp_dump_t ppf = function
+    | TBits n           -> Fmt.pf ppf "bits %d" n
+
+    | TRecord r         -> Fmt.braces
+                             (Fmt.list ~sep:Fmt.comma pp_f)
+                             ppf
+                             (StrMap.to_list r)
+
+    | TChip (tin, tout) -> Fmt.hovbox (Fmt.pair ~sep:arrow pp_dump_t pp_dump_t)
+                             ppf
+                             (tin, tout)
+
+  and pp_f ppf v = Fmt.pair ~sep:(Fmt.any ":@ ") (Fmt.string) (pp_dump_t) ppf v
+end
