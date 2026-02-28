@@ -1,3 +1,6 @@
 (library
  (name vm)
  (public_name vm))
+
+(include_subdirs qualified)
+

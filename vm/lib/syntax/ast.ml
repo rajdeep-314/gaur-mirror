@@ -1,7 +1,7 @@
 (*
-   types.ml
+    ast.ml
 
-   Types for VM instructions, functions and programs.
+    AST of VM programs.
 *)
 
 
@@ -45,14 +45,4 @@ type ('l,'f) func = {
 
 (* Type for VM programs -- lists of VM functions. *)
 type ('l,'f) prog = ('l,'f) func list
-
-(* Errors that the VM translator can produce.
-   'l is the type of VM label names. *)
-type 'l err =
-    | PopToConst
-    | UnboundLabel
-    | UnboundFunction
-    | DuplicateLabel of 'l
-    | NoMainFunction
-    | MultipleMainFunctions
 
