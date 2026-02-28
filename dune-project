@@ -66,9 +66,9 @@
    dune num menhir))
 
 (package
-  (name vm-translator)
+  (name vm)
   (allow_empty)
-  (synopsis "Translate VM programs to PASM programs")
+  (synopsis "Stack-based virtual machine")
   (depends
     (ocaml (>= 4.14))
     (rocq-core (>= 9.0.0))
