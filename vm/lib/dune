@@ -1,6 +1,7 @@
 (library
  (name vm)
- (public_name vm))
+ (public_name vm)
+ (libraries ptools.utils))
 
 (include_subdirs qualified)
 
