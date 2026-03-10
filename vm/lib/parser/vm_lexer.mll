@@ -12,13 +12,10 @@
 let digit = ['0'-'9']+
 let ascii = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
 let lf_name = ['a'-'z' 'A'-'Z' '_' '.'] ascii
-let whitespace = [' ' '\t' '\r']+
-(* let comment = '#' [^'\n']* *)
-let newline = '\n'+
+let whitespace = [' ' '\t' '\r' '\n']+
 
 rule read_token = parse
     | whitespace        { read_token lexbuf }
-    | newline           { NEWLINE }
     | "(*"              { comment 1 lexbuf }
     | "constant"        { CONSTANT }
     | "temp"            { TEMP }
@@ -40,7 +37,6 @@ rule read_token = parse
     | "goto"            { GOTO }
     | "if-goto"         { IFGOTO }
     | "function"        { FUNCTION }
-    | ":"               { COLON }
     | "call"            { CALL }
     | "return"          { RETURN }
     | digit             { NUM (int_of_string (Lexing.lexeme lexbuf)) }

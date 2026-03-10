@@ -10,7 +10,7 @@
 
 %token CONSTANT TEMP STATIC LOCAL ARGUMENT 
 %token ADD SUB NEG EQ GT LT AND OR NOT
-%token POP PUSH LABEL GOTO IFGOTO FUNCTION COLON CALL RETURN EOF NEWLINE
+%token POP PUSH LABEL GOTO IFGOTO FUNCTION CALL RETURN EOF
 %token <string> ID 
 %token <int> NUM
 
@@ -49,21 +49,16 @@ inst:
     | CALL; f=ID; n=NUM            { Call (f,n) }
     | RETURN                       { Return }
 
-inst_line:
-    | i=inst NEWLINE { i }
-
 insts:
-    | l=inst_line is=insts { l :: is }
-    | l=inst_line { [l] }
+    | is=list(inst)     { is }
 
 func:
-    | FUNCTION; fn = ID; nVars = NUM; COLON; NEWLINE; is = insts
+    | FUNCTION; fn = ID; nVars = NUM; is = insts
         { {f_name = fn; n_vars = nVars; body = is} }
 
 funcs:
-    | f=func; NEWLINE; fs=funcs      { f::fs }
-    | f=func                       { [f] }
+    | fs=list(func)     { fs }
 
 prog:
-    | fs = funcs; EOF       { fs }
+    | fs=funcs; EOF     { fs }
 
