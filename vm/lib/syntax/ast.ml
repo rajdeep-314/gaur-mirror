@@ -7,7 +7,6 @@
 
 (* VM segments. *)
 type segment =
-    | Constant
     | Temp
     | Static
     | Local
@@ -19,6 +18,8 @@ type ('l, 'f) inst =
     (* stack operations *)
     | Push of segment * int
     | Pop  of segment * int
+    (* pushing constants. *)
+    | PushC of int
     (* arithmetic operations *)
     | Add | Sub | Neg
     (* comparison operations *)

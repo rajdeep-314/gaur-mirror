@@ -11,7 +11,6 @@ open Ast
 (* Convert a segment to its string representation. *)
 let str_of_seg (seg: segment) =
     match seg with
-    | Constant -> "constant"
     | Temp     -> "temp"
     | Static   -> "static"
     | Local    -> "local"
@@ -22,6 +21,7 @@ let str_of_inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : strin
     match inst with
     | Push (seg, i)    -> Printf.sprintf "push %s %d" (str_of_seg seg) i
     | Pop  (seg, i)    -> Printf.sprintf "pop %s %d"  (str_of_seg seg) i
+    | PushC n          -> "push constant " ^ string_of_int n
     | Add              -> "add"
     | Sub              -> "sub"
     | Neg              -> "neg" 

@@ -25,7 +25,6 @@
 %%
 
 segment:
-    | CONSTANT    { Constant }
     | TEMP        { Temp }
     | STATIC      { Static }
     | LOCAL       { Local }
@@ -34,6 +33,7 @@ segment:
 inst:
     | PUSH; s=segment; n=NUM       { Push (s, n) }
     | POP; s=segment; n=NUM        { Pop (s,n) }
+    | PUSH; CONSTANT; n=NUM        { PushC n }
     | ADD                          { Add }
     | SUB                          { Sub }
     | NEG                          { Neg }
