@@ -31,7 +31,7 @@ let str_of_inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : strin
     | And              -> "and"
     | Or               -> "or"
     | Not              -> "not"
-    | Label l         -> Printf.sprintf "label %s :" (sl l)
+    | Label l         -> Printf.sprintf "label %s" (sl l)
     | Goto l          -> Printf.sprintf "goto %s" (sl l)
     | IfGoto l        -> Printf.sprintf "if-goto %s" (sl l)
     | Call (f, n)     -> Printf.sprintf "call %s %d" (sf f) n
