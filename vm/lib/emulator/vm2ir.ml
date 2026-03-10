@@ -1,0 +1,76 @@
+(*
+    vm2ir.ml
+
+    Convert VM programs to IR programs.
+*)
+
+
+(* Module aliases. *)
+module A = Syntax.Ast           (* VM AST. *)
+module I = Ir                   (* IR AST. *)
+module MU = Utils.Misc          (* Miscellaneous utils. *)
+
+open Err.Helper
+
+(* (string, int) pairs to eliminate labels. *)
+module Table = Map.Make (String)
+type tbl = int Table.t
+
+
+(* Make a table of label names and line numbers from a list of instructions. *)
+let rec make_table ln_num is =
+    match is with
+    | []        -> Table.empty
+    | i :: is'  ->
+        let tbl = make_table (ln_num + 1) is' in
+        match i with
+        | A.Label l ->
+            begin match Table.find_opt l tbl with
+            | Some _ -> raise (dup_label l)
+            | None -> Table.add l ln_num tbl
+            end
+        | _ -> tbl
+
+
+(*
+Translate a VM instruction to a list of IR instructions.
+tbl :   table of label names and line numbers
+ln  :   current line number
+*)
+let translate_inst tbl ln = function
+    | A.Push (s, n) -> [I.Push (s, n)]
+    | A.Pop (s, n)  -> [I.Pop (s, n)]
+    | A.PushC n     -> [I.PushC n]
+    | A.Add -> [I.Add] | A.Sub -> [I.Sub] | A.Neg -> [I.Neg]
+    | A.Eq -> [I.Eq]   | A.Lt -> [I.Lt]   | A.Gt -> [I.Gt]
+    | A.And -> [I.And] | A.Or -> [I.Or]   | A.Not -> [I.Not]
+    | A.Label _ -> []
+    | A.Call (f, n) -> [I.Call (f, n)]
+    | A.Return -> [I.Return]
+    | A.Goto l ->
+        begin match Table.find_opt l tbl with
+        | Some ln' -> [I.Goto (ln' - ln)]
+        | None -> raise (unbound_label l) end
+    | A.IfGoto l ->
+        begin match Table.find_opt l tbl with
+        | Some ln' -> [I.IfGoto (ln' - ln)]
+        | None -> raise (unbound_label l) end
+
+(* Translate a list of VM instructions to a list of IR instructions. *)
+let rec translate_insts tbl ln is =
+    match is with
+    | []        -> []
+    | i :: is'  ->
+        translate_inst tbl ln i @ translate_insts tbl (ln + 1) is'
+
+(* Translate a VM function to an IR function. *)
+let translate_func f =
+    let tbl = make_table 0 f.A.body in
+    let body = Array.of_list (translate_insts tbl 0 f.A.body) in
+    I.({ f_name = f.f_name; n_vars = f.n_vars; body = body })
+
+(* Translate a VM program to an IR program. *)
+let translate_prog p =
+    let f_list = List.map translate_func p in
+    MU.hashtbl_of_list (List.map (fun x -> (x.I.f_name, x)) f_list)
+
