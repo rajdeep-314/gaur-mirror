@@ -10,7 +10,7 @@ module A = Syntax.Ast           (* VM AST. *)
 module I = Ir                   (* IR AST. *)
 module MU = Utils.Misc          (* Miscellaneous utils. *)
 
-open Err.Helper
+open Err.Helper.Semantic
 
 (* (string, int) pairs to eliminate labels. *)
 module Table = Map.Make (String)
