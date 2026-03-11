@@ -20,6 +20,7 @@ module Execution = struct
     type t =
         | EmptyCallStack
         | NotEnoughArgsOnWorkingStack   of int * int
+        | ExecutionTerminated           of int
         | UnImplemented
         (*| OutOfBoundSegRead     of Ir.segment * int * int*)
         (*| OutOfBoundSegWrite    of Ir.segment * int * int*)
@@ -28,6 +29,8 @@ module Execution = struct
         | EmptyCallStack -> "Empty call stack"
         | NotEnoughArgsOnWorkingStack (n, n') -> Printf.sprintf
             "Not enough arguments on the working stack. Needed at least %d, got only %d" n n'
+        | ExecutionTerminated ret_val -> Printf.sprintf
+            "Execution terminated with return value %d." ret_val
         | UnImplemented -> "Unimplemented feature."
         (*| OutOfBoundSegRead (seg, n, n') -> Printf.sprintf*)
         (*    "Attempted to read segment %s out of bounds."*)
@@ -56,6 +59,8 @@ module Helper = struct
         let empty_call_stack = ExecutionError (Execution.EmptyCallStack)
         let not_enough_args n n' =
             ExecutionError (Execution.NotEnoughArgsOnWorkingStack (n, n'))
+        let execution_terminated v =
+            ExecutionError (Execution.ExecutionTerminated v)
         let unimplemented = ExecutionError (Execution.UnImplemented)
         (*let oob_seg_read s n n' =*)
         (*        ExecutionError (Execution.OutOfBoundSegRead (s, n, n'))*)

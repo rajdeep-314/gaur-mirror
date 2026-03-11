@@ -61,11 +61,32 @@ let apply_on_top_frame lf af pf wf s = {
     | fr :: frs -> apply_on_frame lf af pf wf fr :: frs
 }
 
-
 (* Applies function f on the working stack of the top-most function and
-   returns the new state. *)
-(* NOTE:    Should this do PC <- PC + 1? *)
-let apply_on_wstack f s = apply_on_top_frame uf uf idf f s
+   returns the new state. Increments PC by 1. *)
+let apply_on_wstack f s = apply_on_top_frame uf uf (fun x -> x + 1) f s
+
+let pop_wstack = function
+    | []      -> raise (not_enough_args 1 0)
+    | x :: xs -> (x, xs)
+
+(* Top-most entry of the top-most frame's working stack, and the rest of the
+   working stack. *)
+let wstack_peek s =
+    match s.frames with
+    | []        -> raise empty_call_stack
+    | f :: _    -> pop_wstack f.wstack
+
+(* Pop the top-most frame in the call-stack.
+   If there is only one function in the call-stack, raises an exception to
+   denote that the execution has terminated with some return value. *)
+let pop_frame s ret_val = {
+    temp = s.temp; static = s.static;
+    frames =
+    match s.frames with
+    | []        -> raise empty_call_stack
+    | [fr]      -> raise (execution_terminated ret_val)
+    | _ :: frs  -> frs
+}
 
 
 (* (working) stack -> stack functions used in translations. *)
@@ -116,7 +137,17 @@ let execute_inst s = function
     | Add -> translate_add s | Sub -> translate_sub s
     | And -> translate_and s | Or  -> translate_or s
     | Neg -> translate_neg s | Not -> translate_not s
-    | Goto n -> apply_on_top_frame uf uf (fun p -> p + n) idf s
+    | Goto n ->
+        apply_on_top_frame uf uf (fun p -> p + n) idf s
+    | IfGoto n ->
+        let x, xs = wstack_peek s in
+        let pf =
+            if x = -1 then fun p -> p + n else fun p -> p + 1 in
+        let wf = fun _ -> xs in
+        apply_on_top_frame uf uf pf wf s
+    | Return ->
+        let ret_val, _ = wstack_peek s in
+        pop_frame s ret_val
     | _ -> raise unimplemented
 
 
