@@ -19,7 +19,7 @@ end
 module Execution = struct
     type t =
         | EmptyCallStack
-        | NotEnoughArgsOnWorkingStack   of int * int
+        | NotEnoughValsOnWorkingStack   of int * int
         | ExecutionTerminated           of int
         | UnImplemented
         (*| OutOfBoundSegRead     of Ir.segment * int * int*)
@@ -27,8 +27,8 @@ module Execution = struct
 
     let to_string = function
         | EmptyCallStack -> "Empty call stack"
-        | NotEnoughArgsOnWorkingStack (n, n') -> Printf.sprintf
-            "Not enough arguments on the working stack. Needed at least %d, got only %d" n n'
+        | NotEnoughValsOnWorkingStack (n, n') -> Printf.sprintf
+            "Not enough values on the working stack. Needed at least %d, got only %d" n n'
         | ExecutionTerminated ret_val -> Printf.sprintf
             "Execution terminated with return value %d." ret_val
         | UnImplemented -> "Unimplemented feature."
@@ -57,8 +57,8 @@ module Helper = struct
 
     module Execution = struct
         let empty_call_stack = ExecutionError (Execution.EmptyCallStack)
-        let not_enough_args n n' =
-            ExecutionError (Execution.NotEnoughArgsOnWorkingStack (n, n'))
+        let not_enough_vals n n' =
+            ExecutionError (Execution.NotEnoughValsOnWorkingStack (n, n'))
         let execution_terminated v =
             ExecutionError (Execution.ExecutionTerminated v)
         let unimplemented = ExecutionError (Execution.UnImplemented)

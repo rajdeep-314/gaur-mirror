@@ -10,6 +10,8 @@ open State
 open Err.Helper.Execution
 
 
+(* Some functions that will be used frequently in the emulation. *)
+
 (* Make a segment of size n, all values 0. *)
 let make_segment n = Array.make n 0
 
@@ -22,6 +24,7 @@ let make_segment n = Array.make n 0
 let idf = fun x -> x
 (* "Unit function" -- does nothing. *)
 let uf _ = ()
+
 
 let init f_name n_lcls n_args = {
     temp = make_segment 16 ;
@@ -65,47 +68,33 @@ let apply_on_top_frame lf af pf wf s = {
    returns the new state. Increments PC by 1. *)
 let apply_on_wstack f s = apply_on_top_frame uf uf (fun x -> x + 1) f s
 
-let pop_wstack = function
-    | []      -> raise (not_enough_args 1 0)
-    | x :: xs -> (x, xs)
-
-(* Top-most entry of the top-most frame's working stack, and the rest of the
-   working stack. *)
+(* Top-most entry of the top-most frame's working stack. *)
 let wstack_peek s =
     match s.frames with
     | []        -> raise empty_call_stack
-    | f :: _    -> pop_wstack f.wstack
-
-(* Pop the top-most frame in the call-stack.
-   If there is only one function in the call-stack, raises an exception to
-   denote that the execution has terminated with some return value. *)
-let pop_frame s ret_val = {
-    temp = s.temp; static = s.static;
-    frames =
-    match s.frames with
-    | []        -> raise empty_call_stack
-    | [fr]      -> raise (execution_terminated ret_val)
-    | _ :: frs  -> frs
-}
+    | f :: _    ->
+        match f.wstack with
+        | []      -> raise (not_enough_vals 1 0)
+        | x :: xs -> x
 
 
-(* (working) stack -> stack functions used in translations. *)
+(* (working) stack -> stack functions used in emulation. *)
 
 (* Pushing n on the stack. *)
-let translate_push_const n =
+let exec_push_const n =
     let push_c n s = n :: s in apply_on_wstack (push_c n)
 
 (* Apply unary function op to the top-most element. *)
 let un_op_f op = function
-    | []      -> raise (not_enough_args 1 0)
+    | []      -> raise (not_enough_vals 1 0)
     | x :: s' -> op x :: s'
 
 (* Apply binary function op to the two top-most elements. *)
 let bin_op_f op = function
-    | []      -> raise (not_enough_args 2 0)
+    | []      -> raise (not_enough_vals 2 0)
     | y :: s' ->
         match s' with
-        | []        -> raise (not_enough_args 2 1)
+        | []        -> raise (not_enough_vals 2 1)
         | x :: s''  -> op x y :: s''
 
 (* Binary functions. *)
@@ -122,32 +111,52 @@ let eq_f x y = comp_f ( = ) x y
 let lt_f x y = comp_f ( < ) x y
 let gt_f x y = comp_f ( > ) x y
 
+(* Pop the top-most entry of the working stack and return the rest of it. *)
+let pop_wstack = function
+    | []        -> raise (not_enough_vals 1 0)
+    | _ :: xs   -> xs
 
-(* state -> state functions used in translations. *)
 
-let translate_add = apply_on_wstack (bin_op_f and_f)
-let translate_sub = apply_on_wstack (bin_op_f sub_f)
-let translate_and = apply_on_wstack (bin_op_f and_f)
-let translate_or  = apply_on_wstack (bin_op_f or_f)
-let translate_neg = apply_on_wstack (un_op_f neg_f)
-let translate_not = apply_on_wstack (un_op_f not_f)
+(* state -> state functions used in emulation. *)
 
+let exec_add = apply_on_wstack (bin_op_f and_f)
+let exec_sub = apply_on_wstack (bin_op_f sub_f)
+let exec_and = apply_on_wstack (bin_op_f and_f)
+let exec_or  = apply_on_wstack (bin_op_f or_f)
+let exec_neg = apply_on_wstack (un_op_f neg_f)
+let exec_not = apply_on_wstack (un_op_f not_f)
+
+(* Execute `if-goto n` on VM state s. *)
+let exec_if_goto n s =
+    let x = wstack_peek s in
+    let pf =
+        if x = -1 then fun p -> p + n else fun p -> p + 1 in
+    apply_on_top_frame uf uf pf pop_wstack s
+
+(*
+Execute a function return. In case there is only one function frame on the
+call-stack, raises an exception to denote the termination of execution.
+*)
+let exec_return s = {
+    temp = s.temp; static = s.static;
+    frames =
+    match s.frames with
+    | []        -> raise empty_call_stack
+    | f :: fs   ->
+        let ret_val = wstack_peek s in
+        match fs with
+        | []        -> raise (execution_terminated ret_val)
+        | f' :: fs' -> apply_on_frame uf uf idf (fun s -> ret_val :: s) f' :: fs'
+}
+
+
+(* Execute an instruction on a state and give the resulting state. *)
 let execute_inst s = function
-    | PushC n -> translate_push_const n s
-    | Add -> translate_add s | Sub -> translate_sub s
-    | And -> translate_and s | Or  -> translate_or s
-    | Neg -> translate_neg s | Not -> translate_not s
-    | Goto n ->
-        apply_on_top_frame uf uf (fun p -> p + n) idf s
-    | IfGoto n ->
-        let x, xs = wstack_peek s in
-        let pf =
-            if x = -1 then fun p -> p + n else fun p -> p + 1 in
-        let wf = fun _ -> xs in
-        apply_on_top_frame uf uf pf wf s
-    | Return ->
-        let ret_val, _ = wstack_peek s in
-        pop_frame s ret_val
+    | PushC n   -> exec_push_const n s
+    | Add       -> exec_add s | Sub -> exec_sub s | And -> exec_and s 
+    | Or        -> exec_or s  | Neg -> exec_neg s | Not -> exec_not s
+    | Goto n    -> apply_on_top_frame uf uf (fun p -> p + n) idf s
+    | IfGoto n  -> exec_if_goto n s
+    | Return    -> exec_return s
     | _ -> raise unimplemented
-
 
