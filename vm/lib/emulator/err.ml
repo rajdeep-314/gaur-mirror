@@ -24,6 +24,7 @@ module Execution = struct
         | UnboundFunction               of string
         | OutOfBoundSegRead             of Ir.segment * int * int
         | OutOfBoundSegWrite            of Ir.segment * int * int
+        | OutOfBoundPC                  of string * int * int
         | UnImplemented
 
     let to_string = function
@@ -41,6 +42,9 @@ module Execution = struct
             "Attempted to write segment %s out of bounds."
             (Syntax.Printers.str_of_seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
+        | OutOfBoundPC (f, n_insts, n) -> Printf.sprintf
+            "Attempted to fetch instruction number %d in function %s, which \
+            only has %d instructions" n f n_insts
         | UnImplemented -> "Unimplemented feature."
 end
 
@@ -67,9 +71,11 @@ module Helper = struct
             ExecutionError (Execution.UnboundFunction f)
         let unimplemented = ExecutionError (Execution.UnImplemented)
         let oob_seg_read s n n' =
-                ExecutionError (Execution.OutOfBoundSegRead (s, n, n'))
+            ExecutionError (Execution.OutOfBoundSegRead (s, n, n'))
         let oob_seg_write s n n' =
-                ExecutionError (Execution.OutOfBoundSegWrite (s, n, n'))
+            ExecutionError (Execution.OutOfBoundSegWrite (s, n, n'))
+        let oob_pc f n_insts n =
+            ExecutionError (Execution.OutOfBoundPC (f, n_insts, n))
     end
 end
 
