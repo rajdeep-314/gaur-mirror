@@ -209,7 +209,7 @@ let exec_call p f n_args s =
     | Some (xs, ys) ->
         (* State after popping n_args many values from the top-most frame's
            working stack. *)
-        let s' = apply_on_wstack (fun _ -> ys) s in
+        let s' = apply_on_top_frame uf uf (fun pc -> pc + 1) (fun _ -> ys) s in
         (* Adding the new function's frame to call stack. *)
         match Hashtbl.find_opt p f with
         | Some fn   -> push_frame f fn.n_vars xs s'
