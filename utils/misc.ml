@@ -19,3 +19,8 @@ let rec list_split_opt l n =
     | x :: xs   ->
         let* ys, ys' = list_split_opt xs (n - 1) in Some (x :: ys, ys')
 
+(* Split the list head and the rest of the list. *)
+let list_head_split_opt = function
+    | []        -> None
+    | x :: xs   -> Some (x, xs)
+
