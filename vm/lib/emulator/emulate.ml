@@ -219,7 +219,7 @@ let exec_call p f n_args s =
         let s' = apply_on_top_frame uf uf (fun pc -> pc + 1) (fun _ -> ys) s in
         (* Adding the new function's frame to call stack. *)
         match Hashtbl.find_opt p f with
-        | Some fn   -> push_frame f fn.n_vars xs s'
+        | Some fn   -> push_frame f fn.n_vars (List.rev xs) s'
         | None      -> raise (unbound_func f)
 
 let exec_push s seg i =
