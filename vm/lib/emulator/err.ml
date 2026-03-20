@@ -22,9 +22,9 @@ module Execution = struct
         | NotEnoughValsOnWorkingStack   of int * int
         | ExecutionTerminated           of int
         | UnboundFunction               of string
+        | OutOfBoundSegRead             of Ir.segment * int * int
+        | OutOfBoundSegWrite            of Ir.segment * int * int
         | UnImplemented
-        (*| OutOfBoundSegRead     of Ir.segment * int * int*)
-        (*| OutOfBoundSegWrite    of Ir.segment * int * int*)
 
     let to_string = function
         | EmptyCallStack -> "Empty call stack"
@@ -33,15 +33,15 @@ module Execution = struct
         | ExecutionTerminated ret_val -> Printf.sprintf
             "Execution terminated with return value %d." ret_val
         | UnboundFunction f -> "Unbound function " ^ f
+        | OutOfBoundSegRead (seg, n, n') -> Printf.sprintf
+            "Attempted to read segment %s out of bounds."
+            (Syntax.Printers.str_of_seg seg) ^ Printf.sprintf
+            "\n\tSegment size is %d and attempted to read index %d" n n'
+        | OutOfBoundSegWrite (seg, n, n') -> Printf.sprintf
+            "Attempted to write segment %s out of bounds."
+            (Syntax.Printers.str_of_seg seg) ^ Printf.sprintf
+            "\n\tSegment size is %d and attempted to write index %d" n n'
         | UnImplemented -> "Unimplemented feature."
-        (*| OutOfBoundSegRead (seg, n, n') -> Printf.sprintf*)
-        (*    "Attempted to read segment %s out of bounds."*)
-        (*    (Syntax.Printers.str_of_seg seg) ^ Printf.sprintf*)
-        (*    "\n\tSegment size is %d and attempted to read index %d" n n'*)
-        (*| OutOfBoundSegWrite (seg, n, n') -> Printf.sprintf*)
-        (*    "Attempted to write segment %s out of bounds."*)
-        (*    (Syntax.Printers.str_of_seg seg) ^ Printf.sprintf*)
-        (*    "\n\tSegment size is %d and attempted to write index %d" n n'*)
 end
 
 
@@ -66,10 +66,10 @@ module Helper = struct
         let unbound_func f =
             ExecutionError (Execution.UnboundFunction f)
         let unimplemented = ExecutionError (Execution.UnImplemented)
-        (*let oob_seg_read s n n' =*)
-        (*        ExecutionError (Execution.OutOfBoundSegRead (s, n, n'))*)
-        (*let oob_seg_write s n n' =*)
-        (*        ExecutionError (Execution.OutOfBoundSegWrite (s, n, n'))*)
+        let oob_seg_read s n n' =
+                ExecutionError (Execution.OutOfBoundSegRead (s, n, n'))
+        let oob_seg_write s n n' =
+                ExecutionError (Execution.OutOfBoundSegWrite (s, n, n'))
     end
 end
 
