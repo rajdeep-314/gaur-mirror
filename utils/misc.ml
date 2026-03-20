@@ -24,3 +24,16 @@ let list_head_split_opt = function
     | []        -> None
     | x :: xs   -> Some (x, xs)
 
+
+(* Find a duplicate in a list, if one exists. *)
+let find_duplicate xs =
+    let seen = Hashtbl.create 16 in
+    let rec aux = function
+        | [] -> None
+        | x :: xs ->
+            if Hashtbl.mem seen x then Some x
+            else
+                let () = Hashtbl.add seen x () in
+                aux xs
+    in aux xs
+
