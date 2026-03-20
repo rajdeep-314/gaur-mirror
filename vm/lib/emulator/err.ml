@@ -21,6 +21,7 @@ module Execution = struct
         | EmptyCallStack
         | NotEnoughValsOnWorkingStack   of int * int
         | ExecutionTerminated           of int
+        | UnboundFunction               of string
         | UnImplemented
         (*| OutOfBoundSegRead     of Ir.segment * int * int*)
         (*| OutOfBoundSegWrite    of Ir.segment * int * int*)
@@ -31,6 +32,7 @@ module Execution = struct
             "Not enough values on the working stack. Needed at least %d, got only %d" n n'
         | ExecutionTerminated ret_val -> Printf.sprintf
             "Execution terminated with return value %d." ret_val
+        | UnboundFunction f -> "Unbound function " ^ f
         | UnImplemented -> "Unimplemented feature."
         (*| OutOfBoundSegRead (seg, n, n') -> Printf.sprintf*)
         (*    "Attempted to read segment %s out of bounds."*)
@@ -61,6 +63,8 @@ module Helper = struct
             ExecutionError (Execution.NotEnoughValsOnWorkingStack (n, n'))
         let execution_terminated v =
             ExecutionError (Execution.ExecutionTerminated v)
+        let unbound_func f =
+            ExecutionError (Execution.UnboundFunction f)
         let unimplemented = ExecutionError (Execution.UnImplemented)
         (*let oob_seg_read s n n' =*)
         (*        ExecutionError (Execution.OutOfBoundSegRead (s, n, n'))*)
