@@ -70,8 +70,15 @@ let translate_func f =
     let body = Array.of_list (translate_insts tbl 0 f.A.body) in
     I.({ f_name = f.f_name; n_vars = f.n_vars; body = body })
 
+(* Translate a bunch of VM programs to an IR program. *)
+let translate_progs ps =
+    let fs_list = List.map (List.map translate_func) ps in      (* List of functions of programs. *)
+    let f_list = List.concat fs_list in                         (* List of all functions. *)
+    let f_name_list = List.map (fun f -> f.I.f_name) f_list in  (* List of function names. *)
+    match MU.find_duplicate f_name_list with
+    | Some f    -> raise (dup_func f)
+    | None      -> MU.hashtbl_of_list (List.map (fun x -> (x.I.f_name, x)) f_list)
+
 (* Translate a VM program to an IR program. *)
-let translate_prog p =
-    let f_list = List.map translate_func p in
-    MU.hashtbl_of_list (List.map (fun x -> (x.I.f_name, x)) f_list)
+let translate_prog p = translate_progs [p]
 
