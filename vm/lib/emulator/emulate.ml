@@ -5,6 +5,8 @@
 *)
 
 
+module A = Syntax.Ast
+
 open Ir
 open State
 open Err.Helper.Execution
@@ -16,10 +18,18 @@ open Utils.Misc
 (* Make a segment of size n, all values 0. *)
 let make_segment n = Array.make n 0
 
-(*let read_segment seg n =*)
-(*    let size = Array.length seg in*)
-(*    if 0 <= n && n < size then seg.(n)*)
-(*    else raise (oob_seg_read seg size n) *)
+(* Read the n'th index from segment seg_name, with contents seg. *)
+let read_segment seg_name seg n =
+    let size = Array.length seg in
+    if 0 <= n && n < size then seg.(n)
+    else raise (oob_seg_read seg_name size n)
+
+(* Write value v in the n'th index of segment seg_name, with contents seg. *)
+let write_segment seg_name seg n v =
+    let size = Array.length seg in
+    if 0 <= n && n < size then seg.(n) <- v
+    else raise (oob_seg_write seg_name size n)
+
 
 (* Identity function. *)
 let idf = fun x -> x
@@ -38,6 +48,14 @@ let pc_of_top_frame s       = (top_frame s).pc
 let argument_of_top_frame s = (top_frame s).argument
 let local_of_top_frame s    = (top_frame s).local
 let wstack_of_top_frame s   = (top_frame s).wstack
+
+(* Get segment seg from VM state s. *)
+let segment seg s =
+    match seg with
+    | A.Temp     -> s.temp
+    | A.Static   -> s.static
+    | A.Local    -> local_of_top_frame s
+    | A.Argument -> argument_of_top_frame s
 
 
 let init f_name n_lcls n_args = {
@@ -197,10 +215,26 @@ let exec_call p f n_args s =
         | Some fn   -> push_frame f fn.n_vars xs s'
         | None      -> raise (unbound_func f)
 
+let exec_push s seg i =
+    let xs = segment seg s in
+    let v = read_segment seg xs i in
+    apply_on_wstack (push_const v) s
+
+let exec_pop s seg i =
+    let ws = wstack_of_top_frame s in
+    match list_head_split_opt ws with
+    | None          -> raise (not_enough_vals 1 0)
+    | Some (x, xs)  ->
+        let s' = apply_on_wstack (fun _ -> xs) s in
+        let xs = segment seg s' in
+        let () = write_segment seg xs i x in s'
+
 
 (* Execute instruction i on state s, p being the IR program. *)
 let execute_inst p s i =
     match i with
+    | Push (seg, i) -> exec_push s seg i
+    | Pop (seg, i) -> exec_pop s seg i
     | PushC n   -> apply_on_wstack (push_const n) s
     | Add       -> exec_add s | Sub -> exec_sub s | And -> exec_and s 
     | Or        -> exec_or s  | Neg -> exec_neg s | Not -> exec_not s
@@ -209,5 +243,4 @@ let execute_inst p s i =
     | IfGoto n  -> exec_if_goto n s
     | Return    -> exec_return s
     | Call (f, n_args) -> exec_call p f n_args s
-    | _ -> raise unimplemented
 
