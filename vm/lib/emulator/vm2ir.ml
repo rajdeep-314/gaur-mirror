@@ -21,15 +21,12 @@ type tbl = int Table.t
 let rec make_table ln_num is =
     match is with
     | []        -> Table.empty
-    | i :: is'  ->
-        let tbl = make_table (ln_num + 1) is' in
-        match i with
-        | A.Label l ->
-            begin match Table.find_opt l tbl with
-            | Some _ -> raise (dup_label l)
-            | None -> Table.add l ln_num tbl
-            end
-        | _ -> tbl
+    | A.Label l :: is' ->
+        let tbl = make_table ln_num is' in
+        begin match Table.find_opt l tbl with
+        | Some _ -> raise (dup_label l)
+        | None   -> Table.add l ln_num tbl end
+    | _ :: is'  -> make_table (ln_num + 1) is'
 
 
 (*
