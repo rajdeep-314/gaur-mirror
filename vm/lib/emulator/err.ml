@@ -9,10 +9,12 @@ module Semantic = struct
     type t =
         | DuplicateLabel    of string
         | UnboundLabel      of string
+        | DuplicateFunc     of string
 
     let to_string = function
         | DuplicateLabel l  -> "Duplicate label " ^ l
         | UnboundLabel l    -> "Unbound label " ^ l
+        | DuplicateFunc f   -> "Duplicate function " ^ f
 end
 
 
@@ -59,6 +61,7 @@ module Helper = struct
     module Semantic = struct
         let dup_label l = SemanticError (Semantic.DuplicateLabel l)
         let unbound_label l = SemanticError (Semantic.UnboundLabel l)
+        let dup_func f = SemanticError (Semantic.DuplicateFunc f)
     end
 
     module Execution = struct
