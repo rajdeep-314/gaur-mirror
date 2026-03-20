@@ -153,6 +153,9 @@ let exec_and = apply_on_wstack (bin_op_f and_f)
 let exec_or  = apply_on_wstack (bin_op_f or_f)
 let exec_neg = apply_on_wstack (un_op_f neg_f)
 let exec_not = apply_on_wstack (un_op_f not_f)
+let exec_eq  = apply_on_wstack (bin_op_f eq_f)
+let exec_lt  = apply_on_wstack (bin_op_f lt_f)
+let exec_gt  = apply_on_wstack (bin_op_f gt_f)
 
 (* Execute `if-goto n` on VM state s. *)
 let exec_if_goto n s =
@@ -201,6 +204,7 @@ let execute_inst p s i =
     | PushC n   -> apply_on_wstack (push_const n) s
     | Add       -> exec_add s | Sub -> exec_sub s | And -> exec_and s 
     | Or        -> exec_or s  | Neg -> exec_neg s | Not -> exec_not s
+    | Eq        -> exec_eq s  | Lt  -> exec_lt s  | Gt  -> exec_gt s
     | Goto n    -> apply_on_top_frame uf uf (fun p -> p + n) idf s
     | IfGoto n  -> exec_if_goto n s
     | Return    -> exec_return s
