@@ -56,7 +56,7 @@ let init f_name n_lcls n_args = {
 (* Pop the top-most n values from a working stack. Returns list of values
    popped and remaining stack content. *)
 let pop_n n s =
-    match list_head_opt s n with
+    match list_split_opt s n with
     | None   -> raise (not_enough_vals n (List.length s))
     | Some p -> p
 
@@ -182,7 +182,7 @@ let exec_return s = {
 let exec_call p f n_args s =
     (* Getting arguments from top-most frame. *)
     let ws = wstack_of_top_frame s in
-    let split_opt = list_head_opt ws n_args in
+    let split_opt = list_split_opt ws n_args in
     match split_opt with
     | None          -> raise (not_enough_vals n_args (List.length ws))
     | Some (xs, ys) ->
