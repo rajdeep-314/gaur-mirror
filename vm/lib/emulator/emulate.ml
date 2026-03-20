@@ -8,6 +8,7 @@
 open Ir
 open State
 open Err.Helper.Execution
+open Utils.Misc
 
 
 (* Some functions that will be used frequently in the emulation. *)
@@ -26,6 +27,19 @@ let idf = fun x -> x
 let uf _ = ()
 
 
+(* Functions to inspect VM state. *)
+let top_frame s =
+    match s.frames with
+    | []     -> raise empty_call_stack
+    | f :: _ -> f
+
+let fname_of_top_frame s    = (top_frame s).f_name
+let pc_of_top_frame s       = (top_frame s).pc
+let argument_of_top_frame s = (top_frame s).argument
+let local_of_top_frame s    = (top_frame s).local
+let wstack_of_top_frame s   = (top_frame s).wstack
+
+
 let init f_name n_lcls n_args = {
     temp = make_segment 16 ;
     static = make_segment 240 ;
@@ -39,6 +53,12 @@ let init f_name n_lcls n_args = {
     } ]
 }
 
+(* Pop the top-most n values from a working stack. Returns list of values
+   popped and remaining stack content. *)
+let pop_n n s =
+    match list_head_opt s n with
+    | None   -> raise (not_enough_vals n (List.length s))
+    | Some p -> p
 
 (*
 Apply the following functions on a frame:
@@ -70,19 +90,27 @@ let apply_on_wstack f s = apply_on_top_frame uf uf (fun x -> x + 1) f s
 
 (* Top-most entry of the top-most frame's working stack. *)
 let wstack_peek s =
-    match s.frames with
-    | []        -> raise empty_call_stack
-    | f :: _    ->
-        match f.wstack with
-        | []      -> raise (not_enough_vals 1 0)
-        | x :: xs -> x
+    match (top_frame s).wstack with
+    | []      -> raise (not_enough_vals 1 0)
+    | x :: xs -> x
+
+(* Update VM state s by adding a new frame to the call-stack, for
+   function name f with n_vars local variables and argument list xs. *)
+let push_frame f n_vars xs s = {
+    temp = s.temp; static = s.static;
+    frames = {
+        f_name = f;
+        local = make_segment n_vars;
+        argument = Array.of_list xs;
+        pc = 0; wstack = []
+    } :: s.frames
+}
 
 
 (* (working) stack -> stack functions used in emulation. *)
 
 (* Pushing n on the stack. *)
-let exec_push_const n =
-    let push_c n s = n :: s in apply_on_wstack (push_c n)
+let push_const n = fun s -> n :: s
 
 (* Apply unary function op to the top-most element. *)
 let un_op_f op = function
@@ -146,17 +174,36 @@ let exec_return s = {
         let ret_val = wstack_peek s in
         match fs with
         | []        -> raise (execution_terminated ret_val)
-        | f' :: fs' -> apply_on_frame uf uf idf (fun s -> ret_val :: s) f' :: fs'
+        | f' :: fs' ->
+            apply_on_frame uf uf idf (push_const ret_val) f' :: fs'
 }
 
+(* Execute `call f n_args` on VM state s with IR program p. *)
+let exec_call p f n_args s =
+    (* Getting arguments from top-most frame. *)
+    let ws = wstack_of_top_frame s in
+    let split_opt = list_head_opt ws n_args in
+    match split_opt with
+    | None          -> raise (not_enough_vals n_args (List.length ws))
+    | Some (xs, ys) ->
+        (* State after popping n_args many values from the top-most frame's
+           working stack. *)
+        let s' = apply_on_wstack (fun _ -> ys) s in
+        (* Adding the new function's frame to call stack. *)
+        match Hashtbl.find_opt p f with
+        | Some fn   -> push_frame f fn.n_vars xs s'
+        | None      -> raise (unbound_func f)
 
-(* Execute an instruction on a state and give the resulting state. *)
-let execute_inst s = function
-    | PushC n   -> exec_push_const n s
+
+(* Execute instruction i on state s, p being the IR program. *)
+let execute_inst p s i =
+    match i with
+    | PushC n   -> apply_on_wstack (push_const n) s
     | Add       -> exec_add s | Sub -> exec_sub s | And -> exec_and s 
     | Or        -> exec_or s  | Neg -> exec_neg s | Not -> exec_not s
     | Goto n    -> apply_on_top_frame uf uf (fun p -> p + n) idf s
     | IfGoto n  -> exec_if_goto n s
     | Return    -> exec_return s
+    | Call (f, n_args) -> exec_call p f n_args s
     | _ -> raise unimplemented
 
