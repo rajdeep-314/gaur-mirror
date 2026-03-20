@@ -61,7 +61,11 @@ let rec translate_insts tbl ln is =
     match is with
     | []        -> []
     | i :: is'  ->
-        translate_inst tbl ln i @ translate_insts tbl (ln + 1) is'
+        let ln_incr =
+            match i with
+            | A.Label _ -> 0
+            | _ -> 1 in
+        translate_inst tbl ln i @ translate_insts tbl (ln + ln_incr) is'
 
 (* Translate a VM function to an IR function. *)
 let translate_func f =
