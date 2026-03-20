@@ -30,6 +30,12 @@ let write_segment seg_name seg n v =
     if 0 <= n && n < size then seg.(n) <- v
     else raise (oob_seg_write seg_name size n)
 
+(* Get instruction number n from function f, whose body is body. *)
+let get_inst f body n =
+    let size = Array.length body in
+    if 0 <= n && n < size then body.(n)
+    else raise (oob_pc f size n)
+
 
 (* Identity function. *)
 let idf = fun x -> x
@@ -58,8 +64,9 @@ let segment seg s =
     | A.Argument -> argument_of_top_frame s
 
 
+(* Initial VM state. *)
 let init f_name n_lcls n_args = {
-    temp = make_segment 16 ;
+    temp   = make_segment 16 ;
     static = make_segment 240 ;
     frames = [
     {
@@ -243,4 +250,27 @@ let execute_inst p s i =
     | IfGoto n  -> exec_if_goto n s
     | Return    -> exec_return s
     | Call (f, n_args) -> exec_call p f n_args s
+
+(* Fetches the next instruction to execute from program p and VM state s. *)
+let fetch_inst p s =
+    let f = fname_of_top_frame s in
+    let pc = pc_of_top_frame s in
+    match Hashtbl.find_opt p f with
+    | Some fn   -> get_inst f fn.body pc
+    | None      -> raise (unbound_func f)
+
+(* Execution program p on VM state s till termination. *)
+let rec execute_on_state_till_termination s p =
+    try
+        let i = fetch_inst p s in
+        let s' = execute_inst p s i in
+        execute_on_state_till_termination s' p
+    with
+    | Err.ExecutionError (ExecutionTerminated rv) -> rv
+
+(* Execute program p till termination, starting with function main_f. *)
+let execute_till_termination main_f p =
+    match Hashtbl.find_opt p main_f with
+    | Some fn   -> execute_on_state_till_termination (init main_f fn.n_vars 0) p
+    | None      -> raise (unbound_func main_f)
 
