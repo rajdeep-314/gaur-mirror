@@ -172,7 +172,7 @@ let pop_wstack = function
 
 (* state -> state functions used in emulation. *)
 
-let exec_add = apply_on_wstack (bin_op_f and_f)
+let exec_add = apply_on_wstack (bin_op_f add_f)
 let exec_sub = apply_on_wstack (bin_op_f sub_f)
 let exec_and = apply_on_wstack (bin_op_f and_f)
 let exec_or  = apply_on_wstack (bin_op_f or_f)
