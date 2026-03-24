@@ -36,6 +36,9 @@ let get_inst f body n =
     if 0 <= n && n < size then body.(n)
     else raise (oob_pc f size n)
 
+(* Number of frames in VM state s. *)
+let n_frames s = List.length s.frames
+
 
 (* Identity function. *)
 let idf = fun x -> x
@@ -222,11 +225,13 @@ let exec_call p f n_args s =
         | Some fn   -> push_frame f fn.n_vars (List.rev xs) s'
         | None      -> raise (unbound_func f)
 
+(* Execute push seg i on VM state s. *)
 let exec_push s seg i =
     let xs = segment seg s in
     let v = read_segment seg xs i in
     apply_on_wstack (push_const v) s
 
+(* Execute pop seg i on VM state s. *)
 let exec_pop s seg i =
     let ws = wstack_of_top_frame s in
     match list_head_split_opt ws with
@@ -259,18 +264,46 @@ let fetch_inst p s =
     | Some fn   -> get_inst f fn.body pc
     | None      -> raise (unbound_func f)
 
-(* Execution program p on VM state s till termination. *)
-let rec execute_on_state_till_termination s p =
-    try
-        let i = fetch_inst p s in
-        let s' = execute_inst p s i in
-        execute_on_state_till_termination s' p
-    with
-    | Err.ExecutionError (ExecutionTerminated rv) -> rv
 
-(* Execute program p till termination, starting with function main_f. *)
-let execute_till_termination main_f p =
+
+(*
+Execution functions.
+The function names are prefixed by e_, to denote execution functions.
+*)
+
+
+(* e_till_condition p i_cond s_cond s executes VM program p on VM state s till
+   a state is reached where s_cond is true, and i_cond is true for the fetched
+   instruction in that state. *)
+let rec e_till_condition p i_cond s_cond s =
+    let ins = fetch_inst p s in
+    if i_cond ins && s_cond s then s
+    else e_till_condition p i_cond s_cond (execute_inst p s ins)
+
+
+(* Execute program p on state s till it returns from main.
+   Returns final return value. *)
+let e_till_termination p s =
+    let s' = e_till_condition p
+        (fun  i -> i = Return) (fun s -> n_frames s = 1) s in
+    wstack_peek s'
+
+(* Excute program p on state s till it returns from the current function.
+   Returns the state after this return. *)
+let e_till_return p s =
+    e_till_condition p
+        (fun _ -> true) (fun s' -> n_frames s' < n_frames s) s
+
+(* Excute program p on state s till it returns from the current function.
+   Returns the state just before this return. *)
+let e_till_before_return p s =
+    e_till_condition p
+        (fun i -> i = Return) (fun s' -> n_frames s' = n_frames s) s
+
+
+(* Executes program p till termination, with main_f being the main function. *)
+let e_prog_till_termination main_f p =
     match Hashtbl.find_opt p main_f with
-    | Some fn   -> execute_on_state_till_termination (init main_f fn.n_vars 0) p
+    | Some fn   -> e_till_termination p (init main_f fn.n_vars 0)
     | None      -> raise (unbound_func main_f)
 
