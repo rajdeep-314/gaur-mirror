@@ -9,14 +9,16 @@ module E  = Emulate
 module I  = State.Inspect
 module SP = State.PP
 module Er = Err.Helper.Execution
-(*module P  = Parser.Repl*)
+module P  = Parser.Repl
 
 open Syntax.Repl
 
 
 (*
 TODO:
-    Implement mapping IR instructions to AST instructions.
+    - Implement mapping IR instructions to AST instructions.
+    - Handle lexer and parser exceptions
+    - Have a consistent handling of returning from main (exception, or not?)
 *)
 
 
@@ -77,7 +79,7 @@ let e_till_return p s =
 (* Execute till (before the) the current function returns. *)
 let e_till_before_return p s =
     match I.call_of_top_frame s with
-    | Some c -> (I.string_of_call c ^ "ready to return",
+    | Some c -> (I.string_of_call c ^ " ready to return",
                  E.e_till_before_return p s)
     | None -> raise Er.empty_call_stack
 
@@ -108,11 +110,21 @@ let exits = function
     | Exit  -> true
     | _     -> false
 
-(*(* REPL loop on program p and state s. *)*)
-(*let rec loop p s =*)
-(*    let cmd = P.parse_cmd (read_line ()) in*)
-(*    let repl_f = repl_func_of_cmd cmd in*)
-(*    let (str, s') = repl_f p s in*)
-(*    print_endline str ;*)
-(*    if exits cmd then () else loop p s'*)
+
+(* REPL loop on program p and state s. *)
+let rec loop p s =
+    let () = print_string "@> " in
+    let cmd = P.parse_cmd (read_line ()) in
+    let repl_f = repl_func_of_cmd cmd in
+    let (str, s') = repl_f p s in
+    print_endline str ;
+    if exits cmd then () else loop p s'
+
+(* Main REPL loop. *)
+let main_loop main_f p =
+    match Hashtbl.find_opt p main_f with
+    | Some fn   ->
+        let s = E.init main_f fn.Ir.n_vars 0 in
+        loop p s
+    | None      -> raise (Er.unbound_func main_f)
 
