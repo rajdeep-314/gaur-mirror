@@ -40,7 +40,7 @@ module Inspect = struct
     (* Call corresponding to a frame. *)
     let call_of_frame f = Call (f.f_name, Array.to_list f.argument)
     (* List of calls that lead to a VM state. *)
-    let calls s = List.map call_of_frame s.frames
+    let calls s = List.map call_of_frame (List.rev s.frames)
 
     (* String representation of a call and a list of calls. *)
     let string_of_call (Call (f, args)) =
