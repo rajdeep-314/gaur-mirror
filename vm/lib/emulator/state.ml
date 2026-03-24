@@ -23,6 +23,13 @@ type t = {
 }
 
 
+(* Pretty-printers for VM state and related constructs. *)
+module PP = struct
+    let stack s =
+        String.concat ", " (List.map string_of_int s)
+end
+
+
 (* Inspecting VM state. *)
 module Inspect = struct
 
