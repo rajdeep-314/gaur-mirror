@@ -286,7 +286,7 @@ let rec e_till_condition p i_cond s_cond s =
 let e_till_termination p s =
     let s' = e_till_condition p
         (fun  i -> i = Return) (fun s -> n_frames s = 1) s in
-    wstack_peek s'
+    (s', wstack_peek s')
 
 (* Excute program p on state s till it returns from the current function.
    Returns the state after this return. *)
@@ -304,6 +304,6 @@ let e_till_before_return p s =
 (* Executes program p till termination, with main_f being the main function. *)
 let e_prog_till_termination main_f p =
     match Hashtbl.find_opt p main_f with
-    | Some fn   -> e_till_termination p (init main_f fn.n_vars 0)
+    | Some fn   -> snd (e_till_termination p (init main_f fn.n_vars 0))
     | None      -> raise (unbound_func main_f)
 
