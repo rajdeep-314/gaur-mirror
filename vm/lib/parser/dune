@@ -1,5 +1,17 @@
-(menhir
- (modules vm_parser))
+; VM lexer and parser.
 
 (ocamllex
  (modules vm_lexer))
+
+(menhir
+ (modules vm_parser))
+
+
+; REPL lexer and parser.
+
+(menhir
+ (modules repl_parser))
+
+(ocamllex
+ (modules repl_lexer))
+
