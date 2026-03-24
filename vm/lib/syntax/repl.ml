@@ -10,10 +10,10 @@ module A = Ast
 
 type t =
     (* Show commands. *)
-    (*| ShowCalls*)
-    (*| ShowStack*)
+    | ShowCalls
+    | ShowStack
     (*| ShowStackTop  of int*)
-    (*| ShowFunction*)
+    | ShowFunction
     (*| ShowSegment   of A.segment*)
     (*| ShowFrame*)
     (*| ShowState*)

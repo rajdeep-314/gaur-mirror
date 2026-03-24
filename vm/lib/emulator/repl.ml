@@ -7,6 +7,7 @@
 
 module E  = Emulate
 module I  = State.Inspect
+module SP = State.PP
 module Er = Err.Helper.Execution
 (*module P  = Parser.Repl*)
 
@@ -31,6 +32,27 @@ REPL function, for VM program p, in state s, str should be displayed and
 the resulting state is s'.
 *)
 
+
+(* REPL functions for show commands. *)
+
+(* Show sequence of function calls. *)
+let show_calls p s =
+    (I.string_of_calls (I.calls s), s)
+
+(* Show top-most frame's working stack. *)
+let show_stack p s =
+    match I.wstack_of_top_frame s with
+    | Some st   -> ("Stack: " ^ SP.stack st, s)
+    | None      -> raise Er.empty_call_stack
+
+(* Show current function. *)
+let show_function p s =
+    match I.call_of_top_frame s with
+    | Some c    -> (I.string_of_call c, s)
+    | None      -> raise Er.empty_call_stack
+
+
+(* REPL functions for execute commands. *)
 
 (* Execute a single instruction. *)
 let e_step p s =
@@ -71,6 +93,9 @@ let exit_f p s = ("Exiting", s)
 
 (* REPL function for a command. *)
 let repl_func_of_cmd = function
+    | ShowCalls                 -> show_calls
+    | ShowStack                 -> show_stack
+    | ShowFunction              -> show_function
     | ExecuteStep               -> e_step
     | ExecuteSteps n            -> e_steps n 0
     | ExecuteTillReturn         -> e_till_return
