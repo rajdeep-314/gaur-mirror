@@ -38,11 +38,11 @@ module Execution = struct
         | UnboundFunction f -> "Unbound function " ^ f
         | OutOfBoundSegRead (seg, n, n') -> Printf.sprintf
             "Attempted to read segment %s out of bounds."
-            (Syntax.Printers.str_of_seg seg) ^ Printf.sprintf
+            (Syntax.Printers.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to read index %d" n n'
         | OutOfBoundSegWrite (seg, n, n') -> Printf.sprintf
             "Attempted to write segment %s out of bounds."
-            (Syntax.Printers.str_of_seg seg) ^ Printf.sprintf
+            (Syntax.Printers.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
         | OutOfBoundPC (f, n_insts, n) -> Printf.sprintf
             "Attempted to fetch instruction number %d in function %s, which \

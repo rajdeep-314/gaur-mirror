@@ -9,7 +9,7 @@ open Ast
 
 
 (* Convert a segment to its string representation. *)
-let str_of_seg (seg: segment) =
+let seg (seg: segment) =
     match seg with
     | Temp     -> "temp"
     | Static   -> "static"
@@ -17,10 +17,10 @@ let str_of_seg (seg: segment) =
     | Argument -> "argument"
 
 (* Convert a VM instruction to its string representation. *)
-let str_of_inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : string =
+let inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : string =
     match inst with
-    | Push (seg, i)    -> Printf.sprintf "push %s %d" (str_of_seg seg) i
-    | Pop  (seg, i)    -> Printf.sprintf "pop %s %d"  (str_of_seg seg) i
+    | Push (s, i)      -> Printf.sprintf "push %s %d" (seg s) i
+    | Pop  (s, i)      -> Printf.sprintf "pop %s %d"  (seg s) i
     | PushC n          -> "push constant " ^ string_of_int n
     | Add              -> "add"
     | Sub              -> "sub"
@@ -38,21 +38,21 @@ let str_of_inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : strin
     | Return          -> "return"
 
 (* Convert a list of VM instructions to their string representation. *)
-let str_of_insts (sl: 'l -> string)(sf: 'f -> string)(insts: ('l,'f) insts) : string list =
-    List.map (str_of_inst sl sf) insts
+let insts (sl: 'l -> string)(sf: 'f -> string)(insts: ('l,'f) insts) : string list =
+    List.map (inst sl sf) insts
 
 (* Tabulate a list of strings by adding a tab character at the start of each line. *)
 let tabulate (lines: string list) : string list =
     List.map (fun line -> "\t" ^ line) lines
 
 (* Convert a VM function to its string representation. *)
-let str_of_func (sl: 'l -> string)(sf: 'f -> string)(f: ('l,'f) func) : string list =
+let func (sl: 'l -> string)(sf: 'f -> string)(f: ('l,'f) func) : string list =
     let header = Printf.sprintf "function %s %d" (sf f.f_name) f.n_vars in
-    let body_lines = tabulate (str_of_insts sl sf f.body) in
+    let body_lines = tabulate (insts sl sf f.body) in
     header :: body_lines
 
 (* Convert a VM program to its string representation. *)
-let str_of_prog (sl: 'l -> string)(sf: 'f -> string)(prog: ('l,'f) prog) : string =
-    let func_lines = List.flatten (List.map (str_of_func sl sf) prog) in
+let prog (sl: 'l -> string)(sf: 'f -> string)(prog: ('l,'f) prog) : string =
+    let func_lines = List.flatten (List.map (func sl sf) prog) in
     String.concat "\n" func_lines 
 
