@@ -81,6 +81,12 @@ let init f_name n_lcls n_args = {
     } ]
 }
 
+(* Initial VM state from program p, with main_f being the main function. *)
+let init_from_prog main_f p =
+    match Hashtbl.find_opt p main_f with
+    | Some fn   -> init main_f fn.n_vars 0
+    | None      -> raise (unbound_func main_f)
+
 (* Pop the top-most n values from a working stack. Returns list of values
    popped and remaining stack content. *)
 let pop_n n s =
@@ -303,7 +309,5 @@ let e_till_before_return p s =
 
 (* Executes program p till termination, with main_f being the main function. *)
 let e_prog_till_termination main_f p =
-    match Hashtbl.find_opt p main_f with
-    | Some fn   -> snd (e_till_termination p (init main_f fn.n_vars 0))
-    | None      -> raise (unbound_func main_f)
+    snd (e_till_termination p (init_from_prog main_f p))
 
