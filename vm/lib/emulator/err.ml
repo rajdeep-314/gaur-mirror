@@ -5,6 +5,7 @@
 *)
 
 
+(* Errors that indicate a violation of semantics. *)
 module Semantic = struct
     type t =
         | DuplicateLabel    of string
@@ -18,6 +19,7 @@ module Semantic = struct
 end
 
 
+(* Errors during emulations of VM programs. *)
 module Execution = struct
     type t =
         | EmptyCallStack
@@ -51,34 +53,60 @@ module Execution = struct
 end
 
 
+(* Errors that arise in the REPL. *)
+module Repl = struct
+    type t =
+        | EmptyCallStack
+        | ExecuteTillReturnFromMain
+
+    let to_string = function
+        | EmptyCallStack ->
+            "Call stack is empty."
+        | ExecuteTillReturnFromMain ->
+            "Can't perform execute till return from main."
+end
+
+
 type exn +=
     | SemanticError  of Semantic.t
     | ExecutionError of Execution.t
+    | ReplError      of Repl.t
 
 
 (* Helper functions (and values) for raising exceptions. *)
 module Helper = struct
     module Semantic = struct
-        let dup_label l = SemanticError (Semantic.DuplicateLabel l)
-        let unbound_label l = SemanticError (Semantic.UnboundLabel l)
-        let dup_func f = SemanticError (Semantic.DuplicateFunc f)
+        open Semantic
+
+        let dup_label l = SemanticError (DuplicateLabel l)
+        let unbound_label l = SemanticError (UnboundLabel l)
+        let dup_func f = SemanticError (DuplicateFunc f)
     end
 
     module Execution = struct
-        let empty_call_stack = ExecutionError (Execution.EmptyCallStack)
+        open Execution
+
+        let empty_call_stack = ExecutionError EmptyCallStack
         let not_enough_vals n n' =
-            ExecutionError (Execution.NotEnoughValsOnWorkingStack (n, n'))
+            ExecutionError (NotEnoughValsOnWorkingStack (n, n'))
         let execution_terminated v =
-            ExecutionError (Execution.ExecutionTerminated v)
+            ExecutionError (ExecutionTerminated v)
         let unbound_func f =
-            ExecutionError (Execution.UnboundFunction f)
-        let unimplemented = ExecutionError (Execution.UnImplemented)
+            ExecutionError (UnboundFunction f)
+        let unimplemented = ExecutionError UnImplemented
         let oob_seg_read s n n' =
-            ExecutionError (Execution.OutOfBoundSegRead (s, n, n'))
+            ExecutionError (OutOfBoundSegRead (s, n, n'))
         let oob_seg_write s n n' =
-            ExecutionError (Execution.OutOfBoundSegWrite (s, n, n'))
+            ExecutionError (OutOfBoundSegWrite (s, n, n'))
         let oob_pc f n_insts n =
-            ExecutionError (Execution.OutOfBoundPC (f, n_insts, n))
+            ExecutionError (OutOfBoundPC (f, n_insts, n))
+    end
+
+    module Repl = struct
+        open Repl
+
+        let empty_call_stack = ReplError EmptyCallStack
+        let e_till_return_from_main = ReplError ExecuteTillReturnFromMain
     end
 end
 
