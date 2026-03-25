@@ -14,6 +14,7 @@ rule read_tokens = parse
     | "show"        { SHOW }
     | "calls"       { CALLS }
     | "stack"       { STACK }
+    | "top"         { TOP }
     | "function"    { FUNCTION }
     | "execute"     { EXECUTE }
     | "steps"       { STEPS }
@@ -22,6 +23,7 @@ rule read_tokens = parse
     | "before"      { BEFORE }
     | "return"      { RETURN }
     | "termination" { TERMINATION }
+    | "reset"       { RESET }
     | "exit"        { EXIT }
     | nat           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof           { EOF }

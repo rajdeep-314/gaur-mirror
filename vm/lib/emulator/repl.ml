@@ -47,6 +47,12 @@ let show_stack p s =
     | Some st   -> ("Stack: " ^ SP.stack st, s)
     | None      -> raise Er.empty_call_stack
 
+(* Show the top (at most) n entries of the current working stack. *)
+let show_stack_top n p s =
+    match I.wstack_of_top_frame s with
+    | Some st   -> ("Stack top: " ^ SP.stack (List.take n st), s)
+    | None      -> raise Er.empty_call_stack
+
 (* Show current function. *)
 let show_function p s =
     match I.call_of_top_frame s with
@@ -94,6 +100,9 @@ let e_till_termination p s =
     ("Execution terminated with return value " ^ string_of_int rv,
      s')
 
+(* Reset to the program's initial state. *)
+let reset_f p s = ("Resetting.", E.init_from_prog p)
+
 (* REPL function for exit. *)
 let exit_f p s = ("Exiting", s)
 
@@ -102,12 +111,14 @@ let exit_f p s = ("Exiting", s)
 let repl_func_of_cmd = function
     | ShowCalls                 -> show_calls
     | ShowStack                 -> show_stack
+    | ShowStackTop n            -> show_stack_top n
     | ShowFunction              -> show_function
     | ExecuteStep               -> e_step
     | ExecuteSteps n            -> e_steps n 0
     | ExecuteTillReturn         -> e_till_return
     | ExecuteTillBeforeReturn   -> e_till_before_return
     | ExecuteTillTermination    -> e_till_termination
+    | Reset                     -> reset_f
     | Exit                      -> exit_f
 
 (* Does an instruction exit the REPL? *)

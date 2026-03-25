@@ -4,9 +4,9 @@
 
 
 %token <int> NUM
-%token SHOW CALLS STACK FUNCTION
+%token SHOW CALLS STACK TOP FUNCTION
 %token EXECUTE STEPS STEP TILL BEFORE RETURN TERMINATION
-%token EXIT
+%token RESET EXIT
 %token EOF
 
 %type <Syntax.Repl.t> stmt
@@ -23,6 +23,8 @@ stmt:
         { ShowCalls}
     | SHOW; STACK
         { ShowStack }
+    | SHOW; STACK; TOP; n = NUM
+        { ShowStackTop n }
     | SHOW; FUNCTION
         { ShowFunction }
     | EXECUTE; STEP
@@ -35,6 +37,8 @@ stmt:
         { ExecuteTillBeforeReturn }
     | EXECUTE; TILL; TERMINATION
         { ExecuteTillTermination }
+    | RESET
+        { Reset }
     | EXIT
         { Exit }
 

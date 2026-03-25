@@ -12,7 +12,7 @@ type t =
     (* Show commands. *)
     | ShowCalls
     | ShowStack
-    (*| ShowStackTop  of int*)
+    | ShowStackTop  of int
     | ShowFunction
     (*| ShowSegment   of A.segment*)
     (*| ShowFrame*)
@@ -26,7 +26,7 @@ type t =
     (* Meta commands. *)
     (*| PrintProgram*)
     (*| PrintFunction*)
-    (*| Reset*)
+    | Reset
     | Exit
 
 
