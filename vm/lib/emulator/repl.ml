@@ -126,6 +126,6 @@ let rec loop p s =
     if exits cmd then () else loop p s'
 
 (* Main REPL loop. *)
-let main_loop main_f p =
-    loop p (E.init_from_prog main_f p)
+let main_loop p =
+    loop p (E.init_from_prog p)
 

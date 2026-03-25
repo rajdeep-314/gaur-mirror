@@ -40,5 +40,8 @@ type func = {
 
 
 (* IR programs. *)
-type prog = (string, func) Hashtbl.t
+type prog = {
+    main_f : string ;
+    funcs  : (string, func) Hashtbl.t
+}
 

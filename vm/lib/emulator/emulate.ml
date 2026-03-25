@@ -81,11 +81,11 @@ let init f_name n_lcls n_args = {
     } ]
 }
 
-(* Initial VM state from program p, with main_f being the main function. *)
-let init_from_prog main_f p =
-    match Hashtbl.find_opt p main_f with
-    | Some fn   -> init main_f fn.n_vars 0
-    | None      -> raise (unbound_func main_f)
+(* Initial VM state from program p. *)
+let init_from_prog p =
+    match Hashtbl.find_opt p.funcs p.main_f with
+    | Some fn   -> init p.main_f fn.n_vars 0
+    | None      -> raise (unbound_func p.main_f)
 
 (* Pop the top-most n values from a working stack. Returns list of values
    popped and remaining stack content. *)
@@ -227,7 +227,7 @@ let exec_call p f n_args s =
            working stack. *)
         let s' = apply_on_top_frame uf uf (fun pc -> pc + 1) (fun _ -> ys) s in
         (* Adding the new function's frame to call stack. *)
-        match Hashtbl.find_opt p f with
+        match Hashtbl.find_opt p.funcs f with
         | Some fn   -> push_frame f fn.n_vars (List.rev xs) s'
         | None      -> raise (unbound_func f)
 
@@ -266,7 +266,7 @@ let execute_inst p s i =
 let fetch_inst p s =
     let f = fname_of_top_frame s in
     let pc = pc_of_top_frame s in
-    match Hashtbl.find_opt p f with
+    match Hashtbl.find_opt p.funcs f with
     | Some fn   -> get_inst f fn.body pc
     | None      -> raise (unbound_func f)
 
@@ -307,7 +307,7 @@ let e_till_before_return p s =
         (fun i -> i = Return) (fun s' -> n_frames s' = n_frames s) s
 
 
-(* Executes program p till termination, with main_f being the main function. *)
-let e_prog_till_termination main_f p =
-    snd (e_till_termination p (init_from_prog main_f p))
+(* Executes program p till termination. *)
+let e_prog_till_termination p =
+    snd (e_till_termination p (init_from_prog p))
 
