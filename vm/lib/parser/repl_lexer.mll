@@ -24,5 +24,6 @@ rule read_tokens = parse
     | "termination" { TERMINATION }
     | "exit"        { EXIT }
     | nat           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
-    | eof           { failwith "Lexing error: Can't match." }
+    | eof           { EOF }
+    | _             { failwith ("Lexing error: Can't match." ^ Lexing.lexeme lexbuf ) }
 

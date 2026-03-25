@@ -7,7 +7,9 @@
 %token SHOW CALLS STACK FUNCTION
 %token EXECUTE STEPS STEP TILL BEFORE RETURN TERMINATION
 %token EXIT
+%token EOF
 
+%type <Syntax.Repl.t> stmt
 %type <Syntax.Repl.t> cmd
 
 %start cmd
@@ -16,7 +18,7 @@
 %%
 
 
-cmd:
+stmt:
     | SHOW; CALLS
         { ShowCalls}
     | SHOW; STACK
@@ -36,4 +38,6 @@ cmd:
     | EXIT
         { Exit }
 
+cmd:
+    | s = stmt; EOF      { s }
 
