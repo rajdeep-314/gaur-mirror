@@ -8,7 +8,7 @@
 module E  = Emulate
 module I  = State.Inspect
 module SP = State.PP
-module Er = Err.Helper.Execution
+module Er = Err.Helper.Repl
 module P  = Parser.Repl
 
 open Syntax.Repl
@@ -69,12 +69,17 @@ let rec e_steps n counter p s =
     let ins = E.fetch_inst p s in
     e_steps n (counter + 1) p (E.execute_inst p s ins)
 
-(* Execute till (after the) the current function returns. *)
-let e_till_return p s =
+(* Execute till (after the) the current function, which is not main, returns. *)
+let e_till_return_non_main p s =
     match I.call_of_top_frame s with
     | Some c -> ("Finished executing " ^ I.string_of_call c,
                  E.e_till_return p s)
     | None -> raise Er.empty_call_stack
+
+(* Execute till (after the) current function returns, unless if it's main. *)
+let e_till_return p s =
+    if E.n_frames s = 1 then raise Er.e_till_return_from_main
+    else e_till_return_non_main p s
 
 (* Execute till (before the) the current function returns. *)
 let e_till_before_return p s =
@@ -122,9 +127,5 @@ let rec loop p s =
 
 (* Main REPL loop. *)
 let main_loop main_f p =
-    match Hashtbl.find_opt p main_f with
-    | Some fn   ->
-        let s = E.init main_f fn.Ir.n_vars 0 in
-        loop p s
-    | None      -> raise (Er.unbound_func main_f)
+    loop p (E.init_from_prog main_f p)
 
