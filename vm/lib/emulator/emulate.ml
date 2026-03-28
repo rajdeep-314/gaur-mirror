@@ -18,6 +18,9 @@ open Utils.Misc
 (* Make a segment of size n, all values 0. *)
 let make_segment n = Array.make n 0
 
+(* Make a screen segment of size n, all values 32 (space). *)
+let make_screen n = Array.make n 32
+
 (* Read the n'th index from segment seg_name, with contents seg. *)
 let read_segment seg_name seg n =
     let size = Array.length seg in
@@ -72,7 +75,7 @@ let segment seg s =
 let init f_name n_lcls n_args = {
     temp   = make_segment 16 ;
     static = make_segment 240 ;
-    screen = make_segment (80 * 24) ;
+    screen = make_screen (80 * 24) ;
     frames = [
     {
         f_name = f_name ;
