@@ -9,6 +9,7 @@
 type segment =
     | Temp
     | Static
+    | Screen
     | Local
     | Argument
 

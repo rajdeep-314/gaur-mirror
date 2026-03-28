@@ -63,6 +63,7 @@ let segment seg s =
     match seg with
     | A.Temp     -> s.temp
     | A.Static   -> s.static
+    | A.Screen   -> s.screen
     | A.Local    -> local_of_top_frame s
     | A.Argument -> argument_of_top_frame s
 
@@ -71,6 +72,7 @@ let segment seg s =
 let init f_name n_lcls n_args = {
     temp   = make_segment 16 ;
     static = make_segment 240 ;
+    screen = make_segment (80 * 24) ;
     frames = [
     {
         f_name = f_name ;
@@ -111,7 +113,7 @@ let apply_on_frame lf af pf wf f = {
 
 (* Apply these functions on the top-most function frame in the call-stack. *)
 let apply_on_top_frame lf af pf wf s = {
-    temp = s.temp; static = s.static;
+    s with
     frames =
     match s.frames with
     | []        -> raise empty_call_stack
@@ -131,7 +133,7 @@ let wstack_peek s =
 (* Update VM state s by adding a new frame to the call-stack, for
    function name f with n_vars local variables and argument list xs. *)
 let push_frame f n_vars xs s = {
-    temp = s.temp; static = s.static;
+    s with
     frames = {
         f_name = f;
         local = make_segment n_vars;
@@ -203,7 +205,7 @@ Execute a function return. In case there is only one function frame on the
 call-stack, raises an exception to denote the termination of execution.
 *)
 let exec_return s = {
-    temp = s.temp; static = s.static;
+    s with
     frames =
     match s.frames with
     | []        -> raise empty_call_stack

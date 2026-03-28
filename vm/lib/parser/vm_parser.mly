@@ -8,7 +8,7 @@
     open Syntax.Ast 
 %}
 
-%token CONSTANT TEMP STATIC LOCAL ARGUMENT 
+%token CONSTANT TEMP STATIC SCREEN LOCAL ARGUMENT
 %token ADD SUB NEG EQ GT LT AND OR NOT
 %token POP PUSH LABEL GOTO IFGOTO FUNCTION CALL RETURN EOF
 %token <string> ID 
@@ -27,6 +27,7 @@
 segment:
     | TEMP        { Temp }
     | STATIC      { Static }
+    | SCREEN      { Screen }
     | LOCAL       { Local }
     | ARGUMENT    { Argument }
 

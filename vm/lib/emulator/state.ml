@@ -19,6 +19,8 @@ type frame = {
 type t = {
     temp   : segment ;          (* global temporary segment *)
     static : segment ;          (* global static segment *)
+    (* TODO: Extend ASCII to UTF. *)
+    screen : segment ;          (* 80 x 24 characters screen. ASCII, for now. *)
     frames : frame list         (* function frames -- working stack *)
 }
 
@@ -69,6 +71,7 @@ module Inspect = struct
         match seg with
         | Temp      -> Some s.temp
         | Static    -> Some s.static
+        | Screen    -> Some s.screen
         | Local     -> local_of_top_frame s
         | Argument  -> argument_of_top_frame s)
 end
