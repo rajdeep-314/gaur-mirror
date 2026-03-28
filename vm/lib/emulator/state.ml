@@ -32,6 +32,15 @@ module PP = struct
 end
 
 
+(* Useful helper functions. *)
+module Helper = struct
+    (* List of list of integers corresponding to screen of state s. *)
+    let iss_of_screen s =
+        List.init 24
+            (fun i -> Array.to_list (Array.sub s.screen (80*i) 80))
+end
+
+
 (* Inspecting VM state. *)
 module Inspect = struct
 
@@ -74,5 +83,15 @@ module Inspect = struct
         | Screen    -> Some s.screen
         | Local     -> local_of_top_frame s
         | Argument  -> argument_of_top_frame s)
+
+    (* Screen of a VM state, as 24 lines of 80-characters. *)
+    let screen s =
+        let iss = Helper.iss_of_screen s in
+        let to_char i =
+            if i >= 32 && i <= 126 then char_of_int i else '?' in
+        let css = List.map (List.map to_char) iss in
+        let lines = List.map
+            (fun cs -> String.concat "" (List.map (String.make 1) cs)) css in
+        String.concat "\n" lines
 end
 
