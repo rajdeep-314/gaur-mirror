@@ -14,6 +14,7 @@ type t =
     | ShowStack
     | ShowStackTop  of int
     | ShowFunction
+    | ShowScreen
     (*| ShowSegment   of A.segment*)
     (*| ShowFrame*)
     (*| ShowState*)

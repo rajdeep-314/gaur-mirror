@@ -59,6 +59,10 @@ let show_function p s =
     | Some c    -> (I.string_of_call c, s)
     | None      -> raise Er.empty_call_stack
 
+(* Show the current screen. *)
+let show_screen p s =
+    (I.screen s, s)
+
 
 (* REPL functions for execute commands. *)
 
@@ -113,6 +117,7 @@ let repl_func_of_cmd = function
     | ShowStack                 -> show_stack
     | ShowStackTop n            -> show_stack_top n
     | ShowFunction              -> show_function
+    | ShowScreen                -> show_screen
     | ExecuteStep               -> e_step
     | ExecuteSteps n            -> e_steps n 0
     | ExecuteTillReturn         -> e_till_return

@@ -4,7 +4,7 @@
 
 
 %token <int> NUM
-%token SHOW CALLS STACK TOP FUNCTION
+%token SHOW CALLS STACK TOP FUNCTION SCREEN
 %token EXECUTE STEPS STEP TILL BEFORE RETURN TERMINATION
 %token RESET EXIT
 %token EOF
@@ -27,6 +27,8 @@ stmt:
         { ShowStackTop n }
     | SHOW; FUNCTION
         { ShowFunction }
+    | SHOW; SCREEN
+        { ShowScreen }
     | EXECUTE; STEP
         { ExecuteStep }
     | EXECUTE; STEPS; n = NUM

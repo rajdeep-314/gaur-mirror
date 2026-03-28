@@ -16,6 +16,7 @@ rule read_tokens = parse
     | "stack"       { STACK }
     | "top"         { TOP }
     | "function"    { FUNCTION }
+    | "screen"      { SCREEN }
     | "execute"     { EXECUTE }
     | "steps"       { STEPS }
     | "step"        { STEP }
