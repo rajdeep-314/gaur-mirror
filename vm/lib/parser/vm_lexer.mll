@@ -10,8 +10,10 @@
 }
 
 let digit = ['0'-'9']+
-let ascii = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
-let lf_name = ['a'-'z' 'A'-'Z' '_' '.'] ascii
+let iden = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
+let lf_name = ['a'-'z' 'A'-'Z' '_' '.'] iden    (* Label and function names. *)
+let char = ['\032'-'\126']                      (* Valid characters. *)
+let char_lit = '\'' char '\''                   (* Character literals. *)
 let whitespace = [' ' '\t' '\r' '\n']+
 
 rule read_token = parse
@@ -40,10 +42,12 @@ rule read_token = parse
     | "function"        { FUNCTION }
     | "call"            { CALL }
     | "return"          { RETURN }
+    | char_lit          { NUM (int_of_char (Lexing.lexeme lexbuf).[1]) }
     | digit             { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | lf_name           { ID (Lexing.lexeme lexbuf) }
     | eof               { EOF }
-    | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }
+    | _                 { failwith ("Lexing error: Match failed for " ^
+                          Lexing.lexeme lexbuf) }
 and comment depth = parse
     | "(*"              { comment (depth +1) lexbuf }
     | "*)"              { if depth = 1 then read_token lexbuf 
