@@ -6,8 +6,9 @@
 *)
 
 
-(* IR segments are VM segments. *)
-type segment = Syntax.Ast.segment
+
+type segment = Syntax.Ast.segment       (* IR segments are VM segments. *)
+type syscall = Syntax.Ast.syscall       (* IR syscalls are VM syscalls. *)
 
 (* IR instructions. *)
 type inst =
@@ -26,7 +27,8 @@ type inst =
     | Goto   of int
     | IfGoto of int
     (* function related operations *)
-    | Call of string * int
+    | Call  of string * int
+    | SCall of syscall * int
     | Return
 
 type insts = inst array

@@ -11,32 +11,36 @@ open Ast
 (* Convert a segment to its string representation. *)
 let seg (seg: segment) =
     match seg with
-    | Temp     -> "temp"
-    | Static   -> "static"
-    | Screen   -> "screen"
-    | Local    -> "local"
-    | Argument -> "argument"
+    | Temp      -> "temp"
+    | Static    -> "static"
+    | Screen    -> "screen"
+    | Local     -> "local"
+    | Argument  -> "argument"
+
+let syscall = function
+    | PutChar   -> "putchar"
 
 (* Convert a VM instruction to its string representation. *)
 let inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : string =
     match inst with
-    | Push (s, i)      -> Printf.sprintf "push %s %d" (seg s) i
-    | Pop  (s, i)      -> Printf.sprintf "pop %s %d"  (seg s) i
-    | PushC n          -> "push constant " ^ string_of_int n
-    | Add              -> "add"
-    | Sub              -> "sub"
-    | Neg              -> "neg" 
-    | Eq               -> "eq"
-    | Gt               -> "gt"  
-    | Lt               -> "lt"
-    | And              -> "and"
-    | Or               -> "or"
-    | Not              -> "not"
-    | Label l         -> Printf.sprintf "label %s" (sl l)
-    | Goto l          -> Printf.sprintf "goto %s" (sl l)
-    | IfGoto l        -> Printf.sprintf "if-goto %s" (sl l)
-    | Call (f, n)     -> Printf.sprintf "call %s %d" (sf f) n
-    | Return          -> "return"
+    | Push (s, i)       -> Printf.sprintf "push %s %d" (seg s) i
+    | Pop  (s, i)       -> Printf.sprintf "pop %s %d"  (seg s) i
+    | PushC n           -> "push constant " ^ string_of_int n
+    | Add               -> "add"
+    | Sub               -> "sub"
+    | Neg               -> "neg" 
+    | Eq                -> "eq"
+    | Gt                -> "gt"  
+    | Lt                -> "lt"
+    | And               -> "and"
+    | Or                -> "or"
+    | Not               -> "not"
+    | Label l           -> Printf.sprintf "label %s" (sl l)
+    | Goto l            -> Printf.sprintf "goto %s" (sl l)
+    | IfGoto l          -> Printf.sprintf "if-goto %s" (sl l)
+    | Call (f, n)       -> Printf.sprintf "call %s %d" (sf f) n
+    | SCall (f, n)      -> Printf.sprintf "scall %s %d" (syscall f) n
+    | Return            -> "return"
 
 (* Convert a list of VM instructions to their string representation. *)
 let insts (sl: 'l -> string)(sf: 'f -> string)(insts: ('l,'f) insts) : string list =

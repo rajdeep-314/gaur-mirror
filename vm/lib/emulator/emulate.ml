@@ -257,7 +257,7 @@ let exec_pop s seg i =
 let execute_inst p s i =
     match i with
     | Push (seg, i) -> exec_push s seg i
-    | Pop (seg, i) -> exec_pop s seg i
+    | Pop (seg, i)  -> exec_pop s seg i
     | PushC n   -> apply_on_wstack (push_const n) s
     | Add       -> exec_add s | Sub -> exec_sub s | And -> exec_and s 
     | Or        -> exec_or s  | Neg -> exec_neg s | Not -> exec_not s
@@ -266,6 +266,7 @@ let execute_inst p s i =
     | IfGoto n  -> exec_if_goto n s
     | Return    -> exec_return s
     | Call (f, n_args) -> exec_call p f n_args s
+    | SCall (_, _)     -> raise unimplemented
 
 (* Fetches the next instruction to execute from program p and VM state s. *)
 let fetch_inst p s =

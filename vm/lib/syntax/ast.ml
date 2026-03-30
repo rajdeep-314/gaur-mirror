@@ -13,6 +13,10 @@ type segment =
     | Local
     | Argument
 
+(* Supported system calls. *)
+type syscall =
+    | PutChar
+
 (* VM instructions with label names and function names from 'l
    and 'f, respectively. *)
 type ('l, 'f) inst =
@@ -32,7 +36,8 @@ type ('l, 'f) inst =
     | Goto   of 'l
     | IfGoto of 'l
     (* function related operations *)
-    | Call of 'f * int
+    | Call   of 'f * int
+    | SCall  of syscall * int
     | Return
 
 (* List of VM instructions (function bodies are this type). *)

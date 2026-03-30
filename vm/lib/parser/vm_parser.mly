@@ -6,15 +6,20 @@
 
 %{
     open Syntax.Ast 
+
+    let syscall_of_iden = function
+        | "putchar" -> PutChar
+        | s         -> failwith ("Invalid syscall " ^ s)
 %}
 
 %token CONSTANT TEMP STATIC SCREEN LOCAL ARGUMENT
 %token ADD SUB NEG EQ GT LT AND OR NOT
-%token POP PUSH LABEL GOTO IFGOTO FUNCTION CALL RETURN EOF
+%token POP PUSH LABEL GOTO IFGOTO FUNCTION CALL SCALL RETURN EOF
 %token <string> ID 
 %token <int> NUM
 
 %type <segment> segment
+%type <syscall> syscall
 %type <(string, string) inst> inst
 %type <(string, string) func> func
 %type <(string, string) func list> funcs
@@ -30,6 +35,9 @@ segment:
     | SCREEN      { Screen }
     | LOCAL       { Local }
     | ARGUMENT    { Argument }
+
+syscall:
+    | f=ID        { syscall_of_iden f }
 
 inst:
     | PUSH; s=segment; n=NUM       { Push (s, n) }
@@ -48,6 +56,7 @@ inst:
     | GOTO; l=ID                   { Goto l }
     | IFGOTO; l=ID                 { IfGoto l }
     | CALL; f=ID; n=NUM            { Call (f,n) }
+    | SCALL; f=syscall; n=NUM      { SCall (f,n) }
     | RETURN                       { Return }
 
 insts:

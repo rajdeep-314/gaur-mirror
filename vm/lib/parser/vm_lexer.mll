@@ -41,6 +41,7 @@ rule read_token = parse
     | "if-goto"         { IFGOTO }
     | "function"        { FUNCTION }
     | "call"            { CALL }
+    | "scall"           { SCALL }
     | "return"          { RETURN }
     | char_lit          { NUM (int_of_char (Lexing.lexeme lexbuf).[1]) }
     | digit             { NUM (int_of_string (Lexing.lexeme lexbuf)) }
