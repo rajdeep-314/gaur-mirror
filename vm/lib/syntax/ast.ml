@@ -36,7 +36,7 @@ type ('l, 'f) inst =
     | IfGoto of 'l
     (* function related operations *)
     | Call   of 'f * int
-    | SCall  of syscall * int
+    | SCall  of syscall
     | Return
 
 (* List of VM instructions (function bodies are this type). *)

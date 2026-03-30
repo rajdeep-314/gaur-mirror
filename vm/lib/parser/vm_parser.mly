@@ -55,7 +55,7 @@ inst:
     | GOTO; l=ID                   { Goto l }
     | IFGOTO; l=ID                 { IfGoto l }
     | CALL; f=ID; n=NUM            { Call (f,n) }
-    | SCALL; f=syscall; n=NUM      { SCall (f,n) }
+    | SCALL; f=syscall             { SCall f }
     | RETURN                       { Return }
 
 insts:

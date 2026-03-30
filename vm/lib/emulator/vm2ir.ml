@@ -43,7 +43,7 @@ let translate_inst tbl ln = function
     | A.And -> [I.And] | A.Or -> [I.Or]   | A.Not -> [I.Not]
     | A.Label _ -> []
     | A.Call (f, n)  -> [I.Call (f, n)]
-    | A.SCall (f, n) -> [I.SCall (f, n)]
+    | A.SCall f      -> [I.SCall f]
     | A.Return -> [I.Return]
     | A.Goto l ->
         begin match Table.find_opt l tbl with

@@ -38,7 +38,7 @@ let inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : string =
     | Goto l            -> Printf.sprintf "goto %s" (sl l)
     | IfGoto l          -> Printf.sprintf "if-goto %s" (sl l)
     | Call (f, n)       -> Printf.sprintf "call %s %d" (sf f) n
-    | SCall (f, n)      -> Printf.sprintf "scall %s %d" (syscall f) n
+    | SCall f           -> Printf.sprintf "scall %s" (syscall f)
     | Return            -> "return"
 
 (* Convert a list of VM instructions to their string representation. *)

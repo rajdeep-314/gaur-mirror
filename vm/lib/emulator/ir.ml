@@ -28,7 +28,7 @@ type inst =
     | IfGoto of int
     (* function related operations *)
     | Call  of string * int
-    | SCall of syscall * int
+    | SCall of syscall
     | Return
 
 type insts = inst array

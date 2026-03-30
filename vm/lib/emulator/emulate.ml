@@ -264,8 +264,8 @@ let execute_inst p s i =
     | Goto n    -> apply_on_top_frame uf uf (fun p -> p + n) idf s
     | IfGoto n  -> exec_if_goto n s
     | Return    -> exec_return s
-    | Call (f, n_args) -> exec_call p f n_args s
-    | SCall (_, _)     -> raise unimplemented
+    | Call (f, n_args)  -> exec_call p f n_args s
+    | SCall _           -> raise unimplemented
 
 (* Fetches the next instruction to execute from program p and VM state s. *)
 let fetch_inst p s =
