@@ -33,6 +33,10 @@ let write_segment seg_name seg n v =
     if 0 <= n && n < size then seg.(n) <- v
     else raise (oob_seg_write seg_name size n)
 
+(* In state s, write value y at offset x of screen and return new state. *)
+let write_to_screen s x y =
+    s.screen.(x) <- y; s
+
 (* Get instruction number n from function f, whose body is body. *)
 let get_inst f body n =
     let size = Array.length body in
@@ -251,6 +255,22 @@ let exec_pop s seg i =
         let xs = segment seg s' in
         let () = write_segment seg xs i x in s'
 
+(* Execute the putchar system call. *)
+let exec_putchar s =
+    let ws = wstack_of_top_frame s in
+    match list_head_split_opt ws with
+    | Some (y, ys) ->
+        begin match list_head_split_opt ys with
+        | Some (x, xs) ->
+            let s' = apply_on_wstack (fun _ -> xs) s in
+            write_to_screen s' x y
+        | None -> raise (not_enough_vals 2 1) end
+    | None -> raise (not_enough_vals 2 0)
+
+(* Execute a system call. *)
+let exec_syscall = function
+    | A.PutChar -> exec_putchar
+
 
 (* Execute instruction i on state s, p being the IR program. *)
 let execute_inst p s i =
@@ -265,7 +285,7 @@ let execute_inst p s i =
     | IfGoto n  -> exec_if_goto n s
     | Return    -> exec_return s
     | Call (f, n_args)  -> exec_call p f n_args s
-    | SCall _           -> raise unimplemented
+    | SCall f           -> exec_syscall f s
 
 (* Fetches the next instruction to execute from program p and VM state s. *)
 let fetch_inst p s =
