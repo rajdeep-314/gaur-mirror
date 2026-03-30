@@ -66,7 +66,6 @@ let segment seg s =
     match seg with
     | A.Temp     -> s.temp
     | A.Static   -> s.static
-    | A.Screen   -> s.screen
     | A.Local    -> local_of_top_frame s
     | A.Argument -> argument_of_top_frame s
 

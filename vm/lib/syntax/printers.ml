@@ -13,7 +13,6 @@ let seg (seg: segment) =
     match seg with
     | Temp      -> "temp"
     | Static    -> "static"
-    | Screen    -> "screen"
     | Local     -> "local"
     | Argument  -> "argument"
 

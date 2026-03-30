@@ -80,7 +80,6 @@ module Inspect = struct
         match seg with
         | Temp      -> Some s.temp
         | Static    -> Some s.static
-        | Screen    -> Some s.screen
         | Local     -> local_of_top_frame s
         | Argument  -> argument_of_top_frame s)
 

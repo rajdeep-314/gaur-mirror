@@ -22,7 +22,6 @@ rule read_token = parse
     | "constant"        { CONSTANT }
     | "temp"            { TEMP }
     | "static"          { STATIC }
-    | "screen"          { SCREEN }
     | "local"           { LOCAL }
     | "argument"        { ARGUMENT }
     | "push"            { PUSH }
