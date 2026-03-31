@@ -1,0 +1,271 @@
+(*******************************************************)
+(*                                                     *)
+(*               Math-related functions                *)
+(*                                                     *)
+(*******************************************************)
+
+
+
+(*
+min(x, y) returns the minimum of x and y.
+*)
+
+function Math.min 0
+    push argument 0
+    push argument 1
+    lt
+    if-goto x_case
+
+    push argument 1
+    return
+
+    label x_case
+    push argument 0
+    return
+
+
+
+(*
+max(x, y) returns the maximum of x and y.
+*)
+
+function Math.max 0
+    push argument 0
+    push argument 1
+    gt
+    if-goto x_case
+
+    push argument 1
+    return
+
+    label x_case
+    push argument 0
+    return
+
+
+
+(*
+bound(l, u, x) returns min(max(l, x), u).
+*)
+
+function Math.bound 0
+    push argument 0
+    push argument 2
+    call Math.max 2
+    push argument 1
+    call Math.min 2
+    return
+
+
+
+(*
+abs(x) returns |x|.
+*)
+
+function Math.abs 0
+    push argument 0
+    push constant 0
+    lt
+    if-goto neg_case
+
+    push argument 0
+    return
+
+    label neg_case
+    push argument 0
+    neg
+    return
+
+
+
+(*
+nat_mul(x, y) returns x * y, for x, y >= 0.
+Implemented recursively.
+*)
+
+function Math.nat_mul 0
+    push argument 0
+    push constant 1
+    lt
+    if-goto base_case
+
+    push argument 0
+    push constant 1
+    sub
+    push argument 1
+    call Math.nat_mul 2
+    push argument 1
+    add
+    return
+
+    label base_case
+    push constant 0
+    return
+
+
+
+(*
+mul(x, y) returns x * y, for any integers x and y
+Implemented using nat_mul.
+*)
+
+function Math.mul 1
+    push argument 0
+    call Math.abs 1
+    push argument 1
+    call Math.abs 1
+    call Math.nat_mul 2
+
+    push argument 0
+    push constant 1
+    lt
+    push argument 1
+    push constant 1
+    lt
+    add
+    push constant 1
+    neg
+    eq
+    if-goto invert_case
+
+    return
+
+    label invert_case
+    neg
+    return
+
+
+
+(*
+pow(x, y) returns x^y for y >= 0. Returns 1 otherwise.
+Implemented recursively.
+*)
+
+function Math.pow 0
+    push argument 1
+    push constant 1
+    lt
+    if-goto base_case
+
+    push argument 0
+    push argument 1
+    push constant 1
+    sub
+    call Math.pow 2
+    push argument 0
+    call Math.mul 2
+    return
+
+    label base_case
+    push constant 1
+    return
+
+
+
+(*
+div_unsafe(x, y) returns floor(x/y), for x >= 0 and y > 0.
+Implemented recursively.
+*)
+
+function Math.div_unsafe 0
+    push argument 0
+    push argument 1
+    lt
+    if-goto base_case
+
+    push constant 1
+    push argument 0
+    push argument 1
+    sub
+    push argument 1
+    call Math.div_unsafe 2
+    add
+    return
+
+    label base_case
+    push constant 0
+    return
+
+
+
+(*
+div(x, y) returns floor(x/y) for x >= 0 and y > 0, and returns 0 otherwise.
+Implemented using div_unsafe.
+*)
+
+function Math.div 0
+    push argument 0
+    push constant 0
+    lt
+    if-goto x_exception_case
+
+    push argument 1
+    push constant 1
+    lt
+    if-goto y_exception_case
+
+    push argument 0
+    push argument 1
+    call Math.div_unsafe 2
+    return
+
+    label x_exception_case
+    label y_exception_case
+    push constant 0
+    return
+
+
+
+(*
+mod_unsafe(x, y) returns the remainder when x is divided by y, for x >= 0 and
+y > 0.
+Implemented recursively.
+*)
+
+function Math.mod_unsafe 0
+    push argument 0
+    push argument 1
+    lt
+    if-goto base_case
+
+    push argument 0
+    push argument 1
+    sub
+    push argument 1
+    call Math.mod_unsafe 2
+    return
+
+    label base_case
+    push argument 0
+    return
+
+
+
+(*
+mod(x, y) returns the remainder when x is divided by y for x >= 0and y > 0, and
+returns 0 otherwise.
+
+Implemented using mod_unsafe.
+*)
+
+function Math.mod 0
+    push argument 0
+    push constant 0
+    lt
+    if-goto x_exception_case
+
+    push argument 1
+    push constant 1
+    lt
+    if-goto y_exception_case
+
+    push argument 0
+    push argument 1
+    call Math.mod_unsafe 2
+    return
+
+    label x_exception_case
+    label y_exception_case
+    push constant 0
+    return
+
