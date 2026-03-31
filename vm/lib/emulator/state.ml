@@ -83,14 +83,23 @@ module Inspect = struct
         | Local     -> local_of_top_frame s
         | Argument  -> argument_of_top_frame s)
 
-    (* Screen of a VM state, as 24 lines of 80-characters. *)
-    let screen s =
+    (* Lines corresponding to a VM state's screen. List with 24 80-character
+       strings. *)
+    let lines s =
         let iss = Helper.iss_of_screen s in
         let to_char i =
             if i >= 32 && i <= 126 then char_of_int i else '?' in
         let css = List.map (List.map to_char) iss in
-        let lines = List.map
-            (fun cs -> String.concat "" (List.map (String.make 1) cs)) css in
-        String.concat "\n" lines
+        List.map
+            (fun cs -> String.concat "" (List.map (String.make 1) cs)) css
+
+    (* Screen in VM state s. *)
+    let screen s = String.concat "\n" (lines s)
+
+    (* Screen in VM state s, decorated with borders. *)
+    let screen_p s =
+        let hor_border = "+" ^ String.make 80 '-' ^ "+" in
+        let lines' = List.map (fun x -> "|" ^ x ^ "|") (lines s) in
+        String.concat "\n" (hor_border :: lines' @ [hor_border])
 end
 
