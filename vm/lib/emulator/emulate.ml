@@ -262,7 +262,7 @@ let exec_putchar s =
     | Some (y, ys) ->
         begin match list_head_split_opt ys with
         | Some (x, xs) ->
-            let s' = apply_on_wstack (fun _ -> xs) s in
+            let s' = apply_on_wstack (fun _ -> 0 :: xs) s in
             write_to_screen s' x y
         | None -> raise (not_enough_vals 2 1) end
     | None -> raise (not_enough_vals 2 0)
