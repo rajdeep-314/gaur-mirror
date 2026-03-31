@@ -313,7 +313,7 @@ let rec e_till_condition p i_cond s_cond s =
 
 
 (* Execute program p on state s till it returns from main.
-   Returns final return value. *)
+   Returns final state and return value. *)
 let e_till_termination p s =
     let s' = e_till_condition p
         (fun  i -> i = Return) (fun s -> n_frames s = 1) s in
@@ -331,8 +331,7 @@ let e_till_before_return p s =
     e_till_condition p
         (fun i -> i = Return) (fun s' -> n_frames s' = n_frames s) s
 
-
 (* Executes program p till termination. *)
 let e_prog_till_termination p =
-    snd (e_till_termination p (init_from_prog p))
+    e_till_termination p (init_from_prog p)
 
