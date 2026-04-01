@@ -252,3 +252,66 @@ function Screen.backspace 0
     push constant 0
     return
 
+
+
+(*
+print_pos(n) prints n to the screen, for n > 0.
+Implemented recursively.
+*)
+
+function Screen.print_pos 0
+    push argument 0
+    push constant 1
+    lt
+    if-goto ret
+
+    push argument 0
+    push constant 10
+    call Math.div 2
+    call Screen.print_pos 1
+    push argument 0
+    push constant 10
+    call Math.mod 2
+    push constant 48
+    add
+    call Screen.print_char 1
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+print_int(n) prints integer n to the screen.
+Implemented using print_pos.
+*)
+
+function Screen.print_int 0
+    push argument 0
+    push constant 0
+    lt
+    if-goto neg_case
+
+    push argument 0
+    push constant 0
+    eq
+    if-goto zero_case
+
+    push argument 0
+    call Screen.print_pos 1
+    return
+
+    label zero_case
+    push constant 48
+    call Screen.print_char 1
+    return
+
+    label neg_case
+    push constant 45
+    call Screen.print_char 1
+    push argument 0
+    neg
+    call Screen.print_pos 1
+    return
+
