@@ -1,20 +1,3 @@
-(library
- (name parse)
- (modules
-  ast
-  location
-  types
-  lexer
-  parseHelper
-  parser
-  parserMessages
-  parsetree
-  pretty
-  unitActionsParser)
- (libraries menhirLib hdlutils fmt))
-
-;; -----------------------------------------------------------------------------
-
 ;; Constructing the lexer, parser, and executable.
 
 (ocamllex

@@ -1,8 +1,8 @@
-open Parse
-open Parse.ParseHelper
-open Type_check
-open Detect_cycle
-open Usedef
+open Lib.Parse
+open Lib.Parse.ParseHelper
+open Lib.Type_check
+open Lib.Analysis.Detect_cycle
+open Lib.Analysis.Usedef
 
 (** [parse s] parses [s] into an AST *)
 let _parse s =

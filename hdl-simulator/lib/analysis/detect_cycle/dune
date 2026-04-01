@@ -1,4 +1,0 @@
-(library
- (name detect_cycle)
- (modules dep_check errors)
- (libraries ocamlgraph type_check))
