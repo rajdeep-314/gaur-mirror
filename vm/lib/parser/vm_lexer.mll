@@ -7,6 +7,7 @@
 
 {
     open Vm_parser
+    open Err.Helper.Lexer
 }
 
 let digit = ['0'-'9']+
@@ -14,11 +15,12 @@ let iden = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
 let lf_name = ['a'-'z' 'A'-'Z' '_' '.'] iden    (* Label and function names. *)
 let char = ['\032'-'\126']                      (* Valid characters. *)
 let char_lit = '\'' char '\''                   (* Character literals. *)
-let whitespace = [' ' '\t' '\r' '\n']+
+let whitespace = [' ' '\t' '\r']+
 
-rule read_token = parse
-    | whitespace        { read_token lexbuf }
-    | "(*"              { comment 1 lexbuf }
+rule read_token src = parse
+    | whitespace        { read_token src lexbuf }
+    | '\n'              { Lexing.new_line lexbuf; read_token src lexbuf }
+    | "(*"              { comment src 1 lexbuf }
     | "constant"        { CONSTANT }
     | "temp"            { TEMP }
     | "static"          { STATIC }
@@ -46,11 +48,13 @@ rule read_token = parse
     | digit             { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | lf_name           { ID (Lexing.lexeme lexbuf) }
     | eof               { EOF }
-    | _                 { failwith ("Lexing error: Match failed for " ^
-                          Lexing.lexeme lexbuf) }
-and comment depth = parse
-    | "(*"              { comment (depth +1) lexbuf }
-    | "*)"              { if depth = 1 then read_token lexbuf 
-                         else comment (depth-1) lexbuf }
-    | eof               { failwith "Unterminated comment" }
-    | _                 { comment depth lexbuf }
+    | _                 { raise (cantmatch src lexbuf.lex_start_p) }
+and comment src depth = parse
+    | "(*"              { comment src (depth +1) lexbuf }
+    | "*)"              { if depth = 1 then read_token src lexbuf
+                         else comment src (depth-1) lexbuf }
+    | eof               { raise (unterminated_comments
+                                 src lexbuf.lex_start_p depth) }
+    | '\n'              { Lexing.new_line lexbuf; comment src depth lexbuf }
+    | _                 { comment src depth lexbuf }
+

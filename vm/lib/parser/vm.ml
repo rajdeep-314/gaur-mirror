@@ -1,11 +1,17 @@
 (*
-  vm.ml
-  Parser for VM programs.
+    vm.ml
+
+    Interface for lexing and parsing VM source code files.
 *)
 
-open Utils.Files
+
+module F = Utils.Files
+module P = Utils.Parsing
 
 
-let parse string= Vm_parser.prog Vm_lexer.read_token (Lexing.from_string string)
+let parse_from_path path =
+    let src = P.expand_tabs 4 (F.read_file path) in
+    let lexbuf = Lexing.from_string src in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = path } ;
+    Vm_parser.prog (Vm_lexer.read_token src) lexbuf
 
-let parse_from_path path = parse (Utils.Files.read_file path)
