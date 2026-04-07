@@ -56,3 +56,5 @@ type 'i chip =
   ; states  : states option
   ; parts   : 'i assign_info list
   }
+
+type 'i prog = ('i chip) list
