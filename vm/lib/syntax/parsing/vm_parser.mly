@@ -6,10 +6,11 @@
 
 %{
     open Ast
+    open Err.Helper.Parser
 
     let syscall_of_iden = function
         | "putchar" -> PutChar
-        | s         -> failwith ("Invalid syscall " ^ s)
+        | s         -> raise (invalid_syscall s)
 %}
 
 %token CONSTANT TEMP STATIC LOCAL ARGUMENT
