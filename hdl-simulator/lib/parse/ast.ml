@@ -2,7 +2,7 @@ open Types
 open Hdlutils
 
 type 'i expr =
-  | Const     of Bit.t list
+  | Const     of Bit.t NonEmpty.t
   | Splice    of 'i expr_info * int * int
   | Concat    of 'i expr_info * 'i expr_info
   | Access    of string
