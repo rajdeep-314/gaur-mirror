@@ -2,5 +2,5 @@
   (package hdl-simulator)
   (public_name hdl-simulator)
   (name main)
-  (libraries parse type_check usedef detect_cycle)
+  (libraries lib)
 )

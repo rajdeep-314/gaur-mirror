@@ -1,0 +1,6 @@
+(library
+ (name lib)
+ (libraries fmt menhirLib ocamlgraph))
+;  (libraries parse))
+
+(include_subdirs qualified)

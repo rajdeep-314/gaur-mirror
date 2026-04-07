@@ -1,4 +1,0 @@
-(library
- (name usedef)
- (modules usedef_check usedef_tree)
- (libraries ocamlgraph parse type_check))

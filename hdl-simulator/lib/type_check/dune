@@ -1,4 +1,0 @@
-(library
- (name type_check)
- (modules typedtree typecheck env init_env)
- (libraries parse))
