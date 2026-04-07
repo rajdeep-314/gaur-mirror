@@ -9,7 +9,7 @@ module E  = Emulate
 module I  = State.Inspect
 module SP = State.PP
 module Er = Err.Helper.Repl
-module P  = Parser.Repl
+module P  = Parsing.Repl
 
 open Syntax.Repl
 

@@ -5,7 +5,7 @@
 *)
 
 %{
-    open Syntax.Ast 
+    open Ast
 
     let syscall_of_iden = function
         | "putchar" -> PutChar

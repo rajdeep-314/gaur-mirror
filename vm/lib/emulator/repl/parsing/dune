@@ -1,0 +1,6 @@
+(ocamllex
+ (modules repl_lexer))
+
+(menhir
+ (modules repl_parser))
+
