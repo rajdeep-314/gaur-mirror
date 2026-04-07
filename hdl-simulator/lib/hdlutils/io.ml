@@ -9,4 +9,5 @@ let usage s =
   then
     output_string stderr "Usage: \n";
     output_string stderr s;
-    output_string stderr "\n"
+    output_string stderr "\n";
+    exit Exit.usage
