@@ -3,4 +3,5 @@
   (public_name hdl-simulator)
   (name main)
   (libraries lib)
+  (enabled_if (= %{context_name} "none"))
 )
