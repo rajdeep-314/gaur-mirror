@@ -8,10 +8,10 @@
 module E  = Emulate
 module I  = State.Inspect
 module SP = State.PP
-module Er = Err.Helper.Repl
 module P  = Parsing.Repl
 
 open Syntax.Repl
+open Err.Helper
 
 
 (*
@@ -45,19 +45,19 @@ let show_calls p s =
 let show_stack p s =
     match I.wstack_of_top_frame s with
     | Some st   -> ("Stack: " ^ SP.stack st, s)
-    | None      -> raise Er.empty_call_stack
+    | None      -> raise empty_call_stack
 
 (* Show the top (at most) n entries of the current working stack. *)
 let show_stack_top n p s =
     match I.wstack_of_top_frame s with
     | Some st   -> ("Stack top: " ^ SP.stack (List.take n st), s)
-    | None      -> raise Er.empty_call_stack
+    | None      -> raise empty_call_stack
 
 (* Show current function. *)
 let show_function p s =
     match I.call_of_top_frame s with
     | Some c    -> (I.string_of_call c, s)
-    | None      -> raise Er.empty_call_stack
+    | None      -> raise empty_call_stack
 
 (* Show the current screen. *)
 let show_screen p s =
@@ -84,11 +84,11 @@ let e_till_return_non_main p s =
     match I.call_of_top_frame s with
     | Some c -> ("Finished executing " ^ I.string_of_call c,
                  E.e_till_return p s)
-    | None -> raise Er.empty_call_stack
+    | None -> raise empty_call_stack
 
 (* Execute till (after the) current function returns, unless if it's main. *)
 let e_till_return p s =
-    if E.n_frames s = 1 then raise Er.e_till_return_from_main
+    if E.n_frames s = 1 then raise e_till_return_from_main
     else e_till_return_non_main p s
 
 (* Execute till (before the) the current function returns. *)
@@ -96,7 +96,7 @@ let e_till_before_return p s =
     match I.call_of_top_frame s with
     | Some c -> (I.string_of_call c ^ " ready to return",
                  E.e_till_before_return p s)
-    | None -> raise Er.empty_call_stack
+    | None -> raise empty_call_stack
 
 (* Execute till the program terminates. *)
 let e_till_termination p s =
