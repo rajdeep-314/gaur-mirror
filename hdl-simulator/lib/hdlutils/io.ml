@@ -5,9 +5,10 @@ let argc = Array.length Sys.argv
     the executable.
 *)
 let usage s =
-  if argc = 0
-  then
-    output_string stderr "Usage: \n";
+  if argc <= 1
+  then begin
+    prerr_endline "Usage: ";
     output_string stderr s;
-    output_string stderr "\n";
+    prerr_endline "";
     exit Exit.usage
+  end
