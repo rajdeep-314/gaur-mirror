@@ -39,12 +39,12 @@ end
 
 
 type exn +=
-    | LexingError   of info * Lexer.t
+    | LexingError   of Lexer.t
 
 (* Pretty-printer for lexing error exceptions. *)
 let pp_lexing_error = function
-    | LexingError (i, e) -> Some (Printf.sprintf
-        "%s\nLexing error: %s" (string_of_info i) (Lexer.to_string e))
+    | LexingError e -> Some (Printf.sprintf
+        "Lexing error: %s" (Lexer.to_string e))
     | _ -> None
 
 (* Registering pp_lexing_error. *)
@@ -54,15 +54,12 @@ let () = Printexc.register_printer pp_lexing_error
 (* Helper functions to raise exceptions. *)
 module Helper = struct
     module Lexer = struct
-        open Lexing
+        open Lexer
 
-        (* LexingError exception for info (src, pos) and lexing error e. *)
-        let lexing_exn src pos e = LexingError ((src, pos), e)
+        let lexing_exn e = LexingError e
 
-        let cantmatch src pos =
-            lexing_exn src pos CantMatch
-        let unterminated_comments src pos n =
-            lexing_exn src pos (UnterminatedComments n)
+        let cantmatch = lexing_exn CantMatch
+        let unterminated_comments n = lexing_exn (UnterminatedComments n)
     end
 end
 
