@@ -1,21 +1,19 @@
-type loc =
-  { loc_start : Lexing.position;
-    loc_end : Lexing.position;
+type t =
+  { loc_start : Lexing.position
+  ; loc_end   : Lexing.position
   }
-
-exception DuplicateKey of string * loc
 
 type 'a wrapped =
-  { txt : 'a;
-    loc : loc
+  { txt : 'a
+  ; loc : t
   }
 
-let mk_loc loc_start loc_end =
+let make loc_start loc_end =
   { loc_start=loc_start;
     loc_end=loc_end
   }
 
-let wrap_loc ~loc txt =
+let wrap ~loc txt =
   { txt=txt;
     loc=loc
   }
@@ -35,14 +33,3 @@ let errorf ~loc fmt =
   output_string stderr (range loc);
   Printf.eprintf "Error: ";
   Printf.eprintf fmt
-
-let add_to_map map kvl =
-  let module StrMap = Map.Make(String) in
-  let key = fst (kvl.txt) in
-  let value = snd (kvl.txt) in
-  let loc = kvl.loc in
-
-  if StrMap.mem key map then
-    raise (DuplicateKey (key, loc))
-  else
-    StrMap.add key value map
