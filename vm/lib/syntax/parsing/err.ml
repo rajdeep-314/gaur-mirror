@@ -38,19 +38,20 @@ module Lexer = struct
 end
 
 
+(* These exceptions have with-info and a without-info variants. The info comes
+   from the driver code. *)
 type exn +=
     | LexingError   of Lexer.t
+    | LexingErrorWI of info * Lexer.t
 
 (* Pretty-printer for lexing error exceptions. *)
-let pp_lexing_error = function
-    | LexingError e -> Some (Printf.sprintf
-        "Lexing error: %s" (Lexer.to_string e))
+let pp_lexing_error_wi = function
+    | LexingErrorWI (i, e) -> Some (Printf.sprintf
+        "%s\nLexing error: %s\n" (string_of_info i) (Lexer.to_string e))
     | _ -> None
 
 (* Registering pp_lexing_error. *)
-let () = Printexc.register_printer pp_lexing_error
-
-
+let () = Printexc.register_printer pp_lexing_error_wi
 (* Helper functions to raise exceptions. *)
 module Helper = struct
     module Lexer = struct
