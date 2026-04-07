@@ -55,4 +55,5 @@ and comment depth = parse
                           else comment (depth-1) lexbuf }
     | eof               { raise (unterminated_comments depth) }
     | '\n'              { Lexing.new_line lexbuf; comment depth lexbuf }
+    | _                 { comment depth lexbuf }
 
