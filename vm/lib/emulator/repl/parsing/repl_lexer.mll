@@ -1,5 +1,6 @@
 {
     open Repl_parser
+    open Err.Helper.Lexer
 }
 
 
@@ -28,5 +29,5 @@ rule read_tokens = parse
     | "exit"        { EXIT }
     | nat           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof           { EOF }
-    | _             { failwith ("Lexing error: Can't match." ^ Lexing.lexeme lexbuf ) }
+    | _             { raise unmatched_character }
 
