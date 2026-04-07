@@ -1,0 +1,140 @@
+cmd: TOP
+##
+## Ends in an error in state: 0.
+##
+## cmd' -> . cmd [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+Expecting a REPL command.
+For example:
+    - show calls
+
+cmd: SHOW TOP
+##
+## Ends in an error in state: 1.
+##
+## stmt -> SHOW . CALLS [ EOF ]
+## stmt -> SHOW . STACK [ EOF ]
+## stmt -> SHOW . STACK TOP NUM [ EOF ]
+## stmt -> SHOW . FUNCTION [ EOF ]
+## stmt -> SHOW . SCREEN [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## SHOW
+##
+
+Expecting a valid clause after show.
+For example:
+    - show function
+    - show calls
+
+cmd: SHOW STACK TILL
+##
+## Ends in an error in state: 2.
+##
+## stmt -> SHOW STACK . [ EOF ]
+## stmt -> SHOW STACK . TOP NUM [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## SHOW STACK
+##
+
+Expecting end-of-command, or "top".
+For example:
+    - show stack
+    - show stack top 2
+
+cmd: SHOW STACK TOP TOP
+##
+## Ends in an error in state: 3.
+##
+## stmt -> SHOW STACK TOP . NUM [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## SHOW STACK TOP
+##
+
+Expecting a natural number (number of stack entries to show)
+For example:
+    - show stack top 2
+
+cmd: EXECUTE TOP
+##
+## Ends in an error in state: 10.
+##
+## stmt -> EXECUTE . STEP [ EOF ]
+## stmt -> EXECUTE . STEPS NUM [ EOF ]
+## stmt -> EXECUTE . TILL RETURN [ EOF ]
+## stmt -> EXECUTE . TILL BEFORE RETURN [ EOF ]
+## stmt -> EXECUTE . TILL TERMINATION [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXECUTE
+##
+
+Expecting a valid clause after execute.
+For example:
+    - execute step
+    - execute till before return
+    - execute till termination
+
+cmd: EXECUTE TILL TOP
+##
+## Ends in an error in state: 11.
+##
+## stmt -> EXECUTE TILL . RETURN [ EOF ]
+## stmt -> EXECUTE TILL . BEFORE RETURN [ EOF ]
+## stmt -> EXECUTE TILL . TERMINATION [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXECUTE TILL
+##
+
+Expecting a valid execute-till clause.
+For example:
+    - execute till return
+    - execute till termination
+
+cmd: EXECUTE TILL BEFORE TOP
+##
+## Ends in an error in state: 14.
+##
+## stmt -> EXECUTE TILL BEFORE . RETURN [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXECUTE TILL BEFORE
+##
+
+Expecting a valid execute-till-before clause.
+For example:
+    - execute till before return
+
+cmd: EXECUTE STEPS TOP
+##
+## Ends in an error in state: 16.
+##
+## stmt -> EXECUTE STEPS . NUM [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXECUTE STEPS
+##
+
+Expecting a natural number (number of steps to execute).
+For example:
+    - execute steps 10
+
+cmd: EXIT TOP
+##
+## Ends in an error in state: 19.
+##
+## cmd -> stmt . EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## stmt
+##
+
+Wasn't expecting anything at this point.
+

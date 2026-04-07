@@ -2,5 +2,17 @@
  (modules repl_lexer))
 
 (menhir
- (modules repl_parser))
+ (modules repl_parser)
+ (flags --exn-carries-state))
+
+(rule
+  (targets messages.ml)
+  (deps repl_parser.mly repl_parser.messages)
+  (action
+    (with-stdout-to %{targets}
+      (run
+        menhir repl_parser.mly --compile-errors repl_parser.messages)
+    )
+  )
+)
 
