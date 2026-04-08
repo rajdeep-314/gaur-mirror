@@ -28,26 +28,26 @@ type port =
   }
 
 module Pretty : sig
-  val pp_dump_t : t Fmt.t
-  val pp_dump_f : (string * t) Fmt.t
-  val pp_dump_r : (t StrMap.t) Fmt.t
+  val pp_t : t Fmt.t
+  val pp_f : (string * t) Fmt.t
+  val pp_r : (t StrMap.t) Fmt.t
 end = struct
   let arrow = Fmt.any " ->@ "
-  let rec pp_dump_t ppf = function
+  let rec pp_t ppf = function
     | TBits n           -> Fmt.pf ppf "bits %d" n
 
-    | TRecord r         -> pp_dump_r ppf r
+    | TRecord r         -> pp_r ppf r
 
-    | TChip (tin, tout) -> Fmt.hovbox (Fmt.pair ~sep:arrow pp_dump_t pp_dump_t)
+    | TChip (tin, tout) -> Fmt.hovbox (Fmt.pair ~sep:arrow pp_t pp_t)
                              ppf
                              (tin, tout)
 
-  and pp_dump_f ppf v = Fmt.pair ~sep:(Fmt.any ":@ ") Fmt.string pp_dump_t
+  and pp_f ppf v = Fmt.pair ~sep:(Fmt.any ":@ ") Fmt.string pp_t
                           ppf
                           v
 
-  and pp_dump_r ppf r = Fmt.braces
-                          (Fmt.list ~sep:Fmt.comma pp_dump_f)
+  and pp_r ppf r = Fmt.braces
+                          (Fmt.list ~sep:Fmt.comma pp_f)
                           ppf
                           (StrMap.to_list r)
 end
