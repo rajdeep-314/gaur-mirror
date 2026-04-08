@@ -1,0 +1,10 @@
+CHIP Intermediate {
+  INPUT in : { a : bits 32, b : bits 32 }
+  OUTPUT out : { c : bits 8, d : bits 9 }
+  STATES dff : bits 1, fft : bits 9, recState : {a : bits 1}
+
+  out_c := Nand { a=in.a, b=in.b }
+  out_d := Not out_c
+
+  out := { c=out_c, d=out_d }
+}
