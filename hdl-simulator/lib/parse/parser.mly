@@ -48,7 +48,7 @@
 %type <Loc.t Ast.chip> chip
 %type <Loc.t Ast.assign_info> assign
 %type <Loc.t Ast.rhs_info> rhs
-%type <Loc.t Ast.call_info> call
+// %type <Loc.t Ast.call_info> call
 %type <Loc.t Ast.expr_info> expr
 
 %%
@@ -132,15 +132,20 @@ let rhs :=
     { let loc = Loc.make ($startpos) ($endpos) in
       mk_rhs_info (Expr expr) loc
     }
-  | call = call;
+  | chip = PID; expr = expr;
     { let loc = Loc.make ($startpos) ($endpos) in
-      mk_rhs_info (Call call) loc
+      mk_rhs_info (Call (chip, expr)) loc
     }
 
 let expr :=
   | i = INT;
     { let loc = Loc.make ($startpos) ($endpos) in
       mk_expr_info (Const (Bitvec.of_int i)) loc
+    }
+
+  | LBRACE; body = expr_rbody; RBRACE;
+    { let loc = Loc.make ($startpos) ($endpos) in
+      mk_expr_info (Record body) loc
     }
 
   | expr = expr; LSQUARE; lb = INT; COLON; ub = INT; RSQUARE;
@@ -171,29 +176,29 @@ let expr :=
   | LPAREN; expr = expr; RPAREN;
     { expr }
 
-let call :=
-  | chip = PID; expr = expr;
-    { let loc = Loc.make ($startpos) ($endpos) in
-      mk_call_info (CallE (chip, expr)) loc
-    }
-  | chip = PID; args = args;
-    { let loc = Loc.make ($startpos) ($endpos) in
-      mk_call_info (CallR (chip, args)) loc
-    }
+// let call :=
+//   | chip = PID; expr = expr;
+//     { let loc = Loc.make ($startpos) ($endpos) in
+//       mk_call_info (CallE (chip, expr)) loc
+//     }
+//   | chip = PID; args = args;
+//     { let loc = Loc.make ($startpos) ($endpos) in
+//       mk_call_info (CallR (chip, args)) loc
+//     }
 
-let args :=
-  | LBRACE; body = arg_rbody; RBRACE;
-    { body }
+// let args :=
+//   | LBRACE; body = arg_rbody; RBRACE;
+//     { body }
 
-let arg_rbody :=
-  | flist = separated_nonempty_list(COMMA, arg_rfield);
+let expr_rbody :=
+  | flist = separated_nonempty_list(COMMA, expr_rfield);
     { List.fold_left
         add_to_map
         StrMap.empty
         flist
     }
 
-let arg_rfield :=
+let expr_rfield :=
   | field = LID; FIELD_ASSIGN; expr = expr;
     { let loc = Loc.make ($startpos(field)) ($endpos(field)) in
       Loc.wrap ~loc:loc (field, expr)
