@@ -1,6 +1,7 @@
 module Types  = Types
 module Ast    = Ast
 module Parser = Parser
+module Lexer  = Lexer
 
 (** [parse s] parses the program from string [s]. *)
 let parse s =
