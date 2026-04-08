@@ -25,9 +25,9 @@ let lower     = ['a'-'z']
 let upper     = ['A'-'Z']
 
 (* lowercase identifier *)
-let lid       = (lower | '_' | digit)+
+let lid       = (lower | upper | '_' | digit)+
 (* PascalCase identifier *)
-let pid       = upper (lower | '_' | digit)*
+let pid       = upper (lower | upper | '_' | digit)*
 
 let prime     = "'" | "ʹ"
 
