@@ -48,3 +48,45 @@ type 'i chip =
   }
 
 type 'i prog = ('i chip) list
+
+
+module Map = struct
+  let rec expr f e =
+    match e with
+    | Const  bv           -> Const bv
+    | Record r            -> Record (StrMap.map (expr_info f) r)
+    | Splice (e', lb, ub) -> Splice (expr_info f e', lb, ub)
+    | Concat (e1, e2)     -> Concat (expr_info f e1, expr_info f e2)
+    | Access id           -> Access id
+    | Member (e', fld)    -> Member (expr_info f e', fld)
+
+  and expr_info f ei =
+    Info.map (expr f) f ei
+
+  let rhs f r =
+    match r with
+    | Call (id, ei) -> Call (id, expr_info f ei)
+    | Expr ei       -> Expr (expr_info f ei)
+
+  let rhs_info f ri =
+    Info.map (rhs f) f ri
+
+  let assign f a =
+    match a with
+    | Current (id, r) -> Current (id, rhs_info f r)
+    | Next    (id, r) -> Next    (id, rhs_info f r)
+
+  let assign_info f ai =
+    Info.map (assign f) f ai
+
+  let chip f c =
+    { name=c.name
+    ; input=c.input
+    ; output=c.output
+    ; states=c.states
+    ; parts=List.map (assign_info f) c.parts
+    }
+
+  let prog f p =
+    List.map (chip f) p
+end

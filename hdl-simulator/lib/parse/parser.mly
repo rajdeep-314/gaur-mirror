@@ -5,7 +5,7 @@
   open Errors
 
   let add_to_map map (kvl : 'a Loc.wrapped) =
-    let module StrMap = Map.Make(String) in
+    let module StrMap = Stdlib.Map.Make(String) in
     let key = fst (kvl.txt) in
     let value = snd (kvl.txt) in
     let loc = kvl.loc in
