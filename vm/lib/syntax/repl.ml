@@ -9,6 +9,8 @@ module A = Ast
 
 
 type t =
+    (* No input. *)
+    | Empty
     (* Show commands. *)
     | ShowCalls
     | ShowStack

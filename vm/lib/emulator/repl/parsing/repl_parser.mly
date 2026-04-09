@@ -45,5 +45,6 @@ stmt:
         { Exit }
 
 cmd:
+    | EOF                { Empty }
     | s = stmt; EOF      { s }
 

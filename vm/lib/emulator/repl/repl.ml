@@ -110,9 +110,13 @@ let reset_f p s = ("Resetting.", E.init_from_prog p)
 (* REPL function for exit. *)
 let exit_f p s = ("Exiting", s)
 
+(* REPL function for empty input. *)
+let empty_f p s = ("", s)
+
 
 (* REPL function for a command. *)
 let repl_func_of_cmd = function
+    | Empty                     -> empty_f
     | ShowCalls                 -> show_calls
     | ShowStack                 -> show_stack
     | ShowStackTop n            -> show_stack_top n
