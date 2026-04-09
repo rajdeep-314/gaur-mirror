@@ -9,9 +9,10 @@ module E  = Emulate
 module I  = State.Inspect
 module SP = State.PP
 module P  = Parsing.Repl
+module Er = Err
 
 open Ast
-open Err.Helper.Repl
+open Er.Helper.Repl
 
 
 (*
@@ -140,15 +141,23 @@ let exits = function
 let rec loop p s =
     print_string "@> " ; flush stdout ;     (* Prompt string. *)
     match P.get_cmd () with                 (* Try to read and parse input. *)
+    (* No lexing or parsing errors. *)
     | Ok cmd -> exec_cmd p s cmd
+    (* Lexing or parsing error. *)
     | Error err_str ->
         print_endline err_str ;
         loop p s
 
 and exec_cmd p s cmd =
-    let str, s' = repl_func_of_cmd cmd p s in
-    print_endline str ;
-    if exits cmd then () else loop p s'
+    try
+        let str, s' = repl_func_of_cmd cmd p s in
+        print_endline str ;
+        if exits cmd then () else loop p s'
+    with
+    (* Semantic, execution, or REPL error. *)
+    | (Er.SemanticError _ | Er.ExecutionError _ | Er.ReplError _) as e ->
+        print_endline (Printexc.to_string e) ;
+        loop p s
 
 
 (* Main REPL loop. *)
