@@ -5,7 +5,7 @@
 *)
 
 
-module A = Ast
+module A = Syntax.Ast
 
 
 type t =

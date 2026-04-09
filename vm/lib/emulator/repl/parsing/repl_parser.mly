@@ -1,5 +1,5 @@
 %{
-    open Syntax.Repl
+    open Ast
 %}
 
 
@@ -9,8 +9,8 @@
 %token RESET EXIT
 %token EOF
 
-%type <Syntax.Repl.t> stmt
-%type <Syntax.Repl.t> cmd
+%type <Ast.t> stmt
+%type <Ast.t> cmd
 
 %start cmd
 

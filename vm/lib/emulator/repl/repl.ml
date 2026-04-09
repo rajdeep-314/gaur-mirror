@@ -10,7 +10,7 @@ module I  = State.Inspect
 module SP = State.PP
 module P  = Parsing.Repl
 
-open Syntax.Repl
+open Ast
 open Err.Helper
 
 
