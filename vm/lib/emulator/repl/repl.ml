@@ -11,7 +11,7 @@ module SP = State.PP
 module P  = Parsing.Repl
 
 open Ast
-open Err.Helper
+open Err.Helper.Repl
 
 
 (*
@@ -149,6 +149,7 @@ and exec_cmd p s cmd =
     let str, s' = repl_func_of_cmd cmd p s in
     print_endline str ;
     if exits cmd then () else loop p s'
+
 
 (* Main REPL loop. *)
 let main_loop p =

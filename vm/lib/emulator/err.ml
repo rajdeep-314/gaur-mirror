@@ -53,9 +53,24 @@ module Execution = struct
 end
 
 
+(* Errors in the REPL mode. *)
+module Repl = struct
+    type t =
+        | EmptyCallStack
+        | ExecuteTillReturnFromMain
+
+    let to_string = function
+        | EmptyCallStack ->
+            "Call stack is empty."
+        | ExecuteTillReturnFromMain ->
+            "Can't perform execute till return from main."
+end
+
+
 type exn +=
     | SemanticError  of Semantic.t
     | ExecutionError of Execution.t
+    | ReplError      of Repl.t
 
 
 (* Helper functions (and values) for raising exceptions. *)
@@ -85,6 +100,13 @@ module Helper = struct
             ExecutionError (OutOfBoundSegWrite (s, n, n'))
         let oob_pc f n_insts n =
             ExecutionError (OutOfBoundPC (f, n_insts, n))
+    end
+
+    module Repl = struct
+        open Repl
+
+        let empty_call_stack = ReplError EmptyCallStack
+        let e_till_return_from_main = ReplError ExecuteTillReturnFromMain
     end
 end
 
