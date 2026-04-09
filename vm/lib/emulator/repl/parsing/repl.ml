@@ -5,5 +5,34 @@
 *)
 
 
-let parse_cmd s = Repl_parser.cmd Repl_lexer.read_tokens (Lexing.from_string s)
+module E = Err
+module L = Lexing
+module P = Repl_parser
+module U = Utils.Parsing
+
+
+(* String equivalent of an error for a given line, lexer buffer and error
+   string. *)
+let to_string line lexbuf err_str =
+    let l = lexbuf.L.lex_start_p in
+    let carat = U.carat_string (l.pos_cnum - l.pos_bol + 1) in Printf.sprintf
+    "In command:\n%s\n%s\n%s\n"
+    line carat err_str
+
+(*
+Read a line from stdin and return a value of type (cmd, string) result.
+    - Ok c denotes that the input was successfully parsed to produce command c.
+    - Error s denotes a parsing error with s being the error string.
+*)
+let get_cmd () =
+    let inp = read_line () in
+    let lexbuf = Lexing.from_string inp in
+    let string_of_err = to_string inp lexbuf in
+    try
+        Ok (Repl_parser.cmd Repl_lexer.read_tokens lexbuf)
+    with
+        | E.LexingError _ as e ->
+            Error (string_of_err (Printexc.to_string e))
+        | P.Error n ->
+            Error (string_of_err (Messages.message n))
 

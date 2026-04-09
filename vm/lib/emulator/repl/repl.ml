@@ -138,10 +138,15 @@ let exits = function
 
 (* REPL loop on program p and state s. *)
 let rec loop p s =
-    let () = print_string "@> " in
-    let cmd = P.parse_cmd (read_line ()) in
-    let repl_f = repl_func_of_cmd cmd in
-    let (str, s') = repl_f p s in
+    print_string "@> " ; flush stdout ;     (* Prompt string. *)
+    match P.get_cmd () with                 (* Try to read and parse input. *)
+    | Ok cmd -> exec_cmd p s cmd
+    | Error err_str ->
+        print_endline err_str ;
+        loop p s
+
+and exec_cmd p s cmd =
+    let str, s' = repl_func_of_cmd cmd p s in
     print_endline str ;
     if exits cmd then () else loop p s'
 
