@@ -70,8 +70,8 @@ let rec tc_expr env (ei : Loc.t Ast.expr_info) : tc_info Ast.expr_info =
     | TChip _ -> raise_member_type loc te'.info.typ
     end
   in
-  let tci = mk_tc_info loc typ env in
-  Ast.mk_expr_info te tci
+  let info = mk_tc_info loc typ env in
+  Ast.mk_expr_info te info
 
 
 let tc_rhs env (ri : Loc.t Ast.rhs_info) : tc_info Ast.rhs_info =
@@ -101,5 +101,27 @@ let tc_rhs env (ri : Loc.t Ast.rhs_info) : tc_info Ast.rhs_info =
     let te = tc_expr env pe in
     (Expr te, te.info.typ)
   in
-  let tci = mk_tc_info loc typ env in
-  Ast.mk_rhs_info tr tci
+  let info = mk_tc_info loc typ env in
+  Ast.mk_rhs_info tr info
+
+
+let tc_assign env (ai : Loc.t Ast.assign_info) : tc_info Ast.assign_info =
+  let loc = ai.info in
+  let (id, rhs, build) =
+  match ai.data with
+  | Current (id, rhs) -> (id, rhs, fun r' -> Ast.Current (id, r'))
+  | Next    (id, rhs) -> (id, rhs, fun r' -> Ast.Next    (id, r'))
+  in
+  let tr = tc_rhs env rhs in
+  let tr_typ = tr.info.typ in
+  let env' =
+  match Env.find_opt id env with
+  | Some tid ->
+    if Types.eq tr_typ tid
+    then env
+    else raise_assign loc tr_typ tid
+
+  | None -> Env.add id tr_typ env
+  in
+  let info = mk_tc_info loc tr_typ env' in
+  Ast.mk_assign_info (build tr) info

@@ -11,6 +11,7 @@ type t =
   | Call_arg      of Types.t * Types.t
   | Call_typ      of Types.t (* Unreachable exception *)
   | Call_unbound  of string
+  | Assign        of Types.t * Types.t
 
 exception TypeError of Loc.t * t
 
@@ -40,6 +41,9 @@ let raise_call_typ loc typ =
 
 let raise_call_unbound loc id =
   raise (TypeError (loc, Call_unbound id))
+
+let raise_assign loc ta te =
+  raise (TypeError (loc, Assign (ta, te)))
 
 module Pertty = struct
   open Types.Pretty
@@ -78,4 +82,9 @@ module Pertty = struct
 
     | Call_unbound id ->
       Fmt.pf ppf "Unbound chip %s" id
+
+    | Assign (ta, te) ->
+      Fmt.pf ppf "The variable of type %a can not be assigned an expression of type %a"
+        pp_t te
+        pp_t ta
 end
