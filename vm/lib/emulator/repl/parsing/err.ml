@@ -10,7 +10,7 @@ module Lexer = struct
         | UnmatchedCharacter
 
     let of_string = function
-        | UnmatchedCharacter -> "Can't match character"
+        | UnmatchedCharacter -> "Can't match characters from here"
 end
 
 
