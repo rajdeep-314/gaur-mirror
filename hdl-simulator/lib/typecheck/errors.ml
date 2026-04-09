@@ -8,6 +8,9 @@ type t =
   | Access        of string
   | Member_field  of string
   | Member_type   of Types.t
+  | Call_arg      of Types.t * Types.t
+  | Call_typ      of Types.t (* Unreachable exception *)
+  | Call_unbound  of string
 
 exception TypeError of Loc.t * t
 
@@ -28,6 +31,15 @@ let raise_member_field loc fld =
 
 let raise_member_type loc typ =
   raise (TypeError (loc, Member_type typ))
+
+let raise_call_arg loc ta te =
+  raise (TypeError (loc, Call_arg (ta, te)))
+
+let raise_call_typ loc typ =
+  raise (TypeError (loc, Call_typ typ))
+
+let raise_call_unbound loc id =
+  raise (TypeError (loc, Call_unbound id))
 
 module Pertty = struct
   open Types.Pretty
@@ -55,4 +67,15 @@ module Pertty = struct
     | Member_type t ->
       Fmt.pf ppf "The expression has type %a which is not a record"
         pp_t t
+
+    | Call_arg (ta, te) ->
+      Fmt.pf ppf "The expression has type %a but an expression was expected of type %a"
+        pp_t ta
+        pp_t te
+
+    | Call_typ t ->
+      Fmt.pf ppf "The expression of type %a is not a chip" pp_t t
+
+    | Call_unbound id ->
+      Fmt.pf ppf "Unbound chip %s" id
 end

@@ -72,3 +72,34 @@ let rec tc_expr env (ei : Loc.t Ast.expr_info) : tc_info Ast.expr_info =
   in
   let tci = mk_tc_info loc typ env in
   Ast.mk_expr_info te tci
+
+
+let tc_rhs env (ri : Loc.t Ast.rhs_info) : tc_info Ast.rhs_info =
+  let loc = ri.info in
+  let pr  = ri.data in
+  let (tr, typ) : tc_info Ast.rhs * Types.t =
+  match pr with
+  | Call (id, pe) ->
+    begin match Env.find_opt id env with
+    | Some tid ->
+      begin match tid with
+      | TChip (tin, tout) ->
+        let te   = tc_expr env pe in
+        let targ = te.info.typ in
+        if Types.eq tin targ
+        then (Call (id, te), tout)
+        else raise_call_arg loc targ tin
+
+      | TBits _
+      | TRecord _ -> raise_call_typ loc tid
+      end
+
+    | None -> raise_call_unbound loc id
+    end
+
+  | Expr pe ->
+    let te = tc_expr env pe in
+    (Expr te, te.info.typ)
+  in
+  let tci = mk_tc_info loc typ env in
+  Ast.mk_rhs_info tr tci
