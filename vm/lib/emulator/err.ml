@@ -36,20 +36,20 @@ module Execution = struct
         | NotEnoughValsOnWorkingStack (n, n') -> Printf.sprintf
             "Not enough values on the working stack. Needed at least %d, got only %d" n n'
         | ExecutionTerminated ret_val -> Printf.sprintf
-            "Execution terminated with return value %d." ret_val
+            "Execution terminated with return value %d" ret_val
         | UnboundFunction f -> "Unbound function " ^ f
         | OutOfBoundSegRead (seg, n, n') -> Printf.sprintf
-            "Attempted to read segment %s out of bounds."
+            "Attempted to read segment %s out of bounds"
             (Syntax.Printers.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to read index %d" n n'
         | OutOfBoundSegWrite (seg, n, n') -> Printf.sprintf
-            "Attempted to write segment %s out of bounds."
+            "Attempted to write segment %s out of bounds"
             (Syntax.Printers.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
         | OutOfBoundPC (f, n_insts, n) -> Printf.sprintf
             "Attempted to fetch instruction number %d in function %s, which \
             only has %d instructions" n f n_insts
-        | UnImplemented -> "Unimplemented feature."
+        | UnImplemented -> "Unimplemented feature"
 end
 
 
@@ -61,9 +61,9 @@ module Repl = struct
 
     let to_string = function
         | EmptyCallStack ->
-            "Call stack is empty."
+            "Call stack is empty"
         | ExecuteTillReturnFromMain ->
-            "Can't perform execute till return from main."
+            "Can't perform execute till return from main"
 end
 
 
@@ -71,6 +71,31 @@ type exn +=
     | SemanticError  of Semantic.t
     | ExecutionError of Execution.t
     | ReplError      of Repl.t
+
+
+
+(* Registering printers for these exceptions. *)
+
+let pp_semantic_error = function
+    | SemanticError e -> Some (Printf.sprintf
+        "Semantic error: %s." (Semantic.to_string e))
+    | _ -> None
+
+let pp_execution_error = function
+    | ExecutionError e -> Some (Printf.sprintf
+        "Execution error: %s." (Execution.to_string e))
+    | _ -> None
+
+
+let pp_repl_error = function
+    | ReplError e -> Some (Printf.sprintf
+        "REPL error: %s." (Repl.to_string e))
+    | _ -> None
+
+let () =
+    Printexc.register_printer pp_semantic_error ;
+    Printexc.register_printer pp_execution_error ;
+    Printexc.register_printer pp_repl_error
 
 
 (* Helper functions (and values) for raising exceptions. *)
