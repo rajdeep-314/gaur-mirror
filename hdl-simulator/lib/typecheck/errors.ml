@@ -2,16 +2,16 @@ open Parse
 open Hdlutils
 
 type t =
-  | Splice_bounds of int * int * int
-  | Splice_type   of Types.t
-  | Concat_type   of Types.t * Types.t
   | Access        of string
-  | Member_field  of string
-  | Member_type   of Types.t
+  | Assign        of Types.t * Types.t
   | Call_arg      of Types.t * Types.t
   | Call_typ      of Types.t (* Unreachable exception *)
   | Call_unbound  of string
-  | Assign        of Types.t * Types.t
+  | Concat_type   of Types.t * Types.t
+  | Member_field  of string
+  | Member_type   of Types.t
+  | Splice_bounds of int * int * int
+  | Splice_type   of Types.t
 
 exception TypeError of Loc.t * t
 
