@@ -10,6 +10,8 @@ let add = StrMap.add
 
 let empty = StrMap.empty
 
+let singleton = StrMap.singleton
+
 let mem = StrMap.mem
 
 let fold = StrMap.fold
