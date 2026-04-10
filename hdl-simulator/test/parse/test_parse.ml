@@ -6,4 +6,7 @@ let usage_txt =
 
 let () = Io.usage usage_txt
 
-let () = In_channel.with_open_text Sys.argv.(1) parse_ic |> ignore
+let () =
+  let fname = Sys.argv.(1) in
+  In_channel.with_open_text fname (parse_ic fname)
+  |> ignore
