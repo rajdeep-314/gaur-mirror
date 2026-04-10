@@ -164,3 +164,9 @@ let tc_chip env (ci : Loc.t Ast.chip_info) =
   let tc = { pc with parts = tprt } in
   let tci = mk_tc_info loc pc.output.typ env'' in
   Ast.mk_chip_info tc tci
+
+
+let rec tc_prog env (pi : Loc.t Ast.prog) : tc_info Ast.prog =
+  match pi with
+  | []        -> []
+  | pc :: pcs -> tc_chip env pc :: tc_prog env pcs
