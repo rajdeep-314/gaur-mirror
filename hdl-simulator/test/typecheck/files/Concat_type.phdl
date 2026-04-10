@@ -1,0 +1,17 @@
+# Typecheck.Errors.Concat_type
+
+CHIP Foo {
+    INPUT in: {a: bits 1, b: bits 3}
+    OUTPUT out: bits 1
+
+    # Valid concatenation
+    boat := in.b ++ in.a
+
+    # Invalid concatenations
+    foo := {a = in}
+    bar := {b = in}
+
+    foobar1 := foo ++ bar
+    foobar2 := in.b ++ foo
+    foobar3 := bar ++ in.a
+}

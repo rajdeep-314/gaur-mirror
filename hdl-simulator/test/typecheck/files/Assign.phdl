@@ -1,0 +1,9 @@
+# Typecheck.Errors.Assign
+
+CHIP Foo {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  temp1 := Nand {a = in, b = in}
+  out := {a = temp1}
+}

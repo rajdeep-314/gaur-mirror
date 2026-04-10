@@ -1,0 +1,8 @@
+# Typecheck.Errors.Access
+
+CHIP Foo {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  foo := bar
+}

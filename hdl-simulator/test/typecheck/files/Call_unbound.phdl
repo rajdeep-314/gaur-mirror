@@ -1,0 +1,8 @@
+# Typecheck.Errors.Call_unbound
+
+CHIP Foo {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  foo := Not in
+}
