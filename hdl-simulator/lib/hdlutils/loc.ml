@@ -33,3 +33,6 @@ let errorf ~loc fmt =
   output_string stderr (range loc);
   Printf.eprintf "Error: ";
   Printf.eprintf fmt
+
+let errorl loc =
+  output_string stderr (range loc)
