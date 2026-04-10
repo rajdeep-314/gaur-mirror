@@ -45,10 +45,9 @@
 
 %start <Loc.t Ast.prog> prog
 
-%type <Loc.t Ast.chip> chip
+%type <Loc.t Ast.chip_info> chip
 %type <Loc.t Ast.assign_info> assign
 %type <Loc.t Ast.rhs_info> rhs
-// %type <Loc.t Ast.call_info> call
 %type <Loc.t Ast.expr_info> expr
 
 %%
@@ -61,7 +60,9 @@ let chip :=
   | CHIP; name = PID; LBRACE;
     body = body;
     RBRACE;
-      { { body with Ast.name = name } }
+      { let loc = Loc.make ($startpos) ($endpos) in
+        mk_chip_info { body with Ast.name = name} loc
+      }
 
 let body :=
   | in_decl = in_decl;
