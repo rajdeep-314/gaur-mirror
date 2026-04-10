@@ -125,3 +125,42 @@ let tc_assign env (ai : Loc.t Ast.assign_info) : tc_info Ast.assign_info =
   in
   let info = mk_tc_info loc tr_typ env' in
   Ast.mk_assign_info (build tr) info
+
+
+let add_in_port (ci : Loc.t Ast.chip_info) env =
+  let id  = ci.data.input.name in
+  let typ = ci.data.input.typ  in
+  Env.add id typ env
+
+let add_out_port (ci : Loc.t Ast.chip_info) env =
+  let id  = ci.data.output.name in
+  let typ = ci.data.output.typ  in
+  Env.add id typ env
+
+let add_states (ci : Loc.t Ast.chip_info) env =
+  match ci.data.states with
+  | None   -> env
+  | Some s -> StrMap.fold Env.add s env
+
+let add_port_states ci env = env
+                             |> add_in_port ci
+                             |> add_out_port ci
+                             |> add_states ci
+
+let rec tc_parts env ais =
+  match ais with
+  | []         -> [], env
+  | pa :: pas  -> let ta   = tc_assign env pa in
+                  let env' = ta.info.env      in
+                  let (tas, env') = tc_parts env' pas in
+                  ta :: tas, env'
+
+let tc_chip env (ci : Loc.t Ast.chip_info) =
+  let loc = ci.info in
+  let pc  = ci.data in
+  let pprt = ci.data.parts in
+  let env' = add_port_states ci env in
+  let tprt, env'' = tc_parts env' pprt in
+  let tc = { pc with parts = tprt } in
+  let tci = mk_tc_info loc pc.output.typ env'' in
+  Ast.mk_chip_info tc tci
