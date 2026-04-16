@@ -4,3 +4,6 @@
     chip and all chips in [prog].
 *)
 val v : 'a. 'a Parse.Ast.prog -> Env.t
+
+(** [nane_name] is simply ["Nand"]. *)
+val nand_name : string

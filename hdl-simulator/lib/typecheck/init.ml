@@ -2,6 +2,8 @@ open Parse
 
 module StrMap = Map.Make(String)
 
+let nand_name = "Nand"
+
 let nand_in =
   let open Types in
   TRecord (
@@ -15,7 +17,7 @@ let nand_out = Types.TBits 1
 
 let nand_typ = Types.TChip (nand_in, nand_out)
 
-let nand_env = Env.singleton "Nand" nand_typ
+let nand_env = Env.singleton nand_name nand_typ
 
 let add env (ci : 'a Ast.chip_info) =
   let c = ci.data in
