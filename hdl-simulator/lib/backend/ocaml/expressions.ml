@@ -1,4 +1,5 @@
 open Patterns
+open Types
 
 module StrMap = Map.Make(String)
 
@@ -15,7 +16,9 @@ type expr =
   | Apply   of expr * expr list
   | ObjMem  of expr * string
 
-and let_bind = pat * expr
+and let_bind =
+  | Simple  of pat * expr
+  | FunDecl of string * (pat * typ option) list * typ option * expr
 
 
 let eunit = Unit
@@ -23,18 +26,20 @@ let eint n = Int n
 let estring s = String s
 let ebool b = Bool b
 let eid id = Id id
-let elet pat e eb = Let ((pat, e), eb)
+let elet pat e eb = Let (Simple(pat, e), eb)
 let etuple el = Tuple el
 let eobject er = Object er
 let earray el = Array el
 let eapply e el = Apply (e, el)
 let eobjmem obj fld = ObjMem (obj, fld)
 
-let blet (p : pat) (e : expr) : let_bind =
-  (p, e)
+let blet p e = Simple (p, e)
+let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
 
 
 module Pretty = struct
+  let colon ppf = Fmt.any ":@ " ppf
+
   let rec pp_expr ppf e =
     match e with
     | Unit -> Fmt.pf ppf "()"
@@ -57,13 +62,30 @@ module Pretty = struct
                          pp_expr o
                          f
 
-  and pp_blet ppf (pat, e) =
-    Fmt.pf ppf "%a = %a"
-      Patterns.Pretty.pp_pat pat
-      pp_expr e
+  and pp_blet ppf lb =
+    match lb with
+    | Simple (p, e) ->
+      Fmt.pf ppf "%a = %a"
+        Patterns.Pretty.pp_pat p
+        pp_expr e
+
+    | FunDecl (id, ptl, rt, e) ->
+      Fmt.pf ppf "%s %a %a = %a"
+        id
+        Fmt.(list ~sep:sp pp_ptl) ptl
+        Fmt.(option (colon ++ Types.Pretty.pp_typ)) rt
+        pp_expr e
 
   and pp_method ppf (id, e) =
     Fmt.pf ppf "method %s = %a"
       id
       pp_expr e
+
+  and pp_ptl ppf (p, topt) =
+    match topt with
+    | Some t -> Fmt.pf ppf "(%a : %a)"
+                  Patterns.Pretty.pp_pat p
+                  Types.Pretty.pp_typ t
+    | None   -> Fmt.pf ppf "(%a)"
+                  Patterns.Pretty.pp_pat p
 end
