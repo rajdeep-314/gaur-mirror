@@ -11,6 +11,7 @@ type expr =
   | Let     of let_bind * expr
   | Tuple   of expr list
   | Object  of expr StrMap.t
+  | Array   of expr list
 
 and let_bind = pat * expr
 
@@ -23,6 +24,7 @@ let eid id = Id id
 let elet lb e = Let (lb, e)
 let etuple el = Tuple el
 let eobject er = Object er
+let earray el = Array el
 
 let blet (p : pat) (e : expr) : let_bind =
   (p, e)
@@ -42,6 +44,8 @@ module Pretty = struct
     | Tuple el -> Fmt.(parens (list ~sep:comma pp_expr)) ppf el
     | Object er -> Fmt.pf ppf "object %a end"
                      Fmt.(list ~sep:semi pp_method) (StrMap.to_list er)
+    | Array el  -> Fmt.pf ppf "[| %a |]"
+                     Fmt.(list ~sep:(any "; ") pp_expr) el
 
   and pp_blet ppf (pat, e) =
     Fmt.pf ppf "%a = %a"
