@@ -1,11 +1,8 @@
-type t = O | I
+type t = bool
 
 let to_int b =
-  match b with
-  | O -> 0
-  | I -> 1
+  if b then 1 else 0
 
 let nandb b1 b2 =
-  match b1, b2 with
-  | I, I -> O
-  | _    -> I
+  if b1 && b2 then false
+  else true
