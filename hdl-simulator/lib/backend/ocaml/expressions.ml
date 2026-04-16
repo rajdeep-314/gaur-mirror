@@ -65,12 +65,12 @@ module Pretty = struct
   and pp_blet ppf lb =
     match lb with
     | Simple (p, e) ->
-      Fmt.pf ppf "%a = %a"
+      Fmt.pf ppf "let %a = %a"
         Patterns.Pretty.pp_pat p
         pp_expr e
 
     | FunDecl (id, ptl, rt, e) ->
-      Fmt.pf ppf "%s %a %a = %a"
+      Fmt.pf ppf "let %s %a %a =@ %a"
         id
         Fmt.(list ~sep:sp pp_ptl) ptl
         Fmt.(option (colon ++ Types.Pretty.pp_typ)) rt
