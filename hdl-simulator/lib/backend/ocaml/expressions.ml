@@ -15,6 +15,7 @@ type expr =
   | Array   of expr list
   | Apply   of expr * expr list
   | ObjMem  of expr * string
+  | ModPath of string * string
 
 and let_bind =
   | Simple  of pat * expr
@@ -32,6 +33,7 @@ let eobject er = Object er
 let earray el = Array el
 let eapply e el = Apply (e, el)
 let eobjmem obj fld = ObjMem (obj, fld)
+let modpath m f = ModPath (m, f)
 
 let blet p e = Simple (p, e)
 let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
@@ -61,6 +63,7 @@ module Pretty = struct
     | ObjMem (o, f) -> Fmt.pf ppf "(%a)#%s"
                          pp_expr o
                          f
+    | ModPath (m, f) -> Fmt.pf ppf "%s.%s" m f
 
   and pp_blet ppf lb =
     match lb with
