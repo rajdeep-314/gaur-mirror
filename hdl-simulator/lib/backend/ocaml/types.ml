@@ -9,6 +9,7 @@ type typ =
   | Arrow   of typ * typ
   | Tuple   of typ list
   | Object  of typ StrMap.t
+  | Array   of typ
 
 and typ_decl = string * typ_info
 
@@ -26,6 +27,7 @@ let tid id = Id id
 let tarrow tin tout = Arrow (tin, tout)
 let ttuple tl = Tuple tl
 let tobject tr = Object tr
+let tarray t = Array t
 
 let decl_alias   lid typ : typ_decl = (lid, Typ typ)
 let decl_record  lid fl  : typ_decl = (lid, Record fl)
@@ -51,6 +53,8 @@ module Pretty = struct
     | Object tr         -> Fmt.pf ppf "@[<1>< %a >@]"
                              (Fmt.list ~sep:spsemi pp_method)
                              (StrMap.to_list tr)
+    | Array t           -> Fmt.pf ppf "%a array"
+                             pp_typ t
 
   and pp_typ_decl ppf (lid, typ_info) =
     Fmt.pf ppf "@[<hov 2>type %s = @,%a@]"
