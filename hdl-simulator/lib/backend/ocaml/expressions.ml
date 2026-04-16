@@ -49,12 +49,12 @@ module Pretty = struct
     | String s -> Fmt.string ppf s
     | Bool b -> Fmt.bool ppf b
     | Id id -> Fmt.string ppf id
-    | Let (lb, e) -> Fmt.pf ppf "let %a in %a"
+    | Let (lb, e) -> Fmt.pf ppf "%a in %a"
                        pp_blet lb
                        pp_expr e
     | Tuple el -> Fmt.(parens (list ~sep:comma pp_expr)) ppf el
     | Object er -> Fmt.pf ppf "object %a end"
-                     Fmt.(list ~sep:semi pp_method) (StrMap.to_list er)
+                     Fmt.(list ~sep:sp pp_method) (StrMap.to_list er)
     | Array el  -> Fmt.pf ppf "[| %a |]"
                      Fmt.(list ~sep:(any "; ") pp_expr) el
     | Apply (e, el) -> Fmt.pf ppf "%a %a"
