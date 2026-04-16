@@ -35,6 +35,7 @@ let decl_variant lid vl  : typ_decl = (lid, Variant vl)
 module Pretty = struct
   let star ppf = Fmt.any "*" ppf
   let spstar ppf = Fmt.any " * " ppf
+  let spsemi ppf = Fmt.any "@ ;@ " ppf
 
   let rec pp_typ ppf typ =
     match typ with
@@ -47,8 +48,8 @@ module Pretty = struct
                              pp_typ tin
                              pp_typ tout
     | Tuple tl          -> Fmt.parens (Fmt.list ~sep:spstar pp_typ) ppf tl
-    | Object tr         -> Fmt.pf ppf "@[<1><%a>@]"
-                             (Fmt.list ~sep:Fmt.semi pp_method)
+    | Object tr         -> Fmt.pf ppf "@[<1>< %a >@]"
+                             (Fmt.list ~sep:spsemi pp_method)
                              (StrMap.to_list tr)
 
   and pp_typ_decl ppf (lid, typ_info) =
