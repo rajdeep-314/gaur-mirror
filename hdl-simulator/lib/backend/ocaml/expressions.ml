@@ -13,6 +13,7 @@ type expr =
   | Object  of expr StrMap.t
   | Array   of expr list
   | Apply   of expr * expr list
+  | ObjMem  of expr * string
 
 and let_bind = pat * expr
 
@@ -27,6 +28,7 @@ let etuple el = Tuple el
 let eobject er = Object er
 let earray el = Array el
 let eapply e el = Apply (e, el)
+let eobjmem obj fld = ObjMem (obj, fld)
 
 let blet (p : pat) (e : expr) : let_bind =
   (p, e)
@@ -51,6 +53,9 @@ module Pretty = struct
     | Apply (e, el) -> Fmt.pf ppf "%a %a"
                          pp_expr e
                          Fmt.(list ~sep:sp pp_expr) el
+    | ObjMem (o, f) -> Fmt.pf ppf "(%a)#%s"
+                         pp_expr o
+                         f
 
   and pp_blet ppf (pat, e) =
     Fmt.pf ppf "%a = %a"
