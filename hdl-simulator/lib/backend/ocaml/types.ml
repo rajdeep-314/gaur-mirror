@@ -5,9 +5,10 @@ type typ =
   | Int
   | String
   | Bool
-  | Id     of string
-  | Arrow  of typ * typ
-  | Tuple  of typ list
+  | Id      of string
+  | Arrow   of typ * typ
+  | Tuple   of typ list
+  | Object  of typ StrMap.t
 
 and typ_decl = string * typ_info
 
@@ -24,6 +25,7 @@ let tbool = Bool
 let tid id = Id id
 let tarrow tin tout = Arrow (tin, tout)
 let ttuple tl = Tuple tl
+let tobject tr = Object tr
 
 let decl_alias   lid typ : typ_decl = (lid, Typ typ)
 let decl_record  lid fl  : typ_decl = (lid, Record fl)
@@ -45,6 +47,9 @@ module Pretty = struct
                              pp_typ tin
                              pp_typ tout
     | Tuple tl          -> Fmt.parens (Fmt.list ~sep:spstar pp_typ) ppf tl
+    | Object tr         -> Fmt.pf ppf "@[<1><%a>@]"
+                             (Fmt.list ~sep:Fmt.semi pp_method)
+                             (StrMap.to_list tr)
 
   and pp_typ_decl ppf (lid, typ_info) =
     Fmt.pf ppf "@[<hov 2>type %s = @,%a@]"
@@ -55,7 +60,7 @@ module Pretty = struct
     match ti with
     | Typ t       -> pp_typ ppf t
     | Record fl   -> Fmt.braces
-                       (Fmt.list ~sep:Fmt.comma pp_field_decl)
+                       (Fmt.list ~sep:Fmt.semi pp_field_decl)
                        ppf
                        (StrMap.to_list fl)
     | Variant vl  -> Fmt.vbox (Fmt.list pp_var_decl) ppf (StrMap.to_list vl)
@@ -71,4 +76,9 @@ module Pretty = struct
       (if' (not (List.is_empty tl)) Fmt.string) "of "
       (list ~sep:(spstar) pp_typ) tl
     )
+
+  and pp_method ppf (lid, typ) =
+    Fmt.pf ppf "%s : %a"
+      lid
+      pp_typ typ
 end

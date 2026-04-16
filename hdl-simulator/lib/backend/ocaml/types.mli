@@ -26,6 +26,9 @@ val tarrow : typ -> typ -> typ
 (** OCaml tuple [(t1,...,tn)] *)
 val ttuple : typ list -> typ
 
+(** OCaml object [<f1 : t1 ; ... ; fn : tn >] *)
+val tobject : typ Map.Make(String).t -> typ
+
 (** {3 Type Declarations} *)
 
 (** Type alias *)
