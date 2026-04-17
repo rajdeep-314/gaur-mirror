@@ -21,6 +21,7 @@ let item_let_bind lb = Let_bind lb
 
 
 module Pretty = struct
+  let cutcut ppf = Fmt.(cut ++ cut) ppf
 
   let pp_item ppf item =
     match item with
@@ -30,5 +31,5 @@ module Pretty = struct
   let pp_decl ppf m =
     Fmt.pf ppf "@[<v 0>module %s = struct@,  @[<v 0>%a@]@,end@]"
       m.name
-      (Fmt.list pp_item) m.items
+      (Fmt.list ~sep:cutcut pp_item) m.items
 end

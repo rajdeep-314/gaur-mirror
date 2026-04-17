@@ -50,14 +50,14 @@ module Pretty = struct
                              pp_typ tin
                              pp_typ tout
     | Tuple tl          -> Fmt.parens (Fmt.list ~sep:spstar pp_typ) ppf tl
-    | Object tr         -> Fmt.pf ppf "@[<1>< %a >@]"
+    | Object tr         -> Fmt.pf ppf "@[<h>< %a >@]"
                              (Fmt.list ~sep:spsemi pp_method)
                              (StrMap.to_list tr)
-    | Array t           -> Fmt.pf ppf "%a array"
+    | Array t           -> Fmt.pf ppf "@[<hv 2>%a@ array@]"
                              pp_typ t
 
   and pp_typ_decl ppf (lid, typ_info) =
-    Fmt.pf ppf "@[<hov 2>type %s = @,%a@]"
+    Fmt.pf ppf "@[<hv 2>type %s = @,%a@]"
       lid
       pp_typ_info typ_info
 
