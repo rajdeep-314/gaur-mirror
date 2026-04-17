@@ -11,15 +11,11 @@ let var_pfx  = "var_"
 
 (** {2 Chip IO} *)
 
-(** [id_tin id] is the OCaml type identifier of a chip with
-    input name [id].
-*)
-let id_tin id = "tin"
+(** [id_tin] is the OCaml type identifier of a chip.  *)
+let id_tin = "tin"
 
-(** [id_tout id] is the OCaml type identifier of a chip with
-    output name [id].
-*)
-let id_tout id = "tout"
+(** [id_tout] is the OCaml type identifier of a chip.  *)
+let id_tout = "tout"
 
 
 (** {2 Chip Variables} *)
