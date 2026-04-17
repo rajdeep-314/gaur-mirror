@@ -51,15 +51,13 @@ let states (sr : Types.t StrMap.t) : Types.t StrMap.t =
   |> List.map (fun (id, t) -> (N.var_current id, t))
   |> StrMap.of_list
 
-let states_opt = Option.map states
-
 let chip (ci : 'a Ast.chip_info) : 'a Ast.chip_info =
   let c = ci.data in
   let c' : 'a Ast.chip =
     { name=N.module_name c.name
     ; input=input c.input
     ; output=output c.output
-    ; states=states_opt c.states
+    ; states=states c.states
     ; parts=parts c.parts
     }
   in

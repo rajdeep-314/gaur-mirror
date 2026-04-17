@@ -43,7 +43,7 @@ type 'i chip =
   { name    : string
   ; input   : port
   ; output  : port
-  ; states  : states option
+  ; states  : states
   ; parts   : 'i assign_info list
   }
 

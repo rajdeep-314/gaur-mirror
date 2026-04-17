@@ -138,9 +138,7 @@ let add_out_port (ci : Loc.t Ast.chip_info) env =
   Env.add id typ env
 
 let add_states (ci : Loc.t Ast.chip_info) env =
-  match ci.data.states with
-  | None   -> env
-  | Some s -> StrMap.fold Env.add s env
+  StrMap.fold Env.add ci.data.states env
 
 let add_port_states ci env = env
                              |> add_in_port ci

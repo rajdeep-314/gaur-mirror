@@ -3,6 +3,8 @@ open Parse
 open Adt
 module Dep = Dependency
 
+module StrMap = Map.Make(String)
+
 (* Assuming the program is in topological order *)
 
 module Make (P : sig type a val prog : a Ast.prog end) () : sig
@@ -17,7 +19,7 @@ end = struct
     ci.data.name = Init.nand_name
 
   let has_states (ci : P.a Ast.chip_info) : bool =
-    Option.is_some (ci.data.states)
+    not (StrMap.is_empty ci.data.states)
 
   let rec is_stateful (ci : P.a Ast.chip_info) : bool =
     let name = ci.data.name in

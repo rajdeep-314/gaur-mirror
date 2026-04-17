@@ -72,7 +72,7 @@ let body :=
       { { name=""
         ; input=in_decl
         ; output=out_decl
-        ; states=st_decl
+        ; states=Option.value ~default:StrMap.empty st_decl
         ; parts=assign
       } }
 
