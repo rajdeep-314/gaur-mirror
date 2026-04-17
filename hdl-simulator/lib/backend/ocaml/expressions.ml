@@ -44,25 +44,25 @@ module Pretty = struct
 
   let rec pp_expr ppf e =
     match e with
-    | Unit -> Fmt.pf ppf "()"
-    | Int n -> Fmt.int ppf n
-    | String s -> Fmt.string ppf s
-    | Bool b -> Fmt.bool ppf b
-    | Id id -> Fmt.string ppf id
-    | Let (lb, e) -> Fmt.pf ppf "@[<v>%a@,in@,%a@]"
-                       pp_blet lb
-                       pp_expr e
-    | Tuple el -> Fmt.(parens (list ~sep:comma pp_expr)) ppf el
-    | Object er -> Fmt.pf ppf "@[<v>object@;<0 2>@[<v>%a@]@,end@]"
-                     Fmt.(list pp_method) (StrMap.to_list er)
-    | Array el  -> Fmt.pf ppf "[| %a |]"
-                     Fmt.(list ~sep:(any "; ") pp_expr) el
-    | Apply (e, el) -> Fmt.pf ppf "@[<v 2>%a@,%a@]"
-                         pp_expr e
-                         Fmt.(list ~sep:sp pp_expr) el
-    | ObjMem (o, f) -> Fmt.pf ppf "(%a)#%s"
-                         pp_expr o
-                         f
+    | Unit           -> Fmt.pf ppf "()"
+    | Int n          -> Fmt.int ppf n
+    | String s       -> Fmt.string ppf s
+    | Bool b         -> Fmt.bool ppf b
+    | Id id          -> Fmt.string ppf id
+    | Let (lb, e)    -> Fmt.pf ppf "@[<v>%a@,in@,%a@]"
+                          pp_blet lb
+                          pp_expr e
+    | Tuple el       -> Fmt.(parens (list ~sep:comma pp_expr)) ppf el
+    | Object er      -> Fmt.pf ppf "@[<v>object@;<0 2>@[<v>%a@]@,end@]"
+                          Fmt.(list pp_method) (StrMap.to_list er)
+    | Array el       -> Fmt.pf ppf "[| %a |]"
+                          Fmt.(list ~sep:(any "; ") pp_expr) el
+    | Apply (e, el)  -> Fmt.pf ppf "@[<v 2>%a@,%a@]"
+                          pp_expr e
+                          Fmt.(list ~sep:sp pp_expr) el
+    | ObjMem (o, f)  -> Fmt.pf ppf "(%a)#%s"
+                          pp_expr o
+                          f
     | ModPath (m, f) -> Fmt.pf ppf "%s.%s" m f
 
   and pp_blet ppf lb =
