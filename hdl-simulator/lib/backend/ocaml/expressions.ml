@@ -40,7 +40,7 @@ let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
 
 
 module Pretty = struct
-  let colon ppf = Fmt.any ":@ " ppf
+  let colon ppf = Fmt.any ": " ppf
 
   let rec pp_expr ppf e =
     match e with
@@ -49,15 +49,15 @@ module Pretty = struct
     | String s -> Fmt.string ppf s
     | Bool b -> Fmt.bool ppf b
     | Id id -> Fmt.string ppf id
-    | Let (lb, e) -> Fmt.pf ppf "%a in %a"
+    | Let (lb, e) -> Fmt.pf ppf "@[<v>%a@,in@,%a@]"
                        pp_blet lb
                        pp_expr e
     | Tuple el -> Fmt.(parens (list ~sep:comma pp_expr)) ppf el
-    | Object er -> Fmt.pf ppf "object %a end"
-                     Fmt.(list ~sep:sp pp_method) (StrMap.to_list er)
+    | Object er -> Fmt.pf ppf "@[<v>object@;<0 2>@[<v>%a@]@,end@]"
+                     Fmt.(list pp_method) (StrMap.to_list er)
     | Array el  -> Fmt.pf ppf "[| %a |]"
                      Fmt.(list ~sep:(any "; ") pp_expr) el
-    | Apply (e, el) -> Fmt.pf ppf "%a %a"
+    | Apply (e, el) -> Fmt.pf ppf "@[<v 2>%a@,%a@]"
                          pp_expr e
                          Fmt.(list ~sep:sp pp_expr) el
     | ObjMem (o, f) -> Fmt.pf ppf "(%a)#%s"
@@ -68,12 +68,12 @@ module Pretty = struct
   and pp_blet ppf lb =
     match lb with
     | Simple (p, e) ->
-      Fmt.pf ppf "let %a = %a"
+      Fmt.pf ppf "@[<v 2>let %a =@,%a@]"
         Patterns.Pretty.pp_pat p
         pp_expr e
 
     | FunDecl (id, ptl, rt, e) ->
-      Fmt.pf ppf "let %s %a %a =@ %a"
+      Fmt.pf ppf "@[<v 2>let %s %a %a =@ %a@]"
         id
         Fmt.(list ~sep:sp pp_ptl) ptl
         Fmt.(option (colon ++ Types.Pretty.pp_typ)) rt
