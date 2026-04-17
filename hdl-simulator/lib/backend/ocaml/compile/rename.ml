@@ -24,7 +24,7 @@ let rec expr (ei : 'a Ast.expr_info) : 'a Ast.expr_info =
 let rhs (ri : 'a Ast.rhs_info) : 'a Ast.rhs_info =
   let r : 'a Ast.rhs =
     match ri.data with
-    | Call (id, e) -> Call (N.module_name id ^ "." ^ N.fun_out, expr e)
+    | Call (id, e) -> Call (N.module_name id, expr e)
     | Expr e       -> Expr (expr e)
   in
   { ri with data = r }
