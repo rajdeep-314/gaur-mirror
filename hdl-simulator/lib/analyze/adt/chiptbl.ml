@@ -1,13 +1,21 @@
 open Parse
 
-type 'a t = (string, 'a Ast.chip_info) Hashtbl.t
+module Make (P : sig type a val prog : a Ast.prog end) () : sig
+  type t
 
-let add (tbl : 'a t) (ci : 'a Ast.chip_info) : unit =
-  Hashtbl.add tbl ci.data.name ci
+  val make : P.a Ast.prog -> unit
 
-let make (p : 'a Ast.prog) : 'a t =
-  let tbl = Hashtbl.create 16 in
-  List.iter (add tbl) p;
-  tbl
+  val find : string -> P.a Ast.chip_info
+end = struct
+  type t = (string, P.a Ast.chip_info) Hashtbl.t
 
-let find (tbl : 'a t) name = Hashtbl.find tbl name
+  let v : t = Hashtbl.create (List.length P.prog)
+
+  let add (ci : P.a Ast.chip_info) : unit =
+    Hashtbl.add v ci.data.name ci
+
+  let make (p : P.a Ast.prog) =
+    List.iter add p
+
+  let find name = Hashtbl.find v name
+end

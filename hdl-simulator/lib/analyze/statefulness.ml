@@ -10,9 +10,8 @@ module StrMap = Map.Make(String)
 module Make (P : sig type a val prog : a Ast.prog end) () : sig
   val is_stateful : P.a Ast.chip_info -> bool
 end = struct
-  let chiptbl : P.a Chiptbl.t = Chiptbl.make P.prog
+  module C = Chiptbl.Make(P) ()
 
-  (* The memoization table: key is chip name, value is statefulness *)
   let v : (string, bool) Hashtbl.t = Hashtbl.create (List.length P.prog)
 
   let is_nand (ci : P.a Ast.chip_info) : bool =
@@ -36,6 +35,6 @@ end = struct
     else
       let deps = Dep.Chips.chip ci in
       List.exists
-        (fun name -> is_stateful (Chiptbl.find chiptbl name))
+        (fun name -> is_stateful (C.find name))
         deps
 end
