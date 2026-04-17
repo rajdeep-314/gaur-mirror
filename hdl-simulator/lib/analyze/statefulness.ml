@@ -8,7 +8,7 @@ module StrMap = Map.Make(String)
 (* Assuming the program is in topological order *)
 
 module Make (P : sig type a val prog : a Ast.prog end) () : sig
-  val is_stateful : P.a Ast.chip_info -> bool
+  val is_stateful : string -> bool
 end = struct
   module C = Chiptbl.Make(P) ()
 
@@ -20,7 +20,7 @@ end = struct
   let has_states (ci : P.a Ast.chip_info) : bool =
     not (StrMap.is_empty ci.data.states)
 
-  let rec is_stateful (ci : P.a Ast.chip_info) : bool =
+  let rec is_stateful_ci (ci : P.a Ast.chip_info) : bool =
     let name = ci.data.name in
     match Hashtbl.find_opt v name with
     | Some sf -> sf
@@ -35,6 +35,9 @@ end = struct
     else
       let deps = Dep.Chips.chip ci in
       List.exists
-        (fun name -> is_stateful (C.find name))
+        (fun name -> is_stateful_ci (C.find name))
         deps
+
+  let is_stateful (c : string) : bool =
+    is_stateful_ci (C.find c)
 end
