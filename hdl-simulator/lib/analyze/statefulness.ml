@@ -9,6 +9,7 @@ module StrMap = Map.Make(String)
 
 module Make (P : sig type a val prog : a Ast.prog end) () : sig
   val is_stateful : string -> bool
+  val find : string -> P.a Ast.chip_info
 end = struct
   module C = Chiptbl.Make(P) ()
 
@@ -40,4 +41,6 @@ end = struct
 
   let is_stateful (c : string) : bool =
     is_stateful_ci (C.find c)
+
+  let find = C.find
 end
