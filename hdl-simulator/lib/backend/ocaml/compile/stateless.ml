@@ -21,7 +21,7 @@ let rec expr (ei : 'a Ast.expr_info) : E.expr =
   | Const  bv           -> expr_const bv
   | Record r            -> StrMap.map expr r |> E.eobject
   | Splice (e', lb, ub) -> F.splice (expr e') (E.eint lb) (E.eint ub)
-  | Concat (e1, e2)     -> F.concat (expr e1) (expr e1)
+  | Concat (e1, e2)     -> F.concat (expr e1) (expr e2)
   | Access id           -> E.eid id
   | Member (e', fld)    -> E.eobjmem (expr e') fld
 
