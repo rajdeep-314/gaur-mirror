@@ -22,12 +22,10 @@ let nand_out = Types.TBits 1
 
 let nand_out_port : Ast.port =
   { name="out"
-  ; typ=nand_in
+  ; typ=nand_out
   }
 
 let nand_typ = Types.TChip (nand_in, nand_out)
-
-let nand_env = Env.singleton nand_name nand_typ
 
 let nand_chip : 'a Ast.chip = Ast.(
   { name=nand_name
@@ -38,8 +36,13 @@ let nand_chip : 'a Ast.chip = Ast.(
   }
 )
 
+let nand_chip_info (i : 'i) : 'i Ast.chip_info =
+  Ast.mk_chip_info nand_chip i
+
 let add env (ci : 'a Ast.chip_info) =
   let c = ci.data in
   Env.add c.name (Ast.chip_typ c) env
 
-let v prog = List.fold_left add nand_env prog
+let env prog = List.fold_left add Env.empty prog
+
+let prog i prog = nand_chip_info i :: prog

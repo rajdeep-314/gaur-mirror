@@ -9,8 +9,9 @@ open Typechecker
 
 (** [typecheck s] typechecks a parsed program [prog]. *)
 let typecheck prog =
-  let env = Init.v prog in
-  try tc_prog env prog
+  let prog' = Init.prog Loc.dummy prog in
+  let env = Init.env prog' in
+  try tc_prog env prog'
   with TypeError (loc, err) ->
     Loc.errorl loc;
     Pertty.pp Fmt.stderr err;
