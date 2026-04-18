@@ -52,3 +52,8 @@ let fun_out = "out"
 
 (** [fun_clk] is the name of a chip's clock function. *)
 let fun_clk = "clk"
+
+(** [fun_out_clk] is the name of a chip's cobined
+    output and clock function.
+*)
+let fun_out_clk = "out_clk"
