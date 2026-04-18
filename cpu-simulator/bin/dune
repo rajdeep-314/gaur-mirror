@@ -1,6 +1,6 @@
-(executable
+(executables
  (package cpu-simulator)
- (public_name cpusim)
- (name main)
- (libraries syntax cpusim bram utils debug))
+ (public_names cpusim cpusim_new)
+ (names main main_new)
+ (libraries syntax cpusim bram utils debug syntax_new cpusim_new bram_new debug_new))
 
