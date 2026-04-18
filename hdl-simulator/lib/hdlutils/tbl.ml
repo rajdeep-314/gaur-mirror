@@ -12,8 +12,9 @@ end
 
 module Make (K : KEY) (V : VAL) : sig
   type node
-  val add  : K.t  -> V.t -> node
-  val find : node -> V.t
+  val add      : K.t  -> V.t -> node
+  val add_list : (K.t * V.t) list -> (K.t * node) list
+  val find     : node -> V.t
 end = struct
   type t = (K.t, V.t) Hashtbl.t
 
@@ -27,6 +28,11 @@ end = struct
     | None   ->
       Hashtbl.add tbl k v;
       k
+
+  let add_list (kv : (K.t * V.t) list) : (K.t * node) list =
+    List.map
+      (fun (k, v) -> (k, add k v))
+      kv
 
   let find (n : node) : V.t =
     Hashtbl.find tbl n
