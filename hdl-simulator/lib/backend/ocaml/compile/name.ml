@@ -41,6 +41,12 @@ let var_next id =
 let module_name id =
   String.capitalize_ascii (name_pfx ^ id)
 
+(** [chipfld_name id] is the OCaml field name of a chip with
+    name [id], to be used in stateful chips.
+*)
+let chipfld_name id =
+  String.lowercase_ascii (id ^ "'")
+
 (** [fun_out] is the name of a chip's, output function. *)
 let fun_out = "out"
 
