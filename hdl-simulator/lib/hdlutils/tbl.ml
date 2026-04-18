@@ -22,8 +22,11 @@ end = struct
   let tbl : t = Hashtbl.create 16
 
   let add (k : K.t) (v : V.t) : node =
-    Hashtbl.add tbl k v;
-    k
+    match Hashtbl.find_opt tbl k with
+    | Some _ -> k
+    | None   ->
+      Hashtbl.add tbl k v;
+      k
 
   let find (n : node) : V.t =
     Hashtbl.find tbl n
