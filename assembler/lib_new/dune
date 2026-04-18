@@ -3,3 +3,8 @@
  (public_name assembler_new)
  (libraries ptools.utils))
 
+(ocamllex
+  (modules lexer_isa lexer_asm))
+
+(menhir
+  (modules parser_isa parser_asm))
