@@ -1,6 +1,5 @@
 open Typecheck
 open Parse
-open Adt
 open Hdlutils
 
 module Dep = Dependency
