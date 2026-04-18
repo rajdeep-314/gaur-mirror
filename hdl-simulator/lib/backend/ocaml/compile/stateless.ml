@@ -70,3 +70,36 @@ let tout_decl (ci : 'a Ast.chip_info) : T.typ_decl =
   T.decl_alias N.id_tout (tout_typ ci)
 
 let tout_tid = T.tid N.id_tout
+
+
+let expr_in (ci : 'a Ast.chip_info) e =
+  let input = ci.data.input.name in
+  let bl =
+    E.bfun
+      N.fun_out
+      [P.pid input, Some tin_tid]
+      (Some tout_tid)
+  in bl e
+
+
+let expr_out (ci : 'a Ast.chip_info) =
+  E.eid ci.data.output.name
+
+
+let union (m1 : 'a StrMap.t) (m2 : 'a StrMap.t) =
+  StrMap.fold (fun k v acc -> StrMap.add k v acc) m1 m2
+
+let chip (ci : 'a Ast.chip_info) =
+  let ein   = expr_in ci in
+  let eout  = expr_out ci in
+  let eparts = parts ci.data.parts in
+  let elast = eout in
+  M.mdecl
+    ci.data.name
+    [ M.item_typ_decl (tin_decl ci)
+    ; M.item_typ_decl (tout_decl ci)
+    ; M.item_let_bind (ein (eparts elast))
+    ]
+
+let prog (p : 'a Ast.prog) =
+  List.map chip p
