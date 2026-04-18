@@ -3,6 +3,11 @@ type t =
   ; loc_end   : Lexing.position
   }
 
+let dummy =
+  { loc_start=Lexing.dummy_pos
+  ; loc_end  =Lexing.dummy_pos
+  }
+
 type 'a wrapped =
   { txt : 'a
   ; loc : t
