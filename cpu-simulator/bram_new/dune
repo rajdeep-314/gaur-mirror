@@ -1,0 +1,4 @@
+(library
+ (name bram_new)
+ (libraries utils cpusim_new))
+
