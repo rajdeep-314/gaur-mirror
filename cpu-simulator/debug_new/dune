@@ -1,0 +1,4 @@
+(library
+ (name debug_new)
+ (libraries cpusim_new))
+
