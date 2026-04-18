@@ -27,8 +27,8 @@ Inductive t:Set :=
     | sub   : reg.t -> reg.t -> reg.t -> t
     | and   : reg.t -> reg.t -> reg.t -> t
     | not   : reg.t -> reg.t -> t
-    | sl    : reg.t -> reg.t -> bits.bv 6 -> t
-    | sr    : reg.t -> reg.t -> bits.bv 6 -> t
+    | sl    : reg.t -> reg.t -> bits.bv 5 -> t
+    | sr    : reg.t -> reg.t -> bits.bv 5 -> t
     | beq   : reg.t -> reg.t -> bits.bv 6 -> t
     | blt   : reg.t -> reg.t -> bits.bv 6 -> t
     | jalr  : reg.t -> reg.t -> bits.bv 6 -> t
@@ -76,8 +76,8 @@ Definition erase (inst:t) : t_ :=
     | sub rd rs1 rs2    => sub_ rd rs1 rs2
     | and rd rs1 rs2    => and_ rd rs1 rs2
     | not rd rs         => not_ rd rs
-    | sl rd rs imm      => sl_ rd rs (f 6 imm)
-    | sr rd rs imm      => sr_ rd rs (f 6 imm)
+    | sl rd rs imm      => sl_ rd rs (f 5 imm)
+    | sr rd rs imm      => sr_ rd rs (f 5 imm)
     | beq rs1 rs2 imm   => beq_ rs1 rs2 (f 6 imm)
     | blt rs1 rs2 imm   => blt_ rs1 rs2 (f 6 imm)
     | jalr rd rs imm    => jalr_ rd rs (f 6 imm)

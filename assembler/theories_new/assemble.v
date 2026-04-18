@@ -62,8 +62,8 @@ Definition ast_to_isa (l:Set) (eqb:l -> l -> bool) (inst:@ast.t l) (tbl:symtable
     | ast.sub rd rs1 rs2  => Ok (Some (isa.sub rd rs1 rs2))
     | ast.and rd rs1 rs2  => Ok (Some (isa.and rd rs1 rs2))
     | ast.not rd rs       => Ok (Some (isa.not rd rs))
-    | ast.sl rd rs imm    => Ok (Some (isa.sl rd rs (bits.int_to_bv_n 6 imm)))
-    | ast.sr rd rs imm    => Ok (Some (isa.sr rd rs (bits.int_to_bv_n 6 imm)))
+    | ast.sl rd rs imm    => Ok (Some (isa.sl rd rs (bits.int_to_bv_n 5 imm)))
+    | ast.sr rd rs imm    => Ok (Some (isa.sr rd rs (bits.int_to_bv_n 5 imm)))
     | ast.beq rs1 rs2 lbl =>
             match symtable.find_opt l eqb tbl lbl with
             | Some n    =>
@@ -211,8 +211,9 @@ Definition isa_to_machine (inst:isa.t) : machine.t :=
     | isa.sub  rd rs1 rs2   => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs1) (bits.concat 5 1 (reg_to_bv rs2) (bits.int_to_bv_n 1 0))))
     | isa.and  rd rs1 rs2   => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs1) (bits.concat 5 1 (reg_to_bv rs2) (bits.int_to_bv_n 1 0))))
     | isa.not  rd rs        => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs) (bits.int_to_bv_n 6 0)))
-    | isa.sl   rd rs imm    => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs) (bits.reverse imm)))
-    | isa.sr   rd rs imm    => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs) (bits.reverse imm)))
+    | isa.sl   rd rs imm    => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs) (bits.concat 1 5 (bits.int_to_bv_n 1 0) (bits.reverse imm))))
+    | isa.sr   rd rs imm    => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs) (bits.concat 1 5 (bits.int_to_bv_n 1 0) (bits.reverse imm))))
+    (*| isa.sr   rd rs imm    => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs) (bits.b0 :: bits.reverse imm)))*)
     | isa.beq  rs1 rs2 imm  => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rs1) (bits.concat 5 6 (reg_to_bv rs2) (bits.reverse imm)))
     | isa.blt  rs1 rs2 imm  => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rs1) (bits.concat 5 6 (reg_to_bv rs2) (bits.reverse imm)))
     | isa.jalr rd rs imm    => bits.concat 16 16 (opcode_of_inst inst) (bits.concat 5 11 (reg_to_bv rd) (bits.concat 5 6 (reg_to_bv rs) (bits.reverse imm)))
