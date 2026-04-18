@@ -27,8 +27,8 @@ header-includes:
 |   6.      |   sub                 |   sub rd rs1 rs2  |   rd = rs1 - rs2                  |   h<06>_rd(5)_rs1(5)_rs2(5)_0     |
 |   7.      |   and                 |   and rd rs1 rs2  |   rd = rs1 & rs2                  |   h<07>_rd(5)_rs1(5)_rs2(5)_0     |
 |   8.      |   not                 |   not rd rs1      |   rd = ~ rs1                      |   h<08>_rd(5)_rs1(5)_000000       |
-|   9.      |   sl                  |   sl rd rs imm    |   rd = rs << imm                  |   h<09>_rd(5)_rs(5)_imm(6)        |
-|   10.     |   sr                  |   sr rd rs imm    |   rd = rs >> imm                  |   h<10>_rd(5)_rs(5)_imm(6)        |
+|   9.      |   sl                  |   sl rd rs imm    |   rd = rs << imm                  |   h<09>_rd(5)_rs(5)_0_imm(5)      |
+|   10.     |   sr                  |   sr rd rs imm    |   rd = rs >> imm                  |   h<10>_rd(5)_rs(5)_0_imm(5)      |
 |   11.     |   beq                 |   beq rs1 rs2 imm |   if rs1 == rs2, PC += imm        |   h<11>_rs1(5)_rs2(5)_imm(6)      |
 |   12.     |   blt                 |   blt rs1 rs2 imm |   if rs1 < rs2, PC += imm         |   h<12>_rs1(5)_rs2(5)_imm(6)      |
 |   13.     |   jalr                |   jalr rd rs1 imm |   rd = PC + 1, PC = rs1 + imm     |   h<13>_rd(5)_rs1(5)_imm(6)       |
