@@ -1,6 +1,6 @@
-(executable
+(executables
  (package assembler)
- (public_name assembler)
- (name main)
- (libraries assembler))
+ (public_names assembler assembler_new)
+ (names main main_new)
+ (libraries assembler assembler_new))
 
