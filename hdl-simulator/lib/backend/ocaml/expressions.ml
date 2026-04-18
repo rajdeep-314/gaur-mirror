@@ -16,6 +16,8 @@ type expr =
   | Apply   of expr * expr list
   | ObjMem  of expr * string
   | ModPath of string * string
+  | Record  of expr StrMap.t
+  | RecMem  of expr * string
 
 and let_bind =
   | Simple  of pat * expr
@@ -34,6 +36,8 @@ let earray el = Array el
 let eapply e el = Apply (e, el)
 let eobjmem obj fld = ObjMem (obj, fld)
 let modpath m f = ModPath (m, f)
+let erecord er = Record er
+let erecmem r fld = RecMem (r, fld)
 
 let blet p e = Simple (p, e)
 let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
@@ -59,11 +63,16 @@ module Pretty = struct
                           Fmt.(list ~sep:(any "; ") pp_expr) el
     | Apply (e, el)  -> Fmt.pf ppf "@[<v 2>%a@,%a@]"
                           pp_expr e
-                          Fmt.(list ~sep:sp pp_expr) el
+                          Fmt.(list ~sep:sp (parens pp_expr)) el
     | ObjMem (o, f)  -> Fmt.pf ppf "(%a)#%s"
                           pp_expr o
                           f
     | ModPath (m, f) -> Fmt.pf ppf "%s.%s" m f
+    | Record er      -> Fmt.pf ppf "@[<v>{@;<0 2>@[<v>%a@]@,}@]"
+                          Fmt.(list pp_field) (StrMap.to_list er)
+    | RecMem (r, f)  -> Fmt.pf ppf "(%a).%s"
+                          pp_expr r
+                          f
 
   and pp_blet ppf lb =
     match lb with
@@ -91,4 +100,9 @@ module Pretty = struct
                   Types.Pretty.pp_typ t
     | None   -> Fmt.pf ppf "(%a)"
                   Patterns.Pretty.pp_pat p
+
+  and pp_field ppf (id, e) =
+    Fmt.pf ppf "%s = %a"
+      id
+      pp_expr e
 end
