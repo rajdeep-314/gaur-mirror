@@ -37,6 +37,11 @@ type port =
   ; typ  : t
   }
 
+let dummy_port =
+  { name=""
+  ; typ=TBits 0
+  }
+
 type states = t StrMap.t
 
 type 'i chip =
@@ -51,6 +56,14 @@ type 'i chip_info = ('i chip, 'i) Info.t
 
 let mk_chip_info (c : 'i chip) (i : 'i) : 'i chip_info =
   Info.make c i
+
+let dummy_chip name =
+  { name=name
+  ; input=dummy_port
+  ; output=dummy_port
+  ; states=StrMap.empty
+  ; parts=[]
+  }
 
 let chip_typ chip = TChip (chip.input.typ, chip.output.typ)
 
