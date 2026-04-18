@@ -4,6 +4,17 @@ open Parse
 
 module StrMap = Map.Make(String)
 
+let rec typ (t : Types.t) : Types.t =
+  match t with
+  | TBits   n           -> TBits n
+  | TRecord tr          -> TRecord (typ_record tr)
+  | TChip   (tin, tout) -> TChip (typ tin, typ tout)
+
+  and typ_record tr =
+    StrMap.to_list tr
+    |> List.map (fun (fld, t) -> Name.var_current fld, typ t)
+    |> StrMap.of_list
+
 let rec expr (ei : 'a Ast.expr_info) : 'a Ast.expr_info =
   let e : 'a Ast.expr =
     match ei.data with
@@ -18,7 +29,7 @@ let rec expr (ei : 'a Ast.expr_info) : 'a Ast.expr_info =
 
   and expr_record r =
     StrMap.to_list r
-    |> List.map (fun (fld, e) -> Name.var_current fld, e)
+    |> List.map (fun (fld, e) -> Name.var_current fld, expr e)
     |> StrMap.of_list
 
 let rhs (ri : 'a Ast.rhs_info) : 'a Ast.rhs_info =
@@ -41,10 +52,14 @@ let parts (pi : 'a Ast.assign_info list) : 'a Ast.assign_info list =
   List.map assign pi
 
 let input (ip : Ast.port) : Ast.port =
-  { ip with name=N.var_current ip.name }
+  { name=N.var_current ip.name
+  ; typ=typ ip.typ
+  }
 
 let output (op : Ast.port) : Ast.port =
-  { op with name=N.var_current op.name }
+  { name=N.var_current op.name
+  ; typ=typ op.typ
+  }
 
 let states (sr : Types.t StrMap.t) : Types.t StrMap.t =
   StrMap.to_list sr
