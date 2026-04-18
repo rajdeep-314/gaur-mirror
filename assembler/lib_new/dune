@@ -1,0 +1,5 @@
+(library
+ (name assembler_new)
+ (public_name assembler_new)
+ (libraries ptools.utils))
+
