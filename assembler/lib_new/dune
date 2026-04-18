@@ -1,3 +1,9 @@
+(rocq.extraction
+  (prelude extraction)
+  (extracted_modules assembler_extr)
+  (theories Stdlib assembler_new)
+ )
+
 (library
  (name assembler_new)
  (public_name assembler_new)
