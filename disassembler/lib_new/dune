@@ -1,0 +1,4 @@
+(library
+ (name dis_new)
+ (libraries assembler_new))
+
