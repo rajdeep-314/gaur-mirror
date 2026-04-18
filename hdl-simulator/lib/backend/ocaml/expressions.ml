@@ -69,7 +69,7 @@ module Pretty = struct
                           f
     | ModPath (m, f) -> Fmt.pf ppf "%s.%s" m f
     | Record er      -> Fmt.pf ppf "@[<v>{@;<0 2>@[<v>%a@]@,}@]"
-                          Fmt.(list pp_field) (StrMap.to_list er)
+                          Fmt.(list ~sep:semi pp_field) (StrMap.to_list er)
     | RecMem (r, f)  -> Fmt.pf ppf "(%a).%s"
                           pp_expr r
                           f
