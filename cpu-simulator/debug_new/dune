@@ -2,3 +2,9 @@
  (name debug_new)
  (libraries cpusim_new))
 
+(ocamllex
+  (modules lexer))
+
+(menhir
+  (modules parser))
+
