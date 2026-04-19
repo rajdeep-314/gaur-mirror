@@ -72,6 +72,14 @@ let tout_decl (ci : 'a Ast.chip_info) : T.typ_decl =
 let tout_tid = T.tid N.id_tout
 
 
+let tchip_tid = T.tid "t"
+
+let tchip = "t"
+
+let tchip_decl (ci : 'a Ast.chip_info) =
+  T.decl_alias tchip T.tunit
+
+
 let expr_in (ci : 'a Ast.chip_info) e =
   let input = ci.data.input.name in
   let bl =
@@ -85,6 +93,15 @@ let expr_in (ci : 'a Ast.chip_info) e =
 let expr_out (ci : 'a Ast.chip_info) =
   E.eid ci.data.output.name
 
+let expr_fclk (ci : 'a Ast.chip_info) =
+  E.bfun
+    N.fun_clk
+    [ P.pwild, Some tin_tid
+    ; P.pwild, Some tchip_tid
+    ]
+    (Some tchip_tid)
+    E.eunit
+
 
 let union (m1 : 'a StrMap.t) (m2 : 'a StrMap.t) =
   StrMap.fold (fun k v acc -> StrMap.add k v acc) m1 m2
@@ -94,11 +111,14 @@ let chip (ci : 'a Ast.chip_info) =
   let eout  = expr_out ci in
   let eparts = parts ci.data.parts in
   let elast = eout in
+  let efclk = expr_fclk ci in
   M.mdecl
     ci.data.name
-    [ M.item_typ_decl (tin_decl ci)
+    [ M.item_typ_decl (tchip_decl ci)
+    ; M.item_typ_decl (tin_decl ci)
     ; M.item_typ_decl (tout_decl ci)
     ; M.item_let_bind (ein (eparts elast))
+    ; M.item_let_bind efclk
     ]
 
 let prog (p : 'a Ast.prog) =
