@@ -4,6 +4,8 @@ type pat =
 
 let pid id = Id id
 
+let pwild = Id "_"
+
 
 module Pretty = struct
   let pp_pat ppf p =
