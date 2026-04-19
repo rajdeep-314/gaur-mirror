@@ -31,7 +31,11 @@ let rec expr (ei : 'a Ast.expr_info) : E.expr =
     |> E.earray
 
 let rhs_out id e : E.expr =
-  E.eapply (E.modpath id N.fun_out) [expr e]
+  E.eapply
+   (E.modpath id N.fun_out)
+   [ expr e
+   ; E.eunit
+   ]
 
 let rhs_clk id e : E.expr =
   E.eapply (E.modpath id N.fun_clk) [expr e]
@@ -85,7 +89,9 @@ let expr_in (ci : 'a Ast.chip_info) e =
   let bl =
     E.bfun
       N.fun_out
-      [P.pid input, Some tin_tid]
+      [ P.pid input, Some tin_tid
+      ; P.pwild, Some tchip_tid
+      ]
       (Some tout_tid)
   in bl e
 

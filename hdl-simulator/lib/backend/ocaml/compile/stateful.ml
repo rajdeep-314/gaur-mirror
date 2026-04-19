@@ -45,7 +45,11 @@ let rec expr is_state_var (ei : 'a Ast.expr_info) : E.expr =
     else E.eid id
 
 let rhs_out_sl isv id e : E.expr =
-  E.eapply (E.modpath id N.fun_out) [expr isv e]
+  E.eapply
+    (E.modpath id N.fun_out)
+    [ expr isv e
+    ; E.eunit
+    ]
 
 let rhs_out_sf i isv id e : E.expr =
   E.eapply
