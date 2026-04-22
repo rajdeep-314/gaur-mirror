@@ -1,4 +1,0 @@
-(rocq.theory
- (name assembler_new)
- (theories Stdlib)
-)

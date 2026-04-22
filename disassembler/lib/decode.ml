@@ -7,8 +7,8 @@ module E = Errors
 module UB = Utils.Bitwise
 module UR = Utils.Results
 
-open Assembler_new.Types
-open Assembler_new.Types.Helper
+open Assembler.Types
+open Assembler.Types.Helper
 
 
 let int_to_reg = function

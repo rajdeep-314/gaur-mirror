@@ -15,12 +15,15 @@ type reg =
     | R4  | R5  | R6  | R7
     | R8  | R9  | R10 | R11
     | R12 | R13 | R14 | R15
+    | R16 | R17 | R18 | R19
+    | R20 | R21 | R22 | R23
+    | R24 | R25 | R26 | R27
+    | R28 | R29 | R30 | R31
 
 
 (** PASM instructions with labels of type ['l]. *)
 type 'l asm_inst =
-    | Lli   of  reg * int       (** Load lower immediate. *)
-    | Lui   of  reg * int       (** Load upper imediate. *)
+    | Li    of  reg * int       (** Load immediate. *)
     | Ld    of  reg * reg * int (** Load. *)
     | St    of  reg * reg * int (** Store. *)
     | Add   of  reg * reg * reg (** Add two registers. *)
@@ -28,6 +31,8 @@ type 'l asm_inst =
     | Sub   of  reg * reg * reg (** Subtract two registers. *)
     | And   of  reg * reg * reg (** Bitwise and between two registers. *)
     | Not   of  reg * reg       (** Bitwise negation of a register. *)
+    | Sl    of  reg * reg * int (** Logical Shift Left. *)
+    | Sr    of  reg * reg * int (** Logical Shift Right. *)
     | Beq   of  reg * reg * 'l  (** Branch if equal-to. *)
     | Blt   of  reg * reg * 'l  (** Branch if less-than. *)
     | Jalr  of  reg * reg * int (** Jump and link register. *)
@@ -41,8 +46,7 @@ type 'l asm_prog = ('l asm_inst) list
 
 (** PISA instructions, without labels. *)
 type isa_inst =
-    | I_lli   of  reg * int
-    | I_lui   of  reg * int
+    | I_li    of  reg * int
     | I_ld    of  reg * reg * int
     | I_st    of  reg * reg * int
     | I_add   of  reg * reg * reg
@@ -50,6 +54,8 @@ type isa_inst =
     | I_sub   of  reg * reg * reg
     | I_and   of  reg * reg * reg
     | I_not   of  reg * reg
+    | I_sl    of  reg * reg * int
+    | I_sr    of  reg * reg * int
     | I_beq   of  reg * reg * int
     | I_blt   of  reg * reg * int
     | I_jalr  of  reg * reg * int
@@ -86,11 +92,26 @@ module Helper = struct
     let r13 = R13
     let r14 = R14
     let r15 = R15
+    let r16 = R16
+    let r17 = R17
+    let r18 = R18
+    let r19 = R19
+    let r20 = R20
+    let r21 = R21
+    let r22 = R22
+    let r23 = R23
+    let r24 = R24
+    let r25 = R25
+    let r26 = R26
+    let r27 = R27
+    let r28 = R28
+    let r29 = R29
+    let r30 = R30
+    let r31 = R31
 
     (** PASM instructions. *)
 
-    let lli rd n = Lli (rd, n)
-    let lui rd n = Lui (rd, n)
+    let li rd n = Li (rd,n)
     let ld rd rs1 n = Ld (rd, rs1, n)
     let st rd rs1 n = St (rd, rs1, n)
     let add rd rs1 rs2 = Add (rd, rs1, rs2)
@@ -98,6 +119,8 @@ module Helper = struct
     let sub rd rs1 rs2 = Sub (rd, rs1, rs2)
     let and' rd rs1 rs2 = And (rd, rs1, rs2)
     let not rd rs1 = Not (rd, rs1)
+    let sl rd rs n = Sl (rd,rs,n)
+    let sr rd rs n  = Sr (rd,rs,n)
     let beq rs1 rs2 l = Beq (rs1, rs2, l)
     let blt rs1 rs2 l = Blt (rs1, rs2, l)
     let jalr rd rs1 n = Jalr (rd, rs1, n)
@@ -108,8 +131,7 @@ module Helper = struct
 
     (** PISA instructions. *)
 
-    let illi rd n = I_lli (rd, n)
-    let ilui rd n = I_lui (rd, n)
+    let ili rd n = I_li (rd,n)
     let ild rd rs1 n = I_ld (rd, rs1, n)
     let ist rd rs1 n = I_st (rd, rs1, n)
     let iadd rd rs1 rs2 = I_add (rd, rs1, rs2)
@@ -117,6 +139,8 @@ module Helper = struct
     let isub rd rs1 rs2 = I_sub (rd, rs1, rs2)
     let iand rd rs1 rs2 = I_and (rd, rs1, rs2)
     let inot rd rs1 = I_not (rd, rs1)
+    let isl rd rs n  = I_sl (rd,rs,n)
+    let isr rd rs n  = I_sr (rd,rs,n)
     let ibeq rs1 rs2 l = I_beq (rs1, rs2, l)
     let iblt rs1 rs2 l = I_blt (rs1, rs2, l)
     let ijalr rd rs1 n = I_jalr (rd, rs1, n)

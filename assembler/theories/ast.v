@@ -15,7 +15,7 @@ From Stdlib Require Import ZArith String List.
 Import ListNotations.
 Open Scope string_scope.
 
-From assembler Require symtable reg.
+From assembler_new Require reg.
 
 (** Type for immediate. *)
 Definition imm : Set := Z.
@@ -23,15 +23,13 @@ Definition imm : Set := Z.
 (** Type for The assembly's AST.
    l is the type of labels. *)
 Inductive t {l:Set} : Set :=
-    (** Load lower immediate *)
-    | lli   : reg.t -> imm -> t
-    (** Load upper immediate *)
-    | lui   : reg.t -> imm -> t
+    (** Load  immediate *)
+    | li   : reg.t -> imm -> t
     (** Load *)
     | ld    : reg.t -> reg.t -> imm -> t
     (** Store *)
     | st    : reg.t -> reg.t -> imm -> t
-    (** Add two registers *) 
+    (** Add two registers *)
     | add   : reg.t -> reg.t -> reg.t -> t
     (** Add immediate  to register *)
     | addi  : reg.t -> reg.t -> imm -> t
@@ -41,6 +39,10 @@ Inductive t {l:Set} : Set :=
     | and   : reg.t -> reg.t -> reg.t -> t
     (** Bitwise not two registers *)
     | not   : reg.t -> reg.t -> t
+    (** Shift left immediate *)
+    | sl    : reg.t -> reg.t -> imm -> t
+    (** Shift right immediate *)
+    | sr    : reg.t -> reg.t -> imm -> t
     (** Branch equal*)
     | beq   : reg.t -> reg.t -> l -> t
     (** Branch less than *)
@@ -71,3 +73,4 @@ Fixpoint num_labels {l:Set} (p:@prog l) : nat :=
     | label _ :: p' => S (num_labels p')
     | _ :: p'       => num_labels p'
     end.
+

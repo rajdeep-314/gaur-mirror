@@ -9,7 +9,7 @@ module Ast = Syntax.Ast
 open Ast
 
 module Rf = Regfile
-module P = Assembler_new.Printers
+module P = Assembler.Printers
 
 (* Traces. *)
 type t =

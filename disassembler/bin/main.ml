@@ -3,8 +3,6 @@
 *)
 
 
-module Assembler = Assembler_new
-
 module UF = Utils.Files
 module D = Dis.Decode
 

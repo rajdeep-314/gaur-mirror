@@ -14,13 +14,13 @@ From Stdlib Require Import List String.
 Import ListNotations.
 Open Scope string_scope.
 
-From assembler Require bits.
+From assembler_new Require bits.
 
 
-(* Represents a 16-bit unit of the binary file - corresponds to an instruction. *)
+(* Represents a 32-bit unit of the binary file - corresponds to an instruction. *)
 
-(** Type definition for 16-bit vector. *)
-Definition t:Set := bits.bv 16.
+(** Type definition for 32-bit vector. *)
+Definition t:Set := bits.bv 32.
 
 (** Type definition for program. *)
 Definition prog:Set := list t.

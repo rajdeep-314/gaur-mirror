@@ -7,7 +7,7 @@
 *)
 
 
-module T = Assembler_new.Types
+module T = Assembler.Types
 
 type reg = T.reg =
     | R0  | R1  | R2  | R3

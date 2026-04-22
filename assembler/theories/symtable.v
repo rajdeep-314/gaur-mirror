@@ -13,7 +13,7 @@ From Stdlib Require Import String List.
 Import ListNotations.
 Open Scope string_scope.
 
-From assembler Require Import utils.
+From assembler_new Require Import utils.
 
 
 (** Type for a symbol table mapping A to nat. *)

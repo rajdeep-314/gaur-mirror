@@ -5,8 +5,6 @@
 *)
 
 
-module Assembler = Assembler_new
-
 (* Module aliases. *)
 module Sast = Syntax.Ast
 module Trace = Cpusim.Trace

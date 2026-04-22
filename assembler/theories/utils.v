@@ -33,11 +33,11 @@ Fixpoint nat_to_string_aux (time:nat) (n:nat) (acc:string) : string :=
     match time with
     | 0       => "0"
     | S time' =>
-            if Nat.ltb n 10 then String (digit_to_char n) acc
-            else
-                let d   := Nat.modulo n 10 in
-                let n'  := Nat.div n 10 in
-                nat_to_string_aux time' n' (String (digit_to_char d) acc)
+        if Nat.ltb n 10 then String (digit_to_char n) acc
+        else
+            let d   := Nat.modulo n 10 in
+            let n'  := Nat.div n 10 in
+            nat_to_string_aux time' n' (String (digit_to_char d) acc)
     end.
 
 

@@ -10,7 +10,7 @@
 }
 
 
-let whitespace = [' ' '\t' '\r']+
+let whitespace = [' ' '\t' '\r' '\n']+
 
 let dec_digit = ['0'-'9']
 let dec_natural = dec_digit+
@@ -31,9 +31,7 @@ let comment = '#' [^'\n']*
 rule read_token = parse
     | whitespace        { read_token lexbuf }
     | comment           { read_token lexbuf }
-    | '\n'              { NEWLINE }
-    | "lli"             { LLI }
-    | "lui"             { LUI }
+    | "li"              { LI }
     | "ld"              { LD }
     | "st"              { ST }
     | "add"             { ADD }
@@ -41,13 +39,15 @@ rule read_token = parse
     | "sub"             { SUB }
     | "and"             { AND }
     | "not"             { NOT }
+    | "sl"              { SL }
+    | "sr"              { SR }
     | "beq"             { BEQ }
     | "blt"             { BLT }
     | "jalr"            { JALR }
     | "apc"             { APC }
     | "j"               { J }
     | reg               { let s = Lexing.lexeme lexbuf in
-                        REG (int_of_string (String.sub s 1 (String.length s - 1))) }
+                          REG (int_of_string (String.sub s 1 (String.length s - 1))) }
     | dec_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | hex_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }

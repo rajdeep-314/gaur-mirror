@@ -7,7 +7,7 @@
 *)
 
 
-From assembler Require extraction_config.
+From assembler_new Require extraction_config.
 
 Set Extraction Output Directory ".".
 Extraction "assembler_extr.ml" assemble.ast_prog_to_isa_prog_extr assemble.assemble_prog_extr.

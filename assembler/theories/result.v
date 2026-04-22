@@ -2,10 +2,10 @@
     result.v
 *)
 
-(** 
+(**
     {1 Result Module}
 
-    This module defines a result type similar to that in OCaml, 
+    This module defines a result type similar to that in OCaml,
     which can represent either a successful value or an error.
 *)
 

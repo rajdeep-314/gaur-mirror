@@ -3,7 +3,7 @@
 *)
 
 
-(** 
+(**
     {1 Bits Module}
 
     This module defines the type for bits and bit-vectors, along with
@@ -15,7 +15,7 @@ Import ListNotations.
 Open Scope Z_scope.
 Open Scope string_scope.
 
-From assembler Require lemmas.
+From assembler_new Require lemmas.
 
 
 (** Definition of Bit *)

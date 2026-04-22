@@ -10,7 +10,7 @@
 }
 
 
-let whitespace = [' ' '\t' '\r']+
+let whitespace = [' ' '\t' '\r' '\n']+
 let ascii = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
 let label_name = ['a'-'z' 'A'-'Z' '_' '.'] ascii
 
@@ -33,10 +33,8 @@ let comment = '#' [^'\n']*
 rule read_token = parse
     | whitespace        { read_token lexbuf }
     | comment           { read_token lexbuf }
-    | '\n'              { NEWLINE }
     | ':'               { COLON }
-    | "lli"             { LLI }
-    | "lui"             { LUI }
+    | "li"              { LI }
     | "ld"              { LD }
     | "st"              { ST }
     | "add"             { ADD }
@@ -44,6 +42,8 @@ rule read_token = parse
     | "sub"             { SUB }
     | "and"             { AND }
     | "not"             { NOT }
+    | "sl"              { SL }
+    | "sr"              { SR }
     | "beq"             { BEQ }
     | "blt"             { BLT }
     | "jalr"            { JALR }
@@ -51,7 +51,7 @@ rule read_token = parse
     | "j"               { J }
     | "spin"            { SPIN }
     | reg               { let s = Lexing.lexeme lexbuf in
-                        REG (int_of_string (String.sub s 1 (String.length s - 1))) }
+                          REG (int_of_string (String.sub s 1 (String.length s - 1))) }
     | label_name        { LABEL (Lexing.lexeme lexbuf) } 
     | dec_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | hex_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
