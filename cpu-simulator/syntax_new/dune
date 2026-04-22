@@ -1,4 +1,0 @@
-(library
- (name syntax_new)
- (libraries ptools.utils assembler_new))
-

@@ -5,6 +5,8 @@
 *)
 
 
+module Assembler = Assembler_new
+
 (* Module aliases. *)
 module Parser = Assembler.Parse
 module Ast = Syntax.Ast

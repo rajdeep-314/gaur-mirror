@@ -5,16 +5,17 @@
 *)
 
 
-open Syntax
+module Ast = Syntax.Ast
+open Ast
 
 module Rf = Regfile
-module P = Assembler.Printers
+module P = Assembler_new.Printers
 
 (* Traces. *)
 type t =
-    | RegMod of Ram.half * Ast.t * Ast.reg * Ram.half
-    | RamMod of Ram.half * Ast.t * Ram.addr * Ram.half
-    | NoTrace of Ram.half * Ast.t
+    | RegMod of Ram.word * Ast.t * Ast.reg * Ram.word
+    | RamMod of Ram.word * Ast.t * Ram.addr * Ram.word
+    | NoTrace of Ram.word * Ast.t
 
 let to_string = function
     | RegMod (pc, inst, r, v) ->

@@ -4,12 +4,10 @@
     Simulating the processor.
 *)
 
-
 open Syntax.Ast
 
 module Rf = Regfile
 module M = Utils.Bitwise
-
 
 type pc = int
 type t = State of pc * Regfile.t * Ram.t
@@ -21,90 +19,100 @@ let get_regfile (State (_, rf, _)) = rf
 let get_ram (State (_, _, ram)) = ram
 
 
-(* Set the lower 8 bits of data to new_bits. *)
-let set_lower data new_bits = (data land 0xff00) lor new_bits
-
-(* Set the upper 8 bits of data to new_bits. *)
-let set_upper data new_bits = (data land 0x00ff) lor (new_bits lsl 8)
-
-
 let step_inst (State (pc, rf, ram)) inst =
     match inst with
-    | I_lli (rd, imm) ->
-            let data = Rf.read rf rd in
-            let data' = set_lower data imm in
-            let () = Rf.write rf rd data' in
+    | I_li (rd, imm) ->
+            let () = Rf.write rf rd imm in
             State (pc + 1, rf, ram)
-    | I_lui (rd, imm) ->
-            let data = Rf.read rf rd in
-            let data' = set_upper data imm in
-            let () = Rf.write rf rd data' in
-            State (pc + 1, rf, ram)
+
     | I_ld (rd, rs, imm) ->
             let base_addr = Rf.read rf rs in
-            let offset = M.sign_extend imm 4 in
+            let offset = M.sign_extend imm 6 in
             let mem_data = Ram.read ram (base_addr + offset) in
             let () = Rf.write rf rd mem_data in
             State (pc + 1, rf, ram)
+
     | I_st (rs1, rs2, imm) ->
             let base_addr = Rf.read rf rs2 in
-            let offset = M.sign_extend imm 4 in
+            let offset = M.sign_extend imm 6 in
             let data = Rf.read rf rs1 in
             let () = Ram.write ram (base_addr + offset) data in
             State (pc + 1, rf, ram)
+
     | I_add (rd, rs1, rs2) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
             let () = Rf.write rf rd (v1 + v2) in
             State (pc + 1, rf, ram)
+
     | I_addi (rd, rs, imm) ->
             let rsv = Rf.read rf rs in
-            let imm_sext = M.sign_extend imm 4 in
+            let imm_sext = M.sign_extend imm 6 in
             let () = Rf.write rf rd (rsv + imm_sext) in
             State (pc + 1, rf, ram)
+
     | I_sub (rd, rs1, rs2) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
             let () = Rf.write rf rd (v1 - v2) in
             State (pc + 1, rf, ram)
+
     | I_and (rd, rs1, rs2) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
             let () = Rf.write rf rd (v1 land v2) in
             State (pc + 1, rf, ram)
+
     | I_not (rd, rs) ->
             let rsv = Rf.read rf rs in
             let () = Rf.write rf rd (lnot rsv) in
             State (pc + 1, rf, ram)
+
+    | I_sl (rd, rs, imm) ->
+            let rsv = Rf.read rf rs in
+            let () = Rf.write rf rd (rsv lsl imm) in
+            State (pc + 1, rf, ram)
+
+    | I_sr (rd, rs, imm) ->
+            let rsv = Rf.read rf rs in
+            let () = Rf.write rf rd (rsv lsr imm) in
+            State (pc + 1, rf, ram)
+
     | I_beq (rs1, rs2, imm) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
-            let imm_sext = M.sign_extend imm 4 in
-            if v1 == v2 then
+            let imm_sext = M.sign_extend imm 6 in
+            if v1 = v2 then
                 State (pc + imm_sext, rf, ram)
             else
                 State (pc + 1, rf, ram)
+
     | I_blt (rs1, rs2, imm) ->
             let v1 = Rf.read rf rs1 in
             let v2 = Rf.read rf rs2 in
-            let v1_sext = M.sign_extend v1 16 in
-            let v2_sext = M.sign_extend v2 16 in
-            let imm_sext = M.sign_extend imm 4 in
+            let v1_sext = M.sign_extend v1 32 in
+            let v2_sext = M.sign_extend v2 32 in
+            let imm_sext = M.sign_extend imm 6 in
             if v1_sext < v2_sext then
                 State (pc + imm_sext, rf, ram)
             else
                 State (pc + 1, rf, ram)
+
     | I_jalr (rd, rs, imm) ->
-            let () = Rf.write rf rd (pc + 1) in
-            let imm_sext = M.sign_extend imm 4 in
-            State (pc + imm_sext, rf, ram)
+            let ret = pc + 1 in
+            let imm_sext = M.sign_extend imm 6 in
+            let target = (Rf.read rf rs) + imm_sext in
+            let () = Rf.write rf rd ret in
+            State (target, rf, ram)
+
     | I_apc (rd, imm) ->
             let rdv = Rf.read rf rd in
-            let imm_sext = M.sign_extend imm 8 in
+            let imm_sext = M.sign_extend imm 11 in
             let () = Rf.write rf rd (rdv + pc + imm_sext) in
             State (pc + 1, rf, ram)
+
     | I_j imm ->
-            let imm_sext = M.sign_extend imm 12 in
+            let imm_sext = M.sign_extend imm 16 in
             State (pc + imm_sext, rf, ram)
 
 
@@ -144,92 +152,92 @@ let execute_prog_on_ram ?(max_steps = None) ram prog =
 
 let step_inst_wt (State (pc, rf, ram)) inst =
     match inst with
-    | I_lli (rd, imm) ->
-            let data = Rf.read rf rd in
-            let data' = set_lower data imm in
-            let () = Rf.write rf rd data' in
-            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, data'))
-    | I_lui (rd, imm) ->
-            let data = Rf.read rf rd in
-            let data' = set_upper data imm in
-            let () = Rf.write rf rd data' in
-            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, data'))
+    | I_li (rd, imm) ->
+            let () = Rf.write rf rd imm in
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, imm))
+
     | I_ld (rd, rs, imm) ->
             let base_addr = Rf.read rf rs in
-            let offset = M.sign_extend imm 4 in
+            let offset = M.sign_extend imm 6 in
             let mem_data = Ram.read ram (base_addr + offset) in
             let () = Rf.write rf rd mem_data in
             (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, mem_data))
+
     | I_st (rs1, rs2, imm) ->
             let base_addr = Rf.read rf rs2 in
-            let offset = M.sign_extend imm 4 in
+            let offset = M.sign_extend imm 6 in
             let addr = base_addr + offset in
             let data = Rf.read rf rs1 in
             let () = Ram.write ram addr data in
             (State (pc + 1, rf, ram), Trace.RamMod (pc, inst, addr, data))
+
     | I_add (rd, rs1, rs2) ->
-            let v1 = Rf.read rf rs1 in
-            let v2 = Rf.read rf rs2 in
-            let sum = v1 + v2 in
+            let sum = (Rf.read rf rs1) + (Rf.read rf rs2) in
             let () = Rf.write rf rd sum in
             (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, sum))
+
     | I_addi (rd, rs, imm) ->
-            let rsv = Rf.read rf rs in
-            let imm_sext = M.sign_extend imm 4 in
-            let sum = rsv + imm_sext in
+            let sum = (Rf.read rf rs) + (M.sign_extend imm 6) in
             let () = Rf.write rf rd sum in
             (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, sum))
+
     | I_sub (rd, rs1, rs2) ->
-            let v1 = Rf.read rf rs1 in
-            let v2 = Rf.read rf rs2 in
-            let diff = v1 - v2 in
+            let diff = (Rf.read rf rs1) - (Rf.read rf rs2) in
             let () = Rf.write rf rd diff in
             (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, diff))
+
     | I_and (rd, rs1, rs2) ->
-            let v1 = Rf.read rf rs1 in
-            let v2 = Rf.read rf rs2 in
-            let conj = v1 land v2 in
-            let () = Rf.write rf rd conj in
-            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, conj))
+            let v = (Rf.read rf rs1) land (Rf.read rf rs2) in
+            let () = Rf.write rf rd v in
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, v))
+
     | I_not (rd, rs) ->
-            let rsv = Rf.read rf rs in
-            let not = lnot rsv in
-            let () = Rf.write rf rd not in
-            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, not))
+            let v = lnot (Rf.read rf rs) in
+            let () = Rf.write rf rd v in
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, v))
+
+    | I_sl (rd, rs, imm) ->
+            let v = (Rf.read rf rs) lsl imm in
+            let () = Rf.write rf rd v in
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, v))
+
+    | I_sr (rd, rs, imm) ->
+            let v = (Rf.read rf rs) lsr imm in
+            let () = Rf.write rf rd v in
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, v))
+
     | I_beq (rs1, rs2, imm) ->
-            let v1 = Rf.read rf rs1 in
-            let v2 = Rf.read rf rs2 in
-            let imm_sext = M.sign_extend imm 4 in
+            let imm_sext = M.sign_extend imm 6 in
             let st' =
-                if v1 == v2 then
-                    State (pc + imm_sext, rf, ram)
-                else
-                    State (pc + 1, rf, ram) in
+                if Rf.read rf rs1 = Rf.read rf rs2
+                then State (pc + imm_sext, rf, ram)
+                else State (pc + 1, rf, ram) in
             (st', Trace.NoTrace (pc, inst))
+
     | I_blt (rs1, rs2, imm) ->
-            let v1 = Rf.read rf rs1 in
-            let v2 = Rf.read rf rs2 in
-            let v1_sext = M.sign_extend v1 16 in
-            let v2_sext = M.sign_extend v2 16 in
-            let imm_sext = M.sign_extend imm 4 in
+            let v1 = M.sign_extend (Rf.read rf rs1) 32 in
+            let v2 = M.sign_extend (Rf.read rf rs2) 32 in
+            let imm_sext = M.sign_extend imm 6 in
             let st' =
-                if v1_sext < v2_sext then
-                    State (pc + imm_sext, rf, ram)
-                else
-                    State (pc + 1, rf, ram) in
+                if v1 < v2
+                then State (pc + imm_sext, rf, ram)
+                else State (pc + 1, rf, ram) in
             (st', Trace.NoTrace (pc, inst))
+
     | I_jalr (rd, rs, imm) ->
-            let () = Rf.write rf rd (pc + 1) in
-            let imm_sext = M.sign_extend imm 4 in
-            (State (pc + imm_sext, rf, ram), Trace.RegMod (pc, inst, rd, pc + 1))
+            let ret = pc + 1 in
+            let imm_sext = M.sign_extend imm 6 in
+            let target = (Rf.read rf rs) + imm_sext in
+            let () = Rf.write rf rd ret in
+            (State (target, rf, ram), Trace.RegMod (pc, inst, rd, ret))
+
     | I_apc (rd, imm) ->
-            let rdv = Rf.read rf rd in
-            let imm_sext = M.sign_extend imm 8 in
-            let rdv' = rdv + pc + imm_sext in
-            let () = Rf.write rf rd rdv' in
-            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, rdv'))
+            let v = (Rf.read rf rd) + pc + (M.sign_extend imm 11) in
+            let () = Rf.write rf rd v in
+            (State (pc + 1, rf, ram), Trace.RegMod (pc, inst, rd, v))
+
     | I_j imm ->
-            let imm_sext = M.sign_extend imm 12 in
+            let imm_sext = M.sign_extend imm 16 in
             (State (pc + imm_sext, rf, ram), Trace.NoTrace (pc, inst))
 
 

@@ -2,7 +2,7 @@
  (name debug)
  (libraries cpusim))
 
-(ocamllex 
+(ocamllex
   (modules lexer))
 
 (menhir
