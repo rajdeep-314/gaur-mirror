@@ -38,15 +38,6 @@
    dune menhir))
 
 (package
-  (name assembler_new)
-  (allow_empty)
-  (synopsis "Assembler for PASM")
-  (depends
-   (ocaml (>= 4.14))
-   (rocq-core (>= 9.0.0))
-   dune menhir))
-
-(package
   (name disassembler)
   (synopsis "Disassembler for PISA binaries")
  (depends
