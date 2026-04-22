@@ -1,5 +1,5 @@
-(executables
+(executable
  (package disassembler)
- (public_names dis dis_new)
- (names main main_new)
- (libraries dis dis_new))
+ (public_name dis)
+ (name main)
+ (libraries dis))

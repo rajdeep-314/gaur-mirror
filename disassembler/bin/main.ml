@@ -3,6 +3,8 @@
 *)
 
 
+module Assembler = Assembler_new
+
 module UF = Utils.Files
 module D = Dis.Decode
 
@@ -67,7 +69,7 @@ let () =
     exit 1
     end
 
-let instrs = UF.half_words_of_path !input_path
+let instrs = UF.words_of_path !input_path
 
 let () =
     match D.disassemble_prog instrs with

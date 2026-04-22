@@ -1,5 +1,4 @@
 (library
  (name dis)
- (public_name disassembler)
- (libraries assembler))
+ (libraries assembler_new))
 
