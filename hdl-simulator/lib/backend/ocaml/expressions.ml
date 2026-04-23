@@ -20,6 +20,7 @@ type expr =
   | RecMem  of expr * string
   | Fun     of (pat * typ option) list * typ option * expr
   | List    of expr list
+  | Infix   of string * expr * expr
 
 and let_bind =
   | Simple  of pat * expr
@@ -42,6 +43,7 @@ let erecord er = Record er
 let erecmem r fld = RecMem (r, fld)
 let efun ptl rt e = Fun (ptl, rt, e)
 let elist el = List el
+let einfix id el er = Infix (id, el, er)
 
 let blet p e = Simple (p, e)
 let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
@@ -84,6 +86,10 @@ module Pretty = struct
                             pp_expr e
     | List el          -> Fmt.pf ppf "[ %a ]"
                             (Fmt.list ~sep:semi pp_expr) el
+    | Infix (id, el, er) -> Fmt.pf ppf "(%a) %s (%a)"
+                              pp_expr el
+                              id
+                              pp_expr er
 
   and pp_blet ppf lb =
     match lb with
