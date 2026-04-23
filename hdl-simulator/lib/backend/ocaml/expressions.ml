@@ -18,6 +18,7 @@ type expr =
   | ModPath of string * string
   | Record  of expr StrMap.t
   | RecMem  of expr * string
+  | Fun     of (pat * typ option) list * typ option * expr
 
 and let_bind =
   | Simple  of pat * expr
@@ -38,6 +39,7 @@ let eobjmem obj fld = ObjMem (obj, fld)
 let modpath m f = ModPath (m, f)
 let erecord er = Record er
 let erecmem r fld = RecMem (r, fld)
+let efun ptl rt e = Fun (ptl, rt, e)
 
 let blet p e = Simple (p, e)
 let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
@@ -73,6 +75,10 @@ module Pretty = struct
     | RecMem (r, f)  -> Fmt.pf ppf "(%a).%s"
                           pp_expr r
                           f
+    | Fun (ptl, rt, e) -> Fmt.pf ppf "@[<v 2>fun %a %a =@ %a@]"
+                            Fmt.(list ~sep:sp pp_ptl) ptl
+                            Fmt.(option (colon ++ Types.Pretty.pp_typ)) rt
+                            pp_expr e
 
   and pp_blet ppf lb =
     match lb with
