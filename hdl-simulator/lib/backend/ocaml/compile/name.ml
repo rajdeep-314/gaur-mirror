@@ -57,3 +57,13 @@ let fun_clk = "clk"
     output and clock function.
 *)
 let fun_out_clk = "out_clk"
+
+(** [fun_pp_tin] is ["pp_tin"], the name of a chip's input
+    expression pretty printer.
+*)
+let fun_pp_tin = "pp_tin"
+
+(** [fun_pp_tout] is ["pp_tout"], the name of a chip's output
+    expression pretty printer.
+*)
+let fun_pp_tout = "pp_tout"
