@@ -19,6 +19,7 @@ type expr =
   | Record  of expr StrMap.t
   | RecMem  of expr * string
   | Fun     of (pat * typ option) list * typ option * expr
+  | List    of expr list
 
 and let_bind =
   | Simple  of pat * expr
@@ -40,6 +41,7 @@ let modpath m f = ModPath (m, f)
 let erecord er = Record er
 let erecmem r fld = RecMem (r, fld)
 let efun ptl rt e = Fun (ptl, rt, e)
+let elist el = List el
 
 let blet p e = Simple (p, e)
 let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
@@ -47,6 +49,7 @@ let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
 
 module Pretty = struct
   let colon ppf = Fmt.any ": " ppf
+  let semi ppf = Fmt.any "; " ppf
 
   let rec pp_expr ppf e =
     match e with
@@ -79,6 +82,8 @@ module Pretty = struct
                             Fmt.(list ~sep:sp pp_ptl) ptl
                             Fmt.(option (colon ++ Types.Pretty.pp_typ)) rt
                             pp_expr e
+    | List el          -> Fmt.pf ppf "[ %a ]"
+                            (Fmt.list ~sep:semi pp_expr) el
 
   and pp_blet ppf lb =
     match lb with
