@@ -59,7 +59,7 @@ module Pretty = struct
     match e with
     | Unit           -> Fmt.pf ppf "()"
     | Int n          -> Fmt.int ppf n
-    | String s       -> Fmt.string ppf s
+    | String s       -> Fmt.quote Fmt.string ppf s
     | Bool b         -> Fmt.bool ppf b
     | Id id          -> Fmt.string ppf id
     | Let (lb, e)    -> Fmt.pf ppf "@[<v>%a@,in@,%a@]"
