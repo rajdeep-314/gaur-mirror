@@ -19,7 +19,9 @@ let rec typeof (typ : Types.t) =
 and typeof_trec tr =
   tr
   |> StrMap.map (fun t -> typeof t)
-  |> E.erecord
+  |> StrMap.to_list
+  |> List.map (fun (s, e) -> E.etuple [E.estring s; e])
+  |> F.trecord_of_list
 
 let typeof_fun (name : string) (typ : Types.t) : E.let_bind =
   E.blet (P.pid name) (typeof typ)
