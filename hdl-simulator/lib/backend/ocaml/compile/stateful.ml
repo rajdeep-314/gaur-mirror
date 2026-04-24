@@ -4,6 +4,7 @@ module M = Modules
 module N = Name
 module P = Patterns
 module T = Types
+module D = Default
 
 open Parse
 open Hdlutils
@@ -119,6 +120,7 @@ let tout_tid = T.tid N.id_tout
 
 let tchip_tid = T.tid "t"
 let tchip = "t"
+let tdef_t = "def_t"
 
 
 let expr_in (ci : 'a Ast.chip_info) e =
@@ -192,6 +194,40 @@ let tchip_decl isv is_stfl (ci : 'a Ast.chip_info) =
   then T.decl_alias  tchip T.tunit
   else T.decl_record tchip r
 
+let rec sf_default' i is_stfl (pi : 'a Ast.assign_info list) =
+  match pi with
+  | [] -> []
+  | ai :: ais ->
+    match ai.data with
+    | Current (_, ri)
+    | Next    (_, ri) ->
+      match ri.data with
+      | Call (id, e) ->
+        let tid = E.modpath id tdef_t in
+        if is_stfl id
+        then (chipvar_name id i, tid) :: sf_default' (i + 1) is_stfl ais
+        else sf_default' (i + 1) is_stfl ais
+      | Expr e -> sf_default' (i + 1) is_stfl ais
+
+let sf_default is_stfl pi =
+  sf_default' 0 is_stfl pi
+  |> StrMap.of_list
+
+let default is_stfl (ci : 'a Ast.chip_info) =
+  let r = ci.data.states
+          |> StrMap.map (fun typ -> D.default_expr typ)
+          |> union (sf_default is_stfl ci.data.parts)
+  in
+  if StrMap.is_empty r
+  then E.eunit
+  else E.erecord r
+
+let expr_def_t is_stfl ci =
+  E.blet (P.pid N.fun_def_t) (default is_stfl ci)
+
+let expr_def_tin (ci : 'a Ast.chip_info) =
+  E.blet (P.pid N.fun_def_tin) (D.default_tin ci)
+
 let expr_record isv is_stfl (ci : 'a Ast.chip_info) expr_last =
   let erec_states =
     ci.data.states
@@ -220,11 +256,15 @@ let chip is_stfl (ci : 'a Ast.chip_info) =
   let eupdate = expr_record isv is_stfl ci in
   let efout = expr_funout ci in
   let efclk = expr_funclk ci in
+  let edef_t = expr_def_t is_stfl ci in
+  let edef_tin = expr_def_tin ci in
 
   M.mdecl
     ci.data.name
     [ M.item_typ_decl (tchip_decl isv is_stfl ci)
+    ; M.item_let_bind edef_t
     ; M.item_typ_decl (tin_decl ci)
+    ; M.item_let_bind edef_tin
     ; M.item_typ_decl (tout_decl ci)
     ; M.item_let_bind (ein (eparts (eupdate eout)))
     ; M.item_let_bind efout

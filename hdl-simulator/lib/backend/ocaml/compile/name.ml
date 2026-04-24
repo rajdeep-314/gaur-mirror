@@ -67,3 +67,11 @@ let fun_pp_tin = "pp_tin"
     expression pretty printer.
 *)
 let fun_pp_tout = "pp_tout"
+
+(** [fun_def_tin] is ["def_tin"], the name of a chip's default input
+    type.
+*)
+let fun_def_tin = "def_tin"
+
+(** [fun_def_t] is ["def_t"], the name of a chip's default type. *)
+let fun_def_t = "def_t"

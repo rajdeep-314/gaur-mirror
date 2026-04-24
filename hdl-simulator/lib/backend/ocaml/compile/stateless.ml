@@ -4,6 +4,7 @@ module M = Modules
 module N = Name
 module P = Patterns
 module T = Types
+module D = Default
 
 open Parse
 open Hdlutils
@@ -108,6 +109,11 @@ let expr_fclk (ci : 'a Ast.chip_info) =
     (Some tchip_tid)
     E.eunit
 
+let expr_def_t =
+  E.blet (P.pid N.fun_def_t) E.eunit
+
+let expr_def_tin (ci : 'a Ast.chip_info) =
+  E.blet (P.pid N.fun_def_tin) (D.default_tin ci)
 
 let union (m1 : 'a StrMap.t) (m2 : 'a StrMap.t) =
   StrMap.fold (fun k v acc -> StrMap.add k v acc) m1 m2
@@ -118,10 +124,13 @@ let chip (ci : 'a Ast.chip_info) =
   let eparts = parts ci.data.parts in
   let elast = eout in
   let efclk = expr_fclk ci in
+  let edef_tin = expr_def_tin ci in
   M.mdecl
     ci.data.name
     [ M.item_typ_decl (tchip_decl ci)
+    ; M.item_let_bind expr_def_t
     ; M.item_typ_decl (tin_decl ci)
+    ; M.item_let_bind edef_tin
     ; M.item_typ_decl (tout_decl ci)
     ; M.item_let_bind (ein (eparts elast))
     ; M.item_let_bind efclk
