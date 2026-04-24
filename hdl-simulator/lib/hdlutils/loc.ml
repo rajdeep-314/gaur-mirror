@@ -34,6 +34,14 @@ let range loc =
     file line (char1 + 1) (char2 + 1)
 (* use [char1 + 1] and [char2 + 1] if *not* using Caml mode *)
 
+let location (lexbuf : Lexing.lexbuf) =
+  let pos = lexbuf.lex_curr_p in
+  let char = (pos.pos_cnum - pos.pos_bol + 1) in
+  Printf.sprintf "File \"%s\", line %d, character %d:\n"
+    pos.pos_fname
+    pos.pos_lnum
+    char
+
 let errorf ~loc fmt =
   output_string stderr (range loc);
   Printf.eprintf "Error: ";
