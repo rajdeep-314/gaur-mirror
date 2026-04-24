@@ -1,0 +1,6 @@
+(ocamllex
+ (modules toplexer))
+
+(menhir
+ (modules topparser)
+ (flags --exn-carries-state))
