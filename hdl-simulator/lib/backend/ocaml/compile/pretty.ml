@@ -47,8 +47,8 @@ and fmt_args ((s, typ) : string * Types.t) =
   ; E.eobjmem (E.eid v) s
   ]
 
-let pretty_fun (name : string) (typ : Types.t) : E.let_bind =
-  E.blet (P.pid name) (pretty_typ typ)
+let pretty_fun (name : string) (typ : Types.t) (tout : T.typ option) : E.let_bind =
+  E.bfun name [] tout (pretty_typ typ)
 
 (* let pretty (ci : 'a Ast.chip_info) =
   let chip = ci.data in
@@ -69,7 +69,13 @@ let pretty (ci : 'a Ast.chip_info) =
   ]
 
 let pretty_tin (ci : 'a Ast.chip_info) =
-  pretty_fun N.fun_pp_tin ci.data.input.typ
+  pretty_fun
+    N.fun_pp_tin
+    ci.data.input.typ
+    (Some (F.fmt_t (T.tid N.id_tin)))
 
 let pretty_tout (ci : 'a Ast.chip_info) =
-  pretty_fun N.fun_pp_tout ci.data.output.typ
+  pretty_fun
+    N.fun_pp_tout
+    ci.data.output.typ
+    (Some (F.fmt_t (T.tid N.id_tout)))

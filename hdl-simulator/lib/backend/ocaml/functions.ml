@@ -18,6 +18,8 @@ let fmt_pf = fmt "pf"
 
 let fmt_pf_ppf el = fmt_pf (E.eid "ppf" :: el)
 
+let fmt_t v = T.tpoly [v] (T.tmodpath "Fmt" "t")
+
 let tbits n = E.eapply (E.eid "tbits") [E.eint n]
 
 let trecord_of_list el = E.eapply (E.eid "trecord_of_list") [E.elist el]
