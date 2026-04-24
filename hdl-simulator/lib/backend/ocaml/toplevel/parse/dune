@@ -4,3 +4,43 @@
 (menhir
  (modules topparser)
  (flags --exn-carries-state))
+
+(rule
+ (targets messages.ml)
+ (deps topparser.mly topparser.messages)
+ (action
+  (with-stdout-to
+   %{targets}
+   (run
+    menhir
+    --explain
+    --strict
+    --unused-tokens
+    topparser.mly
+    --compile-errors
+    topparser.messages))))
+
+(rule
+ (targets topparser_all_error.messages)
+ (deps topparser.mly)
+ (action
+  (with-stdout-to
+   %{targets}
+   (run menhir %{dep:topparser.mly} --list-errors))))
+
+(rule
+ (alias top_errors)
+ (action
+  (run menhir topparser.mly --list-errors)))
+
+(rule
+ (alias top_new_errors)
+ (deps topparser.mly topparser_all_error.messages topparser.messages)
+ (action
+  (run
+   menhir
+   topparser.mly
+   --compare-errors
+   topparser_all_error.messages
+   --compare-errors
+   topparser.messages)))
