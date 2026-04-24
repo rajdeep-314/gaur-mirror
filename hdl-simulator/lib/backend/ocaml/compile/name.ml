@@ -11,10 +11,10 @@ let var_pfx  = "var_"
 
 (** {2 Chip IO} *)
 
-(** [id_tin] is the OCaml type identifier of a chip.  *)
+(** [id_tin] is ["tin"], the OCaml type identifier of a chip. *)
 let id_tin = "tin"
 
-(** [id_tout] is the OCaml type identifier of a chip.  *)
+(** [id_tout] is ["tout"], the OCaml type identifier of a chip. *)
 let id_tout = "tout"
 
 
@@ -85,3 +85,13 @@ let fun_typeof_tin = "typeof_tin"
     containing runtime type information for a chip's output.
 *)
 let fun_typeof_tout = "typeof_tout"
+
+(** [fun_totype_tin] is ["totype_tin"], the name of the function
+    which converts parsed expression to chip's expression type.
+*)
+let fun_totype_tin = "totype_tin"
+
+(** [fun_totype_tout] is ["totype_tout"], the name of the function
+    which converts parsed expression to chip's expression type.
+*)
+let fun_totype_tout = "totype_tout"

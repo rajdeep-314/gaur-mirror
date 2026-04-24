@@ -21,3 +21,11 @@ let fmt_pf_ppf el = fmt_pf (E.eid "ppf" :: el)
 let tbits n = E.eapply (E.eid "tbits") [E.eint n]
 
 let trecord_of_list el = E.eapply (E.eid "trecord_of_list") [E.elist el]
+
+let pipe = E.einfix "|>"
+let ( ||> ) = pipe
+
+let get_bv = E.eid "get_bv"
+
+let get_record = E.einfix "|>?"
+let ( ||>? ) = get_record
