@@ -35,6 +35,9 @@ val tarray : typ -> typ
 (** OCaml type inside a module [M.t] *)
 val tmodpath : string -> string -> typ
 
+(** Ocaml polymorphic type instantiations [tvar t] *)
+val tpoly : typ list -> typ -> typ
+
 (** {3 Type Declarations} *)
 
 (** Type alias *)
