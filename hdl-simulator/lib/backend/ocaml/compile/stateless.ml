@@ -113,10 +113,10 @@ let expr_fclk (ci : 'a Ast.chip_info) =
     E.eunit
 
 let expr_def_t =
-  E.blet (P.pid N.fun_def_t) E.eunit
+  E.bfun N.fun_def_t [] (Some tchip_tid) E.eunit
 
 let expr_def_tin (ci : 'a Ast.chip_info) =
-  E.blet (P.pid N.fun_def_tin) (D.default_tin ci)
+  E.bfun N.fun_def_tin [] (Some (T.tid N.id_tin)) (D.default_tin ci)
 
 let union (m1 : 'a StrMap.t) (m2 : 'a StrMap.t) =
   StrMap.fold (fun k v acc -> StrMap.add k v acc) m1 m2

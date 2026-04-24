@@ -226,10 +226,10 @@ let default is_stfl (ci : 'a Ast.chip_info) =
   else E.erecord r
 
 let expr_def_t is_stfl ci =
-  E.blet (P.pid N.fun_def_t) (default is_stfl ci)
+  E.bfun N.fun_def_t [] (Some tchip_tid) (default is_stfl ci)
 
 let expr_def_tin (ci : 'a Ast.chip_info) =
-  E.blet (P.pid N.fun_def_tin) (D.default_tin ci)
+  E.bfun N.fun_def_tin [] (Some (T.tid N.id_tin)) (D.default_tin ci)
 
 let expr_record isv is_stfl (ci : 'a Ast.chip_info) expr_last =
   let erec_states =
