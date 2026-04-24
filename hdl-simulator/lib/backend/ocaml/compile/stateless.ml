@@ -5,6 +5,7 @@ module N = Name
 module P = Patterns
 module T = Types
 module D = Default
+module Pr = Pretty
 
 open Parse
 open Hdlutils
@@ -125,6 +126,8 @@ let chip (ci : 'a Ast.chip_info) =
   let elast = eout in
   let efclk = expr_fclk ci in
   let edef_tin = expr_def_tin ci in
+  let epp_tin = Pr.pretty_tin ci in
+  let epp_tout = Pr.pretty_tout ci in
   M.mdecl
     ci.data.name
     [ M.item_typ_decl (tchip_decl ci)
@@ -134,6 +137,8 @@ let chip (ci : 'a Ast.chip_info) =
     ; M.item_typ_decl (tout_decl ci)
     ; M.item_let_bind (ein (eparts elast))
     ; M.item_let_bind efclk
+    ; M.item_let_bind epp_tin
+    ; M.item_let_bind epp_tout
     ]
 
 let prog (p : 'a Ast.prog) =

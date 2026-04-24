@@ -67,3 +67,9 @@ let pretty (ci : 'a Ast.chip_info) =
   [ pretty_fun N.fun_pp_tin  chip.input.typ
   ; pretty_fun N.fun_pp_tout chip.output.typ
   ]
+
+let pretty_tin (ci : 'a Ast.chip_info) =
+  pretty_fun N.fun_pp_tin ci.data.input.typ
+
+let pretty_tout (ci : 'a Ast.chip_info) =
+  pretty_fun N.fun_pp_tout ci.data.output.typ
