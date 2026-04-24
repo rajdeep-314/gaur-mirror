@@ -82,7 +82,7 @@ module Pretty = struct
     | RecMem (r, f)  -> Fmt.pf ppf "(%a).%s"
                           pp_expr r
                           f
-    | Fun (ptl, rt, e) -> Fmt.pf ppf "@[<v 2>fun %a %a =@ %a@]"
+    | Fun (ptl, rt, e) -> Fmt.pf ppf "@[<v 2>fun %a %a ->@ %a@]"
                             Fmt.(list ~sep:sp pp_ptl) ptl
                             Fmt.(option (colon ++ Types.Pretty.pp_typ)) rt
                             pp_expr e
