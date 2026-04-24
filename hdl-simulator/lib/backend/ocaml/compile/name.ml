@@ -75,3 +75,13 @@ let fun_def_tin = "def_tin"
 
 (** [fun_def_t] is ["def_t"], the name of a chip's default type. *)
 let fun_def_t = "def_t"
+
+(** [fun_typeof_tin] is ["typeof_tin"], the name of the value
+    containing runtime type information for a chip's input.
+*)
+let fun_typeof_tin = "typeof_tin"
+
+(** [fun_typeof_tout] is ["typeof_tout"], the name of the value
+    containing runtime type information for a chip's output.
+*)
+let fun_typeof_tout = "typeof_tout"
