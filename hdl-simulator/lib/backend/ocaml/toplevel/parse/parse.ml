@@ -3,6 +3,7 @@ module Ast      = Ast
 module Parser   = Topparser
 module Lexer    = Toplexer
 module Messages = Messages
+module Errors   = Errors
 
 open Hdlutils
 
