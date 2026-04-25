@@ -12,3 +12,6 @@ let usage s =
     prerr_endline "";
     exit Exit.usage
   end
+
+let output_stringln outx s = output_string outx (s ^ "\n")
+let output_string = output_string
