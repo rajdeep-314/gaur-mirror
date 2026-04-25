@@ -20,17 +20,17 @@ module Pretty = struct
   let pp ppf err =
     match err with
     | DuplicateKey (key, loc) ->
-      Fmt.pf ppf "@[<v>%a@,The field name %s is used more than once.@]"
+      Fmt.pf ppf "@[<v>%a@,The field name %s is used more than once.@,@]"
         Fmt.string (Loc.range loc)
         key
 
     | UnexCharInBin (c, lexbuf) ->
-      Fmt.pf ppf "@[<v>%a@,Unexpected character %c.@]"
+      Fmt.pf ppf "@[<v>%a@,Unexpected character %c.@,@]"
         Fmt.string (Loc.location lexbuf)
         c
 
     | UnexString (str, lexbuf) ->
-      Fmt.pf ppf "@[<v>%a@,Syntax error: %s@]"
+      Fmt.pf ppf "@[<v>%a@,Syntax error: %s@,@]"
         Fmt.string (Loc.location lexbuf)
         str
 end
