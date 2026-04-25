@@ -18,8 +18,10 @@ let format_of_tr_fld ppf ((s, _) : string * Types.t) =
   Fmt.pf ppf "%s = %s " s "%a"
 
 let format_of_tr (tr : Types.t StrMap.t) : E.expr =
-  Fmt.str "\"{ %a}\""
+  Fmt.str "%s{ %a}%s"
+    "\"@[<v>"
     (Fmt.list ~sep:comma_sp format_of_tr_fld) (StrMap.to_list tr)
+    "@,@]\""
   |> E.eid
 
 let rec pretty_typ (typ : Types.t) : E.expr =
