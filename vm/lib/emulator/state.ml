@@ -104,5 +104,26 @@ module PP = struct
 
     (* Screen in VM state s, without any borders. *)
     let screen_no_border s = String.concat "\n" (lines s)
+
+    (* Contents of a segment, separated by " | ". *)
+    let seg xs =
+        String.concat " | " (List.map string_of_int (Array.to_list xs))
+
+    (* Contents of segment seg_name. *)
+    let segment seg_name s =
+        match segment seg_name s with
+        | Some xs   -> seg xs
+        | None      -> "N/A"
+
+    (* Frame f. *)
+    let frame f = Printf.sprintf
+        "%s:\nPC: %d\nLocal: %s\nWorking stack:%s"
+        (call (call_of_frame f)) f.pc (seg f.local) (stack f.wstack)
+
+    (* Top-most frame. *)
+    let top_frame s =
+        match top_frame s with
+        | Some f    -> frame f
+        | None      -> "Call stack empty"
 end
 
