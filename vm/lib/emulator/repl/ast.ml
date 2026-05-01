@@ -11,6 +11,8 @@ module A = Syntax.Ast
 type t =
     (* No input. *)
     | Empty
+    (* Help. *)
+    | Help
     (* Show commands. *)
     | ShowCalls
     | ShowStack

@@ -12,6 +12,7 @@ let nat = dig+
 
 rule read_tokens = parse
     | whitespace    { read_tokens lexbuf }
+    | "help"        { HELP }
     | "show"        { SHOW }
     | "calls"       { CALLS }
     | "stack"       { STACK }

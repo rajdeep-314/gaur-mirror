@@ -23,6 +23,29 @@ TODO:
 *)
 
 
+let help_msg =
+    "Commands:
+
+    help                        :       show list of commands
+
+    show calls                  :       show sequence of function calls so far
+    show stack                  :       show current function's working stack
+    show stack top n            :       show current working stack's top n
+                                        entries
+    show function               :       show current function call
+    show screen                 :       show current scren
+
+    execute step                :       execute one instruction
+    execute steps n             :       execute n instructions
+    execute till return         :       execute till current function returns
+    execute till before return  :       execute till just before current
+                                        function returns
+    execute till termination    :       execute till the program terminates
+
+    reset                       :       reset emulator state
+    exit                        :       exit REPL"
+
+
 (*
 REPL functions.
 These are functions that the main REPL loop calls.
@@ -105,19 +128,16 @@ let e_till_termination p s =
     ("Execution terminated with return value " ^ string_of_int rv,
      s')
 
-(* Reset to the program's initial state. *)
 let reset_f p s = ("Resetting.", E.init_from_prog p)
-
-(* REPL function for exit. *)
 let exit_f p s = ("Exiting", s)
-
-(* REPL function for empty input. *)
 let empty_f p s = ("", s)
+let help_f p s = (help_msg, s)
 
 
 (* REPL function for a command. *)
 let repl_func_of_cmd = function
     | Empty                     -> empty_f
+    | Help                      -> help_f
     | ShowCalls                 -> show_calls
     | ShowStack                 -> show_stack
     | ShowStackTop n            -> show_stack_top n

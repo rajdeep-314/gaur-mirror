@@ -4,6 +4,7 @@
 
 
 %token <int> NUM
+%token HELP
 %token SHOW CALLS STACK TOP FUNCTION SCREEN
 %token EXECUTE STEPS STEP TILL BEFORE RETURN TERMINATION
 %token RESET EXIT
@@ -19,6 +20,8 @@
 
 
 stmt:
+    | HELP
+        { Help }
     | SHOW; CALLS
         { ShowCalls}
     | SHOW; STACK
