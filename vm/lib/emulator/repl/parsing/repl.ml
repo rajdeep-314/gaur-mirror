@@ -16,7 +16,7 @@ module U = Utils.Parsing
 let to_string line lexbuf err_str =
     let l = lexbuf.L.lex_start_p in
     let carat = U.carat_string (l.pos_cnum - l.pos_bol + 1) in Printf.sprintf
-    "In command:\n%s\n%s\n%s\n"
+    "In command:\n%s\n%s\n%s"
     line carat err_str
 
 (*
