@@ -40,7 +40,7 @@ the resulting state is s'.
 
 (* Show sequence of function calls. *)
 let show_calls p s =
-    (I.string_of_calls (I.calls s), s)
+    (SP.calls (I.calls s), s)
 
 (* Show top-most frame's working stack. *)
 let show_stack p s =
@@ -57,12 +57,12 @@ let show_stack_top n p s =
 (* Show current function. *)
 let show_function p s =
     match I.call_of_top_frame s with
-    | Some c    -> (I.string_of_call c, s)
+    | Some c    -> (SP.call c, s)
     | None      -> raise empty_call_stack
 
 (* Show the current screen. *)
 let show_screen p s =
-    (I.screen s, s)
+    (SP.screen s, s)
 
 
 (* REPL functions for execute commands. *)
@@ -83,7 +83,7 @@ let rec e_steps n counter p s =
 (* Execute till (after the) the current function, which is not main, returns. *)
 let e_till_return_non_main p s =
     match I.call_of_top_frame s with
-    | Some c -> ("Finished executing " ^ I.string_of_call c,
+    | Some c -> ("Finished executing " ^ SP.call c,
                  E.e_till_return p s)
     | None -> raise empty_call_stack
 
@@ -95,7 +95,7 @@ let e_till_return p s =
 (* Execute till (before the) the current function returns. *)
 let e_till_before_return p s =
     match I.call_of_top_frame s with
-    | Some c -> (I.string_of_call c ^ " ready to return",
+    | Some c -> (SP.call c ^ " ready to return",
                  E.e_till_before_return p s)
     | None -> raise empty_call_stack
 

@@ -25,13 +25,6 @@ type t = {
 }
 
 
-(* Pretty-printers for VM state and related constructs. *)
-module PP = struct
-    let stack s =
-        String.concat ", " (List.map string_of_int s)
-end
-
-
 (* Useful helper functions. *)
 module Helper = struct
     (* List of list of integers corresponding to screen of state s. *)
@@ -52,11 +45,6 @@ module Inspect = struct
     let call_of_frame f = Call (f.f_name, Array.to_list f.argument)
     (* List of calls that lead to a VM state. *)
     let calls s = List.map call_of_frame (List.rev s.frames)
-
-    (* String representation of a call and a list of calls. *)
-    let string_of_call (Call (f, args)) =
-        f ^ "(" ^ String.concat ", " (List.map string_of_int args) ^ ")"
-    let string_of_calls cs = String.concat " -> " (List.map string_of_call cs)
 
 
     (* Segments and stacks. *)
@@ -92,14 +80,29 @@ module Inspect = struct
         let css = List.map (List.map to_char) iss in
         List.map
             (fun cs -> String.concat "" (List.map (String.make 1) cs)) css
+end
 
-    (* Screen in VM state s. *)
-    let screen s = String.concat "\n" (lines s)
+
+(* Pretty-printers for VM state and related constructs. *)
+module PP = struct
+    open Inspect
+
+    (* String representation of a call and a list of calls. *)
+    let call (Call (f, args)) =
+        f ^ "(" ^ String.concat ", " (List.map string_of_int args) ^ ")"
+
+    let calls cs = String.concat " -> " (List.map call cs)
+
+    let stack s =
+        String.concat ", " (List.map string_of_int s)
 
     (* Screen in VM state s, decorated with borders. *)
-    let screen_p s =
+    let screen s =
         let hor_border = "+" ^ String.make 80 '-' ^ "+" in
         let lines' = List.map (fun x -> "|" ^ x ^ "|") (lines s) in
         String.concat "\n" (hor_border :: lines' @ [hor_border])
+
+    (* Screen in VM state s, without any borders. *)
+    let screen_no_border s = String.concat "\n" (lines s)
 end
 
