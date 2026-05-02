@@ -16,15 +16,15 @@
 %token CONSTANT TEMP STATIC LOCAL ARGUMENT
 %token ADD SUB NEG EQ GT LT AND OR NOT
 %token POP PUSH LABEL GOTO IFGOTO FUNCTION CALL SCALL RETURN EOF
-%token <string> ID 
+%token <string> ID
 %token <int> NUM
 
 %type <segment> segment
 %type <syscall> syscall
-%type <(string, string) inst> inst
-%type <(string, string) func> func
-%type <(string, string) func list> funcs
-%type <(string, string) prog> prog
+%type <def_inst> inst
+%type <def_func> func
+%type <def_func list> funcs
+%type <def_prog> prog
 
 %start prog
 
@@ -40,31 +40,31 @@ syscall:
     | f=ID        { syscall_of_iden f }
 
 inst:
-    | PUSH; s=segment; n=NUM       { Push (s, n) }
-    | POP; s=segment; n=NUM        { Pop (s,n) }
-    | PUSH; CONSTANT; n=NUM        { PushC n }
-    | ADD                          { Add }
-    | SUB                          { Sub }
-    | NEG                          { Neg }
-    | EQ                           { Eq }
-    | GT                           { Gt }
-    | LT                           { Lt }
-    | AND                          { And }
-    | OR                           { Or }
-    | NOT                          { Not }
-    | LABEL; l=ID                  { Label l }
-    | GOTO; l=ID                   { Goto l }
-    | IFGOTO; l=ID                 { IfGoto l }
-    | CALL; f=ID; n=NUM            { Call (f,n) }
-    | SCALL; f=syscall             { SCall f }
-    | RETURN                       { Return }
+    | PUSH; s=segment; n=NUM       { Push (s, n), ($startpos, $endpos) }
+    | POP; s=segment; n=NUM        { Pop (s,n), ($startpos, $endpos) }
+    | PUSH; CONSTANT; n=NUM        { PushC n, ($startpos, $endpos) }
+    | ADD                          { Add, ($startpos, $endpos) }
+    | SUB                          { Sub, ($startpos, $endpos) }
+    | NEG                          { Neg, ($startpos, $endpos) }
+    | EQ                           { Eq, ($startpos, $endpos) }
+    | GT                           { Gt, ($startpos, $endpos) }
+    | LT                           { Lt, ($startpos, $endpos) }
+    | AND                          { And, ($startpos, $endpos) }
+    | OR                           { Or, ($startpos, $endpos) }
+    | NOT                          { Not, ($startpos, $endpos) }
+    | LABEL; l=ID                  { Label l, ($startpos, $endpos) }
+    | GOTO; l=ID                   { Goto l, ($startpos, $endpos) }
+    | IFGOTO; l=ID                 { IfGoto l, ($startpos, $endpos) }
+    | CALL; f=ID; n=NUM            { Call (f,n), ($startpos, $endpos) }
+    | SCALL; f=syscall             { SCall f, ($startpos, $endpos) }
+    | RETURN                       { Return, ($startpos, $endpos) }
 
 insts:
     | is=list(inst)     { is }
 
 func:
     | FUNCTION; fn = ID; nVars = NUM; is = insts
-        { {f_name = fn; n_vars = nVars; body = is} }
+        { {f_name = fn; n_vars = nVars; body = is; annot = ($startpos, $endpos)} }
 
 funcs:
     | fs=list(func)     { fs }

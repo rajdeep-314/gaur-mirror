@@ -5,34 +5,64 @@
 *)
 
 
+module A = Syntax.Ast
+module I = Ir
+module STbl = Hashtbl.Make (String)
+
+module U = Utils.Parsing
+
+
+(* String representation of an annotation with lexing position pair (ls, le),
+   src_tbl being a hash table mapping paths to source code.
+   NOTE: It is assumed that the annotation is over a single file only. *)
+let annot_string src_tbl (ls, le) = Lexing.(
+    let path = ls.pos_fname in
+    let l1 = ls.pos_lnum and l2 = le.pos_lnum in
+    let c1 = ls.pos_cnum - ls.pos_bol + 1 in
+    let c2 = le.pos_cnum - le.pos_bol + 1 in
+    let src = STbl.find src_tbl path in
+    let ls = U.get_lines_with_markers '*' '*' src l1 l2 c1 c2 in
+    let header =
+        if l1 = l2 then Printf.sprintf
+            "File \"%s\", line %d columns %d to %d" path l1 c1 c2
+        else Printf.sprintf
+            "File \"%s\", line %d column %d, to line %d column %d"
+            path l1 c1 l2 c2
+    in
+    Printf.sprintf "%s\n%s" header ls)
+
+
 (* Errors that indicate a violation of semantics. *)
 module Semantic = struct
     type t =
         | DuplicateLabel    of string
         | UnboundLabel      of string
         | DuplicateFunc     of string
+        | NoEntryFunc       of string
+        | NoReturnInFunc    of string
 
     let to_string = function
         | DuplicateLabel l  -> "Duplicate label " ^ l
         | UnboundLabel l    -> "Unbound label " ^ l
         | DuplicateFunc f   -> "Duplicate function " ^ f
+        | NoEntryFunc f     -> "Entry function " ^ f ^ " not found"
+        | NoReturnInFunc f  ->
+            "Function " ^ f ^ " does not end with a return instruction"
 end
 
 
 (* Errors during emulations of VM programs. *)
 module Execution = struct
+    (* TODO: Improve the arguments. Maybe add state as argument. *)
     type t =
-        | EmptyCallStack
         | NotEnoughValsOnWorkingStack   of int * int
         | ExecutionTerminated           of int
         | UnboundFunction               of string
         | OutOfBoundSegRead             of Ir.segment * int * int
         | OutOfBoundSegWrite            of Ir.segment * int * int
-        | OutOfBoundPC                  of string * int * int
         | UnImplemented
 
     let to_string = function
-        | EmptyCallStack -> "Empty call stack"
         | NotEnoughValsOnWorkingStack (n, n') -> Printf.sprintf
             "Not enough values on the working stack. Needed at least %d, got only %d" n n'
         | ExecutionTerminated ret_val -> Printf.sprintf
@@ -46,9 +76,6 @@ module Execution = struct
             "Attempted to write segment %s out of bounds"
             (Syntax.Printers.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
-        | OutOfBoundPC (f, n_insts, n) -> Printf.sprintf
-            "Attempted to fetch instruction number %d in function %s, which \
-            only has %d instructions" n f n_insts
         | UnImplemented -> "Unimplemented feature"
 end
 
@@ -67,24 +94,11 @@ module Repl = struct
 end
 
 
+(* Exceptions. *)
 type exn +=
-    | SemanticError  of Semantic.t
-    | ExecutionError of Execution.t
+    | SemanticError  of A.annot option * Semantic.t
+    | ExecutionError of I.annot * Execution.t
     | ReplError      of Repl.t
-
-
-
-(* Registering printers for these exceptions. *)
-
-let pp_semantic_error = function
-    | SemanticError e -> Some (Printf.sprintf
-        "Semantic error: %s." (Semantic.to_string e))
-    | _ -> None
-
-let pp_execution_error = function
-    | ExecutionError e -> Some (Printf.sprintf
-        "Execution error: %s." (Execution.to_string e))
-    | _ -> None
 
 
 let pp_repl_error = function
@@ -92,10 +106,21 @@ let pp_repl_error = function
         "REPL error: %s." (Repl.to_string e))
     | _ -> None
 
-let () =
-    Printexc.register_printer pp_semantic_error ;
-    Printexc.register_printer pp_execution_error ;
-    Printexc.register_printer pp_repl_error
+let () = Printexc.register_printer pp_repl_error
+
+
+(* Printers for exceptions.
+   src_table is a hash table from path to source code. *)
+
+let pp_semantic_error src_tbl = function
+    | (None, e) -> Printf.sprintf "Semantic error: %s."
+        (Semantic.to_string e)
+    | (Some a, e) -> Printf.sprintf "%s\nSemantic error: %s."
+        (annot_string src_tbl a) (Semantic.to_string e)
+
+let pp_execution_error src_tbl (a, e) =
+    Printf.sprintf "%s\nExecution error: %s."
+    (annot_string src_tbl a) (Execution.to_string e)
 
 
 (* Helper functions (and values) for raising exceptions. *)
@@ -103,28 +128,34 @@ module Helper = struct
     module Semantic = struct
         open Semantic
 
-        let dup_label l = SemanticError (DuplicateLabel l)
-        let unbound_label l = SemanticError (UnboundLabel l)
-        let dup_func f = SemanticError (DuplicateFunc f)
+        let exn_with_inst i e = SemanticError (Some (A.inst_annot i), e)
+        let exn_with_func f e = SemanticError (Some (A.func_annot f), e)
+        let exn_with_annot a e = SemanticError (Some a, e)
+
+        let dup_label i l = exn_with_inst i (DuplicateLabel l)
+        let unbound_label i l = exn_with_inst i (UnboundLabel l)
+
+        let dup_func a dup_f = exn_with_annot a (DuplicateFunc dup_f)
+        let no_return f fn = exn_with_func f (NoReturnInFunc fn)
+
+        let no_entry_func main_f = SemanticError (None, NoEntryFunc main_f)
     end
 
     module Execution = struct
         open Execution
 
-        let empty_call_stack = ExecutionError EmptyCallStack
-        let not_enough_vals n n' =
-            ExecutionError (NotEnoughValsOnWorkingStack (n, n'))
-        let execution_terminated v =
-            ExecutionError (ExecutionTerminated v)
-        let unbound_func f =
-            ExecutionError (UnboundFunction f)
-        let unimplemented = ExecutionError UnImplemented
-        let oob_seg_read s n n' =
-            ExecutionError (OutOfBoundSegRead (s, n, n'))
-        let oob_seg_write s n n' =
-            ExecutionError (OutOfBoundSegWrite (s, n, n'))
-        let oob_pc f n_insts n =
-            ExecutionError (OutOfBoundPC (f, n_insts, n))
+        let exn_with_inst i e = ExecutionError (I.inst_annot i, e)
+        let exn_with_func i e = ExecutionError (I.func_annot i, e)
+
+        let not_enough_vals i n n' = exn_with_inst i
+            (NotEnoughValsOnWorkingStack (n, n'))
+        let execution_terminated i v = exn_with_inst i (ExecutionTerminated v)
+        let unbound_func i f = exn_with_inst i (UnboundFunction f)
+        let unimplemented i = exn_with_inst i UnImplemented
+        let oob_seg_read i s n n' = exn_with_inst i
+            (OutOfBoundSegRead (s, n, n'))
+        let oob_seg_write i s n n' = exn_with_inst i
+            (OutOfBoundSegWrite (s, n, n'))
     end
 
     module Repl = struct

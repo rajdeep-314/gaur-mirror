@@ -125,8 +125,10 @@ let e_till_before_return p s =
 (* Execute till the program terminates. *)
 let e_till_termination p s =
     let (s', rv) = E.e_till_termination p s in
-    ("Execution terminated with return value " ^ string_of_int rv,
-     s')
+    let msg = match rv with
+    | None      -> "Execution terminated with no return value."
+    | Some rv   -> "Execution terminated with return value " ^ string_of_int rv
+    in msg, s'
 
 let reset_f p s = ("Resetting.", E.init_from_prog p)
 let exit_f p s = ("Exiting", s)
