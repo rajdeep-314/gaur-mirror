@@ -271,7 +271,7 @@ let exec_syscall i = function
 
 
 (* Execute instruction i on state s, p being the IR program. *)
-let execute_inst c s i =
+let execute_inst p s i =
     match inst_base i with
     | Push (seg, x) -> exec_push i s seg x
     | Pop (seg, x)  -> exec_pop i s seg x
@@ -282,7 +282,7 @@ let execute_inst c s i =
     | Goto n    -> apply_on_top_frame uf uf (fun p -> p + n) idf s
     | IfGoto n  -> exec_if_goto i n s
     | Return    -> exec_return i s
-    | Call (f, n_args)  -> exec_call i c f n_args s
+    | Call (f, n_args)  -> exec_call i p f n_args s
     | SCall f           -> exec_syscall i f s
 
 (* Fetches the next instruction to execute from program p and VM state s. *)
