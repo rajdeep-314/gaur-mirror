@@ -87,7 +87,7 @@ let translate_progs main_f ps =
     (* List of function names. *)
     let fns = List.map (fun f -> f.I.f_name) fs in
     (* Checking for duplicate function names. *)
-    match MU.find_duplicate fns with
+    match MU.find_duplicate Fun.id fns with
     | Some f    -> raise (dup_func f)
     | None      ->
         Ir.{ main_f = main_f ;
