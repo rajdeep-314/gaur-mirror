@@ -7,6 +7,7 @@
 
 module A = Syntax.Ast
 module I = Ir
+module P = State.PP
 module STbl = Hashtbl.Make (String)
 
 module U = Utils.Parsing
@@ -54,15 +55,22 @@ end
 (* Errors during emulations of VM programs. *)
 module Execution = struct
     (* TODO: Improve the arguments. Maybe add state as argument. *)
-    type t =
+    type base =
         | NotEnoughValsOnWorkingStack   of int * int
         | ExecutionTerminated           of int
         | UnboundFunction               of string
-        | OutOfBoundSegRead             of Ir.segment * int * int
-        | OutOfBoundSegWrite            of Ir.segment * int * int
+        | OutOfBoundSegRead             of I.segment * int * int
+        | OutOfBoundSegWrite            of I.segment * int * int
         | UnImplemented
 
-    let to_string = function
+    (* Pairing a base error up with the state that caused it. *)
+    type t = State.t * base
+
+    (* Extracting state and base from an error. *)
+    let state = fst
+    let base = snd
+
+    let base_to_string = function
         | NotEnoughValsOnWorkingStack (n, n') -> Printf.sprintf
             "Not enough values on the working stack. Needed at least %d, got only %d" n n'
         | ExecutionTerminated ret_val -> Printf.sprintf
@@ -77,6 +85,8 @@ module Execution = struct
             (Syntax.Printers.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
         | UnImplemented -> "Unimplemented feature"
+
+    let diagnostics_to_string = P.diagnostic
 end
 
 
@@ -118,9 +128,15 @@ let pp_semantic_error src_tbl = function
     | (Some a, e) -> Printf.sprintf "%s\nSemantic error: %s."
         (annot_string src_tbl a) (Semantic.to_string e)
 
-let pp_execution_error src_tbl (a, e) =
+let pp_execution_error src_tbl (a, e) = Execution.(
     Printf.sprintf "%s\nExecution error: %s."
-    (annot_string src_tbl a) (Execution.to_string e)
+    (annot_string src_tbl a) (base_to_string (base e)))
+
+let pp_execution_error_verbose src_tbl (a, e) = Execution.(
+    Printf.sprintf "%s\nExecution error:\n%s.\n\nState diagnostic info:\n%s"
+    (annot_string src_tbl a) (base_to_string (base e))
+    (diagnostics_to_string (state e)))
+
 
 
 (* Helper functions (and values) for raising exceptions. *)
@@ -144,18 +160,18 @@ module Helper = struct
     module Execution = struct
         open Execution
 
-        let exn_with_inst i e = ExecutionError (I.inst_annot i, e)
-        let exn_with_func i e = ExecutionError (I.func_annot i, e)
+        let exn_with_inst i s e = ExecutionError (I.inst_annot i, (s, e))
+        let exn_with_func i s e = ExecutionError (I.func_annot i, (s, e))
 
-        let not_enough_vals i n n' = exn_with_inst i
+        let not_enough_vals i s n n' = exn_with_inst i s
             (NotEnoughValsOnWorkingStack (n, n'))
-        let execution_terminated i v = exn_with_inst i (ExecutionTerminated v)
-        let unbound_func i f = exn_with_inst i (UnboundFunction f)
-        let unimplemented i = exn_with_inst i UnImplemented
-        let oob_seg_read i s n n' = exn_with_inst i
-            (OutOfBoundSegRead (s, n, n'))
-        let oob_seg_write i s n n' = exn_with_inst i
-            (OutOfBoundSegWrite (s, n, n'))
+        let execution_terminated i s v = exn_with_inst i s (ExecutionTerminated v)
+        let unbound_func i s f = exn_with_inst i s (UnboundFunction f)
+        let unimplemented i s = exn_with_inst i s UnImplemented
+        let oob_seg_read i s seg n n' = exn_with_inst i s
+            (OutOfBoundSegRead (seg, n, n'))
+        let oob_seg_write i s seg n n' = exn_with_inst i s
+            (OutOfBoundSegWrite (seg, n, n'))
     end
 
     module Repl = struct

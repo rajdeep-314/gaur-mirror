@@ -22,16 +22,16 @@ let make_segment n = Array.make n 0
 let make_screen n = Array.make n 32
 
 (* Read the n'th index from segment seg_name, with contents seg. *)
-let read_segment i seg_name seg n =
+let read_segment i s seg_name seg n =
     let size = Array.length seg in
     if 0 <= n && n < size then seg.(n)
-    else raise (oob_seg_read i seg_name size n)
+    else raise (oob_seg_read i s seg_name size n)
 
 (* Write value v in the n'th index of segment seg_name, with contents seg. *)
-let write_segment i seg_name seg n v =
+let write_segment i s seg_name seg n v =
     let size = Array.length seg in
     if 0 <= n && n < size then seg.(n) <- v
-    else raise (oob_seg_write i seg_name size n)
+    else raise (oob_seg_write i s seg_name size n)
 
 (* In state s, write value y at offset x of screen and return new state. *)
 let write_to_screen s x y =
@@ -95,9 +95,9 @@ let init_from_prog p =
 
 (* Pop the top-most n values from a working stack. Returns list of values
    popped and remaining stack content. *)
-let pop_n i n s =
-    match list_split_opt s n with
-    | None   -> raise (not_enough_vals i n (List.length s))
+let pop_n i s n st =
+    match list_split_opt st n with
+    | None   -> raise (not_enough_vals i s n (List.length st))
     | Some p -> p
 
 (*
@@ -129,7 +129,7 @@ let apply_on_wstack f s = apply_on_top_frame uf uf (fun x -> x + 1) f s
 (* Top-most entry of the top-most frame's working stack. *)
 let wstack_peek i s =
     match (top_frame s).wstack with
-    | []      -> raise (not_enough_vals i 1 0)
+    | []      -> raise (not_enough_vals i s 1 0)
     | x :: xs -> x
 
 let wstack_peek_opt s =
@@ -156,16 +156,16 @@ let push_frame f n_vars xs s = {
 let push_const n = fun s -> n :: s
 
 (* Apply unary function op to the top-most element. *)
-let un_op_f i op = function
-    | []      -> raise (not_enough_vals i 1 0)
+let un_op_f i s op = function
+    | []      -> raise (not_enough_vals i s 1 0)
     | x :: s' -> op x :: s'
 
 (* Apply binary function op to the two top-most elements. *)
-let bin_op_f i op = function
-    | []      -> raise (not_enough_vals i 2 0)
+let bin_op_f i s op = function
+    | []      -> raise (not_enough_vals i s 2 0)
     | y :: s' ->
         match s' with
-        | []        -> raise (not_enough_vals i 2 1)
+        | []        -> raise (not_enough_vals i s 2 1)
         | x :: s''  -> op x y :: s''
 
 (* Binary functions. *)
@@ -183,29 +183,29 @@ let lt_f x y = comp_f ( < ) x y
 let gt_f x y = comp_f ( > ) x y
 
 (* Pop the top-most entry of the working stack and return the rest of it. *)
-let pop_wstack i = function
-    | []        -> raise (not_enough_vals i 1 0)
+let pop_wstack i s = function
+    | []        -> raise (not_enough_vals i s 1 0)
     | _ :: xs   -> xs
 
 
 (* state -> state functions used in emulation. *)
 
-let exec_add i = apply_on_wstack (bin_op_f i add_f)
-let exec_sub i = apply_on_wstack (bin_op_f i sub_f)
-let exec_and i = apply_on_wstack (bin_op_f i and_f)
-let exec_or  i = apply_on_wstack (bin_op_f i or_f)
-let exec_neg i = apply_on_wstack (un_op_f i neg_f)
-let exec_not i = apply_on_wstack (un_op_f i not_f)
-let exec_eq  i = apply_on_wstack (bin_op_f i eq_f)
-let exec_lt  i = apply_on_wstack (bin_op_f i lt_f)
-let exec_gt  i = apply_on_wstack (bin_op_f i gt_f)
+let exec_add i s = apply_on_wstack (bin_op_f i s add_f)
+let exec_sub i s = apply_on_wstack (bin_op_f i s sub_f)
+let exec_and i s = apply_on_wstack (bin_op_f i s and_f)
+let exec_or  i s = apply_on_wstack (bin_op_f i s or_f)
+let exec_neg i s = apply_on_wstack (un_op_f i s neg_f)
+let exec_not i s = apply_on_wstack (un_op_f i s not_f)
+let exec_eq  i s = apply_on_wstack (bin_op_f i s eq_f)
+let exec_lt  i s = apply_on_wstack (bin_op_f i s lt_f)
+let exec_gt  i s = apply_on_wstack (bin_op_f i s gt_f)
 
 (* Execute `if-goto n` on VM state s. *)
 let exec_if_goto i n s =
     let x = wstack_peek i s in
     let pf =
         if x = -1 then fun p -> p + n else fun p -> p + 1 in
-    apply_on_top_frame uf uf pf (pop_wstack i) s
+    apply_on_top_frame uf uf pf (pop_wstack i s) s
 
 (*
 Execute a function return. In case there is only one function frame on the
@@ -216,7 +216,7 @@ let exec_return i s = {
         let f, fs = top_and_rest_frames s in
         let ret_val = wstack_peek i s in
         match fs with
-        | []        -> raise (execution_terminated i ret_val)
+        | []        -> raise (execution_terminated i s ret_val)
         | f' :: fs' ->
             apply_on_frame uf uf idf (push_const ret_val) f' :: fs'
 }
@@ -227,7 +227,7 @@ let exec_call i p f n_args s =
     let ws = wstack_of_top_frame s in
     let split_opt = list_split_opt ws n_args in
     match split_opt with
-    | None          -> raise (not_enough_vals i n_args (List.length ws))
+    | None          -> raise (not_enough_vals i s n_args (List.length ws))
     | Some (xs, ys) ->
         (* State after popping n_args many values from the top-most frame's
            working stack. *)
@@ -235,23 +235,23 @@ let exec_call i p f n_args s =
         (* Adding the new function's frame to call stack. *)
         match Hashtbl.find_opt p.funcs f with
         | Some fn   -> push_frame f fn.n_vars (List.rev xs) s'
-        | None      -> raise (unbound_func i f)
+        | None      -> raise (unbound_func i s f)
 
 (* Execute push seg x on VM state s. *)
 let exec_push i s seg x =
     let xs = segment seg s in
-    let v = read_segment i seg xs x in
+    let v = read_segment i s seg xs x in
     apply_on_wstack (push_const v) s
 
 (* Execute pop seg i on VM state s. *)
 let exec_pop i s seg x =
     let ws = wstack_of_top_frame s in
     match list_head_split_opt ws with
-    | None          -> raise (not_enough_vals i 1 0)
+    | None          -> raise (not_enough_vals i s 1 0)
     | Some (y, ys)  ->
         let s' = apply_on_wstack (fun _ -> ys) s in
         let ys = segment seg s' in
-        let () = write_segment i seg ys x y in s'
+        let () = write_segment i s seg ys x y in s'
 
 (* Execute the putchar system call. *)
 let exec_putchar i s =
@@ -262,8 +262,8 @@ let exec_putchar i s =
         | Some (x, xs) ->
             let s' = apply_on_wstack (fun _ -> 0 :: xs) s in
             write_to_screen s' x y
-        | None -> raise (not_enough_vals i 2 1) end
-    | None -> raise (not_enough_vals i 2 0)
+        | None -> raise (not_enough_vals i s 2 1) end
+    | None -> raise (not_enough_vals i s 2 0)
 
 (* Execute a system call. *)
 let exec_syscall i = function
@@ -276,9 +276,9 @@ let execute_inst c s i =
     | Push (seg, x) -> exec_push i s seg x
     | Pop (seg, x)  -> exec_pop i s seg x
     | PushC n   -> apply_on_wstack (push_const n) s
-    | Add       -> exec_add i s | Sub -> exec_sub i s | And -> exec_and i s 
-    | Or        -> exec_or i s  | Neg -> exec_neg i s | Not -> exec_not i s
-    | Eq        -> exec_eq i s  | Lt  -> exec_lt i s  | Gt  -> exec_gt i s
+    | Add       -> exec_add i s s | Sub -> exec_sub i s s | And -> exec_and i s s
+    | Or        -> exec_or i s s  | Neg -> exec_neg i s s | Not -> exec_not i s s
+    | Eq        -> exec_eq i s s  | Lt  -> exec_lt i s s  | Gt  -> exec_gt i s s
     | Goto n    -> apply_on_top_frame uf uf (fun p -> p + n) idf s
     | IfGoto n  -> exec_if_goto i n s
     | Return    -> exec_return i s
