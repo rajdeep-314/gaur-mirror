@@ -117,7 +117,7 @@ module PP = struct
 
     (* Frame f. *)
     let frame f = Printf.sprintf
-        "%s:\nPC: %d\nLocal: %s\nWorking stack:%s"
+        "%s:\nPC: %d\nLocal: %s\nWorking stack: %s"
         (call (call_of_frame f)) f.pc (seg f.local) (stack f.wstack)
 
     (* Top-most frame. *)
@@ -125,5 +125,11 @@ module PP = struct
         match top_frame s with
         | Some f    -> frame f
         | None      -> "Call stack empty"
+
+    (* Diagnostic info about a state: call stack and contents of top-most
+       frame. *)
+    let diagnostic s = Printf.sprintf
+        "Call stack:\n%s\n\n%s"
+        (String.concat "\n" (List.map call (Inspect.calls s))) (top_frame s)
 end
 
