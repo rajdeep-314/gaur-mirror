@@ -48,15 +48,15 @@ let insert_into_string s x i =
     pre ^ x ^ post
 
 (* Get a string corresponding to lines from l1 to l2 in src, with the region
-   from column c1 of l1 to column c2 of l2 enclosed in open_m and close_m. *)
+   from column c1 of l1 to column c2 of l2 denoted by open and close marker
+   characters open_m and close_m. *)
 let get_lines_with_markers open_m close_m src l1 l2 c1 c2 =
     if l1 = l2 then
         let l = get_line src l1 in
         l ^ "\n" ^ carats_string c1 (c2 - c1)
     else
         let ls = get_lines src l1 l2 in
-        let ls_str = String.concat "\n" ls in
-        let c1 = carat_string ~char:'*' c1 in
-        let c2 = carat_string ~char:'*' c2 in
-        String.concat "\n" [c1; ls_str; c2]
+        let c1 = carat_string ~char:open_m c1 in
+        let c2 = carat_string ~char:close_m c2 in
+        String.concat "\n" [c1; String.concat "\n" ls; c2]
 
