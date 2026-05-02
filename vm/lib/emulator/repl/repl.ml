@@ -159,30 +159,36 @@ let exits = function
     | _     -> false
 
 
-(* REPL loop on program p and state s. *)
-let rec loop p s =
+(* REPL loop on program p and state s, with source table src_tbl. *)
+let rec loop src_tbl p s =
     print_string "@> " ; flush stdout ;     (* Prompt string. *)
     match P.get_cmd () with                 (* Try to read and parse input. *)
     (* No lexing or parsing errors. *)
-    | Ok cmd -> exec_cmd p s cmd
+    | Ok cmd -> exec_cmd src_tbl p s cmd
     (* Lexing or parsing error. *)
     | Error err_str ->
         print_endline err_str ;
-        loop p s
+        loop src_tbl p s
 
-and exec_cmd p s cmd =
+and exec_cmd src_tbl p s cmd =
     try
         let str, s' = repl_func_of_cmd cmd p s in
         print_endline str ;
-        if exits cmd then () else loop p s'
+        if exits cmd then () else loop src_tbl p s'
     with
     (* Semantic, execution, or REPL error. *)
-    | (Er.SemanticError _ | Er.ExecutionError _ | Er.ReplError _) as e ->
+    | Er.ReplError _ as e ->
         print_endline (Printexc.to_string e) ;
-        loop p s
+        loop src_tbl p s
+    | Er.SemanticError (a, e) ->
+        print_endline (Er.pp_semantic_error src_tbl (a, e)) ;
+        loop src_tbl p s
+    | Er.ExecutionError (a, e) ->
+        print_endline (Er.pp_execution_error src_tbl (a, e)) ;
+        loop src_tbl p s
 
 
 (* Main REPL loop. *)
-let main_loop p =
-    loop p (E.init_from_prog p)
+let main_loop src_tbl p =
+    loop src_tbl p (E.init_from_prog p)
 
