@@ -52,7 +52,7 @@ let () =
                 "Execution terminated with %d\n%s\n" n screen;
         with
         | Er.ExecutionError (a, e) ->
-            prerr_endline (Er.pp_execution_error src_tbl (a, e)) ;
+            prerr_endline (Er.pp_execution_error_verbose src_tbl (a, e)) ;
             exit 2
     with
     | Er.SemanticError (a, e) ->
