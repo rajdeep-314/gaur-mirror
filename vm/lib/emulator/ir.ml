@@ -47,11 +47,9 @@ type 'a func = {
 
 
 (* IR programs. *)
-(* TODO: Maybe remove f_lbls. *)
 type 'a prog = {
     main_f : string ;
-    funcs  : (string, 'a func) Hashtbl.t ;
-    f_lbls : (string, string list) Hashtbl.t
+    funcs  : (string, 'a func) Hashtbl.t
 }
 
 
