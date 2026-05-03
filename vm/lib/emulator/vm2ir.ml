@@ -7,7 +7,7 @@
 
 (* Module aliases. *)
 module A = Syntax.Ast           (* VM AST. *)
-module I = Ir               (* IR AST. *)
+module I = Ir                   (* IR AST. *)
 module MU = Utils.Misc          (* Miscellaneous utils. *)
 
 open Err.Helper.Semantic
@@ -55,7 +55,7 @@ let translate_inst tbl ln i =
         | Some ln' -> Some (I.IfGoto (ln' - ln))
         | None -> raise (unbound_label i l) end in
     match base with
-    | Some x    -> [x, A.inst_annot i]
+    | Some x    -> [(x, A.inst_annot i)]
     | None      -> []
 
 (* Translate a list of VM instructions to a list of IR instructions. *)
