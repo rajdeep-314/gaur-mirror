@@ -5,7 +5,7 @@
 *)
 
 
-module A = Syntax.Ast
+module A = Syntax.Vm_ast
 module I = Ir
 module P = State.PP
 module STbl = Hashtbl.Make (String)

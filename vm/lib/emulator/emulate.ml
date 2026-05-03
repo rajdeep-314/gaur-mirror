@@ -5,7 +5,7 @@
 *)
 
 
-module A = Syntax.Ast
+module A = Syntax.Vm_ast
 
 open Ir
 open State

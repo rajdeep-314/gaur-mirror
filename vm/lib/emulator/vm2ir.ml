@@ -6,7 +6,7 @@
 
 
 (* Module aliases. *)
-module A = Syntax.Ast           (* VM AST. *)
+module A = Syntax.Vm_ast        (* VM AST. *)
 module I = Ir                   (* IR AST. *)
 module MU = Utils.Misc          (* Miscellaneous utils. *)
 

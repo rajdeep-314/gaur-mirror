@@ -6,7 +6,7 @@
 *)
 
 
-module A = Syntax.Ast
+module A = Syntax.Vm_ast
 
 
 type segment = A.segment        (* IR segments are VM segments. *)
