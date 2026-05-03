@@ -20,7 +20,6 @@ let syscall = function
 
 (* Convert a VM instruction to its string representation. *)
 let inst_base sl sf inst =
-(*let inst (sl: 'l -> string)(sf: 'f -> string)(inst: ('l,'f) inst) : string =*)
     match inst with
     | Push (s, i)       -> Printf.sprintf "push %s %d" (seg s) i
     | Pop  (s, i)       -> Printf.sprintf "pop %s %d"  (seg s) i
@@ -45,7 +44,6 @@ let inst sl sf (a, i) = inst_base sl sf i
 
 (* Convert a list of VM instructions to their string representation. *)
 let insts sl sf insts =
-(*let insts (sl: 'l -> string)(sf: 'f -> string)(insts: ('l,'f) insts) : string list =*)
     List.map (inst sl sf) insts
 
 (* Tabulate a list of strings by adding a tab character at the start of each line. *)
@@ -54,14 +52,12 @@ let tabulate (lines: string list) : string list =
 
 (* Convert a VM function to its string representation. *)
 let func sl sf f =
-(*let func (sl: 'l -> string)(sf: 'f -> string)(f: ('l,'f) func) : string list =*)
     let header = Printf.sprintf "function %s %d" (sf f.f_name) f.n_vars in
     let body_lines = tabulate (insts sl sf f.body) in
     header :: body_lines
 
 (* Convert a VM program to its string representation. *)
 let prog sl sf prog =
-(*let prog (sl: 'l -> string)(sf: 'f -> string)(prog: ('l,'f) prog) : string =*)
     let func_lines = List.flatten (List.map (func sl sf) prog) in
     String.concat "\n" func_lines 
 
