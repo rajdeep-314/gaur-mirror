@@ -165,8 +165,10 @@ let rec loop src_tbl p s =
     match P.get_cmd () with                 (* Try to read and parse input. *)
     (* No lexing or parsing errors. *)
     | Ok cmd -> exec_cmd src_tbl p s cmd
+    (* End of file while reading for command. *)
+    | Error P.EOF -> print_endline "\nExiting"
     (* Lexing or parsing error. *)
-    | Error err_str ->
+    | Error (P.Msg err_str) ->
         print_endline err_str ;
         loop src_tbl p s
 

@@ -19,20 +19,31 @@ let to_string line lexbuf err_str =
     "In command:\n%s\n%s\n%s"
     line carat err_str
 
+
 (*
 Read a line from stdin and return a value of type (cmd, string) result.
     - Ok c denotes that the input was successfully parsed to produce command c.
-    - Error s denotes a parsing error with s being the error string.
+    - Error (Msg s) denotes a parsing error with s being the error string.
+    - Error EOF denotes an End_of_file exception while reading for input
+      (Ctrl + D, for example).
 *)
+
+type err =
+    | Msg of string
+    | EOF
+
 let get_cmd () =
-    let inp = read_line () in
-    let lexbuf = Lexing.from_string inp in
-    let string_of_err = to_string inp lexbuf in
     try
-        Ok (Repl_parser.cmd Repl_lexer.read_tokens lexbuf)
-    with
+        let inp = read_line () in
+        let lexbuf = Lexing.from_string inp in
+        let string_of_err = to_string inp lexbuf in
+        try
+            Ok (Repl_parser.cmd Repl_lexer.read_tokens lexbuf)
+        with
         | E.LexingError _ as e ->
-            Error (string_of_err (Printexc.to_string e))
+            Error (Msg (string_of_err (Printexc.to_string e)))
         | P.Error n ->
-            Error (string_of_err (Messages.message n))
+            Error (Msg (string_of_err (Messages.message n)))
+    with
+    | End_of_file -> Error EOF
 
