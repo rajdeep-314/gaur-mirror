@@ -58,6 +58,7 @@ module Execution = struct
     type base =
         | NotEnoughValsOnWorkingStack   of int * int
         | ExecutionTerminated           of int
+        | NoReturnValue
         | UnboundFunction               of string
         | OutOfBoundSegRead             of I.segment * int * int
         | OutOfBoundSegWrite            of I.segment * int * int
@@ -75,6 +76,7 @@ module Execution = struct
             "Not enough values on the working stack. Needed at least %d, got only %d" n n'
         | ExecutionTerminated ret_val -> Printf.sprintf
             "Execution terminated with return value %d" ret_val
+        | NoReturnValue -> "Nothing in the working stack to return"
         | UnboundFunction f -> "Unbound function " ^ f
         | OutOfBoundSegRead (seg, n, n') -> Printf.sprintf
             "Attempted to read segment %s out of bounds"
@@ -166,6 +168,7 @@ module Helper = struct
         let not_enough_vals i s n n' = exn_with_inst i s
             (NotEnoughValsOnWorkingStack (n, n'))
         let execution_terminated i s v = exn_with_inst i s (ExecutionTerminated v)
+        let no_ret_val i s = exn_with_inst i s NoReturnValue
         let unbound_func i s f = exn_with_inst i s (UnboundFunction f)
         let unimplemented i s = exn_with_inst i s UnImplemented
         let oob_seg_read i s seg n n' = exn_with_inst i s
