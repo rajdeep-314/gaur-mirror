@@ -80,11 +80,12 @@ module Execution = struct
         | UnboundFunction f -> "Unbound function " ^ f
         | OutOfBoundSegRead (seg, n, n') -> Printf.sprintf
             "Attempted to read segment %s out of bounds"
-            (Syntax.Printers.seg seg) ^ Printf.sprintf
+        (*List.map (fun line -> "\t" ^ line) lines*)
+            (A.PP.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to read index %d" n n'
         | OutOfBoundSegWrite (seg, n, n') -> Printf.sprintf
             "Attempted to write segment %s out of bounds"
-            (Syntax.Printers.seg seg) ^ Printf.sprintf
+            (A.PP.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
         | UnImplemented -> "Unimplemented feature"
 
