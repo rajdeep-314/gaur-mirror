@@ -1,5 +1,4 @@
 open Parse
-open Hdlutils
 
 type t =
   | Mismatch  of Types.t * Types.t

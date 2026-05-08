@@ -1,7 +1,6 @@
 %{
   open Types
   open Ast
-  open Hdlutils
   open Errors
 
   let add_to_map map (kvl : (string * expr_info) Loc.wrapped) =

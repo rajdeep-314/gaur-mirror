@@ -4,6 +4,7 @@ module Parser   = Topparser
 module Lexer    = Toplexer
 module Messages = Messages
 module Errors   = Errors
+module Loc      = Loc
 
 open Hdlutils
 

@@ -1,5 +1,3 @@
-open Hdlutils
-
 type t =
   | DuplicateKey  of string * Loc.t
   | UnexCharInBin of char   * Lexing.lexbuf

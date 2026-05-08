@@ -1,4 +1,3 @@
-open Hdlutils
 open Errors
 
 module StrMap = Map.Make(String)

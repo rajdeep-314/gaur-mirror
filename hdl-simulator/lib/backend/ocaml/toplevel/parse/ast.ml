@@ -1,5 +1,4 @@
 open Bits
-open Hdlutils
 
 module StrMap = Map.Make (String)
 
