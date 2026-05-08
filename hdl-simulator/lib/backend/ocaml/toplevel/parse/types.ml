@@ -1,8 +1,8 @@
 module StrMap = Map.Make (String)
 
-type t =
+type typ =
   | TBits   of int
-  | TRecord of t StrMap.t
+  | TRecord of typ StrMap.t
 
 let tbits n =
   TBits n
@@ -18,7 +18,7 @@ let rec eq t1 t2 =
 ;;
 
 module Pretty : sig
-  val pp_t : t Fmt.t
+  val pp_t : typ Fmt.t
 end = struct
   let rec pp_t ppf = function
     | TBits   n -> Fmt.pf ppf "bits %d" n

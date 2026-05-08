@@ -2,7 +2,7 @@ open Errors
 
 module StrMap = Map.Make(String)
 
-let rec tc_expr (ei : Parse.Ast.expr_info) : Parse.Types.t =
+let rec tc_expr (ei : Parse.Ast.expr_info) : Parse.Types.typ =
   match ei.expr with
   | Const bv   -> let l = Array.length bv in
                   TBits l

@@ -9,7 +9,7 @@ module type CHIP = sig
   val clk : tin -> t -> t
   (* val pp_tin : tin Fmt.t *)
   val pp_tout : tout Fmt.t
-  val typeof_tin : Parse.Types.t
+  val typeof_tin : Parse.Types.typ
   val totype_tin : Parse.Ast.expr -> tin
   (* val totype_tout : Loc.t Parse.Ast.expr -> tout *)
   val def_tin : tin

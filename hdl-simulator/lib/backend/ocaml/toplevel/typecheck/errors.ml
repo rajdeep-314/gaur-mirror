@@ -1,7 +1,7 @@
 open Parse
 
 type t =
-  | Mismatch  of Types.t * Types.t
+  | Mismatch  of Types.typ * Types.typ
 
 exception Error of t * Loc.t
 
