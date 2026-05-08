@@ -36,7 +36,7 @@ let var_next id =
   String.lowercase_ascii (var_pfx ^ id ^ "'")
 
 
-(** {2 Chip Interface} *)
+(** {2 Chip Module Interface} *)
 
 (** [module_name id] is the OCaml module identifier of a chip with
     name [id].
@@ -50,6 +50,9 @@ let module_name id =
 let chipfld_name id =
   String.lowercase_ascii (id ^ "'")
 
+
+(** {2 Primary functions} *)
+
 (** [fun_out] is the name of a chip's, output function. *)
 let fun_out = "out"
 
@@ -61,6 +64,9 @@ let fun_clk = "clk"
 *)
 let fun_out_clk = "out_clk"
 
+
+(** {2 Pretty-printing functions} *)
+
 (** [fun_pp_tin] is ["pp_tin"], the name of a chip's input
     expression pretty printer.
 *)
@@ -70,6 +76,9 @@ let fun_pp_tin = "pp_tin"
     expression pretty printer.
 *)
 let fun_pp_tout = "pp_tout"
+
+
+(** {2 Default Values} *)
 
 (** [fun_default_input] is ["default_input"], the name of a chip's
     default input.
@@ -81,6 +90,9 @@ let fun_default_input = "default_input"
 *)
 let fun_default_state = "default_state"
 
+
+(** {2 Runtime typing information} *)
+
 (** [fun_typeof_tin] is ["typeof_tin"], the name of the value
     containing runtime type information for a chip's input.
 *)
@@ -90,6 +102,9 @@ let fun_typeof_tin = "typeof_tin"
     containing runtime type information for a chip's output.
 *)
 let fun_typeof_tout = "typeof_tout"
+
+
+(** {2 Conversion from-and-to runtime expressions} *)
 
 (** [fun_totype_tin] is ["totype_tin"], the name of the function
     which converts parsed expression to chip's expression type.
