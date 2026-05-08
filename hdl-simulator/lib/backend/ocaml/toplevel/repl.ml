@@ -7,11 +7,11 @@ module type CHIP = sig
 
   val out : tin -> t -> tout
   val clk : tin -> t -> t
-  val pp_tin : tin Fmt.t
+  (* val pp_tin : tin Fmt.t *)
   val pp_tout : tout Fmt.t
   val typeof_tin : Parse.Types.t
-  val totype_tin : Loc.t Parse.Ast.expr -> tin
-  val totype_tout : Loc.t Parse.Ast.expr -> tout
+  val totype_tin : Parse.Ast.expr -> tin
+  (* val totype_tout : Loc.t Parse.Ast.expr -> tout *)
   val def_tin : tin
   val def_t : t
 end
@@ -27,6 +27,7 @@ let repl outx (module C : CHIP) =
       (try Typechecker.tc_input C.typeof_tin e with
        | Errors.Error (err, loc) ->
          Io.output_stringln outx (Fmt.to_to_string Errors.Pretty.pp (err, loc)));
+       input := C.totype_tin e.expr;
       go ()
 
     | Output ->

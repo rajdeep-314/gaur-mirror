@@ -4,7 +4,7 @@
   open Hdlutils
   open Errors
 
-  let add_to_map map (kvl : (string * Loc.t expr_info) Loc.wrapped) =
+  let add_to_map map (kvl : (string * expr_info) Loc.wrapped) =
     let module StrMap = Stdlib.Map.Make(String) in
     let key = fst (kvl.txt) in
     let value = snd (kvl.txt) in
@@ -33,9 +33,9 @@
 
 %token EOF
 
-%start <Loc.t Ast.cmd> cmd
+%start <Ast.cmd> cmd
 
-%type <Loc.t Ast.expr_info> expr
+%type <Ast.expr_info> expr
 
 %%
 
