@@ -34,6 +34,16 @@ let mk_expr_info e l =
   ; loc=l
   }
 
+let ebits bv = Const bv
+
+let erecord_of_list (el : (string * expr) list) =
+  let er =
+    el
+    |> List.map (fun (s, e) -> (s, mk_expr_info e Loc.dummy))
+    |> StrMap.of_list
+  in
+  Record er
+
 type cmd =
   | Input   of expr_info
   | Output
