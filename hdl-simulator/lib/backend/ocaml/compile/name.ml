@@ -68,13 +68,15 @@ let fun_pp_tin = "pp_tin"
 *)
 let fun_pp_tout = "pp_tout"
 
-(** [fun_def_tin] is ["def_tin"], the name of a chip's default input
-    type.
+(** [fun_default_input] is ["default_input"], the name of a chip's
+    default input.
 *)
-let fun_def_tin = "def_tin"
+let fun_default_input = "default_input"
 
-(** [fun_def_t] is ["def_t"], the name of a chip's default type. *)
-let fun_def_t = "def_t"
+(** [fun_default_state] is ["default_state"], the name of a chip's
+    default state.
+*)
+let fun_default_state = "default_state"
 
 (** [fun_typeof_tin] is ["typeof_tin"], the name of the value
     containing runtime type information for a chip's input.

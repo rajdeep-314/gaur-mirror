@@ -123,7 +123,6 @@ let tout_tid = T.tid N.id_output
 
 let tchip_tid = T.tid "t"
 let tchip = "t"
-let tdef_t = "def_t"
 
 
 let expr_in (ci : 'a Ast.chip_info) e =
@@ -206,7 +205,7 @@ let rec sf_default' i is_stfl (pi : 'a Ast.assign_info list) =
     | Next    (_, ri) ->
       match ri.data with
       | Call (id, e) ->
-        let tid = E.modpath id tdef_t in
+        let tid = E.modpath id N.fun_default_state in
         if is_stfl id
         then (chipvar_name id i, tid) :: sf_default' (i + 1) is_stfl ais
         else sf_default' (i + 1) is_stfl ais
@@ -226,10 +225,10 @@ let default is_stfl (ci : 'a Ast.chip_info) =
   else E.erecord r
 
 let expr_def_t is_stfl ci =
-  E.bfun N.fun_def_t [] (Some tchip_tid) (default is_stfl ci)
+  E.bfun N.fun_default_state [] (Some tchip_tid) (default is_stfl ci)
 
 let expr_def_tin (ci : 'a Ast.chip_info) =
-  E.bfun N.fun_def_tin [] (Some (T.tid N.id_input)) (D.default_tin ci)
+  E.bfun N.fun_default_input [] (Some (T.tid N.id_input)) (D.default_tin ci)
 
 let expr_record isv is_stfl (ci : 'a Ast.chip_info) expr_last =
   let erec_states =
