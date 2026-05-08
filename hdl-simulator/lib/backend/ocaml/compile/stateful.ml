@@ -121,8 +121,7 @@ let tout_decl (ci : 'a Ast.chip_info) : T.typ_decl =
 let tout_tid = T.tid N.id_output
 
 
-let tchip_tid = T.tid "t"
-let tchip = "t"
+let tchip_tid = T.tid N.id_state
 
 
 let expr_in (ci : 'a Ast.chip_info) e =
@@ -178,7 +177,7 @@ let rec sf_parts'' i is_stfl (pi : 'a Ast.assign_info list) =
     | Next    (_, ri) ->
       match ri.data with
       | Call (id, e) ->
-        let tid = T.tmodpath id tchip in
+        let tid = T.tmodpath id N.id_state in
         if is_stfl id
         then (id, i, tid) :: sf_parts'' (i + 1) is_stfl ais
         else sf_parts'' (i + 1) is_stfl ais
@@ -193,8 +192,8 @@ let tchip_decl isv is_stfl (ci : 'a Ast.chip_info) =
           |> union (StrMap.map typ ci.data.states)
   in
   if StrMap.is_empty r
-  then T.decl_alias  tchip T.tunit
-  else T.decl_record tchip r
+  then T.decl_alias  N.id_state T.tunit
+  else T.decl_record N.id_state r
 
 let rec sf_default' i is_stfl (pi : 'a Ast.assign_info list) =
   match pi with

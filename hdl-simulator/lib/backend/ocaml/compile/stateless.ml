@@ -80,12 +80,10 @@ let tout_decl (ci : 'a Ast.chip_info) : T.typ_decl =
 let tout_tid = T.tid N.id_output
 
 
-let tchip_tid = T.tid "t"
-
-let tchip = "t"
+let tchip_tid = T.tid N.id_state
 
 let tchip_decl (ci : 'a Ast.chip_info) =
-  T.decl_alias tchip T.tunit
+  T.decl_alias N.id_state T.tunit
 
 
 let expr_in (ci : 'a Ast.chip_info) e =

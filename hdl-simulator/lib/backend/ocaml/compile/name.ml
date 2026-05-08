@@ -9,13 +9,16 @@ let name_pfx = "chip_"
 let var_pfx  = "var_"
 
 
-(** {2 Chip IO} *)
+(** {2 Chip Interface} *)
 
 (** [id_input] is ["input"], name of a chip's input type. *)
 let id_input = "input"
 
 (** [id_output] is ["output"], name of a chip's output type. *)
 let id_output = "output"
+
+(** [id_state] is ["state"], name of a chip's state type. *)
+let id_state = "state"
 
 
 (** {2 Chip Variables} *)
