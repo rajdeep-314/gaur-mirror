@@ -37,10 +37,10 @@ let totype_tin (ci : 'a Ast.chip_info) : E.let_bind =
   totype_fun
     N.fun_totype_tin
     ci.data.input.typ
-    (Some (T.tid N.id_tin))
+    (Some (T.tid N.id_input))
 
 let totype_tout (ci : 'a Ast.chip_info) : E.let_bind =
   totype_fun
     N.fun_totype_tout
     ci.data.output.typ
-    (Some (T.tid N.id_tout))
+    (Some (T.tid N.id_output))

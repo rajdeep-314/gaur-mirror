@@ -107,18 +107,18 @@ let tin_typ (ci : 'a Ast.chip_info) : T.typ =
   typ ci.data.input.typ
 
 let tin_decl (ci : 'a Ast.chip_info) : T.typ_decl =
-  T.decl_alias N.id_tin (tin_typ ci)
+  T.decl_alias N.id_input (tin_typ ci)
 
-let tin_tid = T.tid N.id_tin
+let tin_tid = T.tid N.id_input
 
 
 let tout_typ (ci : 'a Ast.chip_info) : T.typ =
   typ ci.data.output.typ
 
 let tout_decl (ci : 'a Ast.chip_info) : T.typ_decl =
-  T.decl_alias N.id_tout (tout_typ ci)
+  T.decl_alias N.id_output (tout_typ ci)
 
-let tout_tid = T.tid N.id_tout
+let tout_tid = T.tid N.id_output
 
 
 let tchip_tid = T.tid "t"
@@ -229,7 +229,7 @@ let expr_def_t is_stfl ci =
   E.bfun N.fun_def_t [] (Some tchip_tid) (default is_stfl ci)
 
 let expr_def_tin (ci : 'a Ast.chip_info) =
-  E.bfun N.fun_def_tin [] (Some (T.tid N.id_tin)) (D.default_tin ci)
+  E.bfun N.fun_def_tin [] (Some (T.tid N.id_input)) (D.default_tin ci)
 
 let expr_record isv is_stfl (ci : 'a Ast.chip_info) expr_last =
   let erec_states =

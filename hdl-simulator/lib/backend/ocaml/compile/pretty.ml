@@ -74,10 +74,10 @@ let pretty_tin (ci : 'a Ast.chip_info) =
   pretty_fun
     N.fun_pp_tin
     ci.data.input.typ
-    (Some (F.fmt_t (T.tid N.id_tin)))
+    (Some (F.fmt_t (T.tid N.id_input)))
 
 let pretty_tout (ci : 'a Ast.chip_info) =
   pretty_fun
     N.fun_pp_tout
     ci.data.output.typ
-    (Some (F.fmt_t (T.tid N.id_tout)))
+    (Some (F.fmt_t (T.tid N.id_output)))
