@@ -23,9 +23,15 @@ let int_to_reg = function
     | n  -> Error (E.InvalidRegNum n)
 
 
+let ensure_zero_bits instr hi lo offset layout =
+    if UB.get_bits instr hi lo = 0 then
+        Ok ()
+    else
+        Error (E.InvalidZeroBits (instr, offset, layout))
+
 let ( let* ) = Result.bind
 
-let disassemble_inst instr =
+let disassemble_inst offset instr =
     let gb = UB.get_bits in
     let gr hi lo = int_to_reg (gb instr hi lo) in
     let sext = UB.sign_extend in
@@ -50,10 +56,16 @@ let disassemble_inst instr =
         Ok (ist rd rs imm)
 
     | 0x8 -> (*4*)
+        let* () =
+            ensure_zero_bits
+                instr 0 0 offset
+                "h<04>_rd(5)_rs1(5)_rs2(5)_0  : opcode 0x08 requires bit 0 to be zero"
+        in
         let* rd = gr 15 11 in
         let* rs1 = gr 10 6 in
         let* rs2 = gr 5 1 in
         Ok (iadd rd rs1 rs2)
+
 
     | 0x10 -> (*5*)
         let* rd = gr 15 11 in
@@ -62,30 +74,54 @@ let disassemble_inst instr =
         Ok (iaddi rd rs imm)
 
     | 0x20 -> (*6*)
+        let* () =
+            ensure_zero_bits
+                instr 0 0 offset
+                "h<06>_rd(5)_rs1(5)_rs2(5)_0  : opcode 0x20 requires bit 0 to be zero"
+        in
         let* rd = gr 15 11 in
         let* rs1 = gr 10 6 in
         let* rs2 = gr 5 1 in
         Ok (isub rd rs1 rs2)
 
     | 0x40 -> (*7*)
+        let* () =
+            ensure_zero_bits
+                instr 0 0 offset
+                "h<07>_rd(5)_rs1(5)_rs2(5)_0  : opcode 0x40 requires bit 0 to be zero"
+        in
         let* rd = gr 15 11 in
         let* rs1 = gr 10 6 in
         let* rs2 = gr 5 1 in
         Ok (iand rd rs1 rs2)
 
-    (* TODO:    Add check for the remaining bits being 0. *)
     | 0x80 ->
+        let* () =
+            ensure_zero_bits
+                instr 5 0 offset
+                "h<08>_rd(5)_rs1(5)_000000 : opcode 0x80 requires bits [5:0] must be zero"
+        in
         let* rd = gr 15 11 in
         let* rs = gr 10 6 in
         Ok (inot rd rs)
 
     | 0x100 ->
+        let* () =
+            ensure_zero_bits
+                instr 5 5 offset
+                "h<09>_rd(5)_rs(5)_0_imm(5)  : opcode 0x100 requires bit 5 to be zero"
+        in
         let* rd = gr 15 11 in
         let* rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
         Ok (isl rd rs imm)
 
     | 0x200 ->
+        let* () =
+            ensure_zero_bits
+                instr 5 5 offset
+                "h<10>_rd(5)_rs(5)_0_imm(5)  : opcode 0x200 requires bit 5 to be zero"
+        in
         let* rd = gr 15 11 in
         let* rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
@@ -109,18 +145,18 @@ let disassemble_inst instr =
         let imm = sext (gb instr 5 0) 6 in
         Ok (ijalr rd rs imm)
 
-    | 0x2000 -> 
+    | 0x2000 ->
         let* rd = gr 15 11 in
         let imm = sext (gb instr 10 0) 6 in
         Ok (iapc rd imm)
 
-    | 0x4000 -> 
+    | 0x4000 ->
         let imm = sext (gb instr 15 0) 16 in
         Ok (ij imm)
 
     | _ ->
-        Error E.InvalidOpcode
+        Error (E.InvalidOpcode (instr, opcode, offset))
 
 let disassemble_prog instrs =
-    UR.flatten_results (List.map disassemble_inst instrs)
+    UR.flatten_results (List.mapi (fun offset instr -> disassemble_inst offset instr) instrs)
 
