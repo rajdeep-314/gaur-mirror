@@ -19,7 +19,7 @@ module Chip_Nand = struct
     end
   ;;
 
-  let input_type = trecord_of_list [ "var_a", tbits 1; "var_b", tbits 1 ]
+  let typ_of_input = trecord_of_list [ "var_a", tbits 1; "var_b", tbits 1 ]
 
   let input_of_expr e : input =
     object
