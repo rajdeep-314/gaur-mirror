@@ -23,11 +23,11 @@ and typof_trec tr =
   |> List.map (fun (s, e) -> E.etuple [E.estring s; e])
   |> F.trecord_of_list
 
-let typ_of (name : string) (typ : Types.t) : E.let_bind =
+let typ_of_fun (name : string) (typ : Types.t) : E.let_bind =
   E.blet (P.pid name) (typ_of typ)
 
 let typ_of_input (ci : 'a Ast.chip_info) =
-  typ_of N.fun_typ_of_input (ci.data.input.typ)
+  typ_of_fun N.fun_typ_of_input (ci.data.input.typ)
 
 let typ_of_output (ci : 'a Ast.chip_info) =
-  typ_of N.fun_typ_of_output (ci.data.output.typ)
+  typ_of_fun N.fun_typ_of_output (ci.data.output.typ)

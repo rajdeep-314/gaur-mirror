@@ -6,7 +6,6 @@ module P = Patterns
 module T = Types
 module D = Default
 module Pr = Pretty
-module Tt = Totype
 
 open Parse
 open Hdlutils
@@ -128,8 +127,7 @@ let chip (ci : 'a Ast.chip_info) =
   let epp_tin = Pr.pretty_tin ci in
   let epp_tout = Pr.pretty_tout ci in
   let typ_of_input = Type_of.typ_of_input ci in
-  let ett_tin = Tt.totype_tin ci in
-  let ett_tout = Tt.totype_tout ci in
+  let input_of_expr = Of_expr.input_of_expr ci in
   let expr_of_output = To_expr.expr_of_output ci in
 
   M.mdecl
@@ -144,8 +142,7 @@ let chip (ci : 'a Ast.chip_info) =
     ; M.item_let_bind epp_tin
     ; M.item_let_bind epp_tout
     ; M.item_let_bind typ_of_input
-    ; M.item_let_bind ett_tin
-    ; M.item_let_bind ett_tout
+    ; M.item_let_bind input_of_expr
     ; M.item_let_bind expr_of_output
     ]
 
