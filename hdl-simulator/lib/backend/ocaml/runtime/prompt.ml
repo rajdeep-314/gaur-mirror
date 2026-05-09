@@ -1,5 +1,4 @@
 open Parse
-open Hdlutils
 
 let string = "> "
 

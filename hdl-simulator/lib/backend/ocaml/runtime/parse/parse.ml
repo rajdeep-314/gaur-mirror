@@ -7,8 +7,6 @@ module Errors   = Errors
 module Loc      = Loc
 module Helpers  = Helpers
 
-open Hdlutils
-
 let from_channel fname ic =
   let lexbuf = Lexing.from_channel ic in
   lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = fname };

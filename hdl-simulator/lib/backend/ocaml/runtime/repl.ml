@@ -1,5 +1,3 @@
-open Hdlutils
-
 module type CHIP = sig
   type state
   type input
