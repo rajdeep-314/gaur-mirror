@@ -5,7 +5,7 @@
 *)
 
 
-module A = Syntax.Vm.Ast
+module A = Syntax.Emulator.Ast
 
 open Ir
 open State

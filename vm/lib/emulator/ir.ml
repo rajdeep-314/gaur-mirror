@@ -6,7 +6,7 @@
 *)
 
 
-module A = Syntax.Vm.Ast
+module A = Syntax.Emulator.Ast
 
 
 type segment = A.segment        (* IR segments are VM segments. *)
