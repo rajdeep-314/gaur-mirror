@@ -24,6 +24,10 @@ let tbits n = E.eapply (E.eid "tbits") [E.eint n]
 
 let trecord_of_list el = E.eapply (E.eid "trecord_of_list") [E.elist el]
 
+let ebits ebv = E.eapply (E.eid "ebits") [ebv]
+
+let erecord_of_list el = E.eapply (E.eid "erecord_of_list") [E.elist el]
+
 let pipe = E.einfix "|>"
 let ( ||> ) = pipe
 

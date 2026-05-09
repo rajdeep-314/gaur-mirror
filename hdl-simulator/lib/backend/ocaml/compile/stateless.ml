@@ -130,6 +130,7 @@ let chip (ci : 'a Ast.chip_info) =
   let typ_of_input = Type_of.typ_of_input ci in
   let ett_tin = Tt.totype_tin ci in
   let ett_tout = Tt.totype_tout ci in
+  let expr_of_output = To_expr.expr_of_output ci in
 
   M.mdecl
     ci.data.name
@@ -145,6 +146,7 @@ let chip (ci : 'a Ast.chip_info) =
     ; M.item_let_bind typ_of_input
     ; M.item_let_bind ett_tin
     ; M.item_let_bind ett_tout
+    ; M.item_let_bind expr_of_output
     ]
 
 let prog (p : 'a Ast.prog) =

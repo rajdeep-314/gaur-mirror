@@ -106,6 +106,8 @@ let fun_typ_of_output = "typ_of_output"
 
 (** {2 Conversion from-and-to runtime expressions} *)
 
+(** {3 From runtime expressions} *)
+
 (** [fun_input_of_expr] is ["input_of_expr"], the name of the function
     which converts parsed expression to chip's expression type.
 *)
@@ -115,3 +117,15 @@ let fun_input_of_expr = "input_of_expr"
     which converts parsed expression to chip's expression type.
 *)
 let fun_output_of_expr = "output_of_expr"
+
+(** {3 To runtime expressions} *)
+
+(** [fun_expr_of_input] is ["expr_of_input"], the name of the function
+    which converts chip's input to a runtime expression.
+*)
+let fun_expr_of_input = "expr_of_input"
+
+(** [fun_expr_of_output] is ["expr_of_output"], the name of the function
+    which converts chip's output to a runtime expression.
+*)
+let fun_expr_of_output = "expr_of_output"
