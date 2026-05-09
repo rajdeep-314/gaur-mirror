@@ -1,7 +1,7 @@
 (executables
   (package vm)
-  (public_names vmt replt)
-  (names test repl_test)
+  (public_names vmt replt vme)
+  (names test repl_test vme)
   (libraries vm)
 )
 
