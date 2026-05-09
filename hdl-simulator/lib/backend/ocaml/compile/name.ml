@@ -93,15 +93,15 @@ let fun_default_state = "default_state"
 
 (** {2 Runtime typing information} *)
 
-(** [fun_input_type] is ["input_type"], the name of the value
+(** [fun_typ_of_input] is ["typ_of_input"], the name of the value
     containing runtime type information for a chip's input.
 *)
-let fun_input_type = "input_type"
+let fun_typ_of_input = "typ_of_input"
 
-(** [fun_output_type] is ["output_type"], the name of the value
+(** [fun_typ_of_output] is ["typ_of_output"], the name of the value
     containing runtime type information for a chip's output.
 *)
-let fun_output_type = "output_type"
+let fun_typ_of_output = "typ_of_output"
 
 
 (** {2 Conversion from-and-to runtime expressions} *)
