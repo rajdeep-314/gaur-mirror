@@ -35,12 +35,12 @@ let totype_fun (name : string) (typ : Types.t) (tout : T.typ option) =
 
 let totype_tin (ci : 'a Ast.chip_info) : E.let_bind =
   totype_fun
-    N.fun_totype_tin
+    N.fun_input_of_expr
     ci.data.input.typ
     (Some (T.tid N.id_input))
 
 let totype_tout (ci : 'a Ast.chip_info) : E.let_bind =
   totype_fun
-    N.fun_totype_tout
+    N.fun_output_of_expr
     ci.data.output.typ
     (Some (T.tid N.id_output))

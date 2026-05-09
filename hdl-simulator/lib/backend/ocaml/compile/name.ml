@@ -93,25 +93,25 @@ let fun_default_state = "default_state"
 
 (** {2 Runtime typing information} *)
 
-(** [fun_typeof_tin] is ["typeof_tin"], the name of the value
+(** [fun_input_type] is ["input_type"], the name of the value
     containing runtime type information for a chip's input.
 *)
-let fun_typeof_tin = "typeof_tin"
+let fun_input_type = "input_type"
 
-(** [fun_typeof_tout] is ["typeof_tout"], the name of the value
+(** [fun_output_type] is ["output_type"], the name of the value
     containing runtime type information for a chip's output.
 *)
-let fun_typeof_tout = "typeof_tout"
+let fun_output_type = "output_type"
 
 
 (** {2 Conversion from-and-to runtime expressions} *)
 
-(** [fun_totype_tin] is ["totype_tin"], the name of the function
+(** [fun_input_of_expr] is ["input_of_expr"], the name of the function
     which converts parsed expression to chip's expression type.
 *)
-let fun_totype_tin = "totype_tin"
+let fun_input_of_expr = "input_of_expr"
 
-(** [fun_totype_tout] is ["totype_tout"], the name of the function
+(** [fun_output_of_expr] is ["output_of_expr"], the name of the function
     which converts parsed expression to chip's expression type.
 *)
-let fun_totype_tout = "totype_tout"
+let fun_output_of_expr = "output_of_expr"

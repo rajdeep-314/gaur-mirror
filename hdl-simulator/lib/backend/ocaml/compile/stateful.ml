@@ -6,7 +6,7 @@ module P = Patterns
 module T = Types
 module D = Default
 module Pr = Pretty
-module Ty = Typeof
+module Te = Toexpr
 module Tt = Totype
 
 open Parse
@@ -261,7 +261,7 @@ let chip is_stfl (ci : 'a Ast.chip_info) =
   let edef_tin = expr_def_tin ci in
   let epp_tin = Pr.pretty_tin ci in
   let epp_tout = Pr.pretty_tout ci in
-  let etof_tin = Ty.typeof_tin ci in
+  let eip_typ = Te.input_type ci in
   let ett_tin = Tt.totype_tin ci in
   let ett_tout = Tt.totype_tout ci in
 
@@ -277,7 +277,7 @@ let chip is_stfl (ci : 'a Ast.chip_info) =
     ; M.item_let_bind efclk
     ; M.item_let_bind epp_tin
     ; M.item_let_bind epp_tout
-    ; M.item_let_bind etof_tin
+    ; M.item_let_bind eip_typ
     ; M.item_let_bind ett_tin
     ; M.item_let_bind ett_tout
     ]
