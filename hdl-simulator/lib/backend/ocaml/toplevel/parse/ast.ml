@@ -6,24 +6,24 @@ type bit = bool
 (** A bit vector *)
 type bv  = bit array
 
-type expr =
+type 'i expr =
   | Const  of bv
-  | Record of expr_info StrMap.t
+  | Record of 'i expr_info StrMap.t
 
-and expr_info =
-  { expr : expr
-  ; loc  : Loc.t
+and 'i expr_info =
+  { expr : 'i expr
+  ; info  : 'i
   }
 
 let get_expr e = e.expr
 
-let mk_expr_info e l =
+let mk_expr_info e i =
   { expr=e
-  ; loc=l
+  ; info=i
   }
 
-type cmd =
-  | Input   of expr_info
+type 'i cmd =
+  | Input   of 'i expr_info
   | Output
   | Clock
   | Quit

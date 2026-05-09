@@ -30,7 +30,7 @@ let ( |>? ) = get_record
 
 let ebits bv = Const bv
 
-let erecord_of_list (el : (string * expr) list) =
+let erecord_of_list (el : (string * Loc.t expr) list) =
   let er =
     el
     |> List.map (fun (s, e) -> (s, mk_expr_info e Loc.dummy))
