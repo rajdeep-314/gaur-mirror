@@ -1,0 +1,20 @@
+(ocamllex
+ (modules emulator_lexer))
+
+(menhir
+ (modules emulator_parser)
+ (flags --exn-carries-state))
+
+
+; Parser error messages.
+(rule
+  (targets messages.ml)
+  (deps emulator_parser.mly emulator_parser.messages)
+  (action
+    (with-stdout-to %{targets}
+      (run
+        menhir emulator_parser.mly --compile-errors emulator_parser.messages)
+    )
+  )
+)
+

@@ -1,0 +1,193 @@
+prog: TEMP
+##
+## Ends in an error in state: 0.
+##
+## prog' -> . prog [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+Expecting a function definition.
+
+prog: FUNCTION TEMP
+##
+## Ends in an error in state: 1.
+##
+## func -> FUNCTION . ID NUM insts [ FUNCTION EOF ]
+##
+## The known suffix of the stack is as follows:
+## FUNCTION
+##
+
+Expecting a function name.
+
+prog: FUNCTION ID TEMP
+##
+## Ends in an error in state: 2.
+##
+## func -> FUNCTION ID . NUM insts [ FUNCTION EOF ]
+##
+## The known suffix of the stack is as follows:
+## FUNCTION ID
+##
+
+Expecting number of local variables used by the function.
+
+prog: FUNCTION ID NUM TEMP
+##
+## Ends in an error in state: 3.
+##
+## func -> FUNCTION ID NUM . insts [ FUNCTION EOF ]
+##
+## The known suffix of the stack is as follows:
+## FUNCTION ID NUM
+##
+
+Expecting a VM instruction.
+
+prog: FUNCTION ID NUM SCALL TEMP
+##
+## Ends in an error in state: 5.
+##
+## inst -> SCALL . syscall [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## SCALL
+##
+
+Expecting a syscall name.
+
+prog: FUNCTION ID NUM PUSH SUB
+##
+## Ends in an error in state: 9.
+##
+## inst -> PUSH . segment NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> PUSH . CONSTANT NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## PUSH
+##
+
+Expecting "constant" or segment name.
+
+prog: FUNCTION ID NUM PUSH CONSTANT TEMP
+##
+## Ends in an error in state: 13.
+##
+## inst -> PUSH CONSTANT . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## PUSH CONSTANT
+##
+
+Expecting natural number (the constant to push).
+
+prog: FUNCTION ID NUM PUSH ARGUMENT TEMP
+##
+## Ends in an error in state: 16.
+##
+## inst -> PUSH segment . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## PUSH segment
+##
+
+Expecting natural number (segment offset).
+
+prog: FUNCTION ID NUM POP SUB
+##
+## Ends in an error in state: 18.
+##
+## inst -> POP . segment NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## POP
+##
+
+Expecting segment name.
+
+prog: FUNCTION ID NUM POP ARGUMENT TEMP
+##
+## Ends in an error in state: 19.
+##
+## inst -> POP segment . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## POP segment
+##
+
+Expecting natural number (segment offset).
+
+prog: FUNCTION ID NUM LABEL TEMP
+##
+## Ends in an error in state: 25.
+##
+## inst -> LABEL . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LABEL
+##
+
+Expecting label name.
+
+prog: FUNCTION ID NUM IFGOTO TEMP
+##
+## Ends in an error in state: 27.
+##
+## inst -> IFGOTO . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## IFGOTO
+##
+
+Expecting target label name.
+
+prog: FUNCTION ID NUM GOTO TEMP
+##
+## Ends in an error in state: 30.
+##
+## inst -> GOTO . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## GOTO
+##
+
+Expecting target label name.
+
+prog: FUNCTION ID NUM CALL TEMP
+##
+## Ends in an error in state: 33.
+##
+## inst -> CALL . ID NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## CALL
+##
+
+Expecting callee function's name.
+
+prog: FUNCTION ID NUM CALL ID TEMP
+##
+## Ends in an error in state: 34.
+##
+## inst -> CALL ID . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## CALL ID
+##
+
+Expecting number of arguments for callee function.
+
+prog: FUNCTION ID NUM ADD TEMP
+##
+## Ends in an error in state: 40.
+##
+## list(inst) -> inst . list(inst) [ FUNCTION EOF ]
+##
+## The known suffix of the stack is as follows:
+## inst
+##
+
+Expecting a VM instruction.
+
