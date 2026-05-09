@@ -15,7 +15,7 @@
 %}
 
 %token <string>  LID
-%token <Bits.bv> BV
+%token <Ast.bv> BV
 
 (* commands *)
 %token INPUT

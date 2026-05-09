@@ -1,10 +1,9 @@
 {
   open Lexing
   open Topparser
-  open Bits
   open Errors
 
-  let of_binary lexbuf : bv =
+  let of_binary lexbuf : Ast.bv =
     lexbuf
     |> Lexing.lexeme
     |> String.to_seq
