@@ -66,3 +66,40 @@ let inst_base : 'a inst -> inst_base = fst
 let inst_annot : 'a inst -> 'a = snd
 let func_annot f = f.annot
 
+
+module PP = struct
+    let seg = A.PP.seg
+    let syscall = A.PP.syscall
+
+    let inst_base = function
+        | Push (s, i)   -> Printf.sprintf "push %s %d" (seg s) i
+        | Pop  (s, i)   -> Printf.sprintf "pop %s %d"  (seg s) i
+        | PushC n       -> "push constant " ^ string_of_int n
+        | Add           -> "add"
+        | Sub           -> "sub"
+        | Neg           -> "neg"
+        | Eq            -> "eq"
+        | Gt            -> "gt"
+        | Lt            -> "lt"
+        | And           -> "and"
+        | Or            -> "or"
+        | Not           -> "not"
+        | Goto i        -> Printf.sprintf "goto %d" i
+        | IfGoto i      -> Printf.sprintf "if-goto %d" i
+        | Call (f, n)   -> Printf.sprintf "call %s %d" f n
+        | SCall f       -> Printf.sprintf "scall %s" (syscall f)
+        | Return        -> "return"
+
+    let inst i = inst_base (fst i)
+    let insts is =
+        String.concat "\n" (List.map inst (Array.to_list is))
+
+    let func f = Printf.sprintf "function %s %d\n%s"
+    f.f_name f.n_vars (insts f.body)
+
+    let prog p =
+        let fs = List.of_seq (Hashtbl.to_seq_values p.funcs) in
+        Printf.sprintf "Entry function: %s\n%s" p.main_f
+            (String.concat "\n" (List.map func fs))
+end
+
