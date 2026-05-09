@@ -23,8 +23,9 @@ let get_record e f =
   | Record er ->
     let m = StrMap.map get_expr er in
     let e = StrMap.find_opt f m in
-    let fail () = failwith ("Key not found: " ^ f) in
-    Option.value ~default:(fail ()) e
+    match e with
+    | Some e -> e
+    | None -> failwith ("Key not found" ^ f)
 
 let ( |>? ) = get_record
 
