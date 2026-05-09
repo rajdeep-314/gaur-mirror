@@ -80,7 +80,7 @@ let func_without_return f =
 (* Translate a VM function to an IR function. *)
 let translate_func f =
     if func_without_return f then raise (no_return f f.A.f_name) else
-    let tbl = make_table 0 (List.rev f.A.body) in
+    let tbl = make_table 0 f.A.body in
     let body = Array.of_list (translate_insts tbl 0 f.A.body) in
     I.({ f_name = f.f_name; n_vars = f.n_vars; body = body; annot = f.annot })
 
