@@ -5,7 +5,7 @@
 *)
 
 %{
-    open Vm_ast
+    open Ast
     open Err.Helper.Parser
 
     let syscall_of_iden = function

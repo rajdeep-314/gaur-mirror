@@ -1,5 +1,5 @@
 (*
-    vm_ast.ml
+    ast.ml
 
     AST of VM programs.
 *)

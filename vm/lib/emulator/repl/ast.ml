@@ -5,7 +5,7 @@
 *)
 
 
-module A = Syntax.Vm_ast
+module A = Syntax.Vm.Ast
 
 
 type t =

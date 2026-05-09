@@ -1,7 +1,7 @@
 (*
     vm_lexer.mll
 
-    Lexer specification for the VM translator.
+    Lexer specification for the VM programs.
 *)
 
 

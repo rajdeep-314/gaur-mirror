@@ -1,5 +1,5 @@
 (*
-    vm.ml
+    driver.ml
 
     Interface for lexing and parsing VM source code files.
 *)

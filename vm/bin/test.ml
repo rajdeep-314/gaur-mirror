@@ -7,7 +7,7 @@
 
 module UF = Utils.Files
 module VE = Vm.Emulator
-module E  = Vm.Syntax.Parsing.Vm.Err
+module E  = Vm.Syntax.Vm.Parsing.Err
 module Er = VE.Err
 module I  = VE.State.Inspect
 module P  = VE.State.PP
@@ -25,12 +25,12 @@ let ps =
 let ps, ps_scs =
     try
         List.split
-        (List.map Vm.Syntax.Parsing.Vm.Driver.parse_from_path ps)
+        (List.map Vm.Syntax.Vm.Parsing.Driver.parse_from_path ps)
     with
-    | Vm.Syntax.Parsing.Vm.Err.LexingErrorWI _ as e ->
+    | Vm.Syntax.Vm.Parsing.Err.LexingErrorWI _ as e ->
         prerr_endline (Printexc.to_string e) ;
         exit 1
-    | Vm.Syntax.Parsing.Vm.Err.ParsingErrorWI _ as e ->
+    | Vm.Syntax.Vm.Parsing.Err.ParsingErrorWI _ as e ->
         prerr_endline (Printexc.to_string e) ;
         exit 1
 
