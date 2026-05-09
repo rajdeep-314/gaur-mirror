@@ -49,3 +49,24 @@ type cmd =
   | Output
   | Clock
   | Quit
+
+
+module Pretty = struct
+  let pp_bit ppf b = Fmt.int ppf (Bool.to_int b)
+  let pp_bv ppf bv = Fmt.pf ppf "@[<h>%a@]" Fmt.(array pp_bit) bv
+
+  let rec pp_expr ppf expr =
+    match expr with
+    | Const  bv -> pp_bv ppf bv
+    | Record er -> Fmt.(braces (list pp_field)) ppf (StrMap.to_list er)
+
+  and pp_field ppf (f, e) =
+    Fmt.pf ppf "%s = %a" f pp_expr e.expr
+
+  let pp_cmd ppf cmd =
+    match cmd with
+    | Input ei -> Fmt.pf ppf "INPUT %a" pp_expr ei.expr
+    | Output   -> Fmt.pf ppf "OUTPUT"
+    | Clock    -> Fmt.pf ppf "CLOCK"
+    | Quit     -> Fmt.pf ppf "QUIT"
+end
