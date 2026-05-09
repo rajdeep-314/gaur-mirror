@@ -257,8 +257,6 @@ let chip is_stfl (ci : 'a Ast.chip_info) =
   let efclk = expr_funclk ci in
   let edef_t = expr_def_t is_stfl ci in
   let edef_tin = expr_def_tin ci in
-  let epp_tin = Pr.pretty_tin ci in
-  let epp_tout = Pr.pretty_tout ci in
   let typ_of_input = Type_of.typ_of_input ci in
   let input_of_expr = Of_expr.input_of_expr ci in
   let expr_of_output = To_expr.expr_of_output ci in
@@ -273,8 +271,6 @@ let chip is_stfl (ci : 'a Ast.chip_info) =
     ; M.item_let_bind (ein (eparts (eupdate eout)))
     ; M.item_let_bind efout
     ; M.item_let_bind efclk
-    ; M.item_let_bind epp_tin
-    ; M.item_let_bind epp_tout
     ; M.item_let_bind typ_of_input
     ; M.item_let_bind input_of_expr
     ; M.item_let_bind expr_of_output
