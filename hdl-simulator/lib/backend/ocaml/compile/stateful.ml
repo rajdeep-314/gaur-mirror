@@ -48,21 +48,21 @@ let rec expr is_state_var (ei : 'a Ast.expr_info) : E.expr =
 
 let rhs_out_sl isv id e : E.expr =
   E.eapply
-    (E.modpath id N.fun_out)
+    (E.modpath id N.fun_output)
     [ expr isv e
     ; E.eunit
     ]
 
 let rhs_out_sf i isv id e : E.expr =
   E.eapply
-    (E.modpath id N.fun_out)
+    (E.modpath id N.fun_output)
     [ expr isv e
     ; E.erecmem (E.eid tchip_arg) (chipvar_name id i)
     ]
 
 let rhs_clk_sf i isv id e : E.expr =
   E.eapply
-    (E.modpath id N.fun_clk)
+    (E.modpath id N.fun_clock)
     [ expr isv e
     ; E.erecmem (E.eid tchip_arg) (chipvar_name id i)
     ]
@@ -104,7 +104,7 @@ let parts is_stfl isv pi expr_last =
 let tin_typ (ci : 'a Ast.chip_info) : T.typ =
   typ ci.data.input.typ
 
-let tin_decl (ci : 'a Ast.chip_info) : T.typ_decl =
+let type_input_decl (ci : 'a Ast.chip_info) : T.typ_decl =
   T.decl_alias N.id_input (tin_typ ci)
 
 let tin_tid = T.tid N.id_input
@@ -113,7 +113,7 @@ let tin_tid = T.tid N.id_input
 let tout_typ (ci : 'a Ast.chip_info) : T.typ =
   typ ci.data.output.typ
 
-let tout_decl (ci : 'a Ast.chip_info) : T.typ_decl =
+let type_output_decl (ci : 'a Ast.chip_info) : T.typ_decl =
   T.decl_alias N.id_output (tout_typ ci)
 
 let tout_tid = T.tid N.id_output
@@ -122,7 +122,7 @@ let tout_tid = T.tid N.id_output
 let tchip_tid = T.tid N.id_state
 
 
-let expr_in (ci : 'a Ast.chip_info) e =
+let expr_outclk (ci : 'a Ast.chip_info) e =
   let input = ci.data.input.name in
   let bl =
     E.bfun
@@ -140,10 +140,10 @@ let expr_out (ci : 'a Ast.chip_info) =
     ; E.eid pchip_next
     ]
 
-let expr_funout (ci : 'a Ast.chip_info) =
+let expr_output (ci : 'a Ast.chip_info) =
   let input = ci.data.input.name in
   E.bfun
-    N.fun_out
+    N.fun_output
     [ P.pid input, Some tin_tid
     ; P.pid tchip_arg, Some tchip_tid
     ]
@@ -151,10 +151,10 @@ let expr_funout (ci : 'a Ast.chip_info) =
   (F.fst (E.eapply (E.eid N.fun_out_clk) [E.eid input; E.eid tchip_arg]))
 
 
-let expr_funclk (ci : 'a Ast.chip_info) =
+let expr_clock (ci : 'a Ast.chip_info) =
   let input = ci.data.input.name in
   E.bfun
-    N.fun_clk
+    N.fun_clock
     [ P.pid input, Some tin_tid
     ; P.pid tchip_arg, Some tchip_tid
     ]
@@ -183,7 +183,7 @@ let rec sf_parts'' i is_stfl (pi : 'a Ast.assign_info list) =
 
 let sf_parts' is_stfl pi = sf_parts'' 0 is_stfl pi
 
-let tchip_decl isv is_stfl (ci : 'a Ast.chip_info) =
+let type_state_decl isv is_stfl (ci : 'a Ast.chip_info) =
   let r = sf_parts' is_stfl ci.data.parts
           |> List.map (fun (id, i, tid) -> (chipvar_name id i, tid))
           |> StrMap.of_list
@@ -221,10 +221,10 @@ let default is_stfl (ci : 'a Ast.chip_info) =
   then E.eunit
   else E.erecord r
 
-let expr_def_t is_stfl ci =
+let expr_defaul_state is_stfl ci =
   E.bfun N.fun_default_state [] (Some tchip_tid) (default is_stfl ci)
 
-let expr_def_tin (ci : 'a Ast.chip_info) =
+let expr_defaut_input (ci : 'a Ast.chip_info) =
   E.bfun N.fun_default_input [] (Some (T.tid N.id_input)) (D.default_tin ci)
 
 let expr_record isv is_stfl (ci : 'a Ast.chip_info) expr_last =
@@ -249,28 +249,35 @@ let isv_ci (ci : 'a Ast.chip_info) var =
 
 let chip is_stfl (ci : 'a Ast.chip_info) =
   let isv = isv_ci ci in
-  let ein   = expr_in ci in
-  let eout  = expr_out ci in
+
+  let default_state = expr_defaul_state is_stfl ci in
+  let default_input = expr_defaut_input ci in
+
+  let outclk = expr_outclk ci in
   let eparts = parts is_stfl isv ci.data.parts in
   let eupdate = expr_record isv is_stfl ci in
-  let efout = expr_funout ci in
-  let efclk = expr_funclk ci in
-  let edef_t = expr_def_t is_stfl ci in
-  let edef_tin = expr_def_tin ci in
+  let elast = expr_out ci in
+
+  let output = expr_output ci in
+  let clock = expr_clock ci in
+
   let typ_of_input = Type_of.typ_of_input ci in
   let input_of_expr = Of_expr.input_of_expr ci in
   let expr_of_output = To_expr.expr_of_output ci in
 
   M.mdecl
     ci.data.name
-    [ M.item_typ_decl (tchip_decl isv is_stfl ci)
-    ; M.item_let_bind edef_t
-    ; M.item_typ_decl (tin_decl ci)
-    ; M.item_let_bind edef_tin
-    ; M.item_typ_decl (tout_decl ci)
-    ; M.item_let_bind (ein (eparts (eupdate eout)))
-    ; M.item_let_bind efout
-    ; M.item_let_bind efclk
+    [ M.item_typ_decl (type_state_decl isv is_stfl ci)
+    ; M.item_typ_decl (type_input_decl ci)
+    ; M.item_typ_decl (type_output_decl ci)
+
+    ; M.item_let_bind default_state
+    ; M.item_let_bind default_input
+
+    ; M.item_let_bind (outclk (eparts (eupdate elast)))
+    ; M.item_let_bind output
+    ; M.item_let_bind clock
+
     ; M.item_let_bind typ_of_input
     ; M.item_let_bind input_of_expr
     ; M.item_let_bind expr_of_output

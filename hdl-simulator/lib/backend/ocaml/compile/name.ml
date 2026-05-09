@@ -53,13 +53,13 @@ let chipfld_name id =
 
 (** {2 Primary functions} *)
 
-(** [fun_out] is the name of a chip's, output function. *)
-let fun_out = "out"
+(** [fun_output] is, ["output"], the name of a chip's output function. *)
+let fun_output = "output"
 
-(** [fun_clk] is the name of a chip's clock function. *)
-let fun_clk = "clk"
+(** [fun_clock] is ["clock"], the name of a chip's clock function. *)
+let fun_clock = "clock"
 
-(** [fun_out_clk] is the name of a chip's cobined
+(** [fun_out_clk] is ["out_clk"], the name of a chip's cobined
     output and clock function.
 *)
 let fun_out_clk = "out_clk"
