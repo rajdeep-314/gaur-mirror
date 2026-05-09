@@ -1,41 +1,44 @@
 open Hdlutils
 
 module type CHIP = sig
-  type t
-  type tin
-  type tout
+  type state
+  type input
+  type output
 
-  val out : tin -> t -> tout
-  val clk : tin -> t -> t
-  (* val pp_tin : tin Fmt.t *)
-  val pp_tout : tout Fmt.t
-  val typeof_tin : Parse.Types.typ
-  val totype_tin : Parse.Ast.expr -> tin
-  (* val totype_tout : Loc.t Parse.Ast.expr -> tout *)
-  val def_tin : tin
-  val def_t : t
+  val default_input : input
+  val default_state : state
+
+  val output : input -> state -> output
+  val clock : input -> state -> state
+
+  val typ_of_input : Parse.Types.typ
+  val input_of_expr : Parse.Ast.expr -> input
+  val expr_of_output : output -> Parse.Ast.expr
 end
 
 let repl outx (module C : CHIP) =
-  let chip = ref C.def_t in
-  let input = ref C.def_tin in
+  let state = ref C.default_state in
+  let input = ref C.default_input in
   let rec go () =
     let cmd = Prompt.read outx () in
     match cmd with
     | Input e ->
       let open Typecheck in
-      (try Typechecker.tc_input C.typeof_tin e with
+      (try Typechecker.tc_input C.typ_of_input e with
        | Errors.Error (err, loc) ->
          Io.output_stringln outx (Fmt.to_to_string Errors.Pretty.pp (err, loc)));
-       input := C.totype_tin e.expr;
+      input := C.input_of_expr e.expr;
       go ()
 
     | Output ->
-      Io.output_stringln outx (Fmt.to_to_string C.pp_tout (C.out !input !chip));
+      let output = C.output !input !state in
+      let output_expr = C.expr_of_output output in
+      let output_str = Fmt.to_to_string Parse.Ast.Pretty.pp_expr output_expr in
+      Io.output_stringln outx output_str;
       go ()
 
     | Clock ->
-      chip := C.clk !input !chip;
+      state := C.clock !input !state;
       go ()
 
     | Quit -> ()
