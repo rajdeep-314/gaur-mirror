@@ -30,7 +30,4 @@ module Chip_Nand = struct
 
   let expr_of_output (op : output) =
     ebits op
-
-  let expr_of_input (ip : input) =
-    erecord_of_list ["a", ebits ip#var_a; "b", ebits ip#var_b]
 end
