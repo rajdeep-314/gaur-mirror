@@ -29,8 +29,3 @@ let select_fun p =
     [ P.pid "name", None ]
     (Some (T.tpoly [T.tmodsig "CHIP"] (T.tid "option")))
     (select_match p)
-
-let select p =
-  M.mdecl "Chips" [
-    M.item_let_bind (select_fun p)
-  ]

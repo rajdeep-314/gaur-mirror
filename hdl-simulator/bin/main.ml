@@ -11,4 +11,4 @@ let p =
   Parse.parse_ic file ic
   |> Typecheck.typecheck_erase
   |> Compile.compile
-  |> Modules.Pretty.pp_decl_list Fmt.stdout
+  |> Files.Pretty.pp_file Fmt.stdout
