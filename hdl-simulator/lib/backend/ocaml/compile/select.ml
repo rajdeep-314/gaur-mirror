@@ -9,6 +9,8 @@ module A = Parse.Ast
 
 open Hdlutils
 
+let drop str n = String.sub str n (String.length str - n)
+
 let select_match_clause s =
   P.pstring s, E.evar "Some" [E.emodule s]
 

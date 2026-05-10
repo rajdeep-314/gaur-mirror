@@ -13,6 +13,8 @@ module StrMap = Map.Make(String)
 let ee = E.eid "e"
 let pe = P.pid "e"
 
+let drop str n = String.sub str n (String.length str - n)
+
 let rec of_expr (typ : Types.t) (e : E.expr) =
   match typ with
   | TBits   n  -> F.(e ||> get_bv)
@@ -22,7 +24,7 @@ let rec of_expr (typ : Types.t) (e : E.expr) =
 and of_expr_trec tr e =
   tr
   |> StrMap.to_list
-  |> List.map (fun (s, t) -> (s, of_expr t F.(e ||>? (E.estring s))))
+  |> List.map (fun (s, t) -> (s, of_expr t F.(e ||>? (E.estring (drop s 4)))))
   |> StrMap.of_list
   |> E.eobject
 

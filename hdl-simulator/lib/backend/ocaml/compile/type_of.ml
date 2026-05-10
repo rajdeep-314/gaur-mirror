@@ -10,6 +10,8 @@ open Hdlutils
 
 module StrMap = Map.Make(String)
 
+let drop str n = String.sub str n (String.length str - n)
+
 let rec typ_of (typ : Types.t) =
   match typ with
   | TBits   n  -> F.tbits n
@@ -20,7 +22,7 @@ and typof_trec tr =
   tr
   |> StrMap.map (fun t -> typ_of t)
   |> StrMap.to_list
-  |> List.map (fun (s, e) -> E.etuple [E.estring s; e])
+  |> List.map (fun (s, e) -> E.etuple [E.estring (drop s 4); e])
   |> F.trecord_of_list
 
 let typ_of_fun (name : string) (typ : Types.t) : E.let_bind =
