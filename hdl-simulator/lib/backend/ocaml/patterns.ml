@@ -1,12 +1,14 @@
 type pat =
   | Id      of string
   | String  of string
+  | Module  of string
   | Variant of string * pat list
 
 
 let pid id = Id id
 let pwild = Id "_"
 let pstring s = String s
+let pmodule m = Module m
 let pvariant s pl = Variant (s, pl)
 
 
@@ -15,6 +17,8 @@ module Pretty = struct
     match p with
     | Id      id      -> Fmt.string ppf id
     | String  s       -> Fmt.quote Fmt.string ppf s
+    | Module  m       -> Fmt.pf ppf "(module %s)"
+                           (String.capitalize_ascii m)
     | Variant (s, pl) -> Fmt.pf ppf "%s (%a)"
                            s
                            Fmt.(list ~sep:comma pp_pat) pl
