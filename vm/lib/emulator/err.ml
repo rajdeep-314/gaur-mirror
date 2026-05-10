@@ -41,7 +41,7 @@ module Semantic = struct
         | DuplicateFunc     of string
         | NoEntryFunc       of string
         | NoReturnInFunc    of string
-        | Unimplemented
+        | Unimplemented     of string
 
     let to_string = function
         | DuplicateLabel l  -> "Duplicate label " ^ l
@@ -50,7 +50,7 @@ module Semantic = struct
         | NoEntryFunc f     -> "Entry function " ^ f ^ " not found"
         | NoReturnInFunc f  ->
             "Function " ^ f ^ " does not end with a return instruction"
-        | Unimplemented     -> "Unimplemented feature"
+        | Unimplemented s   -> s ^ " is an unimplemented feature"
 end
 
 
@@ -160,7 +160,7 @@ module Helper = struct
         let no_return f fn = exn_with_func f (NoReturnInFunc fn)
 
         let no_entry_func main_f = SemanticError (None, NoEntryFunc main_f)
-        let unimplemented = SemanticError (None, Unimplemented)
+        let unimplemented s = SemanticError (None, Unimplemented s)
     end
 
     module Execution = struct
