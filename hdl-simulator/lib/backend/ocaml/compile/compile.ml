@@ -12,6 +12,6 @@ let compile p =
     let prog : t Ast.prog = p
   end
   in
-  let module Q = Top.Make(P) () in
+  let module Q = Statetop.Make(P) () in
   let q = List.tl Q.v in
   q @ [ select p ]
