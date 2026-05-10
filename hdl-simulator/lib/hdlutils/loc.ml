@@ -30,7 +30,7 @@ let range loc =
   let line = pos1.pos_lnum in
   let char1 = pos1.pos_cnum - pos1.pos_bol in
   let char2 = pos2.pos_cnum - pos1.pos_bol in (* yes, [pos1.pos_bol] *)
-  Printf.sprintf "File \"%s\", line %d, characters %d-%d:\n"
+  Printf.sprintf "File \"%s\", line %d, characters %d-%d:"
     file line (char1 + 1) (char2 + 1)
 (* use [char1 + 1] and [char2 + 1] if *not* using Caml mode *)
 
@@ -43,12 +43,12 @@ let location (lexbuf : Lexing.lexbuf) =
     char
 
 let errorf ~loc fmt =
-  output_string stderr (range loc);
+  output_string stderr (range loc ^ "\n");
   Printf.eprintf "Error: ";
   Printf.eprintf fmt
 
 let errorl loc =
-  output_string stderr (range loc)
+  output_string stderr (range loc ^ "\n")
 
 let error_fmt ppf loc =
   Fmt.string ppf (range loc)
