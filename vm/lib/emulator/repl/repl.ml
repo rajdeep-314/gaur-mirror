@@ -31,9 +31,13 @@ let help_msg =
     show calls                  :       show sequence of function calls so far
     show stack                  :       show current function's working stack
     show stack top n            :       show current working stack's top n
-                                        entries
+                                            entries
     show function               :       show current function call
     show screen                 :       show current scren
+    show segment s              :       show contents of segment s
+    show frame                  :       show top-most function frame
+    show state                  :       show the entire VM state, except the
+                                            screen
 
     execute step                :       execute one instruction
     execute steps n             :       execute n instructions
@@ -42,7 +46,7 @@ let help_msg =
     execute till any breakpoint :       execute till the next breakpoint
     execute till return         :       execute till current function returns
     execute till before return  :       execute till just before current
-                                        function returns
+                                            function returns
     execute till termination    :       execute till the program terminates
 
     reset                       :       reset emulator state
@@ -87,8 +91,19 @@ let show_function p s =
     | None      -> raise empty_call_stack
 
 (* Show the current screen. *)
-let show_screen p s =
-    (SP.screen s, s)
+let show_screen p s = (SP.screen s, s)
+
+(* Show contents of segment seg. *)
+let show_segment seg p s = (SP.segment seg s, s)
+
+(* Show top-most frame. *)
+let show_frame p s = (SP.top_frame s, s)
+
+(* Show all frames. *)
+let show_frames p s = (SP.frames s, s)
+
+(* Show the entire state. *)
+let show_state p s = (SP.state s, s)
 
 
 (* REPL functions for execute commands. *)
@@ -158,6 +173,10 @@ let repl_func_of_cmd = function
     | ShowStackTop n            -> show_stack_top n
     | ShowFunction              -> show_function
     | ShowScreen                -> show_screen
+    | ShowSegment s             -> show_segment s
+    | ShowFrame                 -> show_frame
+    | ShowFrames                -> show_frames
+    | ShowState                 -> show_state
     | ExecuteStep               -> e_step
     | ExecuteSteps n            -> e_steps n 0
     | ExecuteTillNamedBpt s     -> e_till_named_bpt s

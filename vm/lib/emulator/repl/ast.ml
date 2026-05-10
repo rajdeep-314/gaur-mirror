@@ -19,9 +19,10 @@ type t =
     | ShowStackTop  of int
     | ShowFunction
     | ShowScreen
-    (*| ShowSegment   of A.segment*)
-    (*| ShowFrame*)
-    (*| ShowState*)
+    | ShowSegment   of A.segment
+    | ShowFrame
+    | ShowFrames
+    | ShowState
     (* Execute commands. *)
     | ExecuteStep
     | ExecuteSteps          of int
