@@ -65,6 +65,7 @@ module Execution = struct
         | OutOfBoundSegRead             of I.segment * int * int
         | OutOfBoundSegWrite            of I.segment * int * int
         | UnImplemented
+        | InvalidBptExp
 
     (* Pairing a base error up with the state that caused it. *)
     type t = State.t * base
@@ -90,6 +91,7 @@ module Execution = struct
             (A.PP.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
         | UnImplemented -> "Unimplemented feature"
+        | InvalidBptExp -> "Invalid breakpoint expression"
 
     let diagnostics_to_string = P.diagnostic
 end
@@ -179,6 +181,7 @@ module Helper = struct
             (OutOfBoundSegRead (seg, n, n'))
         let oob_seg_write i s seg n n' = exn_with_inst i s
             (OutOfBoundSegWrite (seg, n, n'))
+        let invalid_bpt_exp i s = exn_with_inst i s InvalidBptExp
     end
 
     module Repl = struct
