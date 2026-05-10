@@ -120,6 +120,9 @@ module Map = struct
 
   let prog_info f pi =
     List.map (chip_info f) pi
+
+  let erase p =
+    prog_info (fun _ -> ()) p
 end
 
 module Mnemonics = struct
