@@ -14,6 +14,8 @@ module type CHIP = sig
   val expr_of_output : output -> 'a Parse.Ast.expr
 end
 
+let time = ref 0
+
 let repl inx outx (module C : CHIP) prompt exiterr =
   let state = ref C.default_state in
   let input = ref C.default_input in
@@ -35,11 +37,13 @@ let repl inx outx (module C : CHIP) prompt exiterr =
       let output = C.output !input !state in
       let output_expr = C.expr_of_output output in
       let output_str = Fmt.to_to_string Parse.Ast.Pretty.pp_expr output_expr in
+      output_string outx (Format.sprintf "t: %d\t | " !time);
       Io.output_stringln outx output_str;
       go ()
 
     | Clock ->
       state := C.clock !input !state;
+      incr time;
       go ()
 
     | Quit -> ()
