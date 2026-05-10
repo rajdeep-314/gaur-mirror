@@ -6,7 +6,8 @@
 %token <int> NUM
 %token <string> ID
 %token HELP
-%token SHOW CALLS STACK TOP FUNCTION SCREEN
+%token TEMP STATIC LOCAL ARGUMENT
+%token SHOW CALLS STACK TOP FUNCTION SCREEN SEGMENT FRAME FRAMES STATE
 %token EXECUTE STEPS STEP TILL BEFORE RETURN TERMINATION
 %token NEXT BREAKPOINT
 %token RESET EXIT
@@ -20,6 +21,11 @@
 
 %%
 
+segment:
+    | TEMP      { Temp }
+    | STATIC    { Static }
+    | LOCAL     { Local }
+    | ARGUMENT  { Argument }
 
 stmt:
     | HELP
@@ -34,6 +40,14 @@ stmt:
         { ShowFunction }
     | SHOW; SCREEN
         { ShowScreen }
+    | SHOW; SEGMENT; s = segment
+        { ShowSegment s }
+    | SHOW; FRAME
+        { ShowFrame }
+    | SHOW; FRAMES
+        { ShowFrames }
+    | SHOW; STATE
+        { ShowState }
     | EXECUTE; STEP
         { ExecuteStep }
     | EXECUTE; STEPS; n = NUM

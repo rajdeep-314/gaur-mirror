@@ -21,6 +21,9 @@ cmd: SHOW TOP
 ## stmt -> SHOW . STACK TOP NUM [ EOF ]
 ## stmt -> SHOW . FUNCTION [ EOF ]
 ## stmt -> SHOW . SCREEN [ EOF ]
+## stmt -> SHOW . SEGMENT segment [ EOF ]
+## stmt -> SHOW . FRAME [ EOF ]
+## stmt -> SHOW . STATE [ EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## SHOW
@@ -33,7 +36,7 @@ For example:
 
 cmd: SHOW STACK TILL
 ##
-## Ends in an error in state: 2.
+## Ends in an error in state: 3.
 ##
 ## stmt -> SHOW STACK . [ EOF ]
 ## stmt -> SHOW STACK . TOP NUM [ EOF ]
@@ -49,7 +52,7 @@ For example:
 
 cmd: SHOW STACK TOP TOP
 ##
-## Ends in an error in state: 3.
+## Ends in an error in state: 4.
 ##
 ## stmt -> SHOW STACK TOP . NUM [ EOF ]
 ##
@@ -63,7 +66,7 @@ For example:
 
 cmd: EXECUTE TOP
 ##
-## Ends in an error in state: 11.
+## Ends in an error in state: 19.
 ##
 ## stmt -> EXECUTE . STEP [ EOF ]
 ## stmt -> EXECUTE . STEPS NUM [ EOF ]
@@ -85,7 +88,7 @@ For example:
 
 cmd: EXECUTE TILL TOP
 ##
-## Ends in an error in state: 12.
+## Ends in an error in state: 20.
 ##
 ## stmt -> EXECUTE TILL . BREAKPOINT ID [ EOF ]
 ## stmt -> EXECUTE TILL . NEXT BREAKPOINT [ EOF ]
@@ -104,7 +107,7 @@ For example:
 
 cmd: EXECUTE TILL BEFORE TOP
 ##
-## Ends in an error in state: 19.
+## Ends in an error in state: 27.
 ##
 ## stmt -> EXECUTE TILL BEFORE . RETURN [ EOF ]
 ##
@@ -118,7 +121,7 @@ For example:
 
 cmd: EXECUTE STEPS TOP
 ##
-## Ends in an error in state: 21.
+## Ends in an error in state: 29.
 ##
 ## stmt -> EXECUTE STEPS . NUM [ EOF ]
 ##
@@ -132,7 +135,7 @@ For example:
 
 cmd: EXIT TOP
 ##
-## Ends in an error in state: 25.
+## Ends in an error in state: 33.
 ##
 ## cmd -> stmt . EOF [ # ]
 ##
@@ -144,7 +147,7 @@ Wasn't expecting anything at this point.
 
 cmd: EXECUTE TILL NEXT TOP
 ##
-## Ends in an error in state: 15.
+## Ends in an error in state: 23.
 ##
 ## stmt -> EXECUTE TILL NEXT . BREAKPOINT [ EOF ]
 ##
@@ -156,7 +159,7 @@ Was expecting "breakpoint" here.
 
 cmd: EXECUTE TILL BREAKPOINT TOP
 ##
-## Ends in an error in state: 17.
+## Ends in an error in state: 25.
 ##
 ## stmt -> EXECUTE TILL BREAKPOINT . ID [ EOF ]
 ##
@@ -165,3 +168,15 @@ cmd: EXECUTE TILL BREAKPOINT TOP
 ##
 
 Was expecting breakpoint name here.
+
+cmd: SHOW SEGMENT TOP
+##
+## Ends in an error in state: 6.
+##
+## stmt -> SHOW SEGMENT . segment [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## SHOW SEGMENT
+##
+
+Expecting segment name (temp, static, local, argument) here.

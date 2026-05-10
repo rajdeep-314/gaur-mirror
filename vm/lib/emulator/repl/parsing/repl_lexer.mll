@@ -31,6 +31,14 @@ rule read_tokens = parse
     | "exit"        { EXIT }
     | "next"        { NEXT }
     | "breakpoint"  { BREAKPOINT }
+    | "temp"        { TEMP }
+    | "static"      { STATIC }
+    | "local"       { LOCAL }
+    | "argument"    { ARGUMENT }
+    | "frames"      { FRAMES }
+    | "frame"       { FRAME }
+    | "state"       { STATE }
+    | "segment"     { SEGMENT }
     | nat           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | iden          { ID (Lexing.lexeme lexbuf) }
     | eof           { EOF }
