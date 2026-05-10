@@ -42,7 +42,7 @@ let rec embed_loc_cycle map c =
   | []            -> []
   | chip :: chips ->
     match StrMap.find_opt chip map with
-    | None -> failwith ("Not found: " ^ chip)
+    | None -> raise_unbound_chip chip
     | Some item -> (chip, item) :: embed_loc_cycle map chips
 
 let embed_loc_cycles map cs =
@@ -62,7 +62,7 @@ let rec to_info_list map p =
     then to_info_list map chips
     else
       (match StrMap.find_opt chip map with
-      | None -> failwith ("Not found: " ^ chip)
+      | None -> raise_unbound_chip chip
       | Some s -> s :: to_info_list map chips)
 
 let toposort (p : Loc.t Ast.prog) : Loc.t Ast.prog =
