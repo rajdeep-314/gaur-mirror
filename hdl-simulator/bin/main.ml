@@ -1,6 +1,7 @@
 open Lib
 open Backend.Ocaml
 open Hdlutils
+open Analyze
 
 (* Argument Parsing *)
 
@@ -36,6 +37,7 @@ let _ =
       files
       |> Io.open_in_many
       |> Parse.parse_ic_many
+      |> Toposort.toposort
       |> Typecheck.typecheck_erase
       |> Compile.compile
       |> Files.Pretty.pp_file outf
