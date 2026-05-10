@@ -112,6 +112,12 @@ module Map = struct
     ; parts=List.map (assign_info f) c.parts
     }
 
+  let chip_info f ci =
+    Info.map (chip f) f ci
+
   let prog f p =
     List.map (chip f) p
+
+  let prog_info f pi =
+    List.map (chip_info f) pi
 end
