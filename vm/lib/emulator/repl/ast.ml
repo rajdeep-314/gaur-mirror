@@ -5,7 +5,7 @@
 *)
 
 
-module A = Syntax.Ast
+module A = Syntax.Emulator.Ast
 
 
 type t =
@@ -24,7 +24,9 @@ type t =
     (*| ShowState*)
     (* Execute commands. *)
     | ExecuteStep
-    | ExecuteSteps  of int
+    | ExecuteSteps          of int
+    | ExecuteTillNamedBpt   of string
+    | ExecuteTillNextBpt
     | ExecuteTillReturn
     | ExecuteTillBeforeReturn
     | ExecuteTillTermination

@@ -64,7 +64,7 @@ module Inspect = struct
     let wstack_of_top_frame s   = let* f = top_frame s in Some f.wstack
 
     (* Contents of segment seg in VM state s. *)
-    let segment seg s = Syntax.Ast.(
+    let segment seg s = Syntax.Emulator.Ast.(
         match seg with
         | Temp      -> Some s.temp
         | Static    -> Some s.static

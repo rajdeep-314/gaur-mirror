@@ -63,10 +63,12 @@ For example:
 
 cmd: EXECUTE TOP
 ##
-## Ends in an error in state: 10.
+## Ends in an error in state: 11.
 ##
 ## stmt -> EXECUTE . STEP [ EOF ]
 ## stmt -> EXECUTE . STEPS NUM [ EOF ]
+## stmt -> EXECUTE . TILL BREAKPOINT ID [ EOF ]
+## stmt -> EXECUTE . TILL NEXT BREAKPOINT [ EOF ]
 ## stmt -> EXECUTE . TILL RETURN [ EOF ]
 ## stmt -> EXECUTE . TILL BEFORE RETURN [ EOF ]
 ## stmt -> EXECUTE . TILL TERMINATION [ EOF ]
@@ -83,8 +85,10 @@ For example:
 
 cmd: EXECUTE TILL TOP
 ##
-## Ends in an error in state: 11.
+## Ends in an error in state: 12.
 ##
+## stmt -> EXECUTE TILL . BREAKPOINT ID [ EOF ]
+## stmt -> EXECUTE TILL . NEXT BREAKPOINT [ EOF ]
 ## stmt -> EXECUTE TILL . RETURN [ EOF ]
 ## stmt -> EXECUTE TILL . BEFORE RETURN [ EOF ]
 ## stmt -> EXECUTE TILL . TERMINATION [ EOF ]
@@ -100,7 +104,7 @@ For example:
 
 cmd: EXECUTE TILL BEFORE TOP
 ##
-## Ends in an error in state: 14.
+## Ends in an error in state: 19.
 ##
 ## stmt -> EXECUTE TILL BEFORE . RETURN [ EOF ]
 ##
@@ -114,7 +118,7 @@ For example:
 
 cmd: EXECUTE STEPS TOP
 ##
-## Ends in an error in state: 16.
+## Ends in an error in state: 21.
 ##
 ## stmt -> EXECUTE STEPS . NUM [ EOF ]
 ##
@@ -128,7 +132,7 @@ For example:
 
 cmd: EXIT TOP
 ##
-## Ends in an error in state: 19.
+## Ends in an error in state: 25.
 ##
 ## cmd -> stmt . EOF [ # ]
 ##
@@ -138,3 +142,26 @@ cmd: EXIT TOP
 
 Wasn't expecting anything at this point.
 
+cmd: EXECUTE TILL NEXT TOP
+##
+## Ends in an error in state: 15.
+##
+## stmt -> EXECUTE TILL NEXT . BREAKPOINT [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXECUTE TILL NEXT
+##
+
+Was expecting "breakpoint" here.
+
+cmd: EXECUTE TILL BREAKPOINT TOP
+##
+## Ends in an error in state: 17.
+##
+## stmt -> EXECUTE TILL BREAKPOINT . ID [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXECUTE TILL BREAKPOINT
+##
+
+Was expecting breakpoint name here.

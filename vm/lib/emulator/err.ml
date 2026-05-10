@@ -5,7 +5,7 @@
 *)
 
 
-module A = Syntax.Ast
+module A = Syntax.Emulator.Ast
 module I = Ir
 module P = State.PP
 module STbl = Hashtbl.Make (String)
@@ -41,6 +41,7 @@ module Semantic = struct
         | DuplicateFunc     of string
         | NoEntryFunc       of string
         | NoReturnInFunc    of string
+        | Unimplemented     of string
 
     let to_string = function
         | DuplicateLabel l  -> "Duplicate label " ^ l
@@ -49,6 +50,7 @@ module Semantic = struct
         | NoEntryFunc f     -> "Entry function " ^ f ^ " not found"
         | NoReturnInFunc f  ->
             "Function " ^ f ^ " does not end with a return instruction"
+        | Unimplemented s   -> s ^ " is an unimplemented feature"
 end
 
 
@@ -63,6 +65,7 @@ module Execution = struct
         | OutOfBoundSegRead             of I.segment * int * int
         | OutOfBoundSegWrite            of I.segment * int * int
         | UnImplemented
+        | InvalidBptExp
 
     (* Pairing a base error up with the state that caused it. *)
     type t = State.t * base
@@ -80,13 +83,15 @@ module Execution = struct
         | UnboundFunction f -> "Unbound function " ^ f
         | OutOfBoundSegRead (seg, n, n') -> Printf.sprintf
             "Attempted to read segment %s out of bounds"
-            (Syntax.Printers.seg seg) ^ Printf.sprintf
+        (*List.map (fun line -> "\t" ^ line) lines*)
+            (A.PP.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to read index %d" n n'
         | OutOfBoundSegWrite (seg, n, n') -> Printf.sprintf
             "Attempted to write segment %s out of bounds"
-            (Syntax.Printers.seg seg) ^ Printf.sprintf
+            (A.PP.seg seg) ^ Printf.sprintf
             "\n\tSegment size is %d and attempted to write index %d" n n'
         | UnImplemented -> "Unimplemented feature"
+        | InvalidBptExp -> "Invalid breakpoint expression"
 
     let diagnostics_to_string = P.diagnostic
 end
@@ -157,6 +162,7 @@ module Helper = struct
         let no_return f fn = exn_with_func f (NoReturnInFunc fn)
 
         let no_entry_func main_f = SemanticError (None, NoEntryFunc main_f)
+        let unimplemented s = SemanticError (None, Unimplemented s)
     end
 
     module Execution = struct
@@ -175,6 +181,7 @@ module Helper = struct
             (OutOfBoundSegRead (seg, n, n'))
         let oob_seg_write i s seg n n' = exn_with_inst i s
             (OutOfBoundSegWrite (seg, n, n'))
+        let invalid_bpt_exp i s = exn_with_inst i s InvalidBptExp
     end
 
     module Repl = struct

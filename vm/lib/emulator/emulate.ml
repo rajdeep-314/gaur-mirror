@@ -5,7 +5,7 @@
 *)
 
 
-module A = Syntax.Ast
+module A = Syntax.Emulator.Ast
 
 open Ir
 open State
@@ -14,6 +14,7 @@ open Utils.Misc
 
 
 let ( let* ) = Result.bind
+let ( let+ ) = Option.bind
 
 
 (* Some functions that will be used frequently in the emulation. *)
@@ -162,6 +163,46 @@ let push_frame f n_vars xs s = {
         pc = 0; wstack = []
     } :: s.frames
 }
+
+
+(* Evaluating expressions and conditional expressions on VM state. *)
+
+let binop_f = function
+    | B_add -> ( + ) | B_sub -> ( - )
+    | B_mul -> ( * ) | B_div -> ( / )
+
+let relop_f = function
+    | R_eq -> ( = )  | R_lt -> ( < )  | R_gt -> ( > )
+    | R_le -> ( <= ) | R_ge -> ( >= ) | R_ne -> ( <> )
+
+let boolop_f = function
+    | Bl_and -> ( && ) | Bl_or -> ( || )
+
+let rec eval_exp st e =
+    let f = top_frame st in
+    let ee = eval_exp st in
+    match e with
+    | Const n               -> Some n
+    | StackOffset n         -> List.nth_opt f.wstack n
+    | SegmentOffset (s, n)  -> List.nth_opt (Array.to_list (segment s st)) n
+    | Neg e                 -> let+ x = ee e in Some (~-x)
+    | BinOp (o, e1, e2)     ->
+        let+ x = ee e1 in let+ y = ee e2 in
+        Some (binop_f o x y)
+
+let rec eval_cond_exp st e =
+    let ee = eval_exp st in
+    let ec = eval_cond_exp st in
+    match e with
+    | True  -> Some true
+    | False -> Some false
+    | Not c -> let+ x = ec c in Some (not x)
+    | Comp (o, e1, e2) ->
+        let+ x = ee e1 in let+ y = ee e2 in
+        Some (relop_f o x y)
+    | BoolOp (o, c1, c2) ->
+        let+ x = ec c1 in let+ y = ec c2 in
+        Some (boolop_f o x y)
 
 
 (* (working) stack -> stack functions used in emulation. *)
@@ -350,6 +391,7 @@ let execute_inst p s i =
     | Return    -> exec_return i s
     | Call (f, n_args)  -> exec_call i s p f n_args
     | SCall f           -> exec_syscall i s f
+    | LineBpt _ | CondBpt _ -> apply_on_top_frame uf uf ((+) 1) idf s
 
 (* Fetches the next instruction to execute from program p and VM state s. *)
 let fetch_inst p s =
@@ -368,35 +410,50 @@ execution functions.
 *)
 
 
-(* e_till_condition p i_cond s_cond s executes VM program p on VM state s till
-   a state is reached where s_cond is true, and i_cond is true for the fetched
-   instruction in that state. *)
-let rec e_till_condition c i_cond s_cond s =
-    let ins = fetch_inst c s in
-    if i_cond ins && s_cond s then s
-    else e_till_condition c i_cond s_cond (execute_inst c s ins)
+(* e_till_condition p is_cond s executes VM program p on VM state s till the
+   tuple of fetched instruction in a state and that state satisfy the predicate
+   is_cond. *)
+let rec e_till_condition p is_cond s =
+    let ins = fetch_inst p s in
+    if is_cond (ins, s) then s
+    else e_till_condition p is_cond (execute_inst p s ins)
 
+(* Execute till a breakpoint is encountered that breaks execution, and it's
+   name satisfies name_cond. *)
+let e_till_bpt name_cond p s =
+    let cond_func (i, s) =
+        match inst_base i with
+        | LineBpt (x, Some _)   -> raise (unimplemented i s)
+        | LineBpt (x, None)     -> name_cond x
+        | CondBpt (x, c)        ->
+            begin match eval_cond_exp s c with
+            | None   -> raise (invalid_bpt_exp i s)
+            | Some b -> name_cond x && b end
+        | _ -> false in
+    e_till_condition p cond_func s
+
+let e_till_named_bpt bpt_name = e_till_bpt ((=) bpt_name)
+let e_till_any_bpt = e_till_bpt (Fun.const true)
 
 (* Execute program p on state s till it returns from main.
    Returns final state and return value. *)
-let e_till_termination c s =
-    let s' = e_till_condition c
-        (fun  i -> inst_base i = Return) (fun s -> n_frames s = 1) s in
+let e_till_termination p s =
+    let s' = e_till_condition p
+        (fun (i, s) -> inst_base i = Return && n_frames s = 1) s in
     (s', wstack_peek s')
 
 (* Excute program p on state s till it returns from the current function.
    Returns the state after this return. *)
-let e_till_return c s =
-    e_till_condition c
-        (fun _ -> true) (fun s' -> n_frames s' < n_frames s) s
+let e_till_return p s =
+    e_till_condition p (fun (_, s') -> n_frames s' < n_frames s) s
 
 (* Excute program p on state s till it returns from the current function.
    Returns the state just before this return. *)
-let e_till_before_return c s =
-    e_till_condition c
-        (fun i -> inst_base i = Return) (fun s' -> n_frames s' = n_frames s) s
+let e_till_before_return p s =
+    e_till_condition p
+        (fun (i, s') -> inst_base i = Return && n_frames s' = n_frames s) s
 
 (* Executes program p till termination. *)
-let e_prog_till_termination c =
-    e_till_termination c (init_from_prog c)
+let e_prog_till_termination p =
+    e_till_termination p (init_from_prog p)
 

@@ -1,7 +1,7 @@
 (*
-    vm.ml
+    driver.ml
 
-    Interface for lexing and parsing VM source code files.
+    Interface for lexing and parsing VM emulator source code files.
 *)
 
 
@@ -17,13 +17,13 @@ let parse_from_path path =
     let info = (src, lexbuf) in
     lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = path } ;
     try
-        Vm_parser.prog Vm_lexer.read_token lexbuf, (path, src)
+        Emulator_parser.prog Emulator_lexer.read_token lexbuf, (path, src)
     with
         (* For (our own) lexing errors. *)
         | E.LexingError e   -> raise (E.LexingErrorWI (info, e))
         (* For our own parsing errors. *)
         | E.ParsingError e  -> raise (E.ParsingErrorWI (info, e))
         (* For Menhir's parsing errors. *)
-        | Vm_parser.Error n ->
+        | Emulator_parser.Error n ->
             raise (E.ParsingErrorWI (info, E.Parser.MenhirError n))
 
