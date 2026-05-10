@@ -20,3 +20,8 @@ let read_files =
   |> Array.to_list
   |> List.tl
   |> List.map (fun s -> s, In_channel.open_text s)
+
+(** [close_many [inx, ...]] closes all in-channels [inx, ...]. *)
+let close_many icl =
+  icl
+  |> List.map In_channel.close
