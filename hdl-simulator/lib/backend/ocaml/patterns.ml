@@ -22,7 +22,11 @@ module Pretty = struct
     | String  s       -> Fmt.quote Fmt.string ppf s
     | Module  m       -> Fmt.pf ppf "(module %s)"
                            (String.capitalize_ascii m)
-    | Variant (s, pl) -> Fmt.pf ppf "%s (%a)"
+    | Variant (s, pl) -> Fmt.pf ppf "%s %a"
                            s
-                           Fmt.(list ~sep:comma pp_pat) pl
+                           pp_var_args pl
+  and pp_var_args ppf pl =
+    match pl with
+    | [] -> Fmt.nop ppf ()
+    | _  -> Fmt.(parens (list ~sep:comma pp_pat)) ppf pl
 end
