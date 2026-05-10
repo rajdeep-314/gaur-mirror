@@ -19,3 +19,12 @@ let parse_ic fname ic =
   let lexbuf = from_channel fname ic in
   let ast = Parser.prog Lexer.read lexbuf in
   ast
+
+(** [parse_ic_many [(fname, ic); ....]] parses all programs in files
+    [fname,...] from the corresponding in-channels [ic, ...].
+*)
+let parse_ic_many fcs =
+  fcs
+  |> List.map (fun (fname, ic) -> parse_ic fname ic)
+  |> List.flatten
+
