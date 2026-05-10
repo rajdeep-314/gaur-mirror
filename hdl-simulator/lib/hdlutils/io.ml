@@ -7,7 +7,8 @@ let argc = Array.length Sys.argv
 let usage s =
   if argc <= 1
   then begin
-    let msg = "Usage: " ^ Sys.argv.(0) ^ " " ^ s ^ "\n" in
+    let basename = Filename.basename Sys.argv.(0) in
+    let msg = "Usage: " ^ basename ^ " " ^ s ^ "\n" in
     output_string stderr msg;
     exit Exit.usage
   end
