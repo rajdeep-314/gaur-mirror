@@ -24,7 +24,9 @@ type t =
     (*| ShowState*)
     (* Execute commands. *)
     | ExecuteStep
-    | ExecuteSteps  of int
+    | ExecuteSteps          of int
+    | ExecuteTillNamedBpt   of string
+    | ExecuteTillNextBpt
     | ExecuteTillReturn
     | ExecuteTillBeforeReturn
     | ExecuteTillTermination

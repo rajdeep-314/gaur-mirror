@@ -37,6 +37,9 @@ let help_msg =
 
     execute step                :       execute one instruction
     execute steps n             :       execute n instructions
+
+    execute till breakpoint s   :       execute till breakpoint with name s
+    execute till any breakpoint :       execute till the next breakpoint
     execute till return         :       execute till current function returns
     execute till before return  :       execute till just before current
                                         function returns
@@ -103,6 +106,16 @@ let rec e_steps n counter p s =
     let ins = E.fetch_inst p s in
     e_steps n (counter + 1) p (E.execute_inst p s ins)
 
+(* Execute till named breakpoint. *)
+let e_till_named_bpt bpt_name p s =
+    let s' = E.e_till_named_bpt bpt_name p s in
+    (Printf.sprintf "Breakpoint %s hit" bpt_name, s')
+
+(* Execute till next breakpoint. *)
+let e_till_next_bpt p s =
+    let s' = E.e_till_any_bpt p s in
+    ("Breakpoint hit", s')
+
 (* Execute till (after the) the current function, which is not main, returns. *)
 let e_till_return_non_main p s =
     match I.call_of_top_frame s with
@@ -147,6 +160,8 @@ let repl_func_of_cmd = function
     | ShowScreen                -> show_screen
     | ExecuteStep               -> e_step
     | ExecuteSteps n            -> e_steps n 0
+    | ExecuteTillNamedBpt s     -> e_till_named_bpt s
+    | ExecuteTillNextBpt        -> e_till_next_bpt
     | ExecuteTillReturn         -> e_till_return
     | ExecuteTillBeforeReturn   -> e_till_before_return
     | ExecuteTillTermination    -> e_till_termination
