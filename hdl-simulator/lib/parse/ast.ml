@@ -121,3 +121,17 @@ module Map = struct
   let prog_info f pi =
     List.map (chip_info f) pi
 end
+
+module Mnemonics = struct
+  let chip_name c = c.name
+  let chip_input c = c.input
+  let chip_output c = c.output
+  let chip_states c = c.states
+  let chip_parts c = c.parts
+
+  let chip_info_name ci = chip_name (Info.data ci)
+  let chip_info_input ci = chip_input (Info.data ci)
+  let chip_info_output ci = chip_output (Info.data ci)
+  let chip_info_states ci = chip_states (Info.data ci)
+  let chip_info_parts ci = chip_parts (Info.data ci)
+end
