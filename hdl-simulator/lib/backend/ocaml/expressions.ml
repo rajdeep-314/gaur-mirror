@@ -21,6 +21,7 @@ type expr =
   | Fun     of (pat * typ option) list * typ option * expr
   | List    of expr list
   | Infix   of string * expr * expr
+  | Match   of expr * (pat * expr) list
 
 and let_bind =
   | Simple  of pat * expr
@@ -46,6 +47,7 @@ let erecmem r fld = RecMem (r, fld)
 let efun ptl rt e = Fun (ptl, rt, e)
 let elist el = List el
 let einfix id el er = Infix (id, el, er)
+let ematch scr pel = Match (scr, pel)
 
 let blet p e = Simple (p, e)
 let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
@@ -92,6 +94,9 @@ module Pretty = struct
                               pp_expr el
                               id
                               pp_expr er
+    | Match (scr, pel)   -> Fmt.pf ppf "@[<v 2>match %a with@,%a@,@]"
+                              pp_expr scr
+                              (Fmt.list pp_match_clause) pel
 
   and pp_blet ppf lb =
     match lb with
@@ -123,5 +128,10 @@ module Pretty = struct
   and pp_field ppf (id, e) =
     Fmt.pf ppf "%s = %a"
       id
+      pp_expr e
+
+  and pp_match_clause ppf (pat, e) =
+    Fmt.pf ppf "%a -> %a"
+      Patterns.Pretty.pp_pat pat
       pp_expr e
 end
