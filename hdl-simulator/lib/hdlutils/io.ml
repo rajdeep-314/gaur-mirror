@@ -7,11 +7,7 @@ let argc = Array.length Sys.argv
 let usage s =
   if argc <= 1
   then begin
-    prerr_endline "Usage: ";
-    output_string stderr s;
-    prerr_endline "";
+    let msg = "Usage: " ^ Sys.argv.(0) ^ " " ^ s ^ "\n" in
+    output_string stderr msg;
     exit Exit.usage
   end
-
-let output_stringln outx s = output_string outx (s ^ "\n")
-let output_string = output_string
