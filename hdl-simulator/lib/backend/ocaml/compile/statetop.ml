@@ -16,5 +16,5 @@ module Make (P : sig type t val prog : t Ast.prog end) () : sig
 end = struct
   module S = Analyze.Statefulness.Make(P)()
 
-  let v = prog S.is_stateful P.prog
+  let v = List.tl (prog S.is_stateful P.prog)
 end
