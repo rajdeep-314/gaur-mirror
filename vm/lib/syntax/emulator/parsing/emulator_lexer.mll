@@ -17,6 +17,7 @@ let char = ['\032'-'\126']                      (* Valid characters. *)
 let char_lit = '\'' char '\''                   (* Character literals. *)
 let whitespace = [' ' '\t' '\r']+
 
+
 rule read_token = parse
     | whitespace        { read_token lexbuf }
     | '\n'              { Lexing.new_line lexbuf; read_token lexbuf }
@@ -44,6 +45,28 @@ rule read_token = parse
     | "call"            { CALL }
     | "scall"           { SCALL }
     | "return"          { RETURN }
+    | "="               { REQ }
+    | "<="              { RLE }
+    | ">="              { RGE }
+    | "<>"              { RNE }
+    | "<"               { RLT }
+    | ">"               { RGT }
+    | "+"               { BADD }
+    | "-"               { BSUB }
+    | "*"               { BMUL }
+    | "/"               { BDIV }
+    | "&&"              { BLAND }
+    | "||"              { BLOR }
+    | "stack"           { STACK }
+    | "("               { LPAREN }
+    | ")"               { RPAREN }
+    | "["               { LSQUARE }
+    | "]"               { RSQUARE }
+    | "true"            { TRUE }
+    | "false"           { FALSE }
+    | "~"               { UNOT }
+    | "%l"              { LBPT }
+    | "%c"              { CBPT }
     | char_lit          { NUM (int_of_char (Lexing.lexeme lexbuf).[1]) }
     | digit             { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | lf_name           { ID (Lexing.lexeme lexbuf) }
