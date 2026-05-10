@@ -31,7 +31,7 @@ let read_files () =
 *)
 let open_in_many sl =
   sl
-  |> List.map In_channel.open_text
+  |> List.map (fun s -> s, In_channel.open_text s)
 
 (** [close_in_many [inx, ...]] closes all in-channels [inx, ...]. *)
 let close_in_many icl =

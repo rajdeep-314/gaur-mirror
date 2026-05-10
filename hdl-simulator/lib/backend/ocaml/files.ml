@@ -22,5 +22,5 @@ module Pretty = struct
     | LetFun  lb -> E.Pretty.pp_blet ppf lb
     | Module  m  -> M.Pretty.pp_decl ppf m
 
-  let pp_file ppf f = Fmt.list pp_item ppf f
+  let pp_file ppf (f : file) = Fmt.list pp_item ppf f
 end
