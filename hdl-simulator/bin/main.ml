@@ -39,6 +39,7 @@ let _ =
       |> Parse.parse_ic_many
       |> Toposort.toposort
       |> Typecheck.typecheck
+      |> Liveness.analyse
       |> Parse.Ast.Map.erase
       |> Compile.compile
       |> Files.Pretty.pp_file outf
