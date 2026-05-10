@@ -1,0 +1,7 @@
+(executable
+  (package vm)
+  (public_name vme)
+  (name vme)
+  (libraries vm)
+)
+

@@ -1,0 +1,317 @@
+(*******************************************************)
+(*                                                     *)
+(*              Screen-related functions               *)
+(*                                                     *)
+(*******************************************************)
+
+
+
+(*
+NOTES:
+    - The last entry of the static segment, i.e. static[239] is used to store
+      the cursor.
+    - The cursor is in row-major form.
+    - If the cursor is at a distance of p blocks from the top and q from the
+      bottom, then p and q are the "x-offset" and "y-offset" of the cursor,
+      respectively.
+*)
+
+
+
+(*
+set_cursor(x, y) sets the cursor to an x-offset of x, and a y-offset of y.
+*)
+
+function Screen.set_cursor 0
+    push constant 0
+    push constant 79
+    push argument 1
+    call Math.bound 3
+
+    push constant 0
+    push constant 23
+    push argument 0
+    call Math.bound 3
+
+    push constant 80
+    call Math.mul 2
+    add
+    pop static 239
+
+    push constant 0
+    return
+
+
+
+(*
+get_cursor_x() returns the x-offset of the cursor.
+*)
+
+function Screen.get_cursor_x 0
+    push static 239
+    push constant 80
+    call Math.div 2
+    return
+
+
+
+(*
+get_cursor_y() returns the y-offset of the cursor.
+*)
+
+function Screen.get_cursor_y 0
+    push static 239
+    push constant 80
+    call Math.mod 2
+    return
+
+
+
+(*
+cursor_up() decrements the x-offset of the cursor by one, if it isn't already
+in the top row.
+*)
+
+function Screen.cursor_up 0
+    push static 239
+    push constant 80
+    lt
+    if-goto ret
+
+    push static 239
+    push constant 80
+    sub
+    pop static 239
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+cursor_down() increments the x-offset of the cursor by one, if it isn't already
+in the bottom row.
+*)
+
+function Screen.cursor_down 0
+    push static 239
+    push constant 1839
+    gt
+    if-goto ret
+
+    push static 239
+    push constant 80
+    add
+    pop static 239
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+cursor_left() decrements the y-offset of the cursor by one, if it isn't already
+in the left-most column.
+*)
+
+function Screen.cursor_left 0
+    call Screen.get_cursor_y 0
+    push constant 1
+    lt
+    if-goto ret
+
+    push static 239
+    push constant 1
+    sub
+    pop static 239
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+cursor_right() increments the y-offset of the cursor by one, if it isn't
+already in the right-most column.
+*)
+
+function Screen.cursor_right 0
+    call Screen.get_cursor_y 0
+    push constant 78
+    gt
+    if-goto ret
+
+    push static 239
+    push constant 1
+    add
+    pop static 239
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+cursor_incr() moves the cursor right by one place, unless it's at the
+right-most column, in which case it moves it to the left-most block of the next
+row. Stays in place if it's in the bottom-right corner.
+*)
+
+function Screen.cursor_incr 0
+    push static 239
+    push constant 1918
+    gt
+    if-goto ret
+
+    push static 239
+    push constant 1
+    add
+    pop static 239
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+cursor_decr() moves the cursor left by one place, unless it's at the left-most
+column, in which case it moves it to the right-most block of the previous row.
+Stays in place if it's in the top-left corner.
+*)
+
+function Screen.cursor_decr 0
+    push static 239
+    push constant 1
+    lt
+    if-goto ret
+
+    push static 239
+    push constant 1
+    sub
+    pop static 239
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+print_char(n) prints character corresponding to ASCII value n at the cursor,
+and increments the cursor by one.
+*)
+
+function Screen.print_char 0
+    push static 239
+    push argument 0
+    scall putchar
+    call Screen.cursor_incr 0
+    return
+
+
+
+(*
+newline() moves the cursor to the left-most block of the next row, if there is
+a next row. Otherwise, it keeps it in place.
+*)
+
+function Screen.newline 0
+    push static 239
+    push constant 1839
+    gt
+    if-goto ret
+
+    call Screen.cursor_down 0
+    call Screen.get_cursor_x 0
+    push constant 0
+    call Screen.set_cursor 2
+
+    label ret 
+    push constant 0
+    return
+
+
+
+(*
+backspace() clears out the block at the cursor (writes a space) and decrements
+the cursor by one.
+*)
+
+function Screen.backspace 0
+    push static 239
+    push constant 32
+    scall putchar
+
+    call Screen.cursor_decr 0
+
+    push constant 0
+    return
+
+
+
+(*
+print_pos(n) prints n to the screen, for n > 0.
+Implemented recursively.
+*)
+
+function Screen.print_pos 0
+    push argument 0
+    push constant 1
+    lt
+    if-goto ret
+
+    push argument 0
+    push constant 10
+    call Math.div 2
+    call Screen.print_pos 1
+    push argument 0
+    push constant 10
+    call Math.mod 2
+    push constant 48
+    add
+    call Screen.print_char 1
+
+    label ret
+    push constant 0
+    return
+
+
+
+(*
+print_int(n) prints integer n to the screen.
+Implemented using print_pos.
+*)
+
+function Screen.print_int 0
+    push argument 0
+    push constant 0
+    lt
+    if-goto neg_case
+
+    push argument 0
+    push constant 0
+    eq
+    if-goto zero_case
+
+    push argument 0
+    call Screen.print_pos 1
+    return
+
+    label zero_case
+    push constant 48
+    call Screen.print_char 1
+    return
+
+    label neg_case
+    push constant 45
+    call Screen.print_char 1
+    push argument 0
+    neg
+    call Screen.print_pos 1
+    return
+

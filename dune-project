@@ -1,4 +1,4 @@
-(lang dune 3.21)
+(lang dune 3.22)
 (using menhir 3.0)
 (using rocq 0.11)
 
@@ -64,5 +64,14 @@
   (depends
    (ocaml (>= 4.14))
    dune num menhir))
+
+(package
+  (name vm)
+  (allow_empty)
+  (synopsis "Stack-based virtual machine")
+  (depends
+    (ocaml (>= 4.14))
+    (rocq-core (>= 9.0.0))
+    dune menhir))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html

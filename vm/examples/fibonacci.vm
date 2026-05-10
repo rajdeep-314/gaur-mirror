@@ -1,0 +1,27 @@
+function fib 0
+    (* Base case: x <= 1 *)
+    push argument 0
+    push constant 2
+    lt
+    if-goto base
+    (* Recurse: fib(x) = fib(x - 1) + fib(x - 2) *)
+    push argument 0
+    push constant 1
+    sub
+    call fib 1
+    push argument 0
+    push constant 2
+    sub
+    call fib 1
+    add
+    return
+    label base
+    push argument 0
+    return
+
+function main 0
+    (* Computing the 10th Fibonacci number. *)
+    push constant 10
+    call fib 1
+    return
+

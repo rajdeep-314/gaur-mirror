@@ -1,5 +1,5 @@
 default:
-  image: registry.gitlab.com/rajdeep-314/ptools:latest
+  image: registry.gitlab.com/rajdeep-314/ptools:v2
 
 stages:
   - build

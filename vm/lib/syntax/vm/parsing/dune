@@ -1,0 +1,20 @@
+(ocamllex
+ (modules vm_lexer))
+
+(menhir
+ (modules vm_parser)
+ (flags --exn-carries-state))
+
+
+; Parser error messages.
+(rule
+  (targets messages.ml)
+  (deps vm_parser.mly vm_parser.messages)
+  (action
+    (with-stdout-to %{targets}
+      (run
+        menhir vm_parser.mly --compile-errors vm_parser.messages)
+    )
+  )
+)
+
