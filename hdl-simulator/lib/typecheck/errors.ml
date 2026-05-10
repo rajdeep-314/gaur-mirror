@@ -45,7 +45,7 @@ let raise_call_unbound loc id =
 let raise_assign loc ta te =
   raise (TypeError (loc, Assign (ta, te)))
 
-module Pertty = struct
+module Pretty = struct
   open Types.Pretty
 
   let pp ppf err =

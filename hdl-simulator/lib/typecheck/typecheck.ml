@@ -14,5 +14,5 @@ let typecheck prog =
   try tc_prog env prog'
   with TypeError (loc, err) ->
     Loc.errorl loc;
-    Pertty.pp Fmt.stderr err;
+    Pretty.pp Fmt.stderr err;
     exit Exit.typeerror
