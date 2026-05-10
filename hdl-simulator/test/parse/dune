@@ -1,0 +1,9 @@
+(executable
+ (name test_parse)
+ (public_name test_parse)
+ (package hdl-simulator)
+ (libraries lib))
+
+(cram
+ (deps %{bin:test_parse}
+       (source_tree ./files)))

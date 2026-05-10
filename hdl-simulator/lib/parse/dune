@@ -1,0 +1,47 @@
+(ocamllex (modules lexer))
+(menhir (modules parser)
+(flags --exn-carries-state))
+
+(rule
+ (targets messages.ml)
+ (deps parser.mly parser.messages)
+ (action
+  (with-stdout-to
+   %{targets}
+   (run menhir
+        --explain
+        --strict
+        --unused-tokens
+        parser.mly
+        --compile-errors
+        parser.messages
+        )
+   )
+  )
+ )
+
+(rule
+ (targets parser_all_error.messages)
+ (deps parser.mly)
+ (action
+  (with-stdout-to %{targets}
+   (run menhir  %{dep:parser.mly} --list-errors)
+  )
+ )
+)
+
+(rule
+ (alias errors)
+ (action
+  (run menhir parser.mly --list-errors)
+  ))
+
+(rule
+ (alias new_errors)
+ (deps parser.mly parser_all_error.messages parser.messages)
+ (action
+  (run menhir parser.mly
+       --compare-errors parser_all_error.messages
+       --compare-errors parser.messages
+  ))
+)

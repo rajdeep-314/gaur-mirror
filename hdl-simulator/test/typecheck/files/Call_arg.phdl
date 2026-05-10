@@ -1,0 +1,8 @@
+# Typecheck.Errors.Chip_arg
+
+CHIP Foo {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  foo := Nand in
+}

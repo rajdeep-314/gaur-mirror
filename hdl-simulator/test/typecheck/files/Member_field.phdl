@@ -1,0 +1,8 @@
+# Typecheck.Errors.Member_field
+
+CHIP Foo {
+  INPUT in: {a: bits 1, b: bits 1}
+  OUTPUT out: bits 1
+
+  out := in.c
+}

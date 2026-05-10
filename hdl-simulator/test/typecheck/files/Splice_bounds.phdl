@@ -1,0 +1,16 @@
+# Typecheck.Errors.Splice_bounds
+
+CHIP Foo {
+  INPUT in: bits 4
+  OUTPUT out: bits 1
+
+  # Valid splices
+  foo := in[0:0]
+  bar := in[0:3]
+  baz := in[3:3]
+
+  # Invalid splices
+  foo1 := in[0:4]
+  foo2 := in[4:6]
+  foo3 := in[6:6]
+}

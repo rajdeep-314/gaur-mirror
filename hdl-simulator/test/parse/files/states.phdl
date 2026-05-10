@@ -1,0 +1,5 @@
+CHIP States {
+  INPUT in : bits 32
+  OUTPUT out : bits 1
+  STATES dff : bits 1, fft : bits 99
+}

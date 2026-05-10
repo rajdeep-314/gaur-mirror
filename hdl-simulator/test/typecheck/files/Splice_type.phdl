@@ -1,0 +1,9 @@
+# Typecheck.Errors.Splice_type
+
+CHIP Foo {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  foo := {a = in, b = in}
+  bar := foo[0:1]
+}
