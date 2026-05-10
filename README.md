@@ -16,6 +16,7 @@ Toolchain for PISA and PHDL.
 3. [HDL simulator](./hdl-simulator)
 4. [RAM init](./ram-init)
 5. [Disassembler](./disassembler)
+6. [VM](./vm)
 
 
 ## Documentation
