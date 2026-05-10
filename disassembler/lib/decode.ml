@@ -139,7 +139,7 @@ let disassemble_inst offset instr =
         Ok (ij imm)
 
     | _ ->
-        invalid_op_code instr opcode offset
+        invalid_op_code offset instr opcode
 
 let disassemble_prog instrs =
     UR.flatten_results

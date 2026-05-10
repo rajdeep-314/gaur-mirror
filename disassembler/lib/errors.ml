@@ -30,7 +30,7 @@ module Printers = struct
 
     let err = function
         | InvalidOpcode (offset, inst, op) -> Printf.sprintf
-            "Invalid Opcode Error:\n  Inst   : %s\n  Offset : %d\n  Opcode : %s" (int_to_hex inst) offset (int_to_hex op)
+            "Invalid Opcode Error:\n  Inst   : %s\n  Offset : %d\n  Opcode : 0x%04X" (int_to_hex inst) offset op
 
         | InvalidZeroBits (offset, inst, op) -> Printf.sprintf
             "Invalid Zero Bit Error:\n  Inst     : %s\n  Offset   : %d\n  Expected : %s" (int_to_hex inst) offset (zero_bits_layout op)
