@@ -418,6 +418,23 @@ let rec e_till_condition p is_cond s =
     if is_cond (ins, s) then s
     else e_till_condition p is_cond (execute_inst p s ins)
 
+(* Execute till a breakpoint is encountered that breaks execution, and it's
+   name satisfies name_cond. *)
+let e_till_bpt name_cond p s =
+    let cond_func (i, s) =
+        match inst_base i with
+        | LineBpt (x, Some _)   -> raise (unimplemented i s)
+        | LineBpt (x, None)     -> name_cond x
+        | CondBpt (x, c)        ->
+            begin match eval_cond_exp s c with
+            | None   -> raise (invalid_bpt_exp i s)
+            | Some b -> name_cond x && b end
+        | _ -> false in
+    e_till_condition p cond_func s
+
+let e_till_named_bpt bpt_name = e_till_bpt ((=) bpt_name)
+let e_till_any_bpt = e_till_bpt (Fun.const true)
+
 (* Execute program p on state s till it returns from main.
    Returns final state and return value. *)
 let e_till_termination p s =
