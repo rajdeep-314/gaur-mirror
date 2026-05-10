@@ -20,6 +20,7 @@ let verbose = ref false             (* Verbose execution errors. *)
 let debug_mode = ref false          (* REPL for debugging. *)
 let show_screen = ref true          (* Show final screen. *)
 let show_rv = ref true              (* Show return value. *)
+let entry_f = ref "main"            (* Entry function. *)
 let files = ref []                  (* List of paths. *)
 let help = ref false                (* Asking for help? *)
 
@@ -35,6 +36,9 @@ let speclist = [
 
     ("-g", Arg.Set debug_mode, "\n\tREPL mode (debug)");
     ("--debug", Arg.Set debug_mode, "\n\tREPL mode (debug)");
+
+    ("-ef", Arg.Set_string entry_f, "\n\tEntry function");
+    ("--entry-func", Arg.Set_string entry_f, "\n\tEntry function");
 
     ("-s", Arg.Set show_screen, "\n\tDisplay final screen");
     ("--screen", Arg.Set show_screen, "\n\tDisplay final screen");
@@ -81,7 +85,7 @@ let () =
     let src_tbl : src_tbl = STbl.of_seq (List.to_seq ps_scs) in
     try
         (* Translate to IR *)
-        let ip = VE.Vm2ir.translate_progs "main" ps in
+        let ip = VE.Vm2ir.translate_progs !entry_f ps in
 
         (* REPL Mode *)
         if !debug_mode then
