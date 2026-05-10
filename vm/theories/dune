@@ -1,5 +1,6 @@
-(rocq.theory
-  (name vm_translator)
-  (theories Stdlib assembler)
-)
-
+; Commented as the current theories depend on the old PISA.
+; (rocq.theory
+;   (name vm_translator)
+;   (theories Stdlib assembler)
+; )
+;
