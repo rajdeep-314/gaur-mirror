@@ -4,10 +4,12 @@
     The top-level script for the VM emulator.
 *)
 
+
 module VE = Vm.Emulator
 module Er = VE.Err
 module P  = VE.State.PP
 module R  = VE.Repl
+module S  = Vm.Syntax.Emulator
 module STbl = Hashtbl.Make (String)
 
 type src_tbl = string STbl.t
@@ -47,31 +49,30 @@ let speclist = [
 
     ("--help", Arg.Set help, "\n\tDisplay this list of options");
     ("-help", Arg.Set help, "\n\tDisplay this list of options");
-    ( "-h", Arg.Set help, "\n\tShort for --help / -help" )
+    ("-h", Arg.Set help, "\n\tShort for --help / -help" )
 ]
 
 let anon_fun arg = files := arg :: !files
 
 let () =
+    (* Parse command line *)
+    Arg.parse speclist anon_fun usage_msg;
+
     if !help then
         begin
         Arg.usage speclist usage_msg ;
         exit 0
-        end
-
-let () =
-    (* Parse command line *)
-    Arg.parse speclist anon_fun usage_msg;
+        end ;
 
     (* Parse all provided files (reversing list because Arg.parse prepends) *)
     let ps, ps_scs =
         try
             List.split (List.map
-                Vm.Syntax.Parsing.Vm.parse_from_path (List.rev !files))
+                S.Parsing.Driver.parse_from_path (List.rev !files))
         with
-        | Vm.Syntax.Parsing.Err.LexingErrorWI _ as e ->
+        | S.Parsing.Err.LexingErrorWI _ as e ->
             prerr_endline (Printexc.to_string e); exit 1
-        | Vm.Syntax.Parsing.Err.ParsingErrorWI _ as e ->
+        | S.Parsing.Err.ParsingErrorWI _ as e ->
             prerr_endline (Printexc.to_string e); exit 1
     in
 
