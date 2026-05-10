@@ -14,7 +14,7 @@ module type CHIP = sig
   val expr_of_output : output -> 'a Parse.Ast.expr
 end
 
-let repl inx outx ~prompt ~exiterr (module C : CHIP) =
+let repl inx outx (module C : CHIP) prompt exiterr =
   let state = ref C.default_state in
   let input = ref C.default_input in
   let rec go () =
