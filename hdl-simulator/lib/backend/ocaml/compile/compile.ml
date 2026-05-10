@@ -1,6 +1,7 @@
 open Parse
 open Select
 open Files
+open Runrepl
 
 (** [compile prog] compiles a program [prog] carrying no additional
     information.
@@ -18,4 +19,8 @@ let compile p : file =
     [ fopen "Runtime" ]
   ; fmodule_list CP.v
   ; [ ffun (select_fun p) ]
+  ; [ ffun select_fail_fun ]
+  ; [ ffun run_repl_fun ]
+  ; [ ffun run_bench_fun ]
+  ; [ ffun run_fun ]
   ]
