@@ -51,4 +51,4 @@ let errorl loc =
   output_string stderr (range loc ^ "\n")
 
 let error_fmt ppf loc =
-  Fmt.string ppf (range loc)
+  Fmt.pf ppf "@[<v 0>%s@,@]" (range loc)
