@@ -24,7 +24,7 @@ end = struct
     match err with
     | Cycle cl      -> Fmt.pf ppf "@[<v 2>Cycle(s) detected:@,%a@]"
                          Fmt.(vbox (list ~sep:(cut ++ cut) pp_cycle)) cl
-    | UnboundChip c -> Fmt.pf ppf "@[<h>Unbounc chip: %s@]" c
+    | UnboundChip c -> Fmt.pf ppf "@[<h>Unbound chip: %s@]" c
 
   and pp_cycle ppf c =
     Fmt.(vbox (list ~sep:arrow pp_node)) ppf c
