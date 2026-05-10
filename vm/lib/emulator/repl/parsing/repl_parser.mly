@@ -4,9 +4,11 @@
 
 
 %token <int> NUM
+%token <string> ID
 %token HELP
 %token SHOW CALLS STACK TOP FUNCTION SCREEN
 %token EXECUTE STEPS STEP TILL BEFORE RETURN TERMINATION
+%token NEXT BREAKPOINT
 %token RESET EXIT
 %token EOF
 
@@ -36,6 +38,10 @@ stmt:
         { ExecuteStep }
     | EXECUTE; STEPS; n = NUM
         { ExecuteSteps n }
+    | EXECUTE; TILL; BREAKPOINT; s = ID
+        { ExecuteTillNamedBpt (s) }
+    | EXECUTE; TILL; NEXT; BREAKPOINT
+        { ExecuteTillNextBpt }
     | EXECUTE; TILL; RETURN
         { ExecuteTillReturn }
     | EXECUTE; TILL; BEFORE; RETURN
