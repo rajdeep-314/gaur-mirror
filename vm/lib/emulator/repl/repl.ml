@@ -199,7 +199,7 @@ and exec_cmd src_tbl p s cmd =
         loop src_tbl p s
     | Er.ExecutionError (a, e) ->
         print_endline (Er.pp_execution_error src_tbl (a, e)) ;
-        loop src_tbl p s
+        loop src_tbl p (Er.Execution.state e)
 
 
 (* Main REPL loop. *)
