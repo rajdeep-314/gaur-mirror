@@ -49,3 +49,6 @@ let errorf ~loc fmt =
 
 let errorl loc =
   output_string stderr (range loc)
+
+let error_fmt ppf loc =
+  Fmt.string ppf (range loc)
