@@ -32,4 +32,7 @@ module Pretty = struct
     Fmt.pf ppf "@[<v 0>module %s = struct@,  @[<v 0>%a@]@,end@]"
       m.name
       (Fmt.list ~sep:cutcut pp_item) m.items
+
+  let pp_decl_list ppf ml =
+    Fmt.list pp_decl ppf ml
 end
