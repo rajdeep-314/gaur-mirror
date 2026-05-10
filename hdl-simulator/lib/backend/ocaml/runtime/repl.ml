@@ -14,17 +14,19 @@ module type CHIP = sig
   val expr_of_output : output -> 'a Parse.Ast.expr
 end
 
-let repl outx (module C : CHIP) =
+let repl inx outx ~prompt ~exiterr (module C : CHIP) =
   let state = ref C.default_state in
   let input = ref C.default_input in
   let rec go () =
-    let cmd = Prompt.read outx () in
+    if prompt then Prompt.show_prompt outx;
+    let cmd = Prompt.read inx outx ~exiterr:exiterr () in
     match cmd with
     | Input e ->
       let open Typecheck in
       (try Typechecker.tc_input C.typ_of_input e with
        | Errors.Error (err, loc) ->
-         Io.output_stringln outx (Fmt.to_to_string Errors.Pretty.pp (err, loc)));
+         Io.output_stringln outx (Fmt.to_to_string Errors.Pretty.pp (err, loc));
+         go ());
       input := C.input_of_expr e.expr;
       go ()
 
