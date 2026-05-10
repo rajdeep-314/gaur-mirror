@@ -129,3 +129,11 @@ let fun_expr_of_input = "expr_of_input"
     which converts chip's output to a runtime expression.
 *)
 let fun_expr_of_output = "expr_of_output"
+
+
+(** {2 Chip select for REPL} *)
+
+(** [fun_select] is ["select"], the name of the function which selects
+    chip given its name.
+*)
+let fun_select = "select"
