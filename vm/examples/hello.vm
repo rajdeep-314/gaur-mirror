@@ -1,0 +1,17 @@
+(* Printing "Hello" on the screen. *)
+
+function main 0
+    push constant 'H'
+    call Screen.print_char 1
+    push constant 'e'
+    call Screen.print_char 1
+    push constant 'l'
+    call Screen.print_char 1
+    push constant 'l'
+    call Screen.print_char 1
+    push constant 'o'
+    call Screen.print_char 1
+
+    push constant 0
+    return
+
