@@ -13,6 +13,7 @@ type expr =
   | Tuple   of expr list
   | Object  of expr StrMap.t
   | Array   of expr list
+  | ArrIdx  of expr * int
   | Apply   of expr * expr list
   | ObjMem  of expr * string
   | ModPath of string * string
@@ -41,6 +42,7 @@ let elet pat e eb = Let (Simple(pat, e), eb)
 let etuple el = Tuple el
 let eobject er = Object er
 let earray el = Array el
+let earray_idx e n = ArrIdx (e, n)
 let eapply e el = Apply (e, el)
 let eobjmem obj fld = ObjMem (obj, fld)
 let modpath m f = ModPath (m, f)
@@ -76,6 +78,9 @@ module Pretty = struct
                           Fmt.(list pp_method) (StrMap.to_list er)
     | Array el       -> Fmt.pf ppf "[| %a |]"
                           Fmt.(list ~sep:(any "; ") pp_expr) el
+    | ArrIdx (e, n)  -> Fmt.pf ppf "(%a).(%d)"
+                          pp_expr e
+                          n
     | Apply (e, el)  -> Fmt.pf ppf "@[<v 2>%a@,%a@]"
                           pp_expr e
                           Fmt.(list ~sep:sp (parens pp_expr)) el
