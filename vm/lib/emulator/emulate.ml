@@ -14,6 +14,7 @@ open Utils.Misc
 
 
 let ( let* ) = Result.bind
+let ( let+ ) = Option.bind
 
 
 (* Some functions that will be used frequently in the emulation. *)
@@ -162,6 +163,46 @@ let push_frame f n_vars xs s = {
         pc = 0; wstack = []
     } :: s.frames
 }
+
+
+(* Evaluating expressions and conditional expressions on VM state. *)
+
+let binop_f = function
+    | B_add -> ( + ) | B_sub -> ( - )
+    | B_mul -> ( * ) | B_div -> ( / )
+
+let relop_f = function
+    | R_eq -> ( = )  | R_lt -> ( < )  | R_gt -> ( > )
+    | R_le -> ( <= ) | R_ge -> ( >= ) | R_ne -> ( <> )
+
+let boolop_f = function
+    | Bl_and -> ( && ) | Bl_or -> ( || )
+
+let rec eval_exp st e =
+    let f = top_frame st in
+    let ee = eval_exp st in
+    match e with
+    | Const n               -> Some n
+    | StackOffset n         -> List.nth_opt f.wstack n
+    | SegmentOffset (s, n)  -> List.nth_opt (Array.to_list (segment s st)) n
+    | Neg e                 -> let+ x = ee e in Some (~-x)
+    | BinOp (o, e1, e2)     ->
+        let+ x = ee e1 in let+ y = ee e2 in
+        Some (binop_f o x y)
+
+let rec eval_cond_exp st e =
+    let ee = eval_exp st in
+    let ec = eval_cond_exp st in
+    match e with
+    | True  -> Some true
+    | False -> Some false
+    | Not c -> let+ x = ec c in Some (not x)
+    | Comp (o, e1, e2) ->
+        let+ x = ee e1 in let+ y = ee e2 in
+        Some (relop_f o x y)
+    | BoolOp (o, c1, c2) ->
+        let+ x = ec c1 in let+ y = ec c2 in
+        Some (boolop_f o x y)
 
 
 (* (working) stack -> stack functions used in emulation. *)
@@ -350,7 +391,7 @@ let execute_inst p s i =
     | Return    -> exec_return i s
     | Call (f, n_args)  -> exec_call i s p f n_args
     | SCall f           -> exec_syscall i s f
-    | LineBpt _ | CondBpt _ -> raise (unimplemented i s)
+    | LineBpt _ | CondBpt _ -> apply_on_top_frame uf uf ((+) 1) idf s
 
 (* Fetches the next instruction to execute from program p and VM state s. *)
 let fetch_inst p s =
