@@ -70,6 +70,8 @@ let () =
             List.split (List.map
                 S.Parsing.Driver.parse_from_path (List.rev !files))
         with
+        | Sys_error s ->
+            prerr_endline s; exit 1
         | S.Parsing.Err.LexingErrorWI _ as e ->
             prerr_endline (Printexc.to_string e); exit 1
         | S.Parsing.Err.ParsingErrorWI _ as e ->
