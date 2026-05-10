@@ -139,7 +139,7 @@ module Pretty = struct
       pp_expr e
 
   and pp_match_clause ppf (pat, e) =
-    Fmt.pf ppf "%a -> %a"
+    Fmt.pf ppf "| %a -> %a"
       Patterns.Pretty.pp_pat pat
       pp_expr e
 end
