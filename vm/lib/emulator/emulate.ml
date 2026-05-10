@@ -350,6 +350,7 @@ let execute_inst p s i =
     | Return    -> exec_return i s
     | Call (f, n_args)  -> exec_call i s p f n_args
     | SCall f           -> exec_syscall i s f
+    | LineBpt _ | CondBpt _ -> raise (unimplemented i s)
 
 (* Fetches the next instruction to execute from program p and VM state s. *)
 let fetch_inst p s =

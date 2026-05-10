@@ -32,6 +32,26 @@ type inst_base =
     | Call  of string * int
     | SCall of syscall
     | Return
+    (* breakpoints *)
+    | LineBpt   of string * (relop * int) option
+    | CondBpt   of string * cond_exp
+
+and exp = A.exp =
+    | Const         of int
+    | StackOffset   of int
+    | SegmentOffset of segment * int
+    | BinOp         of binop * exp * exp
+    | Neg           of exp
+
+and cond_exp = A.cond_exp =
+    | True | False
+    | Comp      of relop * exp * exp
+    | BoolOp    of boolop * cond_exp * cond_exp
+    | Not       of cond_exp
+
+and relop  = A.relop  = R_eq | R_lt | R_gt | R_le | R_ge | R_ne
+and binop  = A.binop  = B_add | B_sub | B_mul | B_div
+and boolop = A.boolop = Bl_and | Bl_or
 
 (* IR instructions with annotations of type 'a. *)
 type 'a inst = inst_base * 'a
@@ -71,6 +91,34 @@ module PP = struct
     let seg = A.PP.seg
     let syscall = A.PP.syscall
 
+    let relop = function
+        | R_eq -> "="  | R_lt -> "<"  | R_gt -> ">"
+        | R_le -> "<=" | R_ge -> ">=" | R_ne -> "<>"
+
+    let binop = function
+        | B_add -> "+" | B_sub -> "-" | B_mul -> "*" | B_div -> "/"
+
+    let boolop = function
+        | Bl_and -> "&&" | Bl_or -> "||"
+
+    let rec exp = function
+        | Const n       -> string_of_int n
+        | StackOffset n -> Printf.sprintf "stack[%d]" n
+        | Neg (Const n) -> Printf.sprintf "-%d" n
+        | Neg e         -> Printf.sprintf "-(%s)" (exp e)
+        | SegmentOffset (s, n) -> Printf.sprintf "%s[%d]" (seg s) n
+        | BinOp (o, e1, e2) -> Printf.sprintf
+            "(%s %s %s)" (exp e1) (binop o) (exp e2)
+
+    let rec cond_exp = function
+        | True      -> "true"  | False      -> "false"
+        | Not True  -> "~true" | Not False  -> "~false"
+        | Comp (o, e1, e2) -> Printf.sprintf "(%s %s %s)"
+            (exp e1) (relop o) (exp e2)
+        | Not e -> Printf.sprintf "~(%s)" (cond_exp e)
+        | BoolOp (o, c1, c2) -> Printf.sprintf "(%s %s %s)"
+            (cond_exp c1) (boolop o) (cond_exp c2)
+
     let inst_base = function
         | Push (s, i)   -> Printf.sprintf "push %s %d" (seg s) i
         | Pop  (s, i)   -> Printf.sprintf "pop %s %d"  (seg s) i
@@ -89,6 +137,10 @@ module PP = struct
         | Call (f, n)   -> Printf.sprintf "call %s %d" f n
         | SCall f       -> Printf.sprintf "scall %s" (syscall f)
         | Return        -> "return"
+        | LineBpt (s, None) -> Printf.sprintf "%%l %s" s
+        | CondBpt (s, c)    -> Printf.sprintf "%%l %s(%s)" s (cond_exp c)
+        | LineBpt (s, Some (o, n)) -> Printf.sprintf
+            "%%l %s(%s %d)" s (relop o) n
 
     let inst i = inst_base (fst i)
     let insts is =
