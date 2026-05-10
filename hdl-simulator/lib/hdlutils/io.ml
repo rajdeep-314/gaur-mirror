@@ -11,3 +11,12 @@ let usage s =
     output_string stderr msg;
     exit Exit.usage
   end
+
+(** [read_files] returns a list of [(fname, inx)], file names
+    from the argument list and their in-channels.
+*)
+let read_files =
+  Sys.argv
+  |> Array.to_list
+  |> List.tl
+  |> List.map (fun s -> s, In_channel.open_text s)
