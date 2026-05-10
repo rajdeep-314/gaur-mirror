@@ -68,12 +68,12 @@ let () =
         exit 0
         end
 
-
 let init_ram =
     if !ram_path == "" then
         Ram.create ()
     else
-        Bram.Parser.parse_file !ram_path
+        let words = Utils.Files.words_of_path !ram_path in
+        Ram.init_from_mmap (List.mapi (fun i v -> (i, v)) words)
 
 
 let () =
