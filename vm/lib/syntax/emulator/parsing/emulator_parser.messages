@@ -50,7 +50,7 @@ prog: FUNCTION ID NUM SCALL TEMP
 ##
 ## Ends in an error in state: 5.
 ##
-## inst -> SCALL . syscall [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> SCALL . syscall [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## SCALL
@@ -62,8 +62,8 @@ prog: FUNCTION ID NUM PUSH SUB
 ##
 ## Ends in an error in state: 9.
 ##
-## inst -> PUSH . segment NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
-## inst -> PUSH . CONSTANT NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> PUSH . segment NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> PUSH . CONSTANT NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## PUSH
@@ -75,7 +75,7 @@ prog: FUNCTION ID NUM PUSH CONSTANT TEMP
 ##
 ## Ends in an error in state: 13.
 ##
-## inst -> PUSH CONSTANT . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> PUSH CONSTANT . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## PUSH CONSTANT
@@ -87,7 +87,7 @@ prog: FUNCTION ID NUM PUSH ARGUMENT TEMP
 ##
 ## Ends in an error in state: 16.
 ##
-## inst -> PUSH segment . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> PUSH segment . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## PUSH segment
@@ -99,7 +99,7 @@ prog: FUNCTION ID NUM POP SUB
 ##
 ## Ends in an error in state: 18.
 ##
-## inst -> POP . segment NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> POP . segment NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## POP
@@ -111,7 +111,7 @@ prog: FUNCTION ID NUM POP ARGUMENT TEMP
 ##
 ## Ends in an error in state: 19.
 ##
-## inst -> POP segment . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> POP segment . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## POP segment
@@ -121,9 +121,9 @@ Expecting natural number (segment offset).
 
 prog: FUNCTION ID NUM LABEL TEMP
 ##
-## Ends in an error in state: 25.
+## Ends in an error in state: 46.
 ##
-## inst -> LABEL . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> LABEL . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## LABEL
@@ -133,9 +133,9 @@ Expecting label name.
 
 prog: FUNCTION ID NUM IFGOTO TEMP
 ##
-## Ends in an error in state: 27.
+## Ends in an error in state: 48.
 ##
-## inst -> IFGOTO . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> IFGOTO . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## IFGOTO
@@ -145,9 +145,9 @@ Expecting target label name.
 
 prog: FUNCTION ID NUM GOTO TEMP
 ##
-## Ends in an error in state: 30.
+## Ends in an error in state: 51.
 ##
-## inst -> GOTO . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> GOTO . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## GOTO
@@ -157,9 +157,9 @@ Expecting target label name.
 
 prog: FUNCTION ID NUM CALL TEMP
 ##
-## Ends in an error in state: 33.
+## Ends in an error in state: 102.
 ##
-## inst -> CALL . ID NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> CALL . ID NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## CALL
@@ -169,9 +169,9 @@ Expecting callee function's name.
 
 prog: FUNCTION ID NUM CALL ID TEMP
 ##
-## Ends in an error in state: 34.
+## Ends in an error in state: 103.
 ##
-## inst -> CALL ID . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> CALL ID . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## CALL ID
@@ -181,7 +181,7 @@ Expecting number of arguments for callee function.
 
 prog: FUNCTION ID NUM ADD TEMP
 ##
-## Ends in an error in state: 40.
+## Ends in an error in state: 109.
 ##
 ## list(inst) -> inst . list(inst) [ FUNCTION EOF ]
 ##
@@ -191,3 +191,714 @@ prog: FUNCTION ID NUM ADD TEMP
 
 Expecting a VM instruction.
 
+prog: FUNCTION ID NUM LBPT UNOT
+##
+## Ends in an error in state: 25.
+##
+## inst -> LBPT . ID [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT . ID LPAREN REQ NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT . ID LPAREN RLT NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT . ID LPAREN RGT NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT . ID LPAREN RLE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT . ID LPAREN RGE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT . ID LPAREN RNE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT
+##
+
+Expecting name of line breakpoint.
+
+prog: FUNCTION ID NUM LBPT ID UNOT
+##
+## Ends in an error in state: 26.
+##
+## inst -> LBPT ID . [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID . LPAREN REQ NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID . LPAREN RLT NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID . LPAREN RGT NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID . LPAREN RLE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID . LPAREN RGE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID . LPAREN RNE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID
+##
+
+Expecting an instruction or line breakpoint condition inside parentheses.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN UNOT
+##
+## Ends in an error in state: 27.
+##
+## inst -> LBPT ID LPAREN . REQ NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID LPAREN . RLT NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID LPAREN . RGT NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID LPAREN . RLE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID LPAREN . RGE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+## inst -> LBPT ID LPAREN . RNE NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN
+##
+
+Expecting relational operator.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RNE UNOT
+##
+## Ends in an error in state: 28.
+##
+## inst -> LBPT ID LPAREN RNE . NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RNE
+##
+
+Expecting an integer.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RNE NUM UNOT
+##
+## Ends in an error in state: 29.
+##
+## inst -> LBPT ID LPAREN RNE NUM . RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RNE NUM
+##
+
+Expecting a closing parenthesis.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RLT UNOT
+##
+## Ends in an error in state: 31.
+##
+## inst -> LBPT ID LPAREN RLT . NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RLT
+##
+
+Expecting an integer.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RLT NUM UNOT
+##
+## Ends in an error in state: 32.
+##
+## inst -> LBPT ID LPAREN RLT NUM . RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RLT NUM
+##
+
+Expecting a closing parenthesis.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RLE UNOT
+##
+## Ends in an error in state: 34.
+##
+## inst -> LBPT ID LPAREN RLE . NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RLE
+##
+
+Expecting an integer.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RLE NUM UNOT
+##
+## Ends in an error in state: 35.
+##
+## inst -> LBPT ID LPAREN RLE NUM . RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RLE NUM
+##
+
+Expecting a closing parenthesis.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RGT UNOT
+##
+## Ends in an error in state: 37.
+##
+## inst -> LBPT ID LPAREN RGT . NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RGT
+##
+
+Expecting an integer.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RGT NUM UNOT
+##
+## Ends in an error in state: 38.
+##
+## inst -> LBPT ID LPAREN RGT NUM . RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RGT NUM
+##
+
+Expecting a closing parenthesis.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RGE UNOT
+##
+## Ends in an error in state: 40.
+##
+## inst -> LBPT ID LPAREN RGE . NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RGE
+##
+
+Expecting an integer.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN RGE NUM UNOT
+##
+## Ends in an error in state: 41.
+##
+## inst -> LBPT ID LPAREN RGE NUM . RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN RGE NUM
+##
+
+Expecting a closing parenthesis.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN REQ UNOT
+##
+## Ends in an error in state: 43.
+##
+## inst -> LBPT ID LPAREN REQ . NUM RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN REQ
+##
+
+Expecting an integer.
+
+prog: FUNCTION ID NUM LBPT ID LPAREN REQ NUM UNOT
+##
+## Ends in an error in state: 44.
+##
+## inst -> LBPT ID LPAREN REQ NUM . RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## LBPT ID LPAREN REQ NUM
+##
+
+Expecting a closing parenthesis.
+
+prog: FUNCTION ID NUM CBPT UNOT
+##
+## Ends in an error in state: 54.
+##
+## inst -> CBPT . ID LPAREN cond_exp RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## CBPT
+##
+
+Expecting name of conditional breakpoint.
+
+prog: FUNCTION ID NUM CBPT ID UNOT
+##
+## Ends in an error in state: 55.
+##
+## inst -> CBPT ID . LPAREN cond_exp RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## CBPT ID
+##
+
+Expecting an opening parenthesis.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN SUB
+##
+## Ends in an error in state: 56.
+##
+## inst -> CBPT ID LPAREN . cond_exp RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## CBPT ID LPAREN
+##
+
+Expecting a conditional expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN UNOT SUB
+##
+## Ends in an error in state: 57.
+##
+## cond_exp -> UNOT . cond_exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## UNOT
+##
+
+Expecting a conditional expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN STACK UNOT
+##
+## Ends in an error in state: 59.
+##
+## exp -> STACK . LSQUARE NUM RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## STACK
+##
+
+Expecting an opening square bracket for stack offset.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN STACK LSQUARE UNOT
+##
+## Ends in an error in state: 60.
+##
+## exp -> STACK LSQUARE . NUM RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## STACK LSQUARE
+##
+
+Expecting a number for stack offset.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN STACK LSQUARE NUM UNOT
+##
+## Ends in an error in state: 61.
+##
+## exp -> STACK LSQUARE NUM . RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## STACK LSQUARE NUM
+##
+
+Expecting a closing square bracket.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN LPAREN UNOT
+##
+## Ends in an error in state: 64.
+##
+## exp -> LPAREN . exp RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN BSUB UNOT
+##
+## Ends in an error in state: 65.
+##
+## exp -> BSUB . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## BSUB
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN ARGUMENT UNOT
+##
+## Ends in an error in state: 66.
+##
+## exp -> segment . LSQUARE NUM RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## segment
+##
+
+Expecting an opening square bracket for segment offset.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN ARGUMENT LSQUARE UNOT
+##
+## Ends in an error in state: 67.
+##
+## exp -> segment LSQUARE . NUM RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## segment LSQUARE
+##
+
+Expecting a number for segment offset.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN ARGUMENT LSQUARE NUM UNOT
+##
+## Ends in an error in state: 68.
+##
+## exp -> segment LSQUARE NUM . RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## segment LSQUARE NUM
+##
+
+Expecting a closing square bracket.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN LPAREN NUM UNOT
+##
+## Ends in an error in state: 71.
+##
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> LPAREN exp . RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM BSUB UNOT
+##
+## Ends in an error in state: 73.
+##
+## exp -> exp BSUB . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp BSUB
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM BSUB NUM UNOT
+##
+## Ends in an error in state: 74.
+##
+## exp -> exp . BADD exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp BSUB exp . [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp BSUB exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Conditional operator (=, <, >, <=, >=, <>)
+    - Boolean operator (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM BMUL UNOT
+##
+## Ends in an error in state: 75.
+##
+## exp -> exp BMUL . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp BMUL
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM BDIV UNOT
+##
+## Ends in an error in state: 77.
+##
+## exp -> exp BDIV . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp BDIV
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM BADD UNOT
+##
+## Ends in an error in state: 79.
+##
+## exp -> exp BADD . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp BADD
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM BADD NUM UNOT
+##
+## Ends in an error in state: 80.
+##
+## exp -> exp . BADD exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp BADD exp . [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp BADD exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Conditional operator (=, <, >, <=, >=, <>)
+    - Boolean operator (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM UNOT
+##
+## Ends in an error in state: 82.
+##
+## cond_exp -> exp . REQ exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RLT exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RGT exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RLE exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RGE exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RNE exp [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+## exp -> exp . BSUB exp [ RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+## exp -> exp . BMUL exp [ RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+## exp -> exp . BDIV exp [ RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Conditional operator (=, <, >, <=, >=, <>)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RNE UNOT
+##
+## Ends in an error in state: 83.
+##
+## cond_exp -> exp RNE . exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## exp RNE
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RNE NUM UNOT
+##
+## Ends in an error in state: 84.
+##
+## cond_exp -> exp RNE exp . [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp RNE exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Boolean operators (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLT UNOT
+##
+## Ends in an error in state: 85.
+##
+## cond_exp -> exp RLT . exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## exp RLT
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLT NUM UNOT
+##
+## Ends in an error in state: 86.
+##
+## cond_exp -> exp RLT exp . [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp RLT exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Boolean operators (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLE UNOT
+##
+## Ends in an error in state: 87.
+##
+## cond_exp -> exp RLE . exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## exp RLE
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLE NUM UNOT
+##
+## Ends in an error in state: 88.
+##
+## cond_exp -> exp RLE exp . [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp RLE exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Boolean operators (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGT UNOT
+##
+## Ends in an error in state: 89.
+##
+## cond_exp -> exp RGT . exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## exp RGT
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGT NUM UNOT
+##
+## Ends in an error in state: 90.
+##
+## cond_exp -> exp RGT exp . [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp RGT exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Boolean operators (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGE UNOT
+##
+## Ends in an error in state: 91.
+##
+## cond_exp -> exp RGE . exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## exp RGE
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGE NUM UNOT
+##
+## Ends in an error in state: 92.
+##
+## cond_exp -> exp RGE exp . [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp RGE exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Boolean operators (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM REQ UNOT
+##
+## Ends in an error in state: 93.
+##
+## cond_exp -> exp REQ . exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## exp REQ
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN NUM REQ NUM UNOT
+##
+## Ends in an error in state: 94.
+##
+## cond_exp -> exp REQ exp . [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## exp REQ exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+    - Boolean operators (&&, ||)
+
+prog: FUNCTION ID NUM CBPT ID LPAREN FALSE UNOT
+##
+## Ends in an error in state: 96.
+##
+## cond_exp -> cond_exp . BLAND cond_exp [ RPAREN BLOR BLAND ]
+## cond_exp -> cond_exp . BLOR cond_exp [ RPAREN BLOR BLAND ]
+## inst -> CBPT ID LPAREN cond_exp . RPAREN [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
+##
+## The known suffix of the stack is as follows:
+## CBPT ID LPAREN cond_exp
+##
+
+ Expecting one of the following:
+    - Boolean operators (&&, ||)
+    - Closing parenthesis
+
+prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLOR SUB
+##
+## Ends in an error in state: 98.
+##
+## cond_exp -> cond_exp BLOR . cond_exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## cond_exp BLOR
+##
+
+Expecting a conditional expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLOR FALSE UNOT
+##
+## Ends in an error in state: 99.
+##
+## cond_exp -> cond_exp . BLAND cond_exp [ RPAREN BLOR BLAND ]
+## cond_exp -> cond_exp . BLOR cond_exp [ RPAREN BLOR BLAND ]
+## cond_exp -> cond_exp BLOR cond_exp . [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## cond_exp BLOR cond_exp
+##
+
+Expecting one of the following:
+    - Boolean operators (&&, ||)
+    - Closing parenthesis
+
+prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLAND SUB
+##
+## Ends in an error in state: 100.
+##
+## cond_exp -> cond_exp BLAND . cond_exp [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## cond_exp BLAND
+##
+
+Expecting a conditional expression.
