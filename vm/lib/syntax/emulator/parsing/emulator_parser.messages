@@ -157,7 +157,7 @@ Expecting target label name.
 
 prog: FUNCTION ID NUM CALL TEMP
 ##
-## Ends in an error in state: 102.
+## Ends in an error in state: 106.
 ##
 ## inst -> CALL . ID NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
@@ -169,7 +169,7 @@ Expecting callee function's name.
 
 prog: FUNCTION ID NUM CALL ID TEMP
 ##
-## Ends in an error in state: 103.
+## Ends in an error in state: 107.
 ##
 ## inst -> CALL ID . NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LBPT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CBPT CALL AND ADD ]
 ##
@@ -181,7 +181,7 @@ Expecting number of arguments for callee function.
 
 prog: FUNCTION ID NUM ADD TEMP
 ##
-## Ends in an error in state: 109.
+## Ends in an error in state: 113.
 ##
 ## list(inst) -> inst . list(inst) [ FUNCTION EOF ]
 ##
@@ -472,21 +472,9 @@ prog: FUNCTION ID NUM CBPT ID LPAREN STACK LSQUARE NUM UNOT
 
 Expecting a closing square bracket.
 
-prog: FUNCTION ID NUM CBPT ID LPAREN LPAREN UNOT
-##
-## Ends in an error in state: 64.
-##
-## exp -> LPAREN . exp RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
-##
-## The known suffix of the stack is as follows:
-## LPAREN
-##
-
-Expecting an arithmetic expression.
-
 prog: FUNCTION ID NUM CBPT ID LPAREN BSUB UNOT
 ##
-## Ends in an error in state: 65.
+## Ends in an error in state: 66.
 ##
 ## exp -> BSUB . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -498,7 +486,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN ARGUMENT UNOT
 ##
-## Ends in an error in state: 66.
+## Ends in an error in state: 68.
 ##
 ## exp -> segment . LSQUARE NUM RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -510,7 +498,7 @@ Expecting an opening square bracket for segment offset.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN ARGUMENT LSQUARE UNOT
 ##
-## Ends in an error in state: 67.
+## Ends in an error in state: 69.
 ##
 ## exp -> segment LSQUARE . NUM RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -522,7 +510,7 @@ Expecting a number for segment offset.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN ARGUMENT LSQUARE NUM UNOT
 ##
-## Ends in an error in state: 68.
+## Ends in an error in state: 70.
 ##
 ## exp -> segment LSQUARE NUM . RSQUARE [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -534,13 +522,19 @@ Expecting a closing square bracket.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN LPAREN NUM UNOT
 ##
-## Ends in an error in state: 71.
+## Ends in an error in state: 83.
 ##
-## exp -> exp . BADD exp [ RPAREN BSUB BMUL BDIV BADD ]
-## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BDIV BADD ]
-## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BDIV BADD ]
-## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BDIV BADD ]
-## exp -> LPAREN exp . RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+## cond_exp -> exp . REQ exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RLT exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RGT exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RLE exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RGE exp [ RPAREN BLOR BLAND ]
+## cond_exp -> exp . RNE exp [ RPAREN BLOR BLAND ]
+## exp -> exp . BADD exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+## exp -> LPAREN exp . RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## LPAREN exp
@@ -552,7 +546,7 @@ Expecting one of the following:
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM BSUB UNOT
 ##
-## Ends in an error in state: 73.
+## Ends in an error in state: 74.
 ##
 ## exp -> exp BSUB . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -564,7 +558,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM BSUB NUM UNOT
 ##
-## Ends in an error in state: 74.
+## Ends in an error in state: 75.
 ##
 ## exp -> exp . BADD exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ## exp -> exp . BSUB exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -584,7 +578,7 @@ Expecting one of the following:
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM BMUL UNOT
 ##
-## Ends in an error in state: 75.
+## Ends in an error in state: 76.
 ##
 ## exp -> exp BMUL . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -596,7 +590,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM BDIV UNOT
 ##
-## Ends in an error in state: 77.
+## Ends in an error in state: 78.
 ##
 ## exp -> exp BDIV . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -608,7 +602,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM BADD UNOT
 ##
-## Ends in an error in state: 79.
+## Ends in an error in state: 80.
 ##
 ## exp -> exp BADD . exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ##
@@ -620,7 +614,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM BADD NUM UNOT
 ##
-## Ends in an error in state: 80.
+## Ends in an error in state: 81.
 ##
 ## exp -> exp . BADD exp [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
 ## exp -> exp BADD exp . [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -640,7 +634,7 @@ Expecting one of the following:
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM UNOT
 ##
-## Ends in an error in state: 82.
+## Ends in an error in state: 99.
 ##
 ## cond_exp -> exp . REQ exp [ RPAREN BLOR BLAND ]
 ## cond_exp -> exp . RLT exp [ RPAREN BLOR BLAND ]
@@ -663,7 +657,7 @@ Expecting one of the following:
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RNE UNOT
 ##
-## Ends in an error in state: 83.
+## Ends in an error in state: 84.
 ##
 ## cond_exp -> exp RNE . exp [ RPAREN BLOR BLAND ]
 ##
@@ -675,7 +669,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RNE NUM UNOT
 ##
-## Ends in an error in state: 84.
+## Ends in an error in state: 85.
 ##
 ## cond_exp -> exp RNE exp . [ RPAREN BLOR BLAND ]
 ## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -690,11 +684,11 @@ prog: FUNCTION ID NUM CBPT ID LPAREN NUM RNE NUM UNOT
 Expecting one of the following:
     - Binary operator (+, -, *, /)
     - Closing parenthesis
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLT UNOT
 ##
-## Ends in an error in state: 85.
+## Ends in an error in state: 86.
 ##
 ## cond_exp -> exp RLT . exp [ RPAREN BLOR BLAND ]
 ##
@@ -706,7 +700,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLT NUM UNOT
 ##
-## Ends in an error in state: 86.
+## Ends in an error in state: 87.
 ##
 ## cond_exp -> exp RLT exp . [ RPAREN BLOR BLAND ]
 ## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -721,11 +715,11 @@ prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLT NUM UNOT
 Expecting one of the following:
     - Binary operator (+, -, *, /)
     - Closing parenthesis
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLE UNOT
 ##
-## Ends in an error in state: 87.
+## Ends in an error in state: 88.
 ##
 ## cond_exp -> exp RLE . exp [ RPAREN BLOR BLAND ]
 ##
@@ -737,7 +731,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLE NUM UNOT
 ##
-## Ends in an error in state: 88.
+## Ends in an error in state: 89.
 ##
 ## cond_exp -> exp RLE exp . [ RPAREN BLOR BLAND ]
 ## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -752,11 +746,11 @@ prog: FUNCTION ID NUM CBPT ID LPAREN NUM RLE NUM UNOT
 Expecting one of the following:
     - Binary operator (+, -, *, /)
     - Closing parenthesis
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGT UNOT
 ##
-## Ends in an error in state: 89.
+## Ends in an error in state: 90.
 ##
 ## cond_exp -> exp RGT . exp [ RPAREN BLOR BLAND ]
 ##
@@ -768,7 +762,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGT NUM UNOT
 ##
-## Ends in an error in state: 90.
+## Ends in an error in state: 91.
 ##
 ## cond_exp -> exp RGT exp . [ RPAREN BLOR BLAND ]
 ## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -783,11 +777,11 @@ prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGT NUM UNOT
 Expecting one of the following:
     - Binary operator (+, -, *, /)
     - Closing parenthesis
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGE UNOT
 ##
-## Ends in an error in state: 91.
+## Ends in an error in state: 92.
 ##
 ## cond_exp -> exp RGE . exp [ RPAREN BLOR BLAND ]
 ##
@@ -799,7 +793,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGE NUM UNOT
 ##
-## Ends in an error in state: 92.
+## Ends in an error in state: 93.
 ##
 ## cond_exp -> exp RGE exp . [ RPAREN BLOR BLAND ]
 ## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -814,11 +808,11 @@ prog: FUNCTION ID NUM CBPT ID LPAREN NUM RGE NUM UNOT
 Expecting one of the following:
     - Binary operator (+, -, *, /)
     - Closing parenthesis
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM REQ UNOT
 ##
-## Ends in an error in state: 93.
+## Ends in an error in state: 94.
 ##
 ## cond_exp -> exp REQ . exp [ RPAREN BLOR BLAND ]
 ##
@@ -830,7 +824,7 @@ Expecting an arithmetic expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN NUM REQ NUM UNOT
 ##
-## Ends in an error in state: 94.
+## Ends in an error in state: 95.
 ##
 ## cond_exp -> exp REQ exp . [ RPAREN BLOR BLAND ]
 ## exp -> exp . BADD exp [ RPAREN BSUB BMUL BLOR BLAND BDIV BADD ]
@@ -845,11 +839,11 @@ prog: FUNCTION ID NUM CBPT ID LPAREN NUM REQ NUM UNOT
 Expecting one of the following:
     - Binary operator (+, -, *, /)
     - Closing parenthesis
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
 
 prog: FUNCTION ID NUM CBPT ID LPAREN FALSE UNOT
 ##
-## Ends in an error in state: 96.
+## Ends in an error in state: 104.
 ##
 ## cond_exp -> cond_exp . BLAND cond_exp [ RPAREN BLOR BLAND ]
 ## cond_exp -> cond_exp . BLOR cond_exp [ RPAREN BLOR BLAND ]
@@ -860,7 +854,7 @@ prog: FUNCTION ID NUM CBPT ID LPAREN FALSE UNOT
 ##
 
  Expecting one of the following:
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
     - Closing parenthesis
 
 prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLOR SUB
@@ -877,7 +871,7 @@ Expecting a conditional expression.
 
 prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLOR FALSE UNOT
 ##
-## Ends in an error in state: 99.
+## Ends in an error in state: 100.
 ##
 ## cond_exp -> cond_exp . BLAND cond_exp [ RPAREN BLOR BLAND ]
 ## cond_exp -> cond_exp . BLOR cond_exp [ RPAREN BLOR BLAND ]
@@ -888,12 +882,12 @@ prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLOR FALSE UNOT
 ##
 
 Expecting one of the following:
-    - Boolean operators (&&, ||)
+    - Boolean operator (&&, ||)
     - Closing parenthesis
 
 prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLAND SUB
 ##
-## Ends in an error in state: 100.
+## Ends in an error in state: 101.
 ##
 ## cond_exp -> cond_exp BLAND . cond_exp [ RPAREN BLOR BLAND ]
 ##
@@ -902,3 +896,64 @@ prog: FUNCTION ID NUM CBPT ID LPAREN FALSE BLAND SUB
 ##
 
 Expecting a conditional expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN LPAREN SUB
+##
+## Ends in an error in state: 64.
+##
+## cond_exp -> LPAREN . cond_exp RPAREN [ RPAREN BLOR BLAND ]
+## exp -> LPAREN . exp RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+Expecting one of the following:
+    - Arithmetic expression
+    - Conditional expression
+
+prog: FUNCTION ID NUM CBPT ID LPAREN BSUB LPAREN UNOT
+##
+## Ends in an error in state: 67.
+##
+## exp -> LPAREN . exp RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+Expecting an arithmetic expression.
+
+prog: FUNCTION ID NUM CBPT ID LPAREN BSUB LPAREN NUM UNOT
+##
+## Ends in an error in state: 72.
+##
+## exp -> exp . BADD exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> exp . BSUB exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> exp . BMUL exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> exp . BDIV exp [ RPAREN BSUB BMUL BDIV BADD ]
+## exp -> LPAREN exp . RPAREN [ RPAREN RNE RLT RLE RGT RGE REQ BSUB BMUL BLOR BLAND BDIV BADD ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN exp
+##
+
+Expecting one of the following:
+    - Binary operator (+, -, *, /)
+    - Closing parenthesis
+
+prog: FUNCTION ID NUM CBPT ID LPAREN LPAREN FALSE UNOT
+##
+## Ends in an error in state: 96.
+##
+## cond_exp -> cond_exp . BLAND cond_exp [ RPAREN BLOR BLAND ]
+## cond_exp -> cond_exp . BLOR cond_exp [ RPAREN BLOR BLAND ]
+## cond_exp -> LPAREN cond_exp . RPAREN [ RPAREN BLOR BLAND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN cond_exp
+##
+
+Expecting one of the following:
+    - Boolean operator (&&, ||)
+    - Closing parenthesis

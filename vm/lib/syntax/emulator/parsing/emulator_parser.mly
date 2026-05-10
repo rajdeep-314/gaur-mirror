@@ -90,6 +90,7 @@ cond_exp:
     | e1=exp; o=relop; e2=exp               { Comp (o, e1, e2) }
     | e1=cond_exp; o=boolop; e2=cond_exp    { BoolOp (o, e1, e2) }
     | UNOT; e=cond_exp                      { Not e }
+    | LPAREN; e=cond_exp; RPAREN            { e }
 
 inst:
     | PUSH; s=segment; n=NUM        { Push (s, n), ($startpos, $endpos) }
