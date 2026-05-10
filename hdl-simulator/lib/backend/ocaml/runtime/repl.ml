@@ -26,6 +26,7 @@ let repl inx outx ~prompt ~exiterr (module C : CHIP) =
       (try Typechecker.tc_input C.typ_of_input e with
        | Errors.Error (err, loc) ->
          Io.output_stringln outx (Fmt.to_to_string Errors.Pretty.pp (err, loc));
+         if exiterr then exit 1;
          go ());
       input := C.input_of_expr e.expr;
       go ()
