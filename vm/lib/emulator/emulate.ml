@@ -410,35 +410,33 @@ execution functions.
 *)
 
 
-(* e_till_condition p i_cond s_cond s executes VM program p on VM state s till
-   a state is reached where s_cond is true, and i_cond is true for the fetched
-   instruction in that state. *)
-let rec e_till_condition c i_cond s_cond s =
-    let ins = fetch_inst c s in
-    if i_cond ins && s_cond s then s
-    else e_till_condition c i_cond s_cond (execute_inst c s ins)
-
+(* e_till_condition p is_cond s executes VM program p on VM state s till the
+   tuple of fetched instruction in a state and that state satisfy the predicate
+   is_cond. *)
+let rec e_till_condition p is_cond s =
+    let ins = fetch_inst p s in
+    if is_cond (ins, s) then s
+    else e_till_condition p is_cond (execute_inst p s ins)
 
 (* Execute program p on state s till it returns from main.
    Returns final state and return value. *)
-let e_till_termination c s =
-    let s' = e_till_condition c
-        (fun  i -> inst_base i = Return) (fun s -> n_frames s = 1) s in
+let e_till_termination p s =
+    let s' = e_till_condition p
+        (fun (i, s) -> inst_base i = Return && n_frames s = 1) s in
     (s', wstack_peek s')
 
 (* Excute program p on state s till it returns from the current function.
    Returns the state after this return. *)
-let e_till_return c s =
-    e_till_condition c
-        (fun _ -> true) (fun s' -> n_frames s' < n_frames s) s
+let e_till_return p s =
+    e_till_condition p (fun (_, s') -> n_frames s' < n_frames s) s
 
 (* Excute program p on state s till it returns from the current function.
    Returns the state just before this return. *)
-let e_till_before_return c s =
-    e_till_condition c
-        (fun i -> inst_base i = Return) (fun s' -> n_frames s' = n_frames s) s
+let e_till_before_return p s =
+    e_till_condition p
+        (fun (i, s') -> inst_base i = Return && n_frames s' = n_frames s) s
 
 (* Executes program p till termination. *)
-let e_prog_till_termination c =
-    e_till_termination c (init_from_prog c)
+let e_prog_till_termination p =
+    e_till_termination p (init_from_prog p)
 
