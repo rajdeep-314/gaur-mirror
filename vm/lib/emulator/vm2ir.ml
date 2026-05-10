@@ -54,7 +54,8 @@ let translate_inst tbl ln i =
         begin match Table.find_opt l tbl with
         | Some ln' -> Some (I.IfGoto (ln' - ln))
         | None -> raise (unbound_label i l) end
-    | A.LineBpt _ | A.CondBpt _ -> raise (unimplemented "Breakpoints") in
+    | A.LineBpt (s, x) -> Some (I.LineBpt (s, x))
+    | A.CondBpt (s, x) -> Some (I.CondBpt (s, x)) in
     match base with
     | Some x    -> [(x, A.inst_annot i)]
     | None      -> []
