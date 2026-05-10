@@ -22,6 +22,7 @@ type expr =
   | List    of expr list
   | Infix   of string * expr * expr
   | Match   of expr * (pat * expr) list
+  | Module  of string
 
 and let_bind =
   | Simple  of pat * expr
@@ -48,6 +49,7 @@ let efun ptl rt e = Fun (ptl, rt, e)
 let elist el = List el
 let einfix id el er = Infix (id, el, er)
 let ematch scr pel = Match (scr, pel)
+let emodule m = Module m
 
 let blet p e = Simple (p, e)
 let bfun id ptl rt e = FunDecl (id, ptl, rt, e)
@@ -97,6 +99,7 @@ module Pretty = struct
     | Match (scr, pel)   -> Fmt.pf ppf "@[<v 2>match %a with@,%a@,@]"
                               pp_expr scr
                               (Fmt.list pp_match_clause) pel
+    | Module m           -> Fmt.pf ppf "(module %s)" m
 
   and pp_blet ppf lb =
     match lb with
