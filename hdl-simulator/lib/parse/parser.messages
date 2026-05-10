@@ -8,7 +8,8 @@ prog: STATES
 ##
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a chip definition beginning with 'CHIP'
+at this point.
 
 prog: CHIP STATES
 ##
@@ -20,7 +21,7 @@ prog: CHIP STATES
 ## CHIP
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a chip name (uppercase identifier) after 'CHIP'.
 
 prog: CHIP PID STATES
 ##
@@ -32,7 +33,7 @@ prog: CHIP PID STATES
 ## CHIP PID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting '{' after the chip name to open the chip body.
 
 prog: CHIP PID LBRACE STATES
 ##
@@ -44,7 +45,8 @@ prog: CHIP PID LBRACE STATES
 ## CHIP PID LBRACE
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a chip body beginning with 'INPUT'
+after reading '{'.
 
 prog: CHIP PID LBRACE INPUT STATES
 ##
@@ -56,7 +58,7 @@ prog: CHIP PID LBRACE INPUT STATES
 ## INPUT
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an input port name (lowercase identifier) after 'INPUT'.
 
 prog: CHIP PID LBRACE INPUT LID STATES
 ##
@@ -68,7 +70,7 @@ prog: CHIP PID LBRACE INPUT LID STATES
 ## INPUT LID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting ':' after the input port name.
 
 prog: CHIP PID LBRACE INPUT LID COLON STATES
 ##
@@ -80,7 +82,8 @@ prog: CHIP PID LBRACE INPUT LID COLON STATES
 ## INPUT LID COLON
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a type after ':'.
+Valid types are 'bits <n>' or a record type '{...}'.
 
 prog: CHIP PID LBRACE INPUT LID COLON LBRACE STATES
 ##
@@ -92,7 +95,8 @@ prog: CHIP PID LBRACE INPUT LID COLON LBRACE STATES
 ## LBRACE
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a list of record type fields after reading '{'.
+Did you break the type too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID STATES
 ##
@@ -104,7 +108,8 @@ prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID STATES
 ## LID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting ':' after the record field name.
+Did you break the type too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON STATES
 ##
@@ -116,7 +121,9 @@ prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON STATES
 ## LID COLON
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a type after ':'.
+Valid types are 'bits <n>' or a record type '{...}'.
+Did you break the type too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS STATES
 ##
@@ -128,7 +135,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS STATES
 ## BITS
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an integer width after 'bits'.
 
 prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON BITS INT STATES
 ##
@@ -141,7 +148,11 @@ prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON BITS INT STATES
 ## typ_rfield
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting one of
+  - ','
+  - '}'
+after reading a record type field.
+Did you break the type too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON BITS INT COMMA STATES
 ##
@@ -153,7 +164,8 @@ prog: CHIP PID LBRACE INPUT LID COLON LBRACE LID COLON BITS INT COMMA STATES
 ## typ_rfield COMMA
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a list of record type fields after reading ','.
+Did you break the type too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT STATES
 ##
@@ -165,7 +177,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT STATES
 ## in_decl
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an output declaration beginning with 'OUTPUT'
+after the input declaration.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT STATES
 ##
@@ -177,7 +190,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT STATES
 ## OUTPUT
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an output port name (lowercase identifier) after 'OUTPUT'.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID STATES
 ##
@@ -189,7 +202,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID STATES
 ## OUTPUT LID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting ':' after the output port name.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON STATES
 ##
@@ -201,7 +214,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON STATES
 ## OUTPUT LID COLON
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a type after ':'.
+Valid types are 'bits <n>' or a record type '{...}'.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT SEQ_DEF
 ##
@@ -213,7 +227,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT SEQ_DEF
 ## in_decl out_decl
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting either a 'STATES' declaration or the first assignment
+after the output declaration.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES STATES
 ##
@@ -225,7 +240,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES 
 ## STATES
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a list of state names after 'STATES'.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID STATES
 ##
@@ -237,7 +252,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES 
 ## LID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting ':' after the state name.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID COLON STATES
 ##
@@ -249,7 +264,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES 
 ## LID COLON
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a type after ':'.
+Valid types are 'bits <n>' or a record type '{...}'.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID COLON BITS INT STATES
 ##
@@ -262,7 +278,10 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES 
 ## state
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting one of
+  - ','
+  - the first assignment or '}'
+after reading a state declaration.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES LID COLON BITS INT COMMA STATES
 ##
@@ -274,7 +293,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT STATES 
 ## state COMMA
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a list of state declarations after reading ','.
+Did you break the states list too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID STATES
 ##
@@ -287,7 +307,10 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID STA
 ## LID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting one of
+  - ':=' for a combinational assignment
+  - '\'' followed by '<-' for a sequential assignment
+after reading the left-hand side identifier.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID PRIME STATES
 ##
@@ -299,7 +322,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID PRI
 ## LID PRIME
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting '<-' after reading '\'' for a sequential assignment.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID PRIME SEQ_DEF STATES
 ##
@@ -311,7 +334,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID PRI
 ## LID PRIME SEQ_DEF
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a right-hand side expression after '<-'.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF PID STATES
 ##
@@ -323,7 +346,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## PID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an argument expression after the chip instance name.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LPAREN STATES
 ##
@@ -335,7 +358,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## LPAREN
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an expression after '('.
+Did you break the expression too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE STATES
 ##
@@ -347,7 +371,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## LBRACE
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a list of record fields after reading '{'.
+Did you break the expression too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID STATES
 ##
@@ -359,7 +384,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## LID
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting '=' after the record field name.
+Did you break the expression too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID FIELD_ASSIGN STATES
 ##
@@ -371,7 +397,11 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## LID FIELD_ASSIGN
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting one of
+  - bitvector expression
+  - record expression
+after reading '='.
+Did you break the expression too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID FIELD_ASSIGN INT STATES
 ##
@@ -387,7 +417,11 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## LID FIELD_ASSIGN expr
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting one of
+  - ','
+  - '}'
+after reading a record field expression.
+Did you break the expression too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT PLUSPLUS STATES
 ##
@@ -399,7 +433,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr PLUSPLUS
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an expression after '++'.
+Did you break the concatenation too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT PLUSPLUS INT STATES
 ##
@@ -415,7 +450,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr PLUSPLUS expr
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting the concatenation expression to be closed or continued
+after reading 'expr ++ expr'.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQUARE STATES
 ##
@@ -428,7 +464,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr LSQUARE
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an integer index after '['.
+Valid forms are '[i]' (bit select) or '[i:j]' (slice).
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQUARE INT STATES
 ##
@@ -441,7 +478,10 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr LSQUARE INT
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting one of
+  - ']' to close a bit-select
+  - ':' to begin a slice range
+after reading the index.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQUARE INT COLON STATES
 ##
@@ -453,7 +493,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr LSQUARE INT COLON
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting an integer upper bound after ':' in a slice.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT LSQUARE INT COLON INT STATES
 ##
@@ -465,7 +505,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr LSQUARE INT COLON INT
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting ']' to close the slice.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT DOT STATES
 ##
@@ -477,7 +517,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr DOT
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a field name (lowercase identifier) after '.'.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LBRACE LID FIELD_ASSIGN INT COMMA STATES
 ##
@@ -489,7 +529,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr_rfield COMMA
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a list of record fields after reading ','.
+Did you break the expression too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF LPAREN INT STATES
 ##
@@ -505,7 +546,8 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## LPAREN expr
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting ')' to close the parenthesised expression.
+Did you break the expression too early?
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF PID INT STATES
 ##
@@ -521,7 +563,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## PID expr
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting the assignment to end after the chip instance expression.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF INT STATES
 ##
@@ -537,7 +579,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## expr
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting the assignment to end after the expression.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COMB_DEF STATES
 ##
@@ -549,7 +591,7 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT LID COM
 ## LID COMB_DEF
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+I am expecting a right-hand side expression after ':='.
 
 prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT RBRACE STATES
 ##
@@ -561,5 +603,5 @@ prog: CHIP PID LBRACE INPUT LID COLON BITS INT OUTPUT LID COLON BITS INT RBRACE 
 ## chip
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
-
+I am expecting either another chip definition beginning with 'CHIP'
+or end of file after closing '}'.
