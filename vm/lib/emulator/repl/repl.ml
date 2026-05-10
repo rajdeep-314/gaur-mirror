@@ -197,9 +197,6 @@ and exec_cmd src_tbl p s cmd =
     | Er.ReplError _ as e ->
         print_endline (Printexc.to_string e) ;
         loop src_tbl p s
-    | Er.SemanticError (a, e) ->
-        print_endline (Er.pp_semantic_error src_tbl (a, e)) ;
-        loop src_tbl p s
     | Er.ExecutionError (a, e) ->
         print_endline (Er.pp_execution_error src_tbl (a, e)) ;
         loop src_tbl p s
