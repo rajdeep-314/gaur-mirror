@@ -19,10 +19,3 @@ let typecheck prog =
     Loc.errorl loc;
     Pretty.pp Fmt.stderr err;
     exit Exit.typeerror
-
-(** [typecheck_erase prog] typechecks a program [prog], and erases
-    all typechecking information if it succeeds.
-*)
-let typecheck_erase prog : unit Parse.Ast.prog =
-  let erase = Map.prog_info (fun _ -> ()) in
-  erase (typecheck prog)

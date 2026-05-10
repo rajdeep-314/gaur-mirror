@@ -38,7 +38,8 @@ let _ =
       |> Io.open_in_many
       |> Parse.parse_ic_many
       |> Toposort.toposort
-      |> Typecheck.typecheck_erase
+      |> Typecheck.typecheck
+      |> Parse.Ast.Map.erase
       |> Compile.compile
       |> Files.Pretty.pp_file outf
     in
