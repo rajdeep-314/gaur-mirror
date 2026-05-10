@@ -3,7 +3,7 @@
 (** {2 Prefixes} *)
 
 (** Prefix of module name for a chip *)
-let name_pfx = "chip_"
+let name_pfx = ""
 
 (** Prefix for variables in a chip *)
 let var_pfx  = "var_"

@@ -2,7 +2,7 @@ open Parse.Ast
 open Parse.Helpers
 open Parse.Types
 
-module Chip_Nand = struct
+module Nand = struct
   type state = unit
   type input = < var_a : bv ; var_b : bv >
   type output = bv
@@ -19,12 +19,12 @@ module Chip_Nand = struct
     end
   ;;
 
-  let typ_of_input = trecord_of_list [ "var_a", tbits 1; "var_b", tbits 1 ]
+  let typ_of_input = trecord_of_list [ "a", tbits 1; "b", tbits 1 ]
 
   let input_of_expr e : input =
     object
-      method var_a = e |>? "var_a" |> get_bv
-      method var_b = e |>? "var_b" |> get_bv
+      method var_a = e |>? "a" |> get_bv
+      method var_b = e |>? "b" |> get_bv
     end
   ;;
 
