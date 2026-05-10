@@ -1,4 +1,5 @@
 open Parse
+open Select
 
 (** [compile prog] compiles a program [prog] carrying no additional
     information.
@@ -12,4 +13,5 @@ let compile p =
   end
   in
   let module Q = Top.Make(P) () in
-  List.tl Q.v
+  let q = List.tl Q.v in
+  q @ [ select p ]
