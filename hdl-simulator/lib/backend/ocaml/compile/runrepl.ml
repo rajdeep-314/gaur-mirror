@@ -58,7 +58,7 @@ let run_bench_expr =
 
 let run_bench_fun =
   E.bfun
-    "fun_bench"
+    "run_bench"
     [P.pid "name", None; P.pid "inf", None; P.pid "outf", None]
     None
     run_bench_expr

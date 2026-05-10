@@ -38,12 +38,12 @@ let ( ||>? ) = get_record
 
 let raise_fun exn = E.eapply (E.eid "raise") [ exn ]
 let raise_invalid_argument_fun e =
-  raise_fun (E.evar "Invalud_argument" [e])
+  raise_fun (E.evar "Invalid_argument" [e])
 let repl = E.eid "repl"
 let stdin = E.eid "stdin"
 let stdout = E.eid "stdout"
-let inx_open_txt e = E.eapply (E.modpath "In_channel" "open_txt") [e]
-let outx_open_txt e = E.eapply (E.modpath "Out_channel" "open_txt") [e]
+let inx_open_txt e = E.eapply (E.modpath "In_channel" "open_text") [e]
+let outx_open_txt e = E.eapply (E.modpath "Out_channel" "open_text") [e]
 let array_length e = E.eapply (E.modpath "Array" "length") [e]
 let sys_argv = E.modpath "Sys" "argv"
 let exit n = E.eapply (E.eid "exit") [E.eint n]
