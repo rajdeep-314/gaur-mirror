@@ -131,5 +131,11 @@ module PP = struct
     let diagnostic s = Printf.sprintf
         "Call stack:\n%s\n\n%s"
         (String.concat "\n" (List.map call (Inspect.calls s))) (top_frame s)
+
+    let frames s = String.concat "\n\n" (List.map frame (List.rev s.frames))
+
+    let state s = Printf.sprintf
+        "Temp: %s\nStatic: %s\n\nFrames:\n%s"
+        (segment Temp s) (segment Static s) (frames s)
 end
 
