@@ -38,6 +38,9 @@ val tmodpath : string -> string -> typ
 (** Ocaml polymorphic type instantiations [tvar t] *)
 val tpoly : typ list -> typ -> typ
 
+(** OCaml module signature type [module SIG] *)
+val tmodsig : string -> typ
+
 (** {3 Type Declarations} *)
 
 (** Type alias *)

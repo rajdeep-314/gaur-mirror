@@ -12,6 +12,7 @@ type typ =
   | Array   of typ
   | ModPath of string * string
   | Poly    of typ list * typ
+  | ModSig  of string
 
 and typ_decl = string * typ_info
 
@@ -32,6 +33,7 @@ let tobject tr = Object tr
 let tarray t = Array t
 let tmodpath m t = ModPath (m, t)
 let tpoly tl t = Poly (tl, t)
+let tmodsig s = ModSig s
 
 let decl_alias   lid typ : typ_decl = (lid, Typ typ)
 let decl_record  lid fl  : typ_decl = (lid, Record fl)
@@ -63,6 +65,8 @@ module Pretty = struct
     | Poly (tl, t)      -> Fmt.pf ppf "@[<h>%a@ %a@]"
                              Fmt.(list ~sep:sp pp_typ) tl
                              pp_typ t
+    | ModSig s          -> Fmt.pf ppf "(module %s)"
+                            (String.uppercase_ascii s)
 
   and pp_typ_decl ppf (lid, typ_info) =
     Fmt.pf ppf "@[<hv 2>type %s = @,%a@]"
