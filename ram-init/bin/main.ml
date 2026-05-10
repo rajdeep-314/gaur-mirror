@@ -11,7 +11,7 @@ open Raminit
 let path = ref ""               (* Input file path. *)
 let out_path = ref ""           (* Output file path. *)
 let ram_size = ref 16384        (* RAM size in bytes. *)
-let word_size = ref 2           (* Word size in bytes. *)
+let word_size = ref 4           (* Word size in bytes. *)
 let endianness = ref "big"      (* Endianness (little | big). *)
 let offset = ref 0              (* Offset in number of bytes. *)
 let padding = ref "0"           (* Padding bytes. *)
