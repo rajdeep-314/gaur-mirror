@@ -1,5 +1,5 @@
 (executable
  (package hdl-simulator)
  (public_name hdl-simulator)
- (name main)
+ (name phdlc)
  (libraries lib))
