@@ -21,7 +21,7 @@ let show_prompt outx =
   Out_channel.flush outx
 
 
-let repl inx outx (module C : CHIP) prompt exiterr =
+let repl inx outx (module C : CHIP) fname prompt exiterr =
   let state = ref C.default_state in
   let input = ref C.default_input in
   let rec go () =
@@ -31,7 +31,7 @@ let repl inx outx (module C : CHIP) prompt exiterr =
     | "" -> go ()
     | s ->
       (match
-         (try Ok (Parse.parse s)
+         (try Ok (Parse.parse fname s)
           with
           | Parse.Errors.Error err ->
             Io.output_stringln outx (Fmt.to_to_string Parse.Errors.Pretty.pp err);

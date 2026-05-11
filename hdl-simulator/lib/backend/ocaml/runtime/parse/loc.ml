@@ -27,19 +27,17 @@ let range loc =
   let pos1 = loc.loc_start in
   let pos2 = loc.loc_end in
   let file = pos1.pos_fname in
-  let line = pos1.pos_lnum in
   let char1 = pos1.pos_cnum - pos1.pos_bol in
   let char2 = pos2.pos_cnum - pos1.pos_bol in (* yes, [pos1.pos_bol] *)
-  Printf.sprintf "File \"%s\", line %d, characters %d-%d:\n"
-    file line (char1 + 1) (char2 + 1)
+  Printf.sprintf "File \"%s\", characters %d-%d:\n"
+    file (char1 + 1) (char2 + 1)
 (* use [char1 + 1] and [char2 + 1] if *not* using Caml mode *)
 
 let location (lexbuf : Lexing.lexbuf) =
   let pos = lexbuf.lex_curr_p in
   let char = (pos.pos_cnum - pos.pos_bol + 1) in
-  Printf.sprintf "File \"%s\", line %d, character %d:\n"
+  Printf.sprintf "File \"%s\", character %d:\n"
     pos.pos_fname
-    pos.pos_lnum
     char
 
 let errorf ~loc fmt =

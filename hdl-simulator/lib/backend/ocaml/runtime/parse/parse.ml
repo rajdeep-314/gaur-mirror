@@ -12,9 +12,14 @@ let from_channel fname ic =
   lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = fname };
   lexbuf
 
-(** [parse s] parses the command from string [s]. *)
-let parse s =
+let from_string fname s =
   let lexbuf = Lexing.from_string s in
+  lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = fname };
+  lexbuf
+
+(** [parse s] parses the command from string [s]. *)
+let parse fname s =
+  let lexbuf = from_string fname s in
   let ast = Parser.cmd Lexer.read lexbuf in
   ast
 

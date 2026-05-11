@@ -25,6 +25,7 @@ let run_repl_expr =
     [ F.stdin
     ; F.stdout
     ; (E.eapply (E.eid "select_fail") [E.eid "name"])
+    ; E.estring "REPL"
     ; E.etrue
     ; E.efalse
     ]
@@ -50,6 +51,7 @@ let run_bench_expr =
         inx_e
       ; outx_e
       ; E.eapply (E.eid "select_fail") [E.eid "name"]
+      ; (E.earray_idx F.sys_argv 2)
       ; E.efalse
       ; E.etrue
       ]
