@@ -13,11 +13,23 @@
       raise (DuplicateKey (key, loc))
     else
       StrMap.add key value map
+
+  let of_binary str : Bit.t NonEmpty.t =
+    str
+    |> String.to_seq
+    |> Seq.map (function
+       | '0' -> false
+       | '1' -> true
+       |  c  -> raise (SyntaxError  ( Printf.sprintf
+                                      "Unexpected '%s'.\n"
+                                      str)))
+    |> List.of_seq
+    |> NonEmpty.of_list
 %}
 
 %token <string> LID (* 'lowercase' identifier *)
 %token <string> PID (* 'PascalCase' identifier *)
-%token <int>    INT
+%token <string> INT
 
 (* keywords *)
 %token BITS CHIP INPUT OUTPUT STATES
@@ -100,7 +112,7 @@ let state :=
 
 let typ :=
   | BITS; n = INT;
-    { TBits n }
+    { TBits (int_of_string n) }
   | LBRACE; body = typ_rbody; RBRACE;
     { TRecord body }
 
@@ -139,9 +151,9 @@ let rhs :=
     }
 
 let expr :=
-  | i = INT;
+  | bv = INT;
     { let loc = Loc.make ($startpos) ($endpos) in
-      mk_expr_info (Const (Bitvec.of_int i)) loc
+      mk_expr_info (Const (of_binary bv)) loc
     }
 
   | LBRACE; body = expr_rbody; RBRACE;
@@ -151,12 +163,12 @@ let expr :=
 
   | expr = expr; LSQUARE; lb = INT; COLON; ub = INT; RSQUARE;
     { let loc = Loc.make ($startpos) ($endpos) in
-      mk_expr_info (Splice (expr, lb, ub)) loc
+      mk_expr_info (Splice (expr, int_of_string lb, int_of_string ub)) loc
     }
 
   | expr = expr; LSQUARE; idx = INT; RSQUARE;
     { let loc = Loc.make ($startpos) ($endpos) in
-      mk_expr_info (Splice (expr, idx, idx)) loc
+      mk_expr_info (Splice (expr, int_of_string idx, int_of_string idx)) loc
     }
 
   | expr1 = expr; PLUSPLUS; expr2 = expr;

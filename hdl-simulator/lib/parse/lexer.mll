@@ -2,6 +2,7 @@
   open Lexing
   open Parser
   open Errors
+  open Hdlutils
 }
 
 let white     = [' ' '\t']+
@@ -67,7 +68,9 @@ rule read =
 
   | prime     { PRIME }
 
-  | num       { INT (int_of_string (Lexing.lexeme lexbuf)) }
+  (* | binary    { BV (of_binary lexbuf) } *)
+
+  | num       { INT (Lexing.lexeme lexbuf) }
   | lid       { LID (Lexing.lexeme lexbuf) }
   | pid       { PID (Lexing.lexeme lexbuf) }
 
