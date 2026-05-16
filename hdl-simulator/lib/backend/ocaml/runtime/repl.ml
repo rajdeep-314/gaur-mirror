@@ -10,8 +10,8 @@ module type CHIP = sig
   val clock : input -> state -> state
 
   val typ_of_input : Parse.Types.typ
-  val input_of_expr : 'a Parse.Ast.expr -> input
-  val expr_of_output : output -> 'a Parse.Ast.expr
+  val input_of_expr : Parse.Loc.t Parse.Ast.expr -> input
+  val expr_of_output : output -> Parse.Loc.t Parse.Ast.expr
 end
 
 let time = ref 0
