@@ -36,7 +36,7 @@ module Pretty = struct
   let rec pp_expr ppf expr =
     match expr with
     | Const  bv -> pp_bv ppf bv
-    | Record er -> Fmt.(braces (list pp_field)) ppf (StrMap.to_list er)
+    | Record er -> Fmt.(braces (list ~sep:comma pp_field)) ppf (StrMap.to_list er)
 
   and pp_field ppf (f, e) =
     Fmt.pf ppf "%s = %a" f pp_expr e.expr
