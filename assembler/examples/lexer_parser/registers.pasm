@@ -1,0 +1,34 @@
+# Test valid register numbers, including the boundary registers.
+
+li r0 0
+li r1 1
+li r2 2
+li r3 3
+li r4 4
+li r5 5
+li r6 6
+li r7 7
+li r8 8
+li r9 9
+li r10 10
+li r11 11
+li r12 12
+li r13 13
+li r14 14
+li r15 15
+li r16 16
+li r17 17
+li r18 18
+li r19 19
+li r20 20
+li r21 21
+li r22 22
+li r23 23
+li r24 24
+li r25 25
+li r26 26
+li r27 27
+li r28 28
+li r29 29
+li r30 30
+li r31 31
