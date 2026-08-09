@@ -1,4 +1,5 @@
 (rocq.theory
  (name assembler_new)
  (theories Stdlib)
+ (generate_project_file)
 )
