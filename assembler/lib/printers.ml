@@ -39,7 +39,7 @@ let isa_inst_to_string inst =
     | I_sr (rd,rs,imm)      -> String.concat " " ["sr"; rts rd;rts rs;its imm]
     | I_beq (rs1, rs2, imm) -> String.concat " " ["beq"; rts rs1; rts rs2; its imm]
     | I_blt (rs1, rs2, imm) -> String.concat " " ["blt"; rts rs1; rts rs2; its imm]
-    | I_jalr (rd, rs, imm)  -> String.concat " " ["jarl"; rts rd; rts rs; its imm]
+    | I_jalr (rd, rs, imm)  -> String.concat " " ["jalr"; rts rd; rts rs; its imm]
     | I_apc (rd, imm)       -> String.concat " " ["apc"; rts rd; its imm]
     | I_j imm               -> String.concat " " ["j"; its imm]
 
