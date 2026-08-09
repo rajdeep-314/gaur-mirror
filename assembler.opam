@@ -19,7 +19,7 @@ depends: [
   "ocaml" {>= "4.14"}
   "rocq-core" {>= "9.0.0"}
   "dune" {>= "3.22"}
-  "menhir"
+  "menhir" {>= "20180523"}
   "odoc" {with-doc}
 ]
 build: [

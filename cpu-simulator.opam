@@ -18,7 +18,7 @@ bug-reports: "https://gitlab.com/rajdeep-314/ptools/-/issues"
 depends: [
   "ocaml" {>= "4.14"}
   "dune" {>= "3.22"}
-  "menhir"
+  "menhir" {>= "20180523"}
   "odoc" {with-doc}
 ]
 build: [

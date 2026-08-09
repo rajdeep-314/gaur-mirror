@@ -19,7 +19,7 @@ depends: [
   "ocaml" {>= "4.14"}
   "dune" {>= "3.22"}
   "num"
-  "menhir"
+  "menhir" {>= "20180523"}
   "odoc" {with-doc}
 ]
 build: [
