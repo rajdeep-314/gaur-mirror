@@ -2,5 +2,6 @@
 ; (rocq.theory
 ;   (name vm_translator)
 ;   (theories Stdlib assembler)
+;   (generate_project_file)
 ; )
 ;
