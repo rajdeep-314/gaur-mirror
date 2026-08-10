@@ -1,5 +1,5 @@
 default:
-  image: registry.gitlab.com/rajdeep-314/ptools:v2
+  image: registry.gitlab.com/verify-at-iitpkd/focs/ptools:latest
 
 stages:
   - build
