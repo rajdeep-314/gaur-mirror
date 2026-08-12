@@ -131,7 +131,7 @@ let disassemble_inst offset instr =
 
     | 0x2000 ->
         let rd = gr 15 11 in
-        let imm = sext (gb instr 10 0) 6 in
+        let imm = sext (gb instr 10 0) 11 in
         Ok (iapc rd imm)
 
     | 0x4000 ->
