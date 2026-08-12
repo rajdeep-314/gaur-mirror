@@ -1,4 +1,6 @@
 (cram
-  (deps (source_tree ./binaries/))
+  (deps
+        (source_tree ./binaries/)
+        (source_tree ./example/))
 )
 
