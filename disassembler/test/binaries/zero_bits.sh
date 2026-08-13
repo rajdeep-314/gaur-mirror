@@ -5,51 +5,58 @@ set -e
 OUT_DIR="binaries"
 mkdir -p "$OUT_DIR"
 
-python3 - "$OUT_DIR" <<'PY'
-import struct
-import sys
+ocaml <<'OCAML'
+let out_dir = "binaries"
 
-out_dir = sys.argv[1]
+(* Each entry is:
+   name, opcode, invalid_bits
 
-# Each entry is:
-#   name, opcode, invalid_bits
-#
-# The opcode occupies bits [31:16].
-#
-# The following instructions have reserved zero bits:
-#
-#   add : bit 0
-#   sub : bit 0
-#   and : bit 0
-#   not : bits [5:0]
-#   sl  : bit 5
-#   sr  : bit 5
+   The opcode occupies bits [31:16].
 
-tests = [
-    ("add", 0x0008, 1 << 0),
-    ("sub", 0x0020, 1 << 0),
-    ("and", 0x0040, 1 << 0),
-    ("not", 0x0080, 1 << 0),
-    ("sl",  0x0100, 1 << 5),
-    ("sr",  0x0200, 1 << 5),
+   Instructions with reserved zero bits:
+
+     add : bit 0
+     sub : bit 0
+     and : bit 0
+     not : bits [5:0]
+     sl  : bit 5
+     sr  : bit 5
+*)
+
+let tests = [
+  ("add", 0x0008, 1 lsl 0);
+  ("sub", 0x0020, 1 lsl 0);
+  ("and", 0x0040, 1 lsl 0);
+  ("not", 0x0080, 1 lsl 0);
+  ("sl",  0x0100, 1 lsl 5);
+  ("sr",  0x0200, 1 lsl 5);
 ]
 
-for name, opcode, invalid_bits in tests:
-    # Put the opcode in bits [31:16].
-    instruction = (opcode << 16) | invalid_bits
+let () =
+  List.iter (fun (name, opcode, invalid_bits) ->
 
-    filename = f"{out_dir}/zero_bits_{name}.pmac"
+    (* Put the opcode in bits [31:16]. *)
+    let instruction = (opcode lsl 16) lor invalid_bits in
 
-    # PMAC stores instructions in big-endian byte order.
-    bytes_ = [
-        (instruction >> 24) & 0xFF,
-        (instruction >> 16) & 0xFF,
-        (instruction >> 8) & 0xFF,
-        instruction & 0xFF,
-    ]
+    let filename =
+      Printf.sprintf "%s/zero_bits_%s.pmac" out_dir name
+    in
 
-    with open(filename, "wb") as f:
-        f.write(bytes(bytes_))
+    (* PMAC stores instructions in big-endian byte order. *)
+    let b0 = (instruction lsr 24) land 0xFF in
+    let b1 = (instruction lsr 16) land 0xFF in
+    let b2 = (instruction lsr 8) land 0xFF in
+    let b3 = instruction land 0xFF in
 
-    print(f"Generated: {filename}")
-PY
+    let oc = open_out_bin filename in
+    output_byte oc b0;
+    output_byte oc b1;
+    output_byte oc b2;
+    output_byte oc b3;
+    close_out oc;
+
+    Printf.printf "Generated: %s\n" filename
+
+  ) tests
+;;
+OCAML
