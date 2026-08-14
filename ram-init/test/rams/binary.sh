@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+OUT="expected.bin"
+
+# Expected binary for:
+#   0 : 0
+#   1 : 1
+#   ...
+#   15 : 15
+#
+# 16 words × 2 bytes, big-endian.
+
+printf '\x00\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F' > "$OUT"
+
+echo "Generated: $OUT"
