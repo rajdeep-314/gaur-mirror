@@ -12,9 +12,9 @@ authors: [
   "M Sreenath Karthick <msreenathkarthick2005@gmail.com>"
 ]
 license: "LICENSE"
-homepage: "https://gitlab.com/rajdeep-314/ptools"
-doc: "https://url/to/documentation"
-bug-reports: "https://gitlab.com/rajdeep-314/ptools/-/issues"
+homepage: "https://gitlab.com/verify-at-iitpkd/focs/ptools"
+doc: "https://verify-at-iitpkd.gitlab.io/focs/ptools"
+bug-reports: "https://gitlab.com/verify-at-iitpkd/focs/ptools/-/issues"
 depends: [
   "ocaml" {>= "4.14"}
   "dune" {>= "3.22"}
@@ -35,5 +35,5 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://gitlab.com/rajdeep-314/ptools.git"
+dev-repo: "git+https://gitlab.com/verify-at-iitpkd/focs/ptools.git"
 x-maintenance-intent: ["(latest)"]

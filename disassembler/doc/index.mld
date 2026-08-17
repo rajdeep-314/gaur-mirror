@@ -52,7 +52,7 @@ v}
 
 {2 Source code and documentation}
 
-The source code for the assembler can be found on our {{:https://gitlab.com/rajdeep-314/ptools/} GitLab repository}, in the [disassembler] directory.
+The source code for the assembler can be found on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools/} GitLab repository}, in the [disassembler] directory.
 
 The [odoc] generated documentation for the libraries involved can be read here:
 
