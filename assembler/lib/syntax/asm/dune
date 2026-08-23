@@ -1,0 +1,5 @@
+(ocamllex
+  (modules lexer_asm))
+
+(menhir
+  (modules parser_asm))

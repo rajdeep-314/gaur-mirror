@@ -20,7 +20,7 @@ Extract Inductive result.result => "Result.t"  [ "Result.Ok" "Result.Error" ].
 Extract Inductive bits.t        => "bool"  [ "false" "true" ].
 
 (* Non-indexed bitvectors to lists. *)
-Extract Inductive bits.bv_      => "Types.machine_inst"  [ "(fun l -> l)" ].
+Extract Inductive bits.bv_      => "Types.Machine.inst"  [ "(fun l -> l)" ].
 
 Extract Inductive reg.t         => "Types.reg"
     [
@@ -34,19 +34,26 @@ Extract Inductive reg.t         => "Types.reg"
         "Types.R28" "Types.R29" "Types.R30" "Types.R31"
     ].
 
-Extract Inductive ast.t         => "Types.asm_inst"
+Extract Inductive ast.t         => "Types.Asm.inst"
     [
-        "Types.Li" "Types.Ld" "Types.St" "Types.Add"
-        "Types.Addi" "Types.Sub" "Types.And" "Types.Not" 
-        "Types.Sl" "Types.Sr" "Types.Beq"
-        "Types.Blt" "Types.Jalr" "Types.Apc" "Types.J" "Types.Label" "Types.Spin"
+        "Types.Asm.Li"
+        "Types.Asm.Ld" "Types.Asm.St"
+        "Types.Asm.Add" "Types.Asm.Addi" "Types.Asm.Sub"
+        "Types.Asm.And" "Types.Asm.Not"
+        "Types.Asm.Sl" "Types.Asm.Sr"
+        "Types.Asm.Beq" "Types.Asm.Blt"
+        "Types.Asm.Jalr" "Types.Asm.Apc" "Types.Asm.J"
+        "Types.Asm.Label" "Types.Asm.Spin"
     ].
 
-Extract Inductive isa.t_        => "Types.isa_inst"
+Extract Inductive isa.t_        => "Types.Isa.inst"
     [
-        "Types.I_li" "Types.I_ld" "Types.I_st" "Types.I_add"
-        "Types.I_addi" "Types.I_sub" "Types.I_and" "Types.I_not"
-        "Types.I_sl" "Types.I_sr" "Types.I_beq"
-        "Types.I_blt" "Types.I_jalr" "Types.I_apc" "Types.I_j"
+        "Types.Isa.Li"
+        "Types.Isa.Ld" "Types.Isa.St"
+        "Types.Isa.Add" "Types.Isa.Addi" "Types.Isa.Sub"
+        "Types.Isa.And" "Types.Isa.Not"
+        "Types.Isa.Sl" "Types.Isa.Sr"
+        "Types.Isa.Beq" "Types.Isa.Blt"
+        "Types.Isa.Jalr" "Types.Isa.Apc" "Types.Isa.J"
     ].
 

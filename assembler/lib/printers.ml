@@ -23,25 +23,26 @@ let reg_to_string = function
 
 (* ISA format printers. *)
 
-let isa_inst_to_string inst =
+let isa_inst_to_string inst = Isa.(
     let rts = reg_to_string in
     let its = string_of_int in
     match inst with
-    | I_li (rd,imm)         -> String.concat " " ["li"; rts rd;its imm]
-    | I_ld (rd, rs, imm)    -> String.concat " " ["ld"; rts rd; rts rs; its imm]
-    | I_st (rd, rs, imm)    -> String.concat " " ["st"; rts rd; rts rs; its imm]
-    | I_add (rd, rs1, rs2)  -> String.concat " " ["add"; rts rd; rts rs1; rts rs2]
-    | I_addi (rd, rs1, imm) -> String.concat " " ["addi"; rts rd; rts rs1; its imm]
-    | I_sub (rd, rs1, rs2)  -> String.concat " " ["sub"; rts rd; rts rs1; rts rs2]
-    | I_and (rd, rs1, rs2)  -> String.concat " " ["and"; rts rd; rts rs1; rts rs2]
-    | I_not (rd, rs)        -> String.concat " " ["not"; rts rd; rts rs]
-    | I_sl (rd,rs,imm)      -> String.concat " " ["sl"; rts rd;rts rs;its imm]
-    | I_sr (rd,rs,imm)      -> String.concat " " ["sr"; rts rd;rts rs;its imm]
-    | I_beq (rs1, rs2, imm) -> String.concat " " ["beq"; rts rs1; rts rs2; its imm]
-    | I_blt (rs1, rs2, imm) -> String.concat " " ["blt"; rts rs1; rts rs2; its imm]
-    | I_jalr (rd, rs, imm)  -> String.concat " " ["jalr"; rts rd; rts rs; its imm]
-    | I_apc (rd, imm)       -> String.concat " " ["apc"; rts rd; its imm]
-    | I_j imm               -> String.concat " " ["j"; its imm]
+    | Li (rd,imm)         -> String.concat " " ["li"; rts rd;its imm]
+    | Ld (rd, rs, imm)    -> String.concat " " ["ld"; rts rd; rts rs; its imm]
+    | St (rd, rs, imm)    -> String.concat " " ["st"; rts rd; rts rs; its imm]
+    | Add (rd, rs1, rs2)  -> String.concat " " ["add"; rts rd; rts rs1; rts rs2]
+    | Addi (rd, rs1, imm) -> String.concat " " ["addi"; rts rd; rts rs1; its imm]
+    | Sub (rd, rs1, rs2)  -> String.concat " " ["sub"; rts rd; rts rs1; rts rs2]
+    | And (rd, rs1, rs2)  -> String.concat " " ["and"; rts rd; rts rs1; rts rs2]
+    | Not (rd, rs)        -> String.concat " " ["not"; rts rd; rts rs]
+    | Sl (rd,rs,imm)      -> String.concat " " ["sl"; rts rd;rts rs;its imm]
+    | Sr (rd,rs,imm)      -> String.concat " " ["sr"; rts rd;rts rs;its imm]
+    | Beq (rs1, rs2, imm) -> String.concat " " ["beq"; rts rs1; rts rs2; its imm]
+    | Blt (rs1, rs2, imm) -> String.concat " " ["blt"; rts rs1; rts rs2; its imm]
+    | Jalr (rd, rs, imm)  -> String.concat " " ["jalr"; rts rd; rts rs; its imm]
+    | Apc (rd, imm)       -> String.concat " " ["apc"; rts rd; its imm]
+    | J imm               -> String.concat " " ["j"; its imm]
+    )
 
 let isa_prog_to_string prog = String.concat "\n" (List.map isa_inst_to_string prog)
 

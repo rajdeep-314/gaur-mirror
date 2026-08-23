@@ -6,8 +6,10 @@
 
 (**
 This module contains OCaml types for PISA and PASM instructinos and programs.
-The Rocq types in the project's theories are mapped to these using an extraction script.
+The Rocq types in the project's theories are mapped to these using an
+extraction script.
 *)
+
 
 (** Registers. *)
 type reg =
@@ -21,55 +23,83 @@ type reg =
     | R28 | R29 | R30 | R31
 
 
-(** PASM instructions with labels of type ['l]. *)
-type 'l asm_inst =
-    | Li    of  reg * int       (** Load immediate. *)
-    | Ld    of  reg * reg * int (** Load. *)
-    | St    of  reg * reg * int (** Store. *)
-    | Add   of  reg * reg * reg (** Add two registers. *)
-    | Addi  of  reg * reg * int (** Add register and immediate. *)
-    | Sub   of  reg * reg * reg (** Subtract two registers. *)
-    | And   of  reg * reg * reg (** Bitwise and between two registers. *)
-    | Not   of  reg * reg       (** Bitwise negation of a register. *)
-    | Sl    of  reg * reg * int (** Logical Shift Left. *)
-    | Sr    of  reg * reg * int (** Logical Shift Right. *)
-    | Beq   of  reg * reg * 'l  (** Branch if equal-to. *)
-    | Blt   of  reg * reg * 'l  (** Branch if less-than. *)
-    | Jalr  of  reg * reg * int (** Jump and link register. *)
-    | Apc   of  reg * int       (** Add to PC and store in a register. *)
-    | J     of  'l              (** (Unconditional) jump. *)
-    | Label of  'l              (** Define a label. *)
-    | Spin                      (** Spin endlessly. *)
+(** ISA---base instructions and programs. *)
+module Isa = struct
 
-(** PASM programs. *)
-type 'l asm_prog = ('l asm_inst) list
+    (** PISA instructions, without labels. *)
+    type inst =
+        | Li    of  reg * int
+        | Ld    of  reg * reg * int
+        | St    of  reg * reg * int
+        | Add   of  reg * reg * reg
+        | Addi  of  reg * reg * int
+        | Sub   of  reg * reg * reg
+        | And   of  reg * reg * reg
+        | Not   of  reg * reg
+        | Sl    of  reg * reg * int
+        | Sr    of  reg * reg * int
+        | Beq   of  reg * reg * int
+        | Blt   of  reg * reg * int
+        | Jalr  of  reg * reg * int
+        | Apc   of  reg * int
+        | J     of  int
 
-(** PISA instructions, without labels. *)
-type isa_inst =
-    | I_li    of  reg * int
-    | I_ld    of  reg * reg * int
-    | I_st    of  reg * reg * int
-    | I_add   of  reg * reg * reg
-    | I_addi  of  reg * reg * int
-    | I_sub   of  reg * reg * reg
-    | I_and   of  reg * reg * reg
-    | I_not   of  reg * reg
-    | I_sl    of  reg * reg * int
-    | I_sr    of  reg * reg * int
-    | I_beq   of  reg * reg * int
-    | I_blt   of  reg * reg * int
-    | I_jalr  of  reg * reg * int
-    | I_apc   of  reg * int
-    | I_j     of  int
+    (** PISA programs. *)
+    type prog = inst list
 
-(** PISA programs. *)
-type isa_prog = isa_inst list
+    (** Types with arbitrary annotations. *)
 
-(** Machine instructions. *)
-type machine_inst = bool list
+    (** Instructions with annotations of type 'a. *)
+    type 'a annot_inst = inst * 'a
+    (** Programs with annotations of type 'a. *)
+    type 'a annot_prog = 'a annot_inst list
 
-(** Machine programs. *)
-type machine_prog = machine_inst list
+    (** Types with syntactic positions as annotations. *)
+    type syn_inst = (Lexing.position * Lexing.position) annot_inst
+    type syn_prog = (Lexing.position * Lexing.position) annot_prog
+
+    (** Remove annotations from instructions and programs. *)
+    let remove_annot_from_inst (i:'a annot_inst) : inst = fst i
+    let remove_annot_from_prog (p:'a annot_prog) : prog = List.map fst p
+end
+
+
+(** Asm---assembly instructions and programs. *)
+module Asm = struct
+
+    (** PASM instructions with labels of type ['l]. *)
+    type 'l inst =
+        | Li    of  reg * int       (** Load immediate. *)
+        | Ld    of  reg * reg * int (** Load. *)
+        | St    of  reg * reg * int (** Store. *)
+        | Add   of  reg * reg * reg (** Add two registers. *)
+        | Addi  of  reg * reg * int (** Add register and immediate. *)
+        | Sub   of  reg * reg * reg (** Subtract two registers. *)
+        | And   of  reg * reg * reg (** Bitwise and between two registers. *)
+        | Not   of  reg * reg       (** Bitwise negation of a register. *)
+        | Sl    of  reg * reg * int (** Logical Shift Left. *)
+        | Sr    of  reg * reg * int (** Logical Shift Right. *)
+        | Beq   of  reg * reg * 'l  (** Branch if equal-to. *)
+        | Blt   of  reg * reg * 'l  (** Branch if less-than. *)
+        | Jalr  of  reg * reg * int (** Jump and link register. *)
+        | Apc   of  reg * int       (** Add to PC and store in a register. *)
+        | J     of  'l              (** (Unconditional) jump. *)
+        | Label of  'l              (** Define a label. *)
+        | Spin                      (** Spin endlessly. *)
+
+    (** PASM programs. *)
+    type 'l prog = 'l inst list
+end
+
+
+(** Machine programs *)
+module Machine = struct
+    (** Machine instructions. *)
+    type inst = bool list
+
+    (** Machine programs. *)
+    type prog = inst list
+end
 
 
 (** Helper functions to write AST programs. *)
@@ -110,42 +140,47 @@ module Helper = struct
     let r31 = R31
 
     (** PASM instructions. *)
+    module Asm = struct
+        open Asm
 
-    let li rd n = Li (rd,n)
-    let ld rd rs1 n = Ld (rd, rs1, n)
-    let st rd rs1 n = St (rd, rs1, n)
-    let add rd rs1 rs2 = Add (rd, rs1, rs2)
-    let addi rd rs1 n = Addi (rd, rs1, n)
-    let sub rd rs1 rs2 = Sub (rd, rs1, rs2)
-    let and' rd rs1 rs2 = And (rd, rs1, rs2)
-    let not rd rs1 = Not (rd, rs1)
-    let sl rd rs n = Sl (rd,rs,n)
-    let sr rd rs n  = Sr (rd,rs,n)
-    let beq rs1 rs2 l = Beq (rs1, rs2, l)
-    let blt rs1 rs2 l = Blt (rs1, rs2, l)
-    let jalr rd rs1 n = Jalr (rd, rs1, n)
-    let apc rd n = Apc (rd, n)
-    let j l = J l
-    let label l = Label l
-    let spin = Spin
+        let li rd n = Li (rd,n)
+        let ld rd rs1 n = Ld (rd, rs1, n)
+        let st rd rs1 n = St (rd, rs1, n)
+        let add rd rs1 rs2 = Add (rd, rs1, rs2)
+        let addi rd rs1 n = Addi (rd, rs1, n)
+        let sub rd rs1 rs2 = Sub (rd, rs1, rs2)
+        let and' rd rs1 rs2 = And (rd, rs1, rs2)
+        let not rd rs1 = Not (rd, rs1)
+        let sl rd rs n = Sl (rd,rs,n)
+        let sr rd rs n  = Sr (rd,rs,n)
+        let beq rs1 rs2 l = Beq (rs1, rs2, l)
+        let blt rs1 rs2 l = Blt (rs1, rs2, l)
+        let jalr rd rs1 n = Jalr (rd, rs1, n)
+        let apc rd n = Apc (rd, n)
+        let j l = J l
+        let label l = Label l
+        let spin = Spin
+    end
 
     (** PISA instructions. *)
+    module Isa = struct
+        open Isa
 
-    let ili rd n = I_li (rd,n)
-    let ild rd rs1 n = I_ld (rd, rs1, n)
-    let ist rd rs1 n = I_st (rd, rs1, n)
-    let iadd rd rs1 rs2 = I_add (rd, rs1, rs2)
-    let iaddi rd rs1 n = I_addi (rd, rs1, n)
-    let isub rd rs1 rs2 = I_sub (rd, rs1, rs2)
-    let iand rd rs1 rs2 = I_and (rd, rs1, rs2)
-    let inot rd rs1 = I_not (rd, rs1)
-    let isl rd rs n  = I_sl (rd,rs,n)
-    let isr rd rs n  = I_sr (rd,rs,n)
-    let ibeq rs1 rs2 l = I_beq (rs1, rs2, l)
-    let iblt rs1 rs2 l = I_blt (rs1, rs2, l)
-    let ijalr rd rs1 n = I_jalr (rd, rs1, n)
-    let iapc rd n = I_apc (rd, n)
-    let ij l = I_j l
+        let li rd n = Li (rd,n)
+        let ld rd rs1 n = Ld (rd, rs1, n)
+        let st rd rs1 n = St (rd, rs1, n)
+        let add rd rs1 rs2 = Add (rd, rs1, rs2)
+        let addi rd rs1 n = Addi (rd, rs1, n)
+        let sub rd rs1 rs2 = Sub (rd, rs1, rs2)
+        let and' rd rs1 rs2 = And (rd, rs1, rs2)
+        let not rd rs1 = Not (rd, rs1)
+        let sl rd rs n  = Sl (rd,rs,n)
+        let sr rd rs n  = Sr (rd,rs,n)
+        let beq rs1 rs2 l = Beq (rs1, rs2, l)
+        let blt rs1 rs2 l = Blt (rs1, rs2, l)
+        let jalr rd rs1 n = Jalr (rd, rs1, n)
+        let apc rd n = Apc (rd, n)
+        let j l = J l
+    end
 end
-
 
