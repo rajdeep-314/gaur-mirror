@@ -9,8 +9,4 @@
  (public_name assembler)
  (libraries ptools.utils))
 
-(ocamllex
-  (modules lexer_isa lexer_asm))
-
-(menhir
-  (modules parser_isa parser_asm))
+(include_subdirs qualified)

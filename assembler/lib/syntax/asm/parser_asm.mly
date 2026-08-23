@@ -7,7 +7,7 @@
 
 %{
     open Types
-    open Types.Helper
+    open Types.Helper.Asm
 
     let reg_of_int = function
         | 0    -> R0  | 1    -> R1  | 2    -> R2  | 3    -> R3
@@ -30,9 +30,9 @@
 %type <Types.reg> reg
 %type <int> imm
 %type <string> lbl
-%type <string Types.asm_inst> inst
-%type <string Types.asm_inst list> insts
-%type <string Types.asm_prog> prog
+%type <string Types.Asm.inst> inst
+%type <string Types.Asm.inst list> insts
+%type <string Types.Asm.prog> prog
 
 %start prog
 

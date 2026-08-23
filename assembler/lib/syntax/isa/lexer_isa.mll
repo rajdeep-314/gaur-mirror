@@ -7,6 +7,10 @@
 
 {
     open Parser_isa
+    open Errors.Helper.LexingExns
+
+    let ps_of_lexbuf buf =
+        (Lexing.lexeme_start_p buf, Lexing.lexeme_end_p buf)
 }
 
 
@@ -52,5 +56,5 @@ rule read_token = parse
     | hex_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
-    | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }
+    | _                 { cantmatch (Lexing.lexeme lexbuf) (ps_of_lexbuf lexbuf) }
 
