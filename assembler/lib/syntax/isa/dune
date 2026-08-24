@@ -1,5 +1,0 @@
-(ocamllex
-  (modules lexer_isa))
-
-(menhir
-  (modules parser_isa))
