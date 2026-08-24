@@ -54,7 +54,8 @@ module Isa = struct
     (** Programs with annotations of type 'a. *)
     type 'a annot_prog = 'a annot_inst list
 
-    (** Types with syntactic positions as annotations. *)
+    (** Types with syntactic positions as annotations.
+        'syn' stands for 'syntactic' here. *)
     type syn_inst = (Lexing.position * Lexing.position) annot_inst
     type syn_prog = (Lexing.position * Lexing.position) annot_prog
 
@@ -89,6 +90,26 @@ module Asm = struct
 
     (** PASM programs. *)
     type 'l prog = 'l inst list
+
+    (** Types with arbitrary annotations. *)
+
+    (** Instructions with annotations and labels of types ['a] and ['l],
+        respectively. *)
+    type ('a, 'l) annot_inst = 'l inst * 'a
+    (** Programs with annotations and labels of types ['a] and ['l],
+        respectively. *)
+    type ('a, 'l) annot_prog = ('a, 'l) annot_inst list
+
+    (** Types with strings for labels and syntactic positions as annotations.
+        'syn' stands for 'syntactic' here. *)
+    type syn_inst = (Lexing.position * Lexing.position, string) annot_inst
+    type syn_prog = (Lexing.position * Lexing.position, string) annot_prog
+
+    (** Remove annotations from instructions and programs. *)
+    let remove_annot_from_inst (i:('a, 'l) annot_inst) : 'l inst =
+        fst i
+    let remove_annot_from_prog (p:('a, 'l) annot_prog) : 'l prog =
+        List.map fst p
 end
 
 

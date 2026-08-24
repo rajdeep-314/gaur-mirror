@@ -6,11 +6,13 @@
 
 
 {
+    open Errors
+    open Errors.Helper.LexingExns
     open Parser_asm
 }
 
 
-let whitespace = [' ' '\t' '\r' '\n']+
+let whitespace = [' ' '\r']+
 let ascii = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
 let label_name = ['a'-'z' 'A'-'Z' '_' '.'] ascii
 
@@ -31,9 +33,11 @@ let comment = '#' [^'\n']*
 
 
 rule read_token = parse
+    | "\n"              { Lexing.new_line lexbuf; read_token lexbuf }
+    | "\t"              { notabs (pos_info_of_lexbuf lexbuf) }
     | whitespace        { read_token lexbuf }
     | comment           { read_token lexbuf }
-    | ':'               { COLON }
+    | ":"               { COLON }
     | "li"              { LI }
     | "ld"              { LD }
     | "st"              { ST }
@@ -57,5 +61,5 @@ rule read_token = parse
     | hex_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
-    | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }
+    | _                 { cantmatch (pos_info_of_lexbuf lexbuf) }
 

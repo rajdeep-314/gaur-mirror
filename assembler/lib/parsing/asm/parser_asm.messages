@@ -1,0 +1,516 @@
+prog: REG
+##
+## Ends in an error in state: 0.
+##
+## prog' -> . prog [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+Expecting an instruction here.
+
+prog: SUB SUB
+##
+## Ends in an error in state: 1.
+##
+## inst -> SUB . reg reg reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SUB
+##
+
+Expecting the first register argument here.
+
+prog: SUB REG SUB
+##
+## Ends in an error in state: 3.
+##
+## inst -> SUB reg . reg reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SUB reg
+##
+
+Expecting the second register argument here.
+
+prog: SUB REG REG SUB
+##
+## Ends in an error in state: 4.
+##
+## inst -> SUB reg reg . reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SUB reg reg
+##
+
+Expecting the third register argument here.
+
+prog: ST SUB
+##
+## Ends in an error in state: 6.
+##
+## inst -> ST . reg reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ST
+##
+
+Expecting the first register argument here.
+
+prog: ST REG SUB
+##
+## Ends in an error in state: 7.
+##
+## inst -> ST reg . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ST reg
+##
+
+Expecting the second register argument here.
+
+prog: ST REG REG SUB
+##
+## Ends in an error in state: 8.
+##
+## inst -> ST reg reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ST reg reg
+##
+
+Expecting the immediate argument here.
+
+prog: SR SUB
+##
+## Ends in an error in state: 11.
+##
+## inst -> SR . reg reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SR
+##
+
+Expecting the first register argument here.
+
+prog: SR REG SUB
+##
+## Ends in an error in state: 12.
+##
+## inst -> SR reg . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SR reg
+##
+
+Expecting the second register argument here.
+
+prog: SR REG REG SUB
+##
+## Ends in an error in state: 13.
+##
+## inst -> SR reg reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SR reg reg
+##
+
+Expecting the immediate argument here.
+
+prog: SL SUB
+##
+## Ends in an error in state: 16.
+##
+## inst -> SL . reg reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SL
+##
+
+Expecting the first register argument here.
+
+prog: SL REG SUB
+##
+## Ends in an error in state: 17.
+##
+## inst -> SL reg . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SL reg
+##
+
+Expecting the second register argument here.
+
+prog: SL REG REG SUB
+##
+## Ends in an error in state: 18.
+##
+## inst -> SL reg reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## SL reg reg
+##
+
+Expecting the immediate argument here.
+
+prog: NOT SUB
+##
+## Ends in an error in state: 20.
+##
+## inst -> NOT . reg reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## NOT
+##
+
+Expecting the first register argument here.
+
+prog: NOT REG SUB
+##
+## Ends in an error in state: 21.
+##
+## inst -> NOT reg . reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## NOT reg
+##
+
+Expecting the second register argument here.
+
+prog: LI SUB
+##
+## Ends in an error in state: 23.
+##
+## inst -> LI . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## LI
+##
+
+Expecting the first register argument here.
+
+prog: LI REG SUB
+##
+## Ends in an error in state: 24.
+##
+## inst -> LI reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## LI reg
+##
+
+Expecting the immediate argument here.
+
+prog: LD SUB
+##
+## Ends in an error in state: 26.
+##
+## inst -> LD . reg reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## LD
+##
+
+Expecting the first register argument here.
+
+prog: LD REG SUB
+##
+## Ends in an error in state: 27.
+##
+## inst -> LD reg . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## LD reg
+##
+
+Expecting the second register argument here.
+
+prog: LD REG REG SUB
+##
+## Ends in an error in state: 28.
+##
+## inst -> LD reg reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## LD reg reg
+##
+
+Expecting the immediate argument here.
+
+prog: JALR SUB
+##
+## Ends in an error in state: 31.
+##
+## inst -> JALR . reg reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## JALR
+##
+
+Expecting the first register argument here.
+
+prog: JALR REG SUB
+##
+## Ends in an error in state: 32.
+##
+## inst -> JALR reg . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## JALR reg
+##
+
+Expecting the second register argument here.
+
+prog: JALR REG REG SUB
+##
+## Ends in an error in state: 33.
+##
+## inst -> JALR reg reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## JALR reg reg
+##
+
+Expecting the immediate argument here.
+
+prog: J SUB
+##
+## Ends in an error in state: 35.
+##
+## inst -> J . lbl [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## J
+##
+
+Expecting the label argument here.
+
+prog: BLT SUB
+##
+## Ends in an error in state: 37.
+##
+## inst -> BLT . reg reg lbl [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## BLT
+##
+
+Expecting the first register argument here.
+
+prog: BLT REG SUB
+##
+## Ends in an error in state: 38.
+##
+## inst -> BLT reg . reg lbl [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## BLT reg
+##
+
+Expecting the second register argument here.
+
+prog: BLT REG REG SUB
+##
+## Ends in an error in state: 39.
+##
+## inst -> BLT reg reg . lbl [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## BLT reg reg
+##
+
+Expecting the label argument here.
+
+prog: BEQ SUB
+##
+## Ends in an error in state: 41.
+##
+## inst -> BEQ . reg reg lbl [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## BEQ
+##
+
+Expecting the first register argument here.
+
+prog: BEQ REG SUB
+##
+## Ends in an error in state: 42.
+##
+## inst -> BEQ reg . reg lbl [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## BEQ reg
+##
+
+Expecting the second register argument here.
+
+prog: BEQ REG REG SUB
+##
+## Ends in an error in state: 43.
+##
+## inst -> BEQ reg reg . lbl [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## BEQ reg reg
+##
+
+Expecting the label argument here.
+
+prog: APC SUB
+##
+## Ends in an error in state: 45.
+##
+## inst -> APC . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## APC
+##
+
+Expecting the first register argument here.
+
+prog: APC REG SUB
+##
+## Ends in an error in state: 46.
+##
+## inst -> APC reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## APC reg
+##
+
+Expecting the immediate argument here.
+
+prog: AND SUB
+##
+## Ends in an error in state: 48.
+##
+## inst -> AND . reg reg reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## AND
+##
+
+Expecting the first register argument here.
+
+prog: AND REG SUB
+##
+## Ends in an error in state: 49.
+##
+## inst -> AND reg . reg reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## AND reg
+##
+
+Expecting the second register argument here.
+
+prog: AND REG REG SUB
+##
+## Ends in an error in state: 50.
+##
+## inst -> AND reg reg . reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## AND reg reg
+##
+
+Expecting the third register argument here.
+
+prog: ADDI SUB
+##
+## Ends in an error in state: 52.
+##
+## inst -> ADDI . reg reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ADDI
+##
+
+Expecting the first register argument here.
+
+prog: ADDI REG SUB
+##
+## Ends in an error in state: 53.
+##
+## inst -> ADDI reg . reg imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ADDI reg
+##
+
+Expecting the second register argument here.
+
+prog: ADDI REG REG SUB
+##
+## Ends in an error in state: 54.
+##
+## inst -> ADDI reg reg . imm [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ADDI reg reg
+##
+
+Expecting the immediate argument here.
+
+prog: ADD SUB
+##
+## Ends in an error in state: 56.
+##
+## inst -> ADD . reg reg reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ADD
+##
+
+Expecting the first register argument here.
+
+prog: ADD REG SUB
+##
+## Ends in an error in state: 57.
+##
+## inst -> ADD reg . reg reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ADD reg
+##
+
+Expecting the second register argument here.
+
+prog: ADD REG REG SUB
+##
+## Ends in an error in state: 58.
+##
+## inst -> ADD reg reg . reg [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## ADD reg reg
+##
+
+Expecting the third register argument here.
+
+prog: LABEL SUB
+##
+## Ends in an error in state: 62.
+##
+## inst -> lbl . COLON [ SUB ST SR SPIN SL NOT LI LD LABEL JALR J EOF BLT BEQ APC AND ADDI ADD ]
+##
+## The known suffix of the stack is as follows:
+## lbl
+##
+
+Expecting a colon (':') here.
+
+prog: SPIN REG
+##
+## Ends in an error in state: 66.
+##
+## list(inst) -> inst . list(inst) [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## inst
+##
+
+Expecting another instruction or end of program here.
+

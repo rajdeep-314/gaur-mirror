@@ -6,7 +6,7 @@
 
 
 (* Module aliases. *)
-module Types    = Assembler.Types
+module Types    = Assembler.Types.Asm
 module Assemble = Assembler.Assemble
 module Parser   = Assembler.Parsing.Asm.Driver
 module Printers = Assembler.Printers
@@ -80,7 +80,9 @@ let outfile =
   if !out <> "" then !out else default_output_name !path
 
 
-let prog_ast = Parser.parse_asm_prog_from_path !path
+(* WARNING: This function call has unhandled exceptions! *)
+(* TODO: Fix this!! *)
+let prog_ast =  Types.remove_annot_from_prog (Parser.parse_prog_from_path !path)
 let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
 let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
 
