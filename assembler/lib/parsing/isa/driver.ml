@@ -2,6 +2,7 @@
 
 
 open Errors
+open Errors.Helper.ParsingExns
 open Utils.Files
 
 
@@ -10,12 +11,16 @@ open Utils.Files
     [Lexing.position] (i.e. the type [syn_prog]).
 
     @raise LexingExn if the lexing stage fails.
-    @raise ParsingExn if the parsing stage fails.
+    @raise ParsingExn if the parsing stage fails (includes Menhir errors).
 *)
 let parse_prog_with_path path prog =
     let buf = Lexing.from_string prog in
     Lexing.set_filename buf path ;
-    Parser_isa.prog Lexer_isa.read_token buf
+    try
+        Parser_isa.prog Lexer_isa.read_token buf
+    with
+        | Parser_isa.Error n -> menhirerror n (pos_info_of_lexbuf buf)
+        | (LexingExn _ | ParsingExn _) as e -> raise e
 
 
 (** [parse_prog_from_path path prog] parses program present at path [path] and

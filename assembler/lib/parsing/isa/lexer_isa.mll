@@ -6,6 +6,7 @@
 
 
 {
+    open Errors
     open Parser_isa
     open Errors.Helper.LexingExns
 
@@ -14,7 +15,7 @@
 }
 
 
-let whitespace = [' ' '\t' '\r' '\n']+
+let whitespace = [' ' '\r']+
 
 let dec_digit = ['0'-'9']
 let dec_natural = dec_digit+
@@ -33,6 +34,8 @@ let comment = '#' [^'\n']*
 
 
 rule read_token = parse
+    | "\n"              { Lexing.new_line lexbuf; read_token lexbuf }
+    | "\t"              { notabs (pos_info_of_lexbuf lexbuf) }
     | whitespace        { read_token lexbuf }
     | comment           { read_token lexbuf }
     | "li"              { LI }
@@ -56,5 +59,5 @@ rule read_token = parse
     | hex_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
-    | _                 { cantmatch (Lexing.lexeme lexbuf) (ps_of_lexbuf lexbuf) }
+    | _                 { cantmatch (pos_info_of_lexbuf lexbuf) }
 

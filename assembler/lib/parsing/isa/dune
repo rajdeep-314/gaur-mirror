@@ -2,4 +2,19 @@
   (modules lexer_isa))
 
 (menhir
-  (modules parser_isa))
+  (modules parser_isa)
+  (flags --exn-carries-state))
+
+
+; Parser error messages.
+(rule
+  (targets messages.ml)
+  (deps parser_isa.mly parser_isa.messages)
+  (action
+    (with-stdout-to %{targets}
+      (run
+        menhir parser_isa.mly --compile-errors parser_isa.messages)
+    )
+  )
+)
+
