@@ -9,9 +9,6 @@
     open Errors
     open Parser_isa
     open Errors.Helper.LexingExns
-
-    let ps_of_lexbuf buf =
-        (Lexing.lexeme_start_p buf, Lexing.lexeme_end_p buf)
 }
 
 
