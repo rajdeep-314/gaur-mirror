@@ -7,6 +7,6 @@
 (library
  (name assembler)
  (public_name assembler)
- (libraries common.utils))
+ (libraries common.types))
 
 (include_subdirs qualified)

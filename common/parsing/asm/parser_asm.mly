@@ -1,13 +1,14 @@
 (*
-    parser_isa.mly
+    parser_asm.mly
 
-    Parser specification for Menhir for PISA.
+    Parser specification for Menhir for PASM.
 *)
 
 
 %{
-    open Types
-    open Types.Helper.Isa
+    open Types.Reg
+    open Types.Asm.Helper
+
     open Errors.Helper.ParsingExns
 
     let reg_of_int n ps =
@@ -33,17 +34,22 @@
 %token BEQ BLT
 %token JALR APC J
 
-(* Registers and immediates. *)
+(* Pseudo-instruction(s). *)
+%token SPIN
+
+(* Colon (for labels) and end-of-file token. *)
+%token COLON EOF
+
+(* Labels (strings), registers and immediates. *)
+%token <string> LABEL
 %token <int> REG IMM
 
-(* End-of-file. *)
-%token EOF
-
-%type <Types.reg> reg
+%type <Types.Reg.t> reg
 %type <int> imm
-%type <Types.Isa.syn_inst> inst
-%type <Types.Isa.syn_inst list> insts
-%type <Types.Isa.syn_prog> prog
+%type <string> lbl
+%type <Types.Asm.syn_inst> inst
+%type <Types.Asm.syn_inst list> insts
+%type <Types.Asm.syn_prog> prog
 
 %start prog
 
@@ -56,6 +62,9 @@ reg:
 
 imm:
     | n = IMM   { n }
+
+lbl:
+    | l = LABEL { l }
 
 inst:
     | LI; r = reg; n = imm
@@ -77,22 +86,25 @@ inst:
     | SL; rd = reg; rs = reg ; n = imm
         { sl rd rs n, ($startpos, $endpos) }
     | SR; rd = reg; rs = reg ; n = imm
-        { sr rd rs n, ($startpos, $endpos) }
-    | BEQ; rs1 = reg; rs2 = reg; n = imm
-        { beq rs1 rs2 n, ($startpos, $endpos) }
-    | BLT; rs1 = reg; rs2 = reg; n = imm
-        { blt rs1 rs2 n, ($startpos, $endpos) }
+        { sr rd rs n , ($startpos, $endpos)} 
+    | BEQ; rs1 = reg; rs2 = reg; l = lbl
+        { beq rs1 rs2 l, ($startpos, $endpos) }
+    | BLT; rs1 = reg; rs2 = reg; l = lbl
+        { blt rs1 rs2 l, ($startpos, $endpos) }
     | JALR; rd = reg; rs1 = reg; n = imm
         { jalr rd rs1 n, ($startpos, $endpos) }
     | APC; rd = reg; n = imm
         { apc rd n, ($startpos, $endpos) }
-    | J; n = imm
-        { j n, ($startpos, $endpos) }
-
+    | J; l = lbl
+        { j l, ($startpos, $endpos) }
+    | l = lbl; COLON
+        { label l, ($startpos, $endpos) }
+    | SPIN
+        { spin, ($startpos, $endpos) }
 
 insts:
-    | is=inst*          { is }
+    | is=inst*                              { is }
 
 prog:
-    | is=insts; EOF     { is }
+    | is=insts; EOF                         { is }
 

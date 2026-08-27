@@ -22,16 +22,16 @@ Extract Inductive bits.t        => "bool"  [ "false" "true" ].
 (* Non-indexed bitvectors to lists. *)
 Extract Inductive bits.bv_      => "Types.Machine.inst"  [ "(fun l -> l)" ].
 
-Extract Inductive reg.t         => "Types.reg"
+Extract Inductive reg.t         => "Types.Reg.t"
     [
-        "Types.R0" "Types.R1" "Types.R2" "Types.R3"
-        "Types.R4" "Types.R5" "Types.R6" "Types.R7"
-        "Types.R8" "Types.R9" "Types.R10" "Types.R11"
-        "Types.R12" "Types.R13" "Types.R14" "Types.R15"
-        "Types.R16" "Types.R17" "Types.R18" "Types.R19"
-        "Types.R20" "Types.R21" "Types.R22" "Types.R23"
-        "Types.R24" "Types.R25" "Types.R26" "Types.R27"
-        "Types.R28" "Types.R29" "Types.R30" "Types.R31"
+        "Types.Reg.R0" "Types.Reg.R1" "Types.Reg.R2" "Types.Reg.R3"
+        "Types.Reg.R4" "Types.Reg.R5" "Types.Reg.R6" "Types.Reg.R7"
+        "Types.Reg.R8" "Types.Reg.R9" "Types.Reg.R10" "Types.Reg.R11"
+        "Types.Reg.R12" "Types.Reg.R13" "Types.Reg.R14" "Types.Reg.R15"
+        "Types.Reg.R16" "Types.Reg.R17" "Types.Reg.R18" "Types.Reg.R19"
+        "Types.Reg.R20" "Types.Reg.R21" "Types.Reg.R22" "Types.Reg.R23"
+        "Types.Reg.R24" "Types.Reg.R25" "Types.Reg.R26" "Types.Reg.R27"
+        "Types.Reg.R28" "Types.Reg.R29" "Types.Reg.R30" "Types.Reg.R31"
     ].
 
 Extract Inductive ast.t         => "Types.Asm.inst"
