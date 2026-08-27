@@ -8,8 +8,8 @@ module UB = Utils.Bitwise
 module UR = Utils.Results
 
 open E.Helper
-open Assembler.Types
-open Assembler.Types.Helper.Isa
+open Types.Reg
+open Types.Isa.Helper
 
 
 let int_to_reg = function

@@ -1,14 +1,15 @@
 (*
-    parser_asm.mly
+    parser_isa.mly
 
-    Parser specification for Menhir for PASM.
+    Parser specification for Menhir for PISA.
 *)
 
 
 %{
+    open Types.Reg
+    open Types.Isa.Helper
+
     open Errors.Helper.ParsingExns
-    open Types
-    open Types.Helper.Asm
 
     let reg_of_int n ps =
         match n with
@@ -33,22 +34,17 @@
 %token BEQ BLT
 %token JALR APC J
 
-(* Pseudo-instruction(s). *)
-%token SPIN
-
-(* Colon (for labels) and end-of-file token. *)
-%token COLON EOF
-
-(* Labels (strings), registers and immediates. *)
-%token <string> LABEL
+(* Registers and immediates. *)
 %token <int> REG IMM
 
-%type <Types.reg> reg
+(* End-of-file. *)
+%token EOF
+
+%type <Types.Reg.t> reg
 %type <int> imm
-%type <string> lbl
-%type <Types.Asm.syn_inst> inst
-%type <Types.Asm.syn_inst list> insts
-%type <Types.Asm.syn_prog> prog
+%type <Types.Isa.syn_inst> inst
+%type <Types.Isa.syn_inst list> insts
+%type <Types.Isa.syn_prog> prog
 
 %start prog
 
@@ -61,9 +57,6 @@ reg:
 
 imm:
     | n = IMM   { n }
-
-lbl:
-    | l = LABEL { l }
 
 inst:
     | LI; r = reg; n = imm
@@ -85,25 +78,22 @@ inst:
     | SL; rd = reg; rs = reg ; n = imm
         { sl rd rs n, ($startpos, $endpos) }
     | SR; rd = reg; rs = reg ; n = imm
-        { sr rd rs n , ($startpos, $endpos)} 
-    | BEQ; rs1 = reg; rs2 = reg; l = lbl
-        { beq rs1 rs2 l, ($startpos, $endpos) }
-    | BLT; rs1 = reg; rs2 = reg; l = lbl
-        { blt rs1 rs2 l, ($startpos, $endpos) }
+        { sr rd rs n, ($startpos, $endpos) }
+    | BEQ; rs1 = reg; rs2 = reg; n = imm
+        { beq rs1 rs2 n, ($startpos, $endpos) }
+    | BLT; rs1 = reg; rs2 = reg; n = imm
+        { blt rs1 rs2 n, ($startpos, $endpos) }
     | JALR; rd = reg; rs1 = reg; n = imm
         { jalr rd rs1 n, ($startpos, $endpos) }
     | APC; rd = reg; n = imm
         { apc rd n, ($startpos, $endpos) }
-    | J; l = lbl
-        { j l, ($startpos, $endpos) }
-    | l = lbl; COLON
-        { label l, ($startpos, $endpos) }
-    | SPIN
-        { spin, ($startpos, $endpos) }
+    | J; n = imm
+        { j n, ($startpos, $endpos) }
+
 
 insts:
-    | is=inst*                              { is }
+    | is=inst*          { is }
 
 prog:
-    | is=insts; EOF                         { is }
+    | is=insts; EOF     { is }
 

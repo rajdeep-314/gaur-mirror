@@ -6,10 +6,11 @@
 
 
 (* Module aliases. *)
-module Types    = Assembler.Types.Asm
-module Assemble = Assembler.Assemble
-module Parser   = Assembler.Parsing.Asm.Driver
-module Printers = Assembler.Printers
+module Assemble     = Assembler.Assemble
+module Parser       = Parsing.Asm.Driver
+module IsaPrinters  = Types.Isa.Printers
+module MacPrinters  = Types.Machine.Printers
+module Types        = Types.Asm
 
 
 (* Parameters. *)
@@ -94,13 +95,13 @@ let output_str =
             exit 1
     | Ok mp     ->
             match !format with
-            | "ascii" -> Printers.machine_prog_to_ascii mp ^ "\n"
-            | "bin"   -> Printers.machine_prog_to_bin mp
+            | "ascii" -> MacPrinters.ascii_prog mp ^ "\n"
+            | "bin"   -> MacPrinters.bin_prog mp
             | "inter" ->
                     begin
                     match inter_prog with
                     | Error e   -> print_endline e; exit 1
-                    | Ok inter  -> Printers.isa_prog_to_string inter ^ "\n"
+                    | Ok inter  -> IsaPrinters.prog inter ^ "\n"
                     end
             | _       ->
                 print_endline ("Unknown format: " ^ !format);

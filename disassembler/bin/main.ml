@@ -6,7 +6,7 @@
 module UF = Utils.Files
 module D = Dis.Decode
 
-module IP = Assembler.Printers
+module IP = Types.Isa.Printers
 module EP = Dis.Errors.Printers
 
 
@@ -77,7 +77,7 @@ let () =
         exit 2;
         end
     | Ok p ->
-        let string_p = IP.isa_prog_to_string p in
+        let string_p = IP.prog p in
         let out_path = default_output_path !input_path !output_path in
         let () = UF.write_file out_path string_p in
         print_endline ("Wrote: " ^ out_path)

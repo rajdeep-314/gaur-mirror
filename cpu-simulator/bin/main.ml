@@ -6,7 +6,7 @@
 
 
 (* Module aliases. *)
-module Parser = Assembler.Parsing.Isa.Driver
+module Parser = Parsing.Isa.Driver
 module Ast = Syntax.Ast
 module Ram = Cpusim.Ram
 module Rf = Cpusim.Regfile
