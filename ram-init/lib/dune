@@ -1,7 +1,7 @@
 (library
  (public_name ram-init)
  (name raminit)
- (libraries num ptools.utils))
+ (libraries num common.utils))
 
 (ocamllex 
   (modules lexer))

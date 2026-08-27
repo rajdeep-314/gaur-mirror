@@ -30,6 +30,10 @@
    "simulator" "cpu simulator" "hdl" "hdl simulator")))
 
 (package
+ (allow_empty)
+ (name common))
+
+(package
   (name assembler)
   (synopsis "Assembler for PASM")
   (depends
