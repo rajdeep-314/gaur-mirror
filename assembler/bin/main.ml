@@ -11,6 +11,7 @@ module Parser       = Parsing.Asm.Driver
 module IsaPrinters  = Types.Isa.Printers
 module MacPrinters  = Types.Machine.Printers
 module Types        = Types.Asm
+module Errors        = Parsing.Asm.Errors
 
 
 (* Parameters. *)
@@ -32,7 +33,11 @@ let speclist = [
     ( "-h", Arg.Set help, "\n\tShort for --help / -help" )
 ]
 
-let usage_msg = "Usage: assembler [options] <file_path>."
+let usage_msg = "Usage: assembler [options] <file_path>." ^
+                "Exit codes:\n" ^
+                "  0  Success\n" ^
+                "  1  Command-line or Output error\n" ^
+                "  2  Lexing error and Parsing error\n"
 
 
 let remove_extension filename =
@@ -81,14 +86,22 @@ let outfile =
   if !out <> "" then !out else default_output_name !path
 
 
-(* WARNING: This function call has unhandled exceptions! *)
-(* TODO: Fix this!! *)
-let prog_ast =  Types.remove_annot_from_prog (Parser.parse_prog_from_path !path)
+let prog_ast =
+    let src = Utils.Files.read_file !path in
+    try
+        Types.remove_annot_from_prog (Parser.parse_prog_from_path !path)
+    with
+    | Errors.LexingExn err ->
+        print_endline (Errors.LexingErrors.to_string_with_src err src);
+        exit 2
+    | Errors.ParsingExn err ->
+        print_endline (Errors.ParsingErrors.to_string_with_src err src);
+        exit 2
+
 let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
 let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
 
-
-let output_str = 
+let output_str =
     match mach_prog with
     | Error e   ->
             print_endline e;
