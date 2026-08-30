@@ -40,12 +40,12 @@ let speclist = [
     ( "-h", Arg.Set help, "\n\tShort for --help / -help" )
 ]
 
-let usage_msg = "Usage: assembler [options] <file_path>." ^
+let usage_msg = "Usage: assembler [options] <file_path>.\n" ^
                 "Exit codes:\n" ^
                 "  0  Success (no errors)\n" ^
                 "  1  Command-line errors\n" ^
                 "  2  Lexing or parsing errors\n" ^
-                "  3  Assembling errors\n"
+                "  3  Assembling errors"
 
 
 let remove_extension filename =
@@ -66,7 +66,7 @@ let anon_fun arg =
         path := arg
     else
         begin
-        print_endline "Error: Too many positional arguments (only one allowed).";
+        prerr_endline "Error: Too many positional arguments (only one allowed).";
         Arg.usage speclist usage_msg;
         exit err_code_command_line;
         end
@@ -85,7 +85,7 @@ let () =
 let () =
     if !path = "" then
     begin
-    print_endline "Error: Missing input file path.";
+    prerr_endline "Error: Missing input file path.";
     Arg.usage speclist usage_msg;
     exit err_code_command_line
     end
@@ -101,14 +101,14 @@ let prog_ast =
             Types.remove_annot_from_prog (Parser.parse_prog_from_path !path)
         with
         | Errors.LexingExn err ->
-            print_endline (Errors.LexingErrors.to_string_with_src err src);
+            prerr_endline (Errors.LexingErrors.to_string_with_src err src);
             exit err_code_lexing_parsing
         | Errors.ParsingExn err ->
-            print_endline (Errors.ParsingErrors.to_string_with_src err src);
+            prerr_endline (Errors.ParsingErrors.to_string_with_src err src);
             exit err_code_lexing_parsing
     with
     | Sys_error e ->
-        print_endline (Printf.sprintf "System error:\n%s" e);
+        prerr_endline (Printf.sprintf "System error:\n%s" e);
         exit err_code_command_line
 
 let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
@@ -117,7 +117,7 @@ let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
 let output_str =
     match mach_prog with
     | Error e   ->
-            print_endline e;
+            prerr_endline e;
             exit err_code_assembling
     | Ok mp     ->
             match !format with
@@ -126,11 +126,11 @@ let output_str =
             | "inter" ->
                     begin
                     match inter_prog with
-                    | Error e   -> print_endline e; exit err_code_assembling
+                    | Error e   -> prerr_endline e; exit err_code_assembling
                     | Ok inter  -> IsaPrinters.prog inter ^ "\n"
                     end
             | _       ->
-                print_endline ("Unknown format: " ^ !format);
+                prerr_endline ("Unknown format: " ^ !format);
                 exit err_code_command_line
 
 let () =

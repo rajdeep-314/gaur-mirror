@@ -5,9 +5,6 @@
 # Multiple spaces
 li    r1    10
 
-# Tabs between tokens
-li	r2	20
-
 # Leading whitespace
     addi r3 r1 5
 

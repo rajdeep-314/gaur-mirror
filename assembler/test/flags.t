@@ -62,8 +62,13 @@ Tests for the assembler executable's command line flags.
 
 *** Long help flag ***
 
-  $ assembler --help | head -n 1
+  $ assembler --help
   Usage: assembler [options] <file_path>.
+  Exit codes:
+    0  Success (no errors)
+    1  Command-line errors
+    2  Lexing or parsing errors
+    3  Assembling errors
     --format 
   	Output format (bin | inter | ascii)
     -fmt 
@@ -81,8 +86,13 @@ Tests for the assembler executable's command line flags.
 
 *** Short help flags ***
 
-  $ assembler -h | head -n 1
+  $ assembler -h
   Usage: assembler [options] <file_path>.
+  Exit codes:
+    0  Success (no errors)
+    1  Command-line errors
+    2  Lexing or parsing errors
+    3  Assembling errors
     --format 
   	Output format (bin | inter | ascii)
     -fmt 
@@ -98,8 +108,13 @@ Tests for the assembler executable's command line flags.
     -h 
   	Short for --help / -help
 
-  $ assembler -help | head -n 1
+  $ assembler -help
   Usage: assembler [options] <file_path>.
+  Exit codes:
+    0  Success (no errors)
+    1  Command-line errors
+    2  Lexing or parsing errors
+    3  Assembling errors
     --format 
   	Output format (bin | inter | ascii)
     -fmt 

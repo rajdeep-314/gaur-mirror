@@ -31,6 +31,12 @@ Tests for invalid PASM input.
   [2]
 
 
+*** Tabs in file ***
+
+  $ assembler ../examples/errors/tabs.pasm --format inter 2>/dev/null
+  [2]
+
+
 *** Extra operand ***
 
   $ assembler ../examples/errors/extra_operand.pasm --format inter 2>/dev/null
@@ -44,10 +50,10 @@ Tests for invalid PASM input.
 
 *** Jump overflow ***
 
-  $ assembler ../examples/errors/jump_overflow.pasm --format inter 1>/dev/null
-  [1]
+  $ assembler ../examples/errors/jump_overflow.pasm --format inter &>/dev/null
+  [3]
 
 *** Backward jump overflow ***
 
-  $ assembler ../examples/errors/backward_jump_overflow.pasm --format inter 1>/dev/null
-  [1]
+  $ assembler ../examples/errors/backward_jump_overflow.pasm --format inter &>/dev/null
+  [3]
