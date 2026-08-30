@@ -95,16 +95,21 @@ let outfile =
 
 
 let prog_ast =
-    let src = Utils.Files.read_file !path in
     try
-        Types.remove_annot_from_prog (Parser.parse_prog_from_path !path)
+        let src = Utils.Files.read_file !path in
+        try
+            Types.remove_annot_from_prog (Parser.parse_prog_from_path !path)
+        with
+        | Errors.LexingExn err ->
+            print_endline (Errors.LexingErrors.to_string_with_src err src);
+            exit err_code_lexing_parsing
+        | Errors.ParsingExn err ->
+            print_endline (Errors.ParsingErrors.to_string_with_src err src);
+            exit err_code_lexing_parsing
     with
-    | Errors.LexingExn err ->
-        print_endline (Errors.LexingErrors.to_string_with_src err src);
-        exit err_code_lexing_parsing
-    | Errors.ParsingExn err ->
-        print_endline (Errors.ParsingErrors.to_string_with_src err src);
-        exit err_code_lexing_parsing
+    | Sys_error e ->
+        print_endline (Printf.sprintf "System error:\n%s" e);
+        exit err_code_command_line
 
 let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
 let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
