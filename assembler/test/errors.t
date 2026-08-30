@@ -48,9 +48,9 @@ Tests for invalid PASM input.
   $ assembler ../examples/errors/missing_jump_target.pasm --format inter 2>/dev/null
   [2]
 
-*** Jump overflow ***
+*** Forward jump overflow ***
 
-  $ assembler ../examples/errors/jump_overflow.pasm --format inter &>/dev/null
+  $ assembler ../examples/errors/forward_jump_overflow.pasm --format inter &>/dev/null
   [3]
 
 *** Backward jump overflow ***
