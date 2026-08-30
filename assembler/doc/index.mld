@@ -31,6 +31,18 @@ Usage: assembler [options] <file_path>.
         Short for --help / -help
 v}
 
+{2 Exit Codes}
+
+{t
+  | Exit Code | Meaning |
+  | :-------: | :-----: |
+  | 0 | Exited successfully |
+  | 1 | Command-line issues: more or less arguments than expected, invalid flag passed, etc. |
+  | 2 | Lexing or parsing errors |
+  | 3 | Assembling errors |
+}
+
+
 
 {2 Example}
 
