@@ -1,4 +1,13 @@
-Tests for the PASM lexer and parser.
+*** These test cases test things related to lexing and parsing.
+***
+*** List of things currently being tested:
+*** - Integer literals of the following formats/bases work:
+***   - Decimal.
+***   - Hexadecimal.
+***   - Binary.
+*** - Whitespaces and comments work.
+*** - Labels work.
+*** - Valid register indices work.
 
 
 *** Decimal integer literals ***
@@ -56,7 +65,8 @@ Tests for the PASM lexer and parser.
   01000000000000001111111111111110
   01000000000000000000000000000000
 
-*** Register boundaries ***
+
+*** Registers ***
 
   $ assembler ../examples/lexer_parser/registers.pasm --format ascii -o registers-ascii
   Wrote: registers-ascii

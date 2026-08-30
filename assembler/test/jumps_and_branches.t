@@ -1,4 +1,10 @@
-Tests for PASM jump and label translation.
+*** These test cases test things related to jump and branch instructions.
+***
+*** List of things currently being tested:
+*** - Normal forward and backward jumps work.
+*** - Forward jump works with it's max possible offset.
+*** - Backward jump works with it's max possible offset.
+*** - Zero offset jump assembles as expected.
 
 
 *** Forward unconditional and conditional jumps ***

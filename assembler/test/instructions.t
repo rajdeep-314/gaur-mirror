@@ -1,6 +1,6 @@
-Tests for all PASM instructions.
+*** This test case tests that one instance of every single instruction assembles as expected. ***
 
-* All 16 instructions *
+*** All 16 instructions ***
 
   $ assembler ../examples/all_insts.pasm -fmt ascii -o all_insts-ascii
   Wrote: all_insts-ascii
