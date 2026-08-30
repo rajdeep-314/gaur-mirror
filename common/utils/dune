@@ -1,5 +1,5 @@
 (library
   (name utils)
-  (public_name ptools.utils)
+  (public_name common.utils)
   (libraries num))
 

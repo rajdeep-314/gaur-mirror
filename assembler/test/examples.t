@@ -1,4 +1,7 @@
-Tests for the example programs.
+*** These test cases test that the example programs assemble correctly.
+***
+*** List of current example programs being tested:
+*** - fib.pasm (Fibonacci numbers)
 
 
 *** Binary ***

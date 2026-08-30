@@ -2,5 +2,5 @@
  (package cpu-simulator)
  (public_name cpusim)
  (name main)
- (libraries syntax cpusim utils debug))
+ (libraries syntax cpusim utils debug common.parsing))
 

@@ -7,9 +7,9 @@
 *)
 
 
-module T = Assembler.Types
+module T = Types
 
-type reg = T.reg =
+type reg = T.Reg.t =
     | R0  | R1  | R2  | R3
     | R4  | R5  | R6  | R7
     | R8  | R9  | R10 | R11
@@ -20,43 +20,43 @@ type reg = T.reg =
     | R28 | R29 | R30 | R31
 
 
-type t = T.isa_inst =
-    | I_li   of  reg * int
-    | I_ld    of  reg * reg * int
-    | I_st    of  reg * reg * int
-    | I_add   of  reg * reg * reg
-    | I_addi  of  reg * reg * int
-    | I_sub   of  reg * reg * reg
-    | I_and   of  reg * reg * reg
-    | I_not   of  reg * reg
-    | I_sl    of  reg * reg * int
-    | I_sr    of  reg * reg * int
-    | I_beq   of  reg * reg * int
-    | I_blt   of  reg * reg * int
-    | I_jalr  of  reg * reg * int
-    | I_apc   of  reg * int
-    | I_j     of  int
+type t = T.Isa.inst =
+    | Li   of  reg * int
+    | Ld    of  reg * reg * int
+    | St    of  reg * reg * int
+    | Add   of  reg * reg * reg
+    | Addi  of  reg * reg * int
+    | Sub   of  reg * reg * reg
+    | And   of  reg * reg * reg
+    | Not   of  reg * reg
+    | Sl    of  reg * reg * int
+    | Sr    of  reg * reg * int
+    | Beq   of  reg * reg * int
+    | Blt   of  reg * reg * int
+    | Jalr  of  reg * reg * int
+    | Apc   of  reg * int
+    | J     of  int
 
 type prog = t list
 
 
 module Helper = struct
     (* Instructions. *)
-    let li rd imm = I_li (rd, imm)
-    let ld rd rs imm = I_ld (rd, rs, imm)
-    let st rs1 rs2 imm = I_st (rs1, rs2, imm)
-    let add rd rs1 rs2 = I_add (rd, rs1, rs2)
-    let addi rd rs imm = I_addi (rd, rs, imm)
-    let sub rd rs1 rs2 = I_sub (rd, rs1, rs2)
-    let and_ rd rs1 rs2 = I_and (rd, rs1, rs2)
-    let not rd rs = I_not (rd, rs)
-    let sl rd rs imm = I_sl  (rd,rs,imm)
-    let sr rd rs imm = I_sr  (rd,rs,imm) 
-    let beq rs1 rs2 imm = I_beq (rs1, rs2, imm)
-    let blt rs1 rs2 imm = I_blt (rs1, rs2, imm)
-    let jalr rd rs imm = I_jalr (rd, rs, imm)
-    let apc rd imm = I_apc (rd, imm)
-    let j imm = I_j imm
+    let li rd imm = Li (rd, imm)
+    let ld rd rs imm = Ld (rd, rs, imm)
+    let st rs1 rs2 imm = St (rs1, rs2, imm)
+    let add rd rs1 rs2 = Add (rd, rs1, rs2)
+    let addi rd rs imm = Addi (rd, rs, imm)
+    let sub rd rs1 rs2 = Sub (rd, rs1, rs2)
+    let and_ rd rs1 rs2 = And (rd, rs1, rs2)
+    let not rd rs = Not (rd, rs)
+    let sl rd rs imm = Sl  (rd,rs,imm)
+    let sr rd rs imm = Sr  (rd,rs,imm) 
+    let beq rs1 rs2 imm = Beq (rs1, rs2, imm)
+    let blt rs1 rs2 imm = Blt (rs1, rs2, imm)
+    let jalr rd rs imm = Jalr (rd, rs, imm)
+    let apc rd imm = Apc (rd, imm)
+    let j imm = J imm
 
 
     (* Some useful functions. *)

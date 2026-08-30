@@ -13,7 +13,7 @@ module Rf = Cpusim.Regfile
 module Proc = Cpusim.Proc
 
 module H = Sast.Helper
-module P = Assembler.Printers
+module P = Types.Isa.Printers
 
 
 let help_string =
@@ -90,11 +90,11 @@ let rec repl prog proc trace =
             let () = 
             match List.nth_opt prog (Proc.get_pc proc) with
             | None -> print_endline "Error: PC out of bounds, no instruction to display."
-            | Some inst -> print_endline (P.isa_inst_to_string inst)
+            | Some inst -> print_endline (P.inst inst)
             in
             repl prog proc trace
     | Print_prog ->
-            let () = P.print_isa_prog_with_pc prog (Proc.get_pc proc) in
+            let () = P.print_prog_with_pc prog (Proc.get_pc proc) in
             repl prog proc trace
     | Mem (addr, count) ->
             let count = if count <= 0 then 1 else count in

@@ -1,18 +1,18 @@
 (*
     lexer.mll
 
-    Lexer specification for PASM.
+    Lexer specification for PISA.
 *)
 
 
 {
-    open Parser_asm
+    open Errors
+    open Parser_isa
+    open Errors.Helper.LexingExns
 }
 
 
-let whitespace = [' ' '\t' '\r' '\n']+
-let ascii = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
-let label_name = ['a'-'z' 'A'-'Z' '_' '.'] ascii
+let whitespace = [' ' '\r']+
 
 let dec_digit = ['0'-'9']
 let dec_natural = dec_digit+
@@ -31,9 +31,10 @@ let comment = '#' [^'\n']*
 
 
 rule read_token = parse
+    | "\n"              { Lexing.new_line lexbuf; read_token lexbuf }
+    | "\t"              { notabs (pos_info_of_lexbuf lexbuf) }
     | whitespace        { read_token lexbuf }
     | comment           { read_token lexbuf }
-    | ':'               { COLON }
     | "li"              { LI }
     | "ld"              { LD }
     | "st"              { ST }
@@ -49,13 +50,11 @@ rule read_token = parse
     | "jalr"            { JALR }
     | "apc"             { APC }
     | "j"               { J }
-    | "spin"            { SPIN }
     | reg               { let s = Lexing.lexeme lexbuf in
                           REG (int_of_string (String.sub s 1 (String.length s - 1))) }
-    | label_name        { LABEL (Lexing.lexeme lexbuf) } 
     | dec_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | hex_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | bin_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
-    | _                 { failwith ("Lexing error: Match failed for " ^ Lexing.lexeme lexbuf) }
+    | _                 { cantmatch (pos_info_of_lexbuf lexbuf) }
 

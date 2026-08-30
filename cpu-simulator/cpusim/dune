@@ -1,4 +1,4 @@
 (library
  (name cpusim)
- (libraries syntax))
+ (libraries common.utils syntax))
 

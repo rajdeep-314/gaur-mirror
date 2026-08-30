@@ -8,8 +8,8 @@ module UB = Utils.Bitwise
 module UR = Utils.Results
 
 open E.Helper
-open Assembler.Types
-open Assembler.Types.Helper
+open Types.Reg
+open Types.Isa.Helper
 
 
 let int_to_reg = function
@@ -38,19 +38,19 @@ let disassemble_inst offset instr =
     | 0x1 -> (*1*)
         let rd = gr 15 11 in
         let imm = gb instr 10 0 in
-        Ok (ili rd imm)
+        Ok (li rd imm)
 
     | 0x2 -> (*2*)
         let rd = gr 15 11 in
         let rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
-        Ok (ild rd rs imm)
+        Ok (ld rd rs imm)
 
     | 0x4 -> (*3*)
         let rd = gr 15 11 in
         let rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
-        Ok (ist rd rs imm)
+        Ok (st rd rs imm)
 
     | 0x8 -> (*4*)
         if Bool.not (ensure_zero_bits instr 0 0) then
@@ -59,13 +59,13 @@ let disassemble_inst offset instr =
             let rd = gr 15 11 in
             let rs1 = gr 10 6 in
             let rs2 = gr 5 1 in
-            Ok (iadd rd rs1 rs2)
+            Ok (add rd rs1 rs2)
 
     | 0x10 -> (*5*)
         let rd = gr 15 11 in
         let rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
-        Ok (iaddi rd rs imm)
+        Ok (addi rd rs imm)
 
     | 0x20 -> (*6*)
         if Bool.not (ensure_zero_bits instr 0 0) then
@@ -74,7 +74,7 @@ let disassemble_inst offset instr =
             let rd = gr 15 11 in
             let rs1 = gr 10 6 in
             let rs2 = gr 5 1 in
-            Ok (isub rd rs1 rs2)
+            Ok (sub rd rs1 rs2)
 
     | 0x40 -> (*7*)
         if Bool.not (ensure_zero_bits instr 0 0) then
@@ -83,7 +83,7 @@ let disassemble_inst offset instr =
             let rd = gr 15 11 in
             let rs1 = gr 10 6 in
             let rs2 = gr 5 1 in
-            Ok (iand rd rs1 rs2)
+            Ok (and' rd rs1 rs2)
 
     | 0x80 ->
         if Bool.not (ensure_zero_bits instr 5 0) then
@@ -91,7 +91,7 @@ let disassemble_inst offset instr =
         else
             let rd = gr 15 11 in
             let rs = gr 10 6 in
-            Ok (inot rd rs)
+            Ok (not rd rs)
 
     | 0x100 ->
         if Bool.not (ensure_zero_bits instr 5 5) then
@@ -100,7 +100,7 @@ let disassemble_inst offset instr =
             let rd = gr 15 11 in
             let rs = gr 10 6 in
             let imm = sext (gb instr 5 0) 6 in
-            Ok (isl rd rs imm)
+            Ok (sl rd rs imm)
 
     | 0x200 ->
         if Bool.not (ensure_zero_bits instr 5 5) then
@@ -109,34 +109,34 @@ let disassemble_inst offset instr =
             let rd = gr 15 11 in
             let rs = gr 10 6 in
             let imm = sext (gb instr 5 0) 6 in
-            Ok (isr rd rs imm)
+            Ok (sr rd rs imm)
 
     | 0x400 ->
         let rd = gr 15 11 in
         let rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
-        Ok (ibeq rd rs imm)
+        Ok (beq rd rs imm)
 
     | 0x800 ->
         let rd = gr 15 11 in
         let rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
-        Ok (iblt rd rs imm)
+        Ok (blt rd rs imm)
 
     | 0x1000 ->
         let rd = gr 15 11 in
         let rs = gr 10 6 in
         let imm = sext (gb instr 5 0) 6 in
-        Ok (ijalr rd rs imm)
+        Ok (jalr rd rs imm)
 
     | 0x2000 ->
         let rd = gr 15 11 in
         let imm = sext (gb instr 10 0) 11 in
-        Ok (iapc rd imm)
+        Ok (apc rd imm)
 
     | 0x4000 ->
         let imm = sext (gb instr 15 0) 16 in
-        Ok (ij imm)
+        Ok (j imm)
 
     | _ ->
         invalid_op_code offset instr opcode

@@ -50,5 +50,5 @@ v}
 
 {2 Source code}
 
-Source code for the CPU simulator can be found on our {{:https://gitlab.com/rajdeep-314/ptools/} GitLab repository}, in the [cpu-simulator] directory.
+Source code for the CPU simulator can be found on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools/} GitLab repository}, in the [cpu-simulator] directory.
 

@@ -1,0 +1,20 @@
+(ocamllex
+  (modules lexer_asm))
+
+(menhir
+  (modules parser_asm)
+  (flags --exn-carries-state))
+
+
+; Parser error messages.
+(rule
+  (targets messages.ml)
+  (deps parser_asm.mly parser_asm.messages)
+  (action
+    (with-stdout-to %{targets}
+      (run
+        menhir parser_asm.mly --compile-errors parser_asm.messages)
+    )
+  )
+)
+
