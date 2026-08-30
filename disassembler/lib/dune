@@ -1,4 +1,4 @@
 (library
  (name dis)
- (libraries assembler))
+ (libraries common.types common.utils))
 

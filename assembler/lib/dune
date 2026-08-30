@@ -7,10 +7,6 @@
 (library
  (name assembler)
  (public_name assembler)
- (libraries ptools.utils))
+ (libraries common.types))
 
-(ocamllex
-  (modules lexer_isa lexer_asm))
-
-(menhir
-  (modules parser_isa parser_asm))
+(include_subdirs qualified)

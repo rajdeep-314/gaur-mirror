@@ -6,7 +6,7 @@
 
 
 (* Module aliases. *)
-module Parser = Assembler.Parse
+module Parser = Parsing.Isa.Driver
 module Ast = Syntax.Ast
 module Ram = Cpusim.Ram
 module Rf = Cpusim.Regfile
@@ -84,7 +84,9 @@ let () =
         exit 2;
         end
 
-let prog_ast = Parser.parse_isa_prog_from_path !path
+(* WARNING: This call has unhandled exceptions (lexing and parsing). *)
+(* TODO: Fix this!! *)
+let prog_ast = Ast.T.Isa.remove_annot_from_prog (Parser.parse_prog_from_path !path)
 
 
 let () =

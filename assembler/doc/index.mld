@@ -31,6 +31,18 @@ Usage: assembler [options] <file_path>.
         Short for --help / -help
 v}
 
+{2 Exit Codes}
+
+{t
+  | Exit Code | Meaning |
+  | :-------: | :-----: |
+  | 0 | Exited successfully |
+  | 1 | Command-line issues: more or less arguments than expected, invalid flag passed, etc. |
+  | 2 | Lexing or parsing errors |
+  | 3 | Assembling errors |
+}
+
+
 
 {2 Example}
 
@@ -91,7 +103,7 @@ v}
 
 {2 Source code and documentation}
 
-The source code for the assembler can be found on our {{:https://gitlab.com/rajdeep-314/ptools/} GitLab repository}, in the [assembler] directory.
+The source code for the assembler can be found on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools/} GitLab repository}, in the [assembler] directory.
 
 The [odoc] generated documentation for the libraries involved can be read here:
 

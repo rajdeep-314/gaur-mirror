@@ -30,7 +30,7 @@
 - For every non-control instruction, an implicit side effect is `PC += 1`.
 - Left and right shift instructions `sl` and `sr` are both logical shifts.
 - For `li`, `imm` is an unsigned immediate value, and it must belong to the range [0, $2^{11} - 1$].
-- For the branch instructions (`beq` and `blt`), the immediate is a signed immediate with the range [-1024, 1023].
+- For the branch instructions (`beq` and `blt`), the immediate is a signed immediate with the range [-32, 31].
 - For `ld` and `st`, `imm` is meant to provide the signed address offset, and it must be in the interval [-32, 31].
 - For `addi`, `imm` is the signed immediate value, and it must belong to the interval [-32, 31].
 - For `jalr`, `imm` is the signed offset value, and it must belong to the range [-32, 31].

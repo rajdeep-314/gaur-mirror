@@ -8,7 +8,7 @@
 (generate_opam_files true)
 
 (source
- (gitlab rajdeep-314/ptools))
+ (gitlab verify-at-iitpkd/focs/ptools))
 
 (authors "Rajdeep <rajdeep31415@gmail.com>" "Raagam Parmar <raagamparmar@gmail.com>" "M Sreenath Karthick <msreenathkarthick2005@gmail.com>")
 
@@ -16,7 +16,7 @@
 
 (license LICENSE)
 
-(documentation https://url/to/documentation)
+(documentation https://verify-at-iitpkd.gitlab.io/focs/ptools)
 
 (package
  (name ptools)
@@ -28,6 +28,10 @@
  (tags
   ("toolchain" "rocq" "coq" "formal verification" "assembler"
    "simulator" "cpu simulator" "hdl" "hdl simulator")))
+
+(package
+ (allow_empty)
+ (name common))
 
 (package
   (name assembler)
