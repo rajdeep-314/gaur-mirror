@@ -27,14 +27,13 @@ let bin_natural = ("0b" | "0B") bin_digit+
 let bin_integer = '-'? bin_natural
 
 let reg = 'r' dec_natural
-let comment = '#' [^'\n']*
 
 
 rule read_token = parse
     | "\n"              { Lexing.new_line lexbuf; read_token lexbuf }
     | "\t"              { notabs (pos_info_of_lexbuf lexbuf) }
     | whitespace        { read_token lexbuf }
-    | comment           { read_token lexbuf }
+    | "#"               { read_comment lexbuf }
     | "li"              { LI }
     | "ld"              { LD }
     | "st"              { ST }
@@ -57,4 +56,9 @@ rule read_token = parse
     | bin_integer       { IMM (int_of_string (Lexing.lexeme lexbuf)) }
     | eof               { EOF }
     | _                 { cantmatch (pos_info_of_lexbuf lexbuf) }
+
+and read_comment = parse
+    | "\n"              { read_token lexbuf }
+    | "\t"              { notabs (pos_info_of_lexbuf lexbuf) }
+    | _                 { read_comment lexbuf }
 
