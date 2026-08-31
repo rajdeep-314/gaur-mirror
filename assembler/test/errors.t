@@ -46,9 +46,14 @@
   [2]
 
 
-*** Tabs in file ***
+*** Tabs in non-comment lines ***
 
   $ assembler ../examples/errors/tabs.pasm --format inter 2>/dev/null
+  [2]
+
+*** Tabs in comments ***
+
+  $ assembler ../examples/errors/tabs_in_comments.pasm --format inter 2>/dev/null
   [2]
 
 
