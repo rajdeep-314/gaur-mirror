@@ -26,12 +26,12 @@ ASM register they correspond to:
 |   Alias   |     Meaning           |    Register    |
 |-----------|-----------------------|----------------|
 |   zero    |   Zero Register       |        r0      |
-|    sp     |   Stack Pointer       |        ??      |
-|    lp     |   Local Pointer       |        ??      |
-|    ap     |   Argument Pointer    |        ??      |
-|    w1     |   Working register 1  |        ??      |
-|    w2     |   Working register 2  |        ??      |
-|    w3     |   Working register 3  |        ??      |
+|    sp     |   Stack Pointer       |        r1      |
+|    lp     |   Local Pointer       |        r2      |
+|    ap     |   Argument Pointer    |        r3      |
+|    w1     |   Working register 1  |        r29      |
+|    w2     |   Working register 2  |        r30      |
+|    w3     |   Working register 3  |        r31      |
 
 ## Instruction Translations
 
