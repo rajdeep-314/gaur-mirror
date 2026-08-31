@@ -58,7 +58,7 @@ let default_output_name str =
     | "bin"     -> remove_extension str ^ ".pmac"
     | "ascii"   -> remove_extension str ^ ".pasc"
     | "inter"   -> remove_extension str ^ ".pasm.inter"
-    | _         -> failwith "unknown format"
+    | _         -> raise (Invalid_argument "unknown format")
 
 
 let anon_fun arg =
@@ -89,10 +89,6 @@ let () =
     Arg.usage speclist usage_msg;
     exit err_code_command_line
     end
-
-let outfile =
-  if !out <> "" then !out else default_output_name !path
-
 
 let prog_ast =
     try
@@ -134,6 +130,8 @@ let output_str =
                 exit err_code_command_line
 
 let () =
+    let outfile =
+        if !out <> "" then !out else default_output_name !path in
     let oc = open_out outfile in
     output_string oc output_str;
     close_out oc;

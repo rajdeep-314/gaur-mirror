@@ -112,4 +112,4 @@
 *** Unknown format flag value ***
 
   $ assembler ../examples/fib.pasm --format xyz >/dev/null 2>&1
-  [2]
+  [1]
