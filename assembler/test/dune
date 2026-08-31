@@ -1,4 +1,5 @@
 (cram
+  (shell bash)
   (deps (source_tree ../examples))
 )
 
