@@ -1,8 +1,8 @@
-Tests that assembling and then disassembling a valid PASM program
-produces an equivalent PASM program.
+*** These test cases test that assembling and then disassembling a valid PASM program produces an equivalent PASM program.
 
-*** Assembler -> Disassembler ***
-*** Assembler -> Intermediate Representation ***
+*** - Round-trip correctness of the assembler and disassembler
+*** - Consistency between disassembled output and the intermediate representation
+*** - Preservation of all valid instructions during assembly and disassembly
 
   $ assembler example/all_instructions.pasm -fmt bin -o asm_binary.pmac
   Wrote: asm_binary.pmac

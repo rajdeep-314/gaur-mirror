@@ -1,10 +1,13 @@
-Tests that the disassembler rejects instructions with invalid zero bits.
+*** These test cases test that the disassembler rejects instructions with invalid zero bits.
 
+*** - Detection of non-zero reserved bits in ADD, SUB, AND, NOT, SL, and SR instructions
+*** - Validation of instruction encoding constraints for required zero bits
+*** - Correct reporting of invalid zero bit errors
 
 *** ADD: bit 0 must be zero ***
 
   $ bash binaries/zero_bits.sh >/dev/null
-  $ dis binaries/zero_bits_add.pmac -o zero_bits_add.pasm 
+  $ dis binaries/zero_bits_add.pmac -o zero_bits_add.pasm
   Invalid Zero Bit Error:
     Inst     : 0x00080001
     Offset   : 0

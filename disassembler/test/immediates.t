@@ -1,5 +1,8 @@
-Tests for disassembler immediate decoding and sign extension.
+*** These test cases test the disassembler's immediate decoding and sign extension.
 
+*** - Decoding immediate values at their minimum and maximum boundaries
+*** - Correct sign extension of negative immediate values
+*** - Correct decoding of positive immediate values
 
 *** Immediate boundaries ***
 

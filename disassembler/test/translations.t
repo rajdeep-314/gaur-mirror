@@ -1,5 +1,8 @@
-Tests for disassembler instruction translation.
+*** These test cases test the disassembler's translation of PISA instructions.
 
+*** - Correct decoding of all supported PISA instructions
+*** - Correct decoding of registers and immediate operands
+*** - Correct translation of arithmetic, memory, branch, and jump instructions
 
 *** All PISA instructions ***
 

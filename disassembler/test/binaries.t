@@ -1,4 +1,8 @@
-Testing output on some sample PISA binaries.
+*** These test cases test the disassembler output on sample PISA binaries, such as:
+
+*** - Disassembly of a Fibonacci program binary
+*** - Correct decoding of PISA instructions and operands
+*** - Correct generation of the corresponding `.pasm` output
 
 
 *** fib-out.pmac ***

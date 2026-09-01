@@ -1,4 +1,7 @@
-Tests that the disassembler rejects invalid opcodes.
+*** These test cases test that the disassembler rejects invalid opcodes.
+
+*** - Invalid opcodes across different opcode ranges
+*** - Correct reporting of invalid opcode errors
 
 
 *** Opcode 0x0000 ***

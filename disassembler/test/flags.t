@@ -1,5 +1,13 @@
-*Tests for the disassembler executable's command line flags.*
+*** These test cases test the disassembler executable's command line flags and argument handling.
 
+*** - Default output path
+*** - Short output flag (-o)
+*** - Long output flag (--out)
+*** - Consistency between -o and --out
+*** - Help flags (-h, -help, --help)
+*** - Missing input file
+*** - Too many positional arguments
+*** - Invalid input file
 
 *** Default output path ***
 
