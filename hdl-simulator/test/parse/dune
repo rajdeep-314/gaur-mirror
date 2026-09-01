@@ -5,5 +5,6 @@
  (libraries lib))
 
 (cram
+ (shell bash)
  (deps %{bin:test_parse}
        (source_tree ./files)))
