@@ -123,4 +123,3 @@ j j_backward
 EOF
 
 echo "Generated: $OUT"
-echo "Instructions: $(grep -cve '^[[:space:]]*$' "$OUT")"

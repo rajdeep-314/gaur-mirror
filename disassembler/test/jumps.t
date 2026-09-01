@@ -5,7 +5,6 @@ Tests for jump and branch immediate generation.
 
   $ bash example/jumps.sh
   Generated: example/jumps.pasm
-  Instructions: 65686
 
   $ assembler example/jumps.pasm --format bin -o jumps.pmac
   Wrote: jumps.pmac
