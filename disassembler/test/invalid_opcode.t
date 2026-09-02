@@ -1,13 +1,12 @@
 *** These test cases test that the disassembler rejects invalid opcodes.
 
-*** - Invalid opcodes across different opcode ranges
-*** - Correct reporting of invalid opcode errors
+*** These tests cover invalid opcodes across different opcode ranges and verify that the correct opcode is reported.
 
 
 *** Opcode 0x0000 ***
 
-  $ bash binaries/invalid_opcode.sh >/dev/null
-  $ dis binaries/invalid_opcode_0000.pmac -o invalid_opcode_0000.pasm
+  $ ./scripts/invalid_opcode.sh 0x0000 > invalid_opcode_0000.pmac
+  $ dis invalid_opcode_0000.pmac -o invalid_opcode_0000.pasm
   Invalid Opcode Error:
     Inst   : 0x00000000
     Offset : 0
@@ -17,7 +16,8 @@
 
 *** Opcode 0x0003 ***
 
-  $ dis binaries/invalid_opcode_0003.pmac -o invalid_opcode_0003.pasm
+  $ ./scripts/invalid_opcode.sh 0x0003 > invalid_opcode_0003.pmac
+  $ dis invalid_opcode_0003.pmac -o invalid_opcode_0003.pasm
   Invalid Opcode Error:
     Inst   : 0x00030000
     Offset : 0
@@ -27,7 +27,8 @@
 
 *** Opcode 0x0005 ***
 
-  $ dis binaries/invalid_opcode_0005.pmac -o invalid_opcode_0005.pasm
+  $ ./scripts/invalid_opcode.sh 0x0005 > invalid_opcode_0005.pmac
+  $ dis invalid_opcode_0005.pmac -o invalid_opcode_0005.pasm
   Invalid Opcode Error:
     Inst   : 0x00050000
     Offset : 0
@@ -35,9 +36,10 @@
   [2]
 
 
-*** Opcode 0x000f ***
+*** Opcode 0x000F ***
 
-  $ dis binaries/invalid_opcode_000f.pmac -o invalid_opcode_000f.pasm
+  $ ./scripts/invalid_opcode.sh 0x000F > invalid_opcode_000f.pmac
+  $ dis invalid_opcode_000f.pmac -o invalid_opcode_000f.pasm
   Invalid Opcode Error:
     Inst   : 0x000F0000
     Offset : 0
@@ -45,9 +47,10 @@
   [2]
 
 
-*** Opcode 0x00ff ***
+*** Opcode 0x00FF ***
 
-  $ dis binaries/invalid_opcode_00ff.pmac -o invalid_opcode_00ff.pasm
+  $ ./scripts/invalid_opcode.sh 0x00FF > invalid_opcode_00ff.pmac
+  $ dis invalid_opcode_00ff.pmac -o invalid_opcode_00ff.pasm
   Invalid Opcode Error:
     Inst   : 0x00FF0000
     Offset : 0
@@ -57,7 +60,8 @@
 
 *** Opcode 0x0300 ***
 
-  $ dis binaries/invalid_opcode_0300.pmac -o invalid_opcode_0300.pasm
+  $ ./scripts/invalid_opcode.sh 0x0300 > invalid_opcode_0300.pmac
+  $ dis invalid_opcode_0300.pmac -o invalid_opcode_0300.pasm
   Invalid Opcode Error:
     Inst   : 0x03000000
     Offset : 0
@@ -65,9 +69,10 @@
   [2]
 
 
-*** Opcode 0x0fff ***
+*** Opcode 0x0FFF ***
 
-  $ dis binaries/invalid_opcode_0fff.pmac -o invalid_opcode_0fff.pasm
+  $ ./scripts/invalid_opcode.sh 0x0FFF > invalid_opcode_0fff.pmac
+  $ dis invalid_opcode_0fff.pmac -o invalid_opcode_0fff.pasm
   Invalid Opcode Error:
     Inst   : 0x0FFF0000
     Offset : 0
@@ -77,7 +82,8 @@
 
 *** Opcode 0x3000 ***
 
-  $ dis binaries/invalid_opcode_3000.pmac -o invalid_opcode_3000.pasm
+  $ ./scripts/invalid_opcode.sh 0x3000 > invalid_opcode_3000.pmac
+  $ dis invalid_opcode_3000.pmac -o invalid_opcode_3000.pasm
   Invalid Opcode Error:
     Inst   : 0x30000000
     Offset : 0
@@ -85,9 +91,10 @@
   [2]
 
 
-*** Opcode 0x7fff ***
+*** Opcode 0x7FFF ***
 
-  $ dis binaries/invalid_opcode_7fff.pmac -o invalid_opcode_7fff.pasm
+  $ ./scripts/invalid_opcode.sh 0x7FFF > invalid_opcode_7fff.pmac
+  $ dis invalid_opcode_7fff.pmac -o invalid_opcode_7fff.pasm
   Invalid Opcode Error:
     Inst   : 0x7FFF0000
     Offset : 0
@@ -97,7 +104,8 @@
 
 *** Opcode 0x8000 ***
 
-  $ dis binaries/invalid_opcode_8000.pmac -o invalid_opcode_8000.pasm
+  $ ./scripts/invalid_opcode.sh 0x8000 > invalid_opcode_8000.pmac
+  $ dis invalid_opcode_8000.pmac -o invalid_opcode_8000.pasm
   Invalid Opcode Error:
     Inst   : 0x80000000
     Offset : 0
@@ -105,9 +113,10 @@
   [2]
 
 
-*** Opcode 0xffff ***
+*** Opcode 0xFFFF ***
 
-  $ dis binaries/invalid_opcode_ffff.pmac -o invalid_opcode_ffff.pasm
+  $ ./scripts/invalid_opcode.sh 0xFFFF > invalid_opcode_ffff.pmac
+  $ dis invalid_opcode_ffff.pmac -o invalid_opcode_ffff.pasm
   Invalid Opcode Error:
     Inst   : 0xFFFF0000
     Offset : 0

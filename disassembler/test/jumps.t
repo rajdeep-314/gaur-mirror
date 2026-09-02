@@ -10,10 +10,10 @@
 
 *** Jump stress test ***
 
-  $ bash example/jumps.sh
-  Generated: example/jumps.pasm
+  $ bash scripts/jumps.sh
+  Generated: binaries/jumps.pasm
 
-  $ assembler example/jumps.pasm --format bin -o jumps.pmac
+  $ assembler binaries/jumps.pasm --format bin -o jumps.pmac
   Wrote: jumps.pmac
 
   $ dis jumps.pmac -o jumps-dis.pasm
