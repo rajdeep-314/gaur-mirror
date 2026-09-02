@@ -2,124 +2,107 @@
 
 set -e
 
-OUT="binaries/jumps.pasm"
+if [[ $# -ne 4 ]]; then
+    echo "Usage: $0 <forward|backward> <beq|blt|j> <offset> <output>" >&2
+    exit 1
+fi
 
-cat > "$OUT" <<'EOF'
-# Jump stress test
-#
-# Purpose:
-#   Stress-test assembler label resolution for PC-relative
-#   branches and jumps.
-#
-# Instructions tested:
-#   - beq
-#   - blt
-#   - j
-#
-# Large blocks of SPIN instructions create large positive and
-# negative jump offsets.
+DIRECTION="$1"
+INSTRUCTION="$2"
+OFFSET="$3"
+OUT="$4"
 
+if [[ "$DIRECTION" != "forward" && "$DIRECTION" != "backward" ]]; then
+    echo "Error: direction must be 'forward' or 'backward'" >&2
+    exit 1
+fi
 
-# Forward BEQ
+if [[ "$INSTRUCTION" != "beq" &&
+      "$INSTRUCTION" != "blt" &&
+      "$INSTRUCTION" != "j" ]]; then
+    echo "Error: instruction must be 'beq', 'blt', or 'j'" >&2
+    exit 1
+fi
 
+if ! [[ "$OFFSET" =~ ^[0-9]+$ ]]; then
+    echo "Error: offset must be a non-negative integer" >&2
+    exit 1
+fi
 
-beq r0 r0 beq_forward
+case "$INSTRUCTION" in
+    beq|blt)
+        MAX_FORWARD=31
+        MAX_BACKWARD=32
+        ;;
+    j)
+        MAX_FORWARD=32767
+        MAX_BACKWARD=32768
+        ;;
+esac
 
-EOF
+if [[ "$DIRECTION" == "forward" ]]; then
+    if (( OFFSET > MAX_FORWARD )); then
+        echo "Error: maximum forward offset for $INSTRUCTION is $MAX_FORWARD" >&2
+        exit 1
+    fi
+else
+    if (( OFFSET > MAX_BACKWARD )); then
+        echo "Error: maximum backward offset for $INSTRUCTION is -$MAX_BACKWARD" >&2
+        exit 1
+    fi
+fi
 
-for i in $(seq 1 29); do
-    echo "spin" >> "$OUT"
-done
+if [[ "$DIRECTION" == "forward" ]]; then
 
-cat >> "$OUT" <<'EOF'
+    echo "# Jump stress test" > "$OUT"
+    echo >> "$OUT"
 
-beq_forward:
+    case "$INSTRUCTION" in
+        beq)
+            echo "beq r0 r0 target" >> "$OUT"
+            ;;
+        blt)
+            echo "li r1 1" >> "$OUT"
+            echo "li r2 2" >> "$OUT"
+            echo "blt r1 r2 target" >> "$OUT"
+            ;;
+        j)
+            echo "j target" >> "$OUT"
+            ;;
+    esac
 
+    SPINS=$(( OFFSET - 1 ))
 
+    for ((i = 0; i < SPINS; i++)); do
+        echo "spin" >> "$OUT"
+    done
 
-# Forward BLT
+    echo "target:" >> "$OUT"
 
+else
 
-li r1 1
-li r2 2
-blt r1 r2 blt_forward
+    echo "# Jump stress test" > "$OUT"
+    echo >> "$OUT"
+    echo "target:" >> "$OUT"
 
-EOF
+    SPINS=$(( OFFSET ))
 
-for i in $(seq 1 29); do
-    echo "spin" >> "$OUT"
-done
+    for ((i = 0; i < SPINS; i++)); do
+        echo "spin" >> "$OUT"
+    done
 
-cat >> "$OUT" <<'EOF'
+    case "$INSTRUCTION" in
+        beq)
+            echo "beq r0 r0 target" >> "$OUT"
+            ;;
+        blt)
+            echo "li r1 1" >> "$OUT"
+            echo "li r2 2" >> "$OUT"
+            echo "blt r1 r2 target" >> "$OUT"
+            ;;
+        j)
+            echo "j target" >> "$OUT"
+            ;;
+    esac
 
-blt_forward:
-
-
-# Forward J
-
-j j_forward
-
-EOF
-
-for i in $(seq 1 32766); do
-    echo "spin" >> "$OUT"
-done
-
-cat >> "$OUT" <<'EOF'
-
-j_forward:
-
-
-# Backward BEQ
-
-
-beq_backward:
-spin
-EOF
-
-for i in $(seq 1 29); do
-    echo "spin" >> "$OUT"
-done
-
-cat >> "$OUT" <<'EOF'
-
-beq r0 r0 beq_backward
-
-
-
-# Backward BLT
-
-
-blt_backward:
-spin
-EOF
-
-for i in $(seq 1 29); do
-    echo "spin" >> "$OUT"
-done
-
-cat >> "$OUT" <<'EOF'
-
-li r1 1
-li r2 2
-blt r1 r2 blt_backward
-
-
-
-# Backward J
-
-
-j_backward:
-spin
-EOF
-
-for i in $(seq 1 32766); do
-    echo "spin" >> "$OUT"
-done
-
-cat >> "$OUT" <<'EOF'
-
-j j_backward
-EOF
-
-echo "Generated: $OUT"
+fi
