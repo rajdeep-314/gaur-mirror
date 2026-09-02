@@ -5,7 +5,7 @@
 *** - Correct reporting of invalid zero bit errors
 
 *** ADD: bit 0 must be zero ***
-  $ bash scripts/gen_bin.sh 0x0008 0x0001 > zero_bits_add.pmac
+  $ ocaml scripts/gen_bin.ml 0x0008 0x0001 > zero_bits_add.pmac
   $ dis zero_bits_add.pmac -o zero_bits_add.pasm
   Invalid Zero Bit Error:
     Inst     : 0x00080001
@@ -14,7 +14,7 @@
   [2]
 
 *** SUB: bit 0 must be zero ***
-  $ bash scripts/gen_bin.sh 0x0020 0x0001 > zero_bits_sub.pmac
+  $ ocaml scripts/gen_bin.ml 0x0020 0x0001 > zero_bits_sub.pmac
   $ dis zero_bits_sub.pmac -o zero_bits_sub.pasm
   Invalid Zero Bit Error:
     Inst     : 0x00200001
@@ -23,7 +23,7 @@
   [2]
 
 *** AND: bit 0 must be zero ***
-  $ bash scripts/gen_bin.sh 0x0040 0x0001 > zero_bits_and.pmac
+  $ ocaml scripts/gen_bin.ml 0x0040 0x0001 > zero_bits_and.pmac
   $ dis zero_bits_and.pmac -o zero_bits_and.pasm
   Invalid Zero Bit Error:
     Inst     : 0x00400001
@@ -32,7 +32,7 @@
   [2]
 
 *** NOT: bits [5:0] must be zero ***
-  $ bash scripts/gen_bin.sh 0x0080 0x0001 > zero_bits_not.pmac
+  $ ocaml scripts/gen_bin.ml 0x0080 0x0001 > zero_bits_not.pmac
   $ dis zero_bits_not.pmac -o zero_bits_not.pasm
   Invalid Zero Bit Error:
     Inst     : 0x00800001
@@ -41,7 +41,7 @@
   [2]
 
 *** SL: bit 5 must be zero ***
-  $ bash scripts/gen_bin.sh 0x0100 0x0020 > zero_bits_sl.pmac
+  $ ocaml scripts/gen_bin.ml 0x0100 0x0020 > zero_bits_sl.pmac
   $ dis zero_bits_sl.pmac -o zero_bits_sl.pasm
   Invalid Zero Bit Error:
     Inst     : 0x01000020
@@ -50,7 +50,7 @@
   [2]
 
 *** SR: bit 5 must be zero ***
-  $ bash scripts/gen_bin.sh 0x0200 0x0020 > zero_bits_sr.pmac
+  $ ocaml scripts/gen_bin.ml 0x0200 0x0020 > zero_bits_sr.pmac
   $ dis zero_bits_sr.pmac -o zero_bits_sr.pasm
   Invalid Zero Bit Error:
     Inst     : 0x02000020
