@@ -8,6 +8,7 @@ module D = Dis.Decode
 
 module IP = Types.Isa.Printers
 module EP = Dis.Errors.Printers
+module E  = Dis.Errors
 
 
 let input_path = ref ""
@@ -67,7 +68,12 @@ let () =
     exit 1
     end
 
-let instrs = UF.words_of_path !input_path
+let instrs =
+     match UF.words_of_path !input_path with
+        | Error size ->
+            print_endline(EP.err (E.InvalidFileSize size));
+            exit 1
+        | Ok x -> x
 
 let () =
     match D.disassemble_prog instrs with

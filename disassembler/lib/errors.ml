@@ -21,6 +21,7 @@ type err =
     (* (offset, instruction, opcode) *)
     | InvalidOpcode     of int * int * int
     | InvalidZeroBits   of int * int * int
+    | InvalidFileSize   of int
 
 
 (** Printer functions for errors. *)
@@ -34,6 +35,9 @@ module Printers = struct
 
         | InvalidZeroBits (offset, inst, op) -> Printf.sprintf
             "Invalid Zero Bit Error:\n  Inst     : %s\n  Offset   : %d\n  Expected : %s" (int_to_hex inst) offset (zero_bits_layout op)
+
+        | InvalidFileSize size -> Printf.sprintf
+            "Invalid File Size Error:\n  Size : %d, Expected the file size to be a multiple of 4 bytes" size
 end
 
 
@@ -42,5 +46,7 @@ module Helper = struct
         Error (InvalidOpcode (offset, inst, op))
     let invalid_zero_bits offset inst op =
         Error (InvalidZeroBits (offset, inst, op))
+    let invalid_file_size size =
+        Error (InvalidFileSize size)
 end
 
