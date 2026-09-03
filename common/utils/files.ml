@@ -29,20 +29,32 @@ let half_words_of_path file_path =
 
 let words_of_path file_path =
     let ic = open_in_bin file_path in
-    let rec loop acc =
-        try
-            let b1 = input_byte ic in
-            let b2 = input_byte ic in
-            let b3 = input_byte ic in
-            let b4 = input_byte ic in
-            let instr =
-                (b1 lsl 24) lor
-                (b2 lsl 16) lor
-                (b3 lsl 8) lor
-                b4 in
-            loop (instr :: acc)
-        with End_of_file ->
-            close_in ic ;
-            List.rev acc
-    in loop []
 
+    let file_size = in_channel_length ic in
+
+    if file_size mod 4 <> 0 then begin
+        close_in ic;
+        Error file_size
+    end
+    else begin
+        let rec loop acc =
+            try
+                let b1 = input_byte ic in
+                let b2 = input_byte ic in
+                let b3 = input_byte ic in
+                let b4 = input_byte ic in
+
+                let instr =
+                    (b1 lsl 24) lor
+                    (b2 lsl 16) lor
+                    (b3 lsl 8) lor
+                    b4
+                in
+
+                loop (instr :: acc)
+            with End_of_file ->
+                close_in ic;
+                Ok (List.rev acc)
+        in
+        loop []
+    end
