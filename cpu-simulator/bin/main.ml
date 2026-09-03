@@ -72,7 +72,13 @@ let init_ram =
     if !ram_path == "" then
         Ram.create ()
     else
-        let words = Utils.Files.words_of_path !ram_path in
+        let words =
+            match Utils.Files.words_of_path !ram_path with
+            | Error size ->
+                prerr_endline(Printf.sprintf "Error: Initial RAM image file size is not a multiple of 4 bytes. Size: %d" size);
+                exit 1
+            | Ok x -> x
+        in
         Ram.init_from_mmap (List.mapi (fun i v -> (i, v)) words)
 
 
