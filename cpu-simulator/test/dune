@@ -1,6 +1,7 @@
 (cram
   (shell bash)
   (deps (source_tree ./ram-imgs)
+        (source_tree ./scripts)
         (source_tree ./snippets))
 )
 
