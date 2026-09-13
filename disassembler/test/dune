@@ -1,5 +1,6 @@
 (cram
   (shell bash)
-  (deps (source_tree ./binaries/))
+  (deps
+        (source_tree ./binaries)
+        (source_tree ./scripts))
 )
-
