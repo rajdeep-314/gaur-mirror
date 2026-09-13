@@ -12,6 +12,11 @@
 ***   - Missing jump target
 ***   - Missing beq target
 ***   - Missing blt target
+***   - Duplicate label target
+***   - Forward beq overflow
+***   - Backward beq overflow
+***   - Forward blt overflow
+***   - Backward blt overflow
 ***   - Forward jump overflow
 ***   - Backward jump overflow
 
@@ -80,14 +85,43 @@
   $ assembler ../examples/errors/missing_blt_target.pasm --format inter 2>/dev/null
   [3]
 
+*** Duplicate Label target ***
+  $ assembler ../examples/errors/dup_label.pasm --format inter 2>/dev/null
+  [3]
+
+*** Forward beq overflow ***
+  $ ocaml scripts/forward.ml beq 32 > forward_beq_overflow.pasm
+  $ assembler forward_beq_overflow.pasm --format inter &>/dev/null
+  [3]
+
+
+*** Backward beq overflow ***
+  $ ocaml scripts/backward.ml beq 33 > backward_beq_overflow.pasm
+  $ assembler backward_beq_overflow.pasm --format inter &>/dev/null
+  [3]
+
+*** Forward blt overflow ***
+
+  $ ocaml scripts/forward.ml blt 32 > forward_blt_overflow.pasm
+  $ assembler forward_blt_overflow.pasm --format inter &>/dev/null
+  [3]
+
+
+*** Backward blt overflow ***
+
+  $ ocaml scripts/backward.ml blt 33 > backward_blt_overflow.pasm
+  $ assembler backward_blt_overflow.pasm --format inter &>/dev/null
+  [3]
 
 *** Forward jump overflow ***
 
-  $ assembler ../examples/errors/forward_jump_overflow.pasm --format inter &>/dev/null
+  $ ocaml scripts/forward.ml j 32768 > forward_jump_overflow.pasm
+  $ assembler forward_jump_overflow.pasm --format inter &>/dev/null
   [3]
 
 
 *** Backward jump overflow ***
 
-  $ assembler ../examples/errors/backward_jump_overflow.pasm --format inter &>/dev/null
+  $ ocaml scripts/backward.ml j 32769 >  backward_jump_overflow.pasm
+  $ assembler backward_jump_overflow.pasm --format inter &>/dev/null
   [3]
