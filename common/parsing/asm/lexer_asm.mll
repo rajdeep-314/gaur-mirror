@@ -63,7 +63,7 @@ rule read_token = parse
     | _                 { cantmatch (pos_info_of_lexbuf lexbuf) }
 
 and read_comment = parse
-    | "\n"              { read_token lexbuf }
+    | "\n"              { Lexing.new_line lexbuf; read_token lexbuf }
     | "\t"              { notabs (pos_info_of_lexbuf lexbuf) }
     | _                 { read_comment lexbuf }
 
