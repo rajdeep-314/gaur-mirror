@@ -1,0 +1,27 @@
+(library
+ (name web_utils)
+ (wrapped false)
+ (modules web_utils misc)
+ (libraries js_of_ocaml)
+ (preprocess (pps js_of_ocaml-ppx)))
+
+(executable
+ (name assembler_web)
+ (modules assembler_web)
+ (modes js)
+ (libraries js_of_ocaml web_utils assembler common.types common.parsing)
+ (preprocess (pps js_of_ocaml-ppx)))
+
+(executable
+ (name disassembler_web)
+ (modules disassembler_web)
+ (modes js)
+ (libraries js_of_ocaml web_utils dis common.types common.parsing)
+ (preprocess (pps js_of_ocaml-ppx)))
+
+(executable
+ (name ram_init_web)
+ (modules ram_init_web)
+ (modes js)
+ (libraries js_of_ocaml web_utils ram-init common.types common.parsing)
+ (preprocess (pps js_of_ocaml-ppx)))

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ptools Disassembler</title>
+    <link rel="stylesheet" href="style/disassembler_style.css">
+</head>
+
+<body>
+    <nav id="navbar">
+        <div id="nav-title"> Ptools </div>
+        <div id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="assembler.html">Assembler</a>
+            <a href="disassembler.html">Disassembler</a>
+            <a href="ram-init.html">RAM Init</a>
+        </div>
+    </nav>
+
+
+    <div id="app">
+        <!-- Left side -->
+        <div id="input-panel">
+            <h2>Disassembler</h2>
+            <div class="input-group">
+                <label for="dis-input-file"> Input Binary File </label>
+                <input type="file" id="dis-input-file">
+            </div>
+
+            <button id="disassemble-button">
+                Disassemble
+            </button>
+
+        </div>
+
+
+        <!-- Right side -->
+
+        <div id="output-panel">
+            <div id="result-section">
+                <h2>Result</h2>
+                <pre id="disassembler-result"></pre>
+            </div>
+
+            <div id="error-section">
+                <h2>Errors</h2>
+                <pre id="disassembler-errors"></pre>
+            </div>
+        </div>
+
+    </div>
+
+     <script src="/_build/default/web/disassembler_web.bc.js"></script>
+</body>
+</html>
