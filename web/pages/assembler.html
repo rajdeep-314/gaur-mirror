@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <title>Ptools Assembler</title>
     <link rel="stylesheet" href="style/assembler_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav id="navbar">
-        <div id="nav-title">Ptools </div>
+        <div id="nav-title">Ptools</div>
+
         <div id="nav-links">
             <a href="index.html">Home</a>
             <a href="assembler.html">Assembler</a>
@@ -17,15 +21,21 @@
     </nav>
 
     <div id="app">
+        <!-- Left: Assembly Input -->
         <div id="input-panel">
             <h2>Assembly Code</h2>
-            <textarea
-                id="assembly-input"
-                placeholder="Enter assembly code here...">
-            </textarea>
+            <div id="editor">
+                <div id="line-numbers" aria-hidden="true">1</div>
+                <textarea
+                    id="assembly-input"
+                    placeholder="Enter assembly code here..."
+                    spellcheck="false"
+                    wrap="off"></textarea>
+            </div>
         </div>
 
 
+        <!-- Right: Output -->
         <div id="output-panel">
             <div id="format-buttons">
                 <h2>Choose output format</h2>
@@ -35,7 +45,7 @@
             </div>
 
             <div id="result-section">
-                <h2>Result</h2>
+                <h2>Output</h2>
                 <pre id="assembly-result"></pre>
             </div>
 
@@ -44,8 +54,32 @@
                 <pre id="assembly-errors"></pre>
             </div>
         </div>
+
     </div>
 
+
+    <!-- <script>
+        const textarea = document.getElementById("assembly-input");
+        const lineNumbers = document.getElementById("line-numbers");
+
+        function updateLineNumbers() {
+            const lineCount = textarea.value.split("\n").length;
+
+            lineNumbers.textContent = Array.from(
+                { length: lineCount },
+                (_, i) => i + 1
+            ).join("\n");
+        }
+
+        textarea.addEventListener("input", updateLineNumbers);
+
+        textarea.addEventListener("scroll", () => {
+            lineNumbers.scrollTop = textarea.scrollTop;
+        });
+
+        updateLineNumbers();
+    </script> -->
     <script src="/_build/default/web/assembler_web.bc.js"></script>
+
 </body>
 </html>
