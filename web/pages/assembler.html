@@ -56,29 +56,6 @@
         </div>
 
     </div>
-
-
-    <!-- <script>
-        const textarea = document.getElementById("assembly-input");
-        const lineNumbers = document.getElementById("line-numbers");
-
-        function updateLineNumbers() {
-            const lineCount = textarea.value.split("\n").length;
-
-            lineNumbers.textContent = Array.from(
-                { length: lineCount },
-                (_, i) => i + 1
-            ).join("\n");
-        }
-
-        textarea.addEventListener("input", updateLineNumbers);
-
-        textarea.addEventListener("scroll", () => {
-            lineNumbers.scrollTop = textarea.scrollTop;
-        });
-
-        updateLineNumbers();
-    </script> -->
     <script src="/_build/default/web/assembler_web.bc.js"></script>
 
 </body>
