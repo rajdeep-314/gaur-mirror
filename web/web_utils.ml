@@ -44,3 +44,62 @@ let get_select_value id =
   Js.to_string select##.value
 
 
+(* Update line number  *)
+let update_line_numbers textarea line_numbers =
+
+  let source = Js.to_string textarea##.value in
+  let line_count =  List.length (String.split_on_char '\n' source) in
+  let numbers = String.concat "\n" (List.init line_count (fun i -> string_of_int (i + 1))) in
+  line_numbers##.textContent := Js.some (Js.string numbers)
+
+(* Resolves tabs to 4 width spaces *)
+let setup_tab_to_spaces textarea =
+  textarea##.onkeydown :=
+    Dom_html.handler (fun ev ->
+
+      if ev##.keyCode = 9 then begin
+
+        Dom.preventDefault ev;
+
+        let start = textarea##.selectionStart in
+        let finish = textarea##.selectionEnd in
+        let value = Js.to_string textarea##.value in
+        let before = String.sub value 0 start in
+        let selected = String.sub value start (finish - start) in
+        let after = String.sub value finish (String.length value - finish) in
+        let replacement = "    " in
+
+        textarea##.value :=
+          Js.string (before ^ replacement ^ selected ^ after);
+
+        textarea##setSelectionRange (start + 4) (start + 4);
+
+        Js._false
+
+      end else begin
+        Js._true
+      end
+    )
+
+(* Set up line numbers and scrolling for the editor *)
+(* textarea is the input and line_numbers , is the line number area. *)
+let setup_line_numbers textarea line_numbers =
+
+  update_line_numbers textarea line_numbers;
+  setup_tab_to_spaces textarea;
+
+  (* Update line numbers whenever text changes *)
+  textarea##.oninput :=
+    Dom_html.handler (fun _ ->
+      update_line_numbers textarea line_numbers;
+      Js._false
+    );
+
+  (* Keep line numbers aligned while scrolling *)
+  textarea##.onscroll :=
+    Dom_html.handler (fun _ ->
+      line_numbers##.scrollTop :=
+        textarea##.scrollTop;
+
+      Js._false
+    )

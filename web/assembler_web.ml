@@ -31,38 +31,6 @@ let assemble_source source =
   Assemble.assemble_prog prog_ast
 
 
-(* Update the line numbers next to the assembly editor *)
-let update_line_numbers textarea line_numbers =
-
-  let source = Js.to_string textarea##.value in
-  let line_count =  List.length (String.split_on_char '\n' source) in
-  let numbers = String.concat "\n" (List.init line_count (fun i -> string_of_int (i + 1))) in
-  line_numbers##.textContent := Js.some (Js.string numbers)
-
-
-(* Set up line numbers and scrolling for the editor *)
-let setup_line_numbers () =
-  let textarea =  WU.get_textarea "assembly-input" in
-  let line_numbers = WU.get_element "line-numbers"in
-
-  update_line_numbers textarea line_numbers;
-
-  (* Update line numbers whenever text changes *)
-  textarea##.oninput :=
-    Dom_html.handler (fun _ ->
-      update_line_numbers textarea line_numbers;
-      Js._false
-    );
-
-  (* Keep line numbers aligned while scrolling *)
-  textarea##.onscroll :=
-    Dom_html.handler (fun _ ->
-      line_numbers##.scrollTop :=
-        textarea##.scrollTop;
-
-      Js._false
-    )
-
 
 (* Common code for format buttons *)
 let handle_format_button button result errors operation =
@@ -103,13 +71,15 @@ let handle_format_button button result errors operation =
 
 let () =
 
+  let input = WU.get_textarea "assembly-input" in
+  let line_numbers = WU.get_element "line-numbers" in
   let result = WU.get_element "assembly-result" in
   let errors = WU.get_element "assembly-errors" in
   let fmt_ascii = WU.get_element "format-ascii" in
   let fmt_bin = WU.get_element "format-bin" in
   let fmt_inter = WU.get_element "format-inter" in
 
-  setup_line_numbers ();
+  WU.setup_line_numbers input line_numbers;
 
   WU.set_text result "Waiting for input...";
   WU.clear_text errors;
