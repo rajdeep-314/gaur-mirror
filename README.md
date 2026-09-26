@@ -3,7 +3,7 @@
 
 [![Build](https://img.shields.io/gitlab/pipeline-status/verify-at-iitpkd/focs/ptools?branch=main&job=build-project&label=Build&style=for-the-badge&color=orange)](https://gitlab.com/verify-at-iitpkd/focs/ptools/-/pipelines)
 [![Tests](https://img.shields.io/gitlab/pipeline-status/verify-at-iitpkd/focs/ptools?branch=main&job=cram-tests&label=Tests&style=for-the-badge&color=green)](https://gitlab.com/verify-at-iitpkd/focs/ptools/-/pipelines)
-[![Web Hosting](https://img.shields.io/gitlab/pipeline-status/verify-at-iitpkd/focs/ptools?branch=main&job=host-web&label=Docs&style=for-the-badge&color=blue)](https://verify-at-iitpkd.gitlab.io/focs/ptools/)
+[![Web Hosting](https://img.shields.io/gitlab/pipeline-status/verify-at-iitpkd/focs/ptools?branch=main&job=host-web&label=Web%20Hosting&style=for-the-badge&color=blue)](https://verify-at-iitpkd.gitlab.io/focs/ptools/)
 
 
 Toolchain for PISA and PHDL.
