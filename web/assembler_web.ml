@@ -88,7 +88,12 @@ let () =
   let fmt_bin = DU.get_element "format-bin" in
   let fmt_inter = DU.get_element "format-inter" in
 
+  let copy_output = DU.get_element "copy-output" in
+  let copy_errors = DU.get_element "copy-errors" in
+
   DU.setup_line_numbers input line_numbers;
+  DU.setup_copy_button copy_output result;
+  DU.setup_copy_button copy_errors errors;
 
   DU.set_text result "Waiting for input...";
   DU.clear_text errors;
