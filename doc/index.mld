@@ -4,6 +4,11 @@
 [Ptools] refers to the toolchain for [PISA], [PASM], [PHDL], etc.
 
 
+{1 Web tools}
+
+Web versions of the tools can be found {{:../tools/index.html} here}.
+
+
 {1 The tools}
 
 Find the documentation for the tools here:

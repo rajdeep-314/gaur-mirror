@@ -5,6 +5,10 @@
 
 However, the tool is general and can be configured to produce RAM images outside of usage for this toolchain.
 
+{2 Web tool}
+
+The web version of the RAM initializer can be found {{:../tools/ram-init.html} here}
+
 {2 Usage}
 
 The [ram-init] executable can be invoked with various flags. To see an exhaustive list of the same, invoke it with the [--help] flag.

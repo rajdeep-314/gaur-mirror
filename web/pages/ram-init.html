@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ptools RAM Init</title>
+
+    <link rel="stylesheet" href="style/ram_init_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <nav id="navbar">
+        <div id="nav-title">Ptools</div>
+
+        <div id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="assembler.html">Assembler</a>
+            <a href="disassembler.html">Disassembler</a>
+            <a href="ram-init.html">RAM Init</a>
+        </div>
+    </nav>
+
+
+    <div id="app">
+
+        <!-- Left side -->
+        <div id="input-panel">
+
+            <h2>RAM Initialization</h2>
+
+            <div id="input-grid">
+
+                <!-- Row 1 -->
+                <div class="input-group">
+                    <label for="ram-map-file"> Memory Map </label>
+                    <input type="file" id="ram-map-file">
+                </div>
+
+                <div class="input-group">
+                    <label for="ram-size"> RAM Size </label>
+                    <input type="number" id="ram-size" value="16384">
+                </div>
+
+                <!-- Row 2 -->
+                <div class="input-group">
+                    <label for="word-size"> Word Size (bytes) </label>
+                    <input type="number" id="word-size" value="4">
+                </div>
+
+                <div class="input-group">
+                    <label for="endianness"> Endianness </label>
+                    <select id="endianness">
+                        <option value="big">Big Endian</option>
+                        <option value="little">Little Endian</option>
+                    </select>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="input-group">
+                    <label for="offset"> Offset (bytes) </label>
+                    <input type="number" id="offset" value="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="padding"> Padding </label>
+                    <input type="text" id="padding" value="0">
+                </div>
+
+                <!-- Row 4 -->
+                <div class="input-group">
+                    <label for="output-file"> Output filename </label>
+                    <input type="text" id="output-file" value="">
+                </div>
+
+            </div>
+
+            <button id="ram-init-button">
+                Initialize RAM
+            </button>
+
+        </div>
+
+
+        <!-- Right side -->
+        <div id="output-panel">
+
+            <div id="status-section">
+                <h2>Status</h2>
+                <pre id="ram-status"></pre>
+            </div>
+
+            <div id="error-section">
+                <h2>Errors</h2>
+                <pre id="ram-errors"></pre>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="./ram_init_web.bc.js"></script>
+
+</body>
+</html>

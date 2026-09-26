@@ -3,6 +3,10 @@
 
 The disassembler is, in some sense, an inverse of the assembler. It takes [PISA] binaries as input and generates the corresponding [PASM] assembly files. However, the assembly files generated lack labels and pseudo-instructions (for now).
 
+{2 Web tool}
+
+The web version of disassembler can be found {{:../tools/disassembler.html} here}
+
 {2 Usage}
 
 The [dis] executable can be invoked with various flags. To see an exhaustive list of the same, invoke it with the [--help] flag. The output will be something like this:
