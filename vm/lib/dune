@@ -1,7 +1,7 @@
 (library
  (name vm)
  (public_name vm)
- (libraries common.utils))
+ (libraries common.utils common.types))
 
 (include_subdirs qualified)
 

@@ -4,9 +4,11 @@
     VM state.
 *)
 
+module W = Types.Word
 
-type segment = int array        (* Segments are arrays of integers. *)
-type stack = int list           (* Stacks are lists of integers. *)
+
+type segment = W.t array        (* Segments are arrays of words. *)
+type stack = W.t list           (* Stacks are lists of words.    *)
 
 type frame = {
     f_name   : string ;         (* function name *)
@@ -39,7 +41,7 @@ module Inspect = struct
 
     (* Function call. *)
     type call =
-        | Call  of string * int list
+        | Call  of string * W.t list
 
     (* Call corresponding to a frame. *)
     let call_of_frame f = Call (f.f_name, Array.to_list f.argument)
@@ -76,7 +78,10 @@ module Inspect = struct
     let lines s =
         let iss = Helper.iss_of_screen s in
         let to_char i =
-            if i >= 32 && i <= 126 then char_of_int i else '?' in
+            match W.to_char i with
+            | Some c -> c
+            | None   -> '?'
+        in
         let css = List.map (List.map to_char) iss in
         List.map
             (fun cs -> String.concat "" (List.map (String.make 1) cs)) css
@@ -89,12 +94,12 @@ module PP = struct
 
     (* String representation of a call and a list of calls. *)
     let call (Call (f, args)) =
-        f ^ "(" ^ String.concat ", " (List.map string_of_int args) ^ ")"
+        f ^ "(" ^ String.concat ", " (List.map Int32.to_string args) ^ ")"
 
     let calls cs = String.concat " -> " (List.map call cs)
 
     let stack s =
-        String.concat ", " (List.map string_of_int s)
+        String.concat ", " (List.map Int32.to_string s)
 
     (* Screen in VM state s, decorated with borders. *)
     let screen s =
@@ -107,7 +112,7 @@ module PP = struct
 
     (* Contents of a segment, separated by " | ". *)
     let seg xs =
-        String.concat " | " (List.map string_of_int (Array.to_list xs))
+        String.concat " | " (List.map Int32.to_string (Array.to_list xs))
 
     (* Contents of segment seg_name. *)
     let segment seg_name s =

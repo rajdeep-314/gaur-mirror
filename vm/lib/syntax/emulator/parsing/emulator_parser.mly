@@ -5,6 +5,8 @@
 *)
 
 %{
+    module W = Types.Word
+
     open Ast
     open Err.Helper.Parser
 
@@ -77,7 +79,7 @@ syscall:
     | BLOR  { Bl_or }
 
 exp:
-    | n=NUM                                 { Const n }
+    | n=NUM                                 { Const (W.of_int n) }
     | STACK; LSQUARE; n=NUM; RSQUARE        { StackOffset n }
     | s=segment; LSQUARE; n=NUM; RSQUARE    { SegmentOffset (s, n) }
     | e1=exp; o=binop; e2=exp               { BinOp (o, e1, e2) }
@@ -95,7 +97,7 @@ cond_exp:
 inst:
     | PUSH; s=segment; n=NUM        { Push (s, n), ($startpos, $endpos) }
     | POP; s=segment; n=NUM         { Pop (s,n), ($startpos, $endpos) }
-    | PUSH; CONSTANT; n=NUM         { PushC n, ($startpos, $endpos) }
+    | PUSH; CONSTANT; n=NUM         { PushC (W.of_int n), ($startpos, $endpos) }
     | ADD                           { Add, ($startpos, $endpos) }
     | SUB                           { Sub, ($startpos, $endpos) }
     | NEG                           { Neg, ($startpos, $endpos) }

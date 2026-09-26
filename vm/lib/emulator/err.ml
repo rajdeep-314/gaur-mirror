@@ -9,6 +9,7 @@ module A = Syntax.Emulator.Ast
 module I = Ir
 module P = State.PP
 module STbl = Hashtbl.Make (String)
+module W = Types.Word
 
 module U = Utils.Parsing
 
@@ -59,7 +60,7 @@ module Execution = struct
     (* TODO: Improve the arguments. Maybe add state as argument. *)
     type base =
         | NotEnoughValsOnWorkingStack   of int * int
-        | ExecutionTerminated           of int
+        | ExecutionTerminated           of W.t
         | NoReturnValue
         | UnboundFunction               of string
         | OutOfBoundSegRead             of I.segment * int * int
@@ -78,7 +79,7 @@ module Execution = struct
         | NotEnoughValsOnWorkingStack (n, n') -> Printf.sprintf
             "Not enough values on the working stack. Needed at least %d, got only %d" n n'
         | ExecutionTerminated ret_val -> Printf.sprintf
-            "Execution terminated with return value %d" ret_val
+            "Execution terminated with return value %s" (W.to_string ret_val)
         | NoReturnValue -> "Nothing in the working stack to return"
         | UnboundFunction f -> "Unbound function " ^ f
         | OutOfBoundSegRead (seg, n, n') -> Printf.sprintf

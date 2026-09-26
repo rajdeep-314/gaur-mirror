@@ -7,6 +7,7 @@
 
 
 module A = Syntax.Emulator.Ast
+module W = Types.Word
 
 
 type segment = A.segment        (* IR segments are VM segments. *)
@@ -18,7 +19,7 @@ type inst_base =
     | Push of segment * int
     | Pop  of segment * int
     (* pushing constants. *)
-    | PushC of int
+    | PushC of W.t
     (* arithmetic operations *)
     | Add | Sub | Neg
     (* comparison operations *)
@@ -37,7 +38,7 @@ type inst_base =
     | CondBpt   of string * cond_exp
 
 and exp = A.exp =
-    | Const         of int
+    | Const         of W.t
     | StackOffset   of int
     | SegmentOffset of segment * int
     | BinOp         of binop * exp * exp
@@ -102,9 +103,9 @@ module PP = struct
         | Bl_and -> "&&" | Bl_or -> "||"
 
     let rec exp = function
-        | Const n       -> string_of_int n
+        | Const n       -> W.to_string n
         | StackOffset n -> Printf.sprintf "stack[%d]" n
-        | Neg (Const n) -> Printf.sprintf "-%d" n
+        | Neg (Const n) -> Printf.sprintf "-%s" (W.to_string n)
         | Neg e         -> Printf.sprintf "-(%s)" (exp e)
         | SegmentOffset (s, n) -> Printf.sprintf "%s[%d]" (seg s) n
         | BinOp (o, e1, e2) -> Printf.sprintf
@@ -122,7 +123,7 @@ module PP = struct
     let inst_base = function
         | Push (s, i)   -> Printf.sprintf "push %s %d" (seg s) i
         | Pop  (s, i)   -> Printf.sprintf "pop %s %d"  (seg s) i
-        | PushC n       -> "push constant " ^ string_of_int n
+        | PushC n       -> "push constant " ^ W.to_string n
         | Add           -> "add"
         | Sub           -> "sub"
         | Neg           -> "neg"
