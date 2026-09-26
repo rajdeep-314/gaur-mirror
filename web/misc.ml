@@ -1,7 +1,7 @@
 (*
   misc.ml
 
-  Contains miscelanious functions
+  Contains miscellaneous functions
 *)
 
 open Js_of_ocaml
