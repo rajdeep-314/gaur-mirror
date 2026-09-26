@@ -3,4 +3,4 @@
  (libraries fmt menhirLib ocamlgraph))
 
 (include_subdirs qualified)
-(dirs parse hdlutils typecheck backend analyze)
+(dirs parse hdlutils typecheck backend analyze common)
