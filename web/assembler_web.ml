@@ -15,20 +15,46 @@ module Errors = Parsing.Asm.Errors
 module WU = Web_utils
 
 
-(* Parse the source program *)
+(** [parse_source src] parses string program [src] and returns a value in the
+    type [(string prog, string] result]. The return value being [Ok p]
+    denotes that there were no lexing or parsing errors, and the resultant
+    AST program is [p]. [Error e] denotes that there was some error, the
+    string representation of which is [e]. *)
 let parse_source source =
-  let prog_ast =
-    Parser.parse_prog_with_path "<web-input>" source
-  in
-  Types.remove_annot_from_prog prog_ast
+    try
+        let prog_ast =
+        Parser.parse_prog_with_path "<web-input>" source in
+        Ok (Types.remove_annot_from_prog prog_ast)
+    with
+    | Errors.LexingExn err ->
+        Error (Errors.LexingErrors.to_string_with_src err source)
+    | Errors.ParsingExn err ->
+        Error (Errors.ParsingErrors.to_string_with_src err source)
 
 
-(* Parse and assemble the source program *)
+(** [assemble_source src] assembles string source program [src] and returns [Ok
+    p], [p] being the assembled prorogram, if there were no errors in lexing,
+    parsing, or assembling, and it returns [Error e], with [e] being the
+    error string -- which can arise from lexing errors, parsing errors, or
+    assembly errors. *)
 let assemble_source source =
-  let prog_ast =
-    parse_source source
-  in
-  Assemble.assemble_prog prog_ast
+    match parse_source source with
+    | Error e -> Error e
+    | Ok p    ->
+        match Assemble.assemble_prog p with
+        | Ok assembled_p -> Ok assembled_p
+        | Error e        -> Error e
+
+(** [assemble_to_inter src] is the variant of [assemble_source src] that does
+    not go all the way through with the assembly and returns the intermediate
+    form, with labels resolved. *)
+let assemble_to_inter source =
+    match parse_source source with
+    | Error e -> Error e
+    | Ok p    ->
+        match Assemble.to_inter p with
+        | Ok assembled_p -> Ok assembled_p
+        | Error e        -> Error e
 
 
 
@@ -43,29 +69,12 @@ let handle_format_button button result errors operation =
       WU.clear_text result;
       WU.clear_text errors;
 
-      try
-        (match operation source with
-         | Error e ->
-             WU.set_text errors e
-         | Ok output ->
-             WU.set_text result output);
-
-        Js._false
-
-      with
-        | Errors.LexingExn err ->
-            WU.set_text
-              errors
-              (Errors.LexingErrors.to_string_with_src err source);
-
-            Js._false
-
-        | Errors.ParsingExn err ->
-            WU.set_text
-              errors
-              (Errors.ParsingErrors.to_string_with_src err source);
-
-            Js._false
+      begin
+      match operation source with
+      | Error e   -> WU.set_text errors e
+      | Ok output -> WU.set_text result output
+      end;
+      Js._false
     )
 
 
@@ -109,13 +118,10 @@ let () =
   (* Intermediate *)
   handle_format_button fmt_inter result errors
     (fun source ->
-      let prog_ast =
-        parse_source source
-      in
-
-      match Assemble.to_inter prog_ast with
+      match assemble_to_inter source with
       | Error e ->
           Error e
-      | Ok inter ->
-          Ok (IsaPrinters.prog inter)
+      | Ok mp ->
+          Ok (IsaPrinters.prog mp)
     )
+
