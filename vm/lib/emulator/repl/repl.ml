@@ -10,6 +10,7 @@ module I  = State.Inspect
 module SP = State.PP
 module P  = Parsing.Repl
 module Er = Err
+module W = Types.Word
 
 open Ast
 open Er.Helper.Repl
@@ -155,7 +156,7 @@ let e_till_termination p s =
     let (s', rv) = E.e_till_termination p s in
     let msg = match rv with
     | None      -> "Execution terminated with no return value."
-    | Some rv   -> "Execution terminated with return value " ^ string_of_int rv
+    | Some rv   -> "Execution terminated with return value " ^ W.to_string rv
     in msg, s'
 
 let reset_f p s = ("Resetting.", E.init_from_prog p)

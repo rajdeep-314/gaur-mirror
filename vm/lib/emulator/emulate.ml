@@ -6,6 +6,7 @@
 
 
 module A = Syntax.Emulator.Ast
+module W = Types.Word
 
 open Ir
 open State
@@ -20,10 +21,10 @@ let ( let+ ) = Option.bind
 (* Some functions that will be used frequently in the emulation. *)
 
 (* Make a segment of size n, all values 0. *)
-let make_segment n = Array.make n 0
+let make_segment n = Array.make n 0l
 
 (* Make a screen segment of size n, all values 32 (space). *)
-let make_screen n = Array.make n 32
+let make_screen n = Array.make n 32l
 
 (* Read the n'th index of segment seg. Return [Some x] if index is in bounds
    and corresponds to [x], else [None]. *)
@@ -40,7 +41,7 @@ let write_segment seg n v =
 
 (* In state s, write value y at offset x of screen and return new state. *)
 let write_to_screen s x y =
-    s.screen.(x) <- y; s
+    s.screen.(W.to_int x) <- y; s
 
 (* Get instruction number n from function f, whose body is body.
    Previous checks in the pipeline ensure that this does not cause an error. *)
@@ -168,12 +169,12 @@ let push_frame f n_vars xs s = {
 (* Evaluating expressions and conditional expressions on VM state. *)
 
 let binop_f = function
-    | B_add -> ( + ) | B_sub -> ( - )
-    | B_mul -> ( * ) | B_div -> ( / )
+    | B_add -> W.add | B_sub -> W.sub
+    | B_mul -> W.mul | B_div -> W.div
 
 let relop_f = function
-    | R_eq -> ( = )  | R_lt -> ( < )  | R_gt -> ( > )
-    | R_le -> ( <= ) | R_ge -> ( >= ) | R_ne -> ( <> )
+    | R_eq -> W.eq | R_lt -> W.lt | R_gt -> W.gt
+    | R_le -> W.le | R_ge -> W.ge | R_ne -> W.ne
 
 let boolop_f = function
     | Bl_and -> ( && ) | Bl_or -> ( || )
@@ -185,7 +186,7 @@ let rec eval_exp st e =
     | Const n               -> Some n
     | StackOffset n         -> List.nth_opt f.wstack n
     | SegmentOffset (s, n)  -> List.nth_opt (Array.to_list (segment s st)) n
-    | Neg e                 -> let+ x = ee e in Some (~-x)
+    | Neg e                 -> let+ x = ee e in Some (W.neg x)
     | BinOp (o, e1, e2)     ->
         let+ x = ee e1 in let+ y = ee e2 in
         Some (binop_f o x y)
@@ -238,18 +239,19 @@ let bin_op_f op = function
         | x :: s''  -> Ok (op x y :: s'')
 
 (* Binary functions. *)
-let add_f = ( + )
-let sub_f = ( - )
-let and_f = ( land )
-let or_f  = ( lor )
+let add_f = W.add
+let sub_f = W.sub
+let and_f = W.band
+let or_f  = W.bor
 (* Unary functions. *)
-let neg_f = ( ~- )
-let not_f = ( lnot )
+let neg_f = W.neg
+let not_f = W.bnot
+
 (* Comparison functions. *)
-let comp_f op = fun x y -> if op x y then -1 else 0
-let eq_f x y = comp_f ( = ) x y
-let lt_f x y = comp_f ( < ) x y
-let gt_f x y = comp_f ( > ) x y
+let comp_f op = fun x y -> if op x y then -1l else 0l
+let eq_f x y = comp_f W.eq x y
+let lt_f x y = comp_f W.lt x y
+let gt_f x y = comp_f W.gt x y
 
 (* Pop the top-most entry of the working stack and return the rest of it. *)
 let pop_wstack = function
@@ -304,7 +306,7 @@ let exec_if_goto i s n =
     match wstack_peek s with
     | None -> raise (not_enough_vals i s 1 0)
     | Some x ->
-        let pf = if x = -1 then (+) n else (+) 1 in
+        let pf = if x = -1l then (+) n else (+) 1 in
         match apply_on_top_frame_result uf uf pf pop_wstack s with
         | Ok s         -> s
         | Error (x, y) -> raise (not_enough_vals i s x y)
@@ -367,7 +369,7 @@ let exec_putchar i s =
     | Some (y, ys) ->
         begin match list_head_split_opt ys with
         | Some (x, xs) ->
-            let s' = apply_on_wstack (fun _ -> 0 :: xs) s in
+            let s' = apply_on_wstack (fun _ -> 0l :: xs) s in
             write_to_screen s' x y
         | None -> raise (not_enough_vals i s 2 1) end
     | None -> raise (not_enough_vals i s 2 0)

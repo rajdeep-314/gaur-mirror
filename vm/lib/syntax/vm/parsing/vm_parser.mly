@@ -5,6 +5,8 @@
 *)
 
 %{
+    module W = Types.Word
+
     open Ast
     open Err.Helper.Parser
 
@@ -42,7 +44,7 @@ syscall:
 inst:
     | PUSH; s=segment; n=NUM       { Push (s, n), ($startpos, $endpos) }
     | POP; s=segment; n=NUM        { Pop (s,n), ($startpos, $endpos) }
-    | PUSH; CONSTANT; n=NUM        { PushC n, ($startpos, $endpos) }
+    | PUSH; CONSTANT; n=NUM        { PushC (W.of_int n), ($startpos, $endpos) }
     | ADD                          { Add, ($startpos, $endpos) }
     | SUB                          { Sub, ($startpos, $endpos) }
     | NEG                          { Neg, ($startpos, $endpos) }

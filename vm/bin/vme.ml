@@ -11,6 +11,7 @@ module P  = VE.State.PP
 module R  = VE.Repl
 module S  = Vm.Syntax.Emulator
 module STbl = Hashtbl.Make (String)
+module W = Types.Word
 
 type src_tbl = string STbl.t
 
@@ -101,7 +102,7 @@ let () =
                     | None -> print_endline
                         "Execution terminated with no return value."
                     | Some v -> Printf.printf
-                        "Execution terminated with %d\n" v end ;
+                        "Execution terminated with %s\n" (W.to_string v) end ;
 
                 (* Handle Screen output *)
                 if !show_screen then
