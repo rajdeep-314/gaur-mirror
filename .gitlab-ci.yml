@@ -1,10 +1,22 @@
+# Structure of directory public/:
+# public/
+#   +- tools            # contains the web versions of tools and has entrypoint in tools/index.html
+#   +- ptools
+#     +- index.html     # the main entrypoint for documentation, has link to tools/index.html
+#   +- assembler        # documentation page for assembler
+#   +- disassembler     # documentation page for disassembler
+#   +- <other tools>    # documentation pages for the other tools
+#   +- index.html       # main GitLab pages entrypoint -- symlinked to ptools/index.html
+
 default:
   image: registry.gitlab.com/verify-at-iitpkd/focs/ptools:latest
 
 stages:
-  - build
-  - test
-  - deploy
+  - build           # Build the main dune project
+  - test            # Run cram tests
+  - web-tools       # Build pages for web versions of tools
+  - documentation   # Build documentation (.html pages)
+  - host-on-pages   # Host documentation and web tools on GitLab pages
 
 build-project:
   stage: build
@@ -21,15 +33,30 @@ cram-tests:
   script:
     - dune runtest
 
-host-documentation:
-  stage: deploy
-  dependencies:
-    - build-project
+build-web-tools:
+  stage: web-tools
+  script:
+    - mkdir public
+    - cp -r _build/default/web public/tools
+    - cp -r ./web/pages/* public/tools
+  artifacts:
+    paths:
+      - public
+
+build-documentation:
+  stage: documentation
   script:
     - dune build @doc
-    - mkdir public
     - cp -r _build/default/_doc/_html/* public/
     - rm -f public/index.html
     - ln -s ptools/index.html public/index.html
+  artifacts:
+    paths:
+      - public
+
+host-web:
+  stage: host-on-pages
+  script:
+    - echo "Hosting documentation and web tools on GitLab pages..."
   pages: true
 
