@@ -69,6 +69,12 @@ let () =
   let button = DU.get_element "ram-init-button" in
   let status = DU.get_element "ram-status" in
   let errors = DU.get_element "ram-errors" in
+  let copy_status = DU.get_element "copy-status" in
+  let copy_errors = DU.get_element "copy-errors" in
+
+  DU.setup_copy_button copy_status status;
+  DU.setup_copy_button copy_errors errors;
+
 
   DU.clear_text status;
   DU.clear_text errors;
