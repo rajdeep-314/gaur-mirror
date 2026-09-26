@@ -56,6 +56,11 @@ let () =
   let button = DU.get_element "disassemble-button" in
   let result = DU.get_element "disassembler-result" in
   let errors = DU.get_element "disassembler-errors" in
+  let copy_output = DU.get_element "copy-output" in
+  let copy_errors = DU.get_element "copy-errors" in
+
+  DU.setup_copy_button copy_output result;
+  DU.setup_copy_button copy_errors errors;
 
   DU.clear_text result;
   DU.clear_text errors;

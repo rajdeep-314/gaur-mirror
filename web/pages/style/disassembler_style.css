@@ -417,6 +417,71 @@ button:active {
     background: #505050;
 }
 
+/* ================================
+   Output containers
+   ================================ */
+
+.code-container {
+    position: relative;
+}
+
+
+/* ================================
+   Copy button
+   ================================ */
+
+.copy-button {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    padding: 5px 10px;
+
+    margin: 0;
+
+    border: 1px solid var(--border);
+    border-radius: 5px;
+
+    background-color: var(--surface-hover);
+    color: var(--text-secondary);
+
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.15s ease,
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+/* Show button when hovering over output/error */
+
+.code-container:hover .copy-button {
+    opacity: 1;
+}
+
+
+.copy-button:hover {
+    background-color: #FFFFFF;
+    color: #111111;
+
+    border-color: #FFFFFF;
+}
+
+
+.copy-button:focus {
+    opacity: 1;
+
+    outline: none;
+}
 
 /* ================================
    Responsive
