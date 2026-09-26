@@ -10,9 +10,22 @@
     open Ast
     open Err.Helper.Parser
 
-    let syscall_of_iden = function
+    let syscall_of_iden f ps =
+        match f with
         | "putchar" -> PutChar
-        | s         -> raise (invalid_syscall s)
+        | s         -> raise (invalid_syscall s ps)
+
+    (** [word_of_int n b ps] attempts to convert int [n] to [W.t], and raises
+        a parsing exception if it is unable to do so -- an exception for
+        [PushC] statements if [b] is [true], and an exception for [exp] type's
+        [Const] constructor otherwise. [ps] is of type [Lexing.position *
+        Lexing.position] and it corresponds to the offending positions. *)
+    let word_of_int n b ps =
+        match W.of_int_opt n with
+        | Some n -> n
+        | None   ->
+            let exn = if b then oob_pushc n ps else oob_exp_const n ps in
+            raise exn
 %}
 
 %token CONSTANT TEMP STATIC LOCAL ARGUMENT
@@ -58,7 +71,7 @@ segment:
     | ARGUMENT    { Argument }
 
 syscall:
-    | f=ID        { syscall_of_iden f }
+    | f=ID        { syscall_of_iden f ($startpos(f), $endpos(f)) }
 
 %inline relop:
     | REQ   { R_eq }
@@ -79,7 +92,7 @@ syscall:
     | BLOR  { Bl_or }
 
 exp:
-    | n=NUM                                 { Const (W.of_int n) }
+    | n=NUM                                 { Const (word_of_int n false ($startpos(n), $endpos(n))) }
     | STACK; LSQUARE; n=NUM; RSQUARE        { StackOffset n }
     | s=segment; LSQUARE; n=NUM; RSQUARE    { SegmentOffset (s, n) }
     | e1=exp; o=binop; e2=exp               { BinOp (o, e1, e2) }
@@ -97,7 +110,7 @@ cond_exp:
 inst:
     | PUSH; s=segment; n=NUM        { Push (s, n), ($startpos, $endpos) }
     | POP; s=segment; n=NUM         { Pop (s,n), ($startpos, $endpos) }
-    | PUSH; CONSTANT; n=NUM         { PushC (W.of_int n), ($startpos, $endpos) }
+    | PUSH; CONSTANT; n=NUM         { PushC (word_of_int n true ($startpos(n), $endpos(n))), ($startpos, $endpos) }
     | ADD                           { Add, ($startpos, $endpos) }
     | SUB                           { Sub, ($startpos, $endpos) }
     | NEG                           { Neg, ($startpos, $endpos) }

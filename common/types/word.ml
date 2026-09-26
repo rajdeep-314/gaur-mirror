@@ -24,10 +24,19 @@ let of_int : int -> t = Int32.of_int
     WARNING: Probably machine-dependent. *)
 let to_int : t -> int = Int32.to_int
 
-(** [to_char w] is the character equivalent of word [w] -- [Some c] as the
+(** [of_int_opt n] evaluates to [Some n'] if [n] is in the int32 range, [n']
+    being the corresponding [int32] value, and it evaluates to [None]
+    otherwise. *)
+let of_int_opt : int -> t option =
+    fun n ->
+    if n >= Int32.(to_int min_int) && n <= Int32.(to_int max_int)
+    then Some (Int32.of_int n)
+    else None
+
+(** [to_char_opt w] is the character equivalent of word [w] -- [Some c] as the
     result denotes that the word [w] was in the ASCII characters range ([[32,
     126]]), and [None] denotes otherwise. *)
-let to_char : t -> char option =
+let to_char_opt : t -> char option =
     fun w ->
     if w >= 32l && w <= 126l then Some (char_of_int (Int32.to_int w))
     else None
