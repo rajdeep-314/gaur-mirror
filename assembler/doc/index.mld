@@ -7,6 +7,10 @@ The assembler's job is to take programs written in the [PASM] assembly language 
 - [ascii]: ASCII representations of [PISA] binaries, where each instruction is written in it's own line with 16-character strings consisting of [0]s and [1]s, corresponding to the bit-wise layout of the instruction.
 - [bin]: [PISA] binaries.
 
+{2 Web tool}
+
+The web version of assembler can be found {{:../tools/assembler.html} here}
+
 
 {2 Usage}
 
