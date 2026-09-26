@@ -103,3 +103,37 @@ let setup_line_numbers textarea line_numbers =
 
       Js._false
     )
+
+(* Copy text from an element to the clipboard *)
+let copy_text element =
+  let document = Dom_html.document in
+
+  let range =
+    document##createRange
+  in
+
+  range##selectNodeContents (Js.Unsafe.coerce element);
+
+  let selection =
+    Dom_html.window##getSelection
+  in
+
+  selection##removeAllRanges;
+  selection##addRange range;
+
+  ignore (
+    document##execCommand
+      (Js.string "copy")
+      Js._false
+      Js.null
+  );
+
+  selection##removeAllRanges
+
+(* Set up a copy button for an element *)
+let setup_copy_button button element =
+  button##.onclick :=
+    Dom_html.handler (fun _ ->
+      copy_text element;
+      Js._false
+    )
