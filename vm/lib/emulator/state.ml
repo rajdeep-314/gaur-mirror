@@ -78,7 +78,7 @@ module Inspect = struct
     let lines s =
         let iss = Helper.iss_of_screen s in
         let to_char i =
-            match W.to_char i with
+            match W.to_char_opt i with
             | Some c -> c
             | None   -> '?'
         in
