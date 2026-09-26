@@ -1,7 +1,7 @@
 (library
  (name web_utils)
  (wrapped false)
- (modules web_utils misc)
+ (modules dom_utils misc)
  (libraries js_of_ocaml)
  (preprocess (pps js_of_ocaml-ppx)))
 

@@ -11,7 +11,7 @@ module IP = Types.Isa.Printers
 module EP = Dis.Errors.Printers
 module E  = Dis.Errors
 
-module WU = Web_utils
+module DU = Dom_utils
 module M = Misc
 
 (* Read the selected browser file and disassemble it. *)
@@ -26,21 +26,21 @@ let disassemble_file file result errors =
       with
 
       | None ->
-          WU.set_text errors "Unable to read file as an ArrayBuffer."
+          DU.set_text errors "Unable to read file as an ArrayBuffer."
 
       | Some buffer ->
 
           begin
             match M.words_of_array_buffer buffer with
             | Error size ->
-                WU.set_text errors (EP.err (E.InvalidFileSize size))
+                DU.set_text errors (EP.err (E.InvalidFileSize size))
             | Ok instrs ->
                 begin
                   match D.disassemble_prog instrs with
                   | Error e ->
-                      WU.set_text errors (EP.err e)
+                      DU.set_text errors (EP.err e)
                   | Ok p ->
-                      WU.set_text result (IP.prog p)
+                      DU.set_text result (IP.prog p)
                 end
           end);
 
@@ -52,29 +52,29 @@ let disassemble_file file result errors =
 
 let () =
 
-  let input_file = WU.get_input "dis-input-file" in
-  let button = WU.get_element "disassemble-button" in
-  let result = WU.get_element "disassembler-result" in
-  let errors = WU.get_element "disassembler-errors" in
+  let input_file = DU.get_input "dis-input-file" in
+  let button = DU.get_element "disassemble-button" in
+  let result = DU.get_element "disassembler-result" in
+  let errors = DU.get_element "disassembler-errors" in
 
-  WU.clear_text result;
-  WU.clear_text errors;
+  DU.clear_text result;
+  DU.clear_text errors;
 
   button##.onclick :=
     Dom_html.handler (fun _ ->
-      WU.clear_text result;
-      WU.clear_text errors;
+      DU.clear_text result;
+      DU.clear_text errors;
       (match Js.Opt.to_option input_file##.files with
         | None ->
-            WU.set_text errors "No file selected."
+            DU.set_text errors "No file selected."
 
         | Some files ->
             if files##.length = 0 then
-              WU.set_text errors "No file selected."
+              DU.set_text errors "No file selected."
             else
               match Js.Opt.to_option (files##item 0) with
               | None ->
-                  WU.set_text errors "Unable to access selected file."
+                  DU.set_text errors "Unable to access selected file."
               | Some file ->
                   disassemble_file file result errors);
 

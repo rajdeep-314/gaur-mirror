@@ -12,7 +12,7 @@ module IsaPrinters = Types.Isa.Printers
 module MacPrinters = Types.Machine.Printers
 module Types = Types.Asm
 module Errors = Parsing.Asm.Errors
-module WU = Web_utils
+module DU = Dom_utils
 
 
 (** [parse_source src] parses string program [src] and returns a value in the
@@ -63,16 +63,16 @@ let handle_format_button button result errors operation =
   button##.onclick :=
     Dom_html.handler (fun _ ->
       let source =
-        WU.get_textarea_value "assembly-input"
+        DU.get_textarea_value "assembly-input"
       in
 
-      WU.clear_text result;
-      WU.clear_text errors;
+      DU.clear_text result;
+      DU.clear_text errors;
 
       begin
       match operation source with
-      | Error e   -> WU.set_text errors e
-      | Ok output -> WU.set_text result output
+      | Error e   -> DU.set_text errors e
+      | Ok output -> DU.set_text result output
       end;
       Js._false
     )
@@ -80,18 +80,18 @@ let handle_format_button button result errors operation =
 
 let () =
 
-  let input = WU.get_textarea "assembly-input" in
-  let line_numbers = WU.get_element "line-numbers" in
-  let result = WU.get_element "assembly-result" in
-  let errors = WU.get_element "assembly-errors" in
-  let fmt_ascii = WU.get_element "format-ascii" in
-  let fmt_bin = WU.get_element "format-bin" in
-  let fmt_inter = WU.get_element "format-inter" in
+  let input = DU.get_textarea "assembly-input" in
+  let line_numbers = DU.get_element "line-numbers" in
+  let result = DU.get_element "assembly-result" in
+  let errors = DU.get_element "assembly-errors" in
+  let fmt_ascii = DU.get_element "format-ascii" in
+  let fmt_bin = DU.get_element "format-bin" in
+  let fmt_inter = DU.get_element "format-inter" in
 
-  WU.setup_line_numbers input line_numbers;
+  DU.setup_line_numbers input line_numbers;
 
-  WU.set_text result "Waiting for input...";
-  WU.clear_text errors;
+  DU.set_text result "Waiting for input...";
+  DU.clear_text errors;
 
   (* Ascii *)
   handle_format_button fmt_ascii result errors
