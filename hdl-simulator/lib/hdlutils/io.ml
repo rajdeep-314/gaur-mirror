@@ -37,3 +37,19 @@ let open_in_many sl =
 let close_in_many icl =
   icl
   |> List.map In_channel.close
+
+(** [range fst lst ip] returns the list of lines of [ip] between
+    line number [fst] untill [lst] with respective line numbers. *)
+let range fst lst ip =
+  ip
+  |> List.mapi (fun i x -> (i + 1, x))
+  |> List.drop (fst - 1)
+  |> List.take (lst - fst + 1)
+
+(** [file_range fst lst ip] returns the list of lines of in channel
+    [ic] between line number [fst] untill [lst] with respective line
+    numbers. *)
+let file_range fst lst ic =
+  ic
+  |> In_channel.input_lines
+  |> range fst lst
