@@ -1,5 +1,5 @@
 (*
-    isa.ml
+    asm.ml
 *)
 
 
@@ -43,6 +43,70 @@ type syn_prog = (Lexing.position * Lexing.position, string) annot_prog
 (** Remove annotations from instructions and programs. *)
 let remove_annot_from_inst (i:('a, 'l) annot_inst) : 'l inst = fst i
 let remove_annot_from_prog (p:('a, 'l) annot_prog) : 'l prog = List.map fst p
+
+(** Extract annotation from an annotated instruction. *)
+let annot_of (i:('a, 'l) annot_inst) : 'a = snd i
+
+
+(** Module [Validate] contains functions to validate ASM instructions and
+    programs. *)
+module Validate = struct
+    open Utils
+
+    (** ['a verr] denotes a validation error, with ['a] being the type of
+        annotations for instructions. *)
+    type 'a verr =
+
+        (** [VErr (a, l, u, n)] denotes that an instruction with annotation [a]
+            was invalid, with an out-of-bound immediate [n], the valid
+            immediate range being the interval [[l, u]]. *)
+        | VErr of 'a * int * int * int
+
+    let string_of_verr ap (VErr (a, l, u, n)) = Printf.sprintf
+        "%s\nImmediate validation Error: Immediate %d is outside the valid interval [%d, %d]."
+        (ap a) n l u
+
+    (** [inst_partial i] returns [None] if annotated instruction [i]'s
+        immediate is in the valid interval, and if that is not the case, [Some
+        (l, u, n)] is returned, with the valid interval being [[l, u]], and the
+        offending immediate being [n]. *)
+    let inst_partial (i:('a, 'l) annot_inst) : (int * int * int) option =
+        match remove_annot_from_inst i with
+        | Li (_, i)            -> cir_u 11 i
+        | Ld (_, _, i)         -> cir_s 6 i
+        | St (_, _, i)         -> cir_s 6 i
+        | Addi (_, _, i)       -> cir_s 6 i
+        | Sl (_, _, i)         -> cir_u 5 i
+        | Sr (_, _, i)         -> cir_u 5 i
+        | Jalr (_, _, i)       -> cir_s 6 i
+        | Apc (_, i)           -> cir_s 11 i
+        | Add _ | Sub _ | And _
+        | Not _ | Beq _ | Blt _
+        | J _ | Label _ | Spin -> None
+
+    (** [inst i], for some annotated instruction [i] returns [None] if the
+        instruction [i] has its immediate (if any) in the valid range, and if
+        that is not the case, [Some (VErr (a, l, u))] is returned, with [a]
+        being the annotation corresponding to [i], and the valid immediate
+        interval being [[l, u]]. *)
+    let inst (i:('a, 'l) annot_inst) : 'a verr option =
+        match inst_partial i with
+        | None           -> None
+        | Some (u, l, n) -> Some (VErr (annot_of i, u, l, n))
+
+    (** [prog p] returns [None] if all of its instructions have valid immediate
+        arguments, and if that is not the case, [Some (VErr (a, l, u, n))] is
+        returned, with [a] being the first offending instruction's annotation,
+        [[l, u]] being the valid immediate interval, and [n] being the
+        offending instruction's immediate. *)
+    let rec prog (p:('a, 'l) annot_prog) : 'a verr option =
+        match p with
+        | []      -> None
+        | i :: p' ->
+            match inst i with
+            | None -> prog p'
+            | ow   -> ow
+end
 
 
 (** Helper functions to write ASM instructions and programs. *)
