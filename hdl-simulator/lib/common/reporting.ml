@@ -51,10 +51,21 @@ let create ~kind ~severity ~code ~source ~summary ~message =
 ;;
 
 let pp_header ppf error = Fmt.pf ppf "[%d] %a" error.code pp_kind error.kind
+let pp_line width ppf (idx, line) = Fmt.pf ppf " %-*d | %s" width idx line
+let pp_lines width = Fmt.(vbox (list ~sep:cut (pp_line width)))
 
-(* TODO Replace with actual source code printing function *)
-let pp_source ppf error = Loc.error_fmt ppf error.source
+(* TODO Add caret highlighting *)
+let pp_source ppf error =
+  let source = error.source in
+  let fname = source.loc_start.pos_fname in
+  let fst = source.loc_start.pos_lnum in
+  let lst = source.loc_end.pos_lnum in
+  let width = String.length (string_of_int lst) in
+  let lines = In_channel.with_open_text fname (Io.file_range fst lst) in
+  Fmt.pf ppf "@[<v 0>%a@,%a@,@]" Loc.error_fmt source (pp_lines width) lines
+;;
+
 let pp_summary ppf error = Fmt.string ppf error.summary
 let pp_message ppf error = Fmt.string ppf error.message
-let pp_detail = Fmt.(vbox (pp_header ++ cut ++ pp_source ++ cut ++ pp_message))
-let pp_short = Fmt.(vbox (pp_header ++ cut ++ pp_source ++ cut ++ pp_summary))
+let pp_detail = Fmt.(vbox (concat [ pp_header; pp_source; pp_message ]))
+let pp_short = Fmt.(vbox (concat [ pp_header; pp_source; pp_summary ]))
