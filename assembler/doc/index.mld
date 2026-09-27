@@ -44,6 +44,7 @@ v}
   | 1 | Command-line issues: more or less arguments than expected, invalid flag passed, etc. |
   | 2 | Lexing or parsing errors |
   | 3 | Assembling errors |
+  | 4 | Immediate range validation: some instruction has an immediate outside the valid range |
 }
 
 

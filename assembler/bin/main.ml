@@ -19,6 +19,8 @@ let err_code_success        = 0     (* Exited successfully.           *)
 let err_code_command_line   = 1     (* Command-line errors.           *)
 let err_code_lexing_parsing = 2     (* Lexing or parsing errors.      *)
 let err_code_assembling     = 3     (* Errors at the assembler level. *)
+let err_code_validation     = 4     (* Errors at the immediate
+                                                    validation level. *)
 
 
 (* Parameters. *)
@@ -90,22 +92,38 @@ let () =
     exit err_code_command_line
     end
 
-let prog_ast =
+let src =
     try
-        let src = Utils.Files.read_file !path in
-        try
-            Types.remove_annot_from_prog (Parser.parse_prog_from_path !path)
-        with
-        | Errors.LexingExn err ->
-            prerr_endline (Errors.LexingErrors.to_string_with_src err src);
-            exit err_code_lexing_parsing
-        | Errors.ParsingExn err ->
-            prerr_endline (Errors.ParsingErrors.to_string_with_src err src);
-            exit err_code_lexing_parsing
+        Utils.Files.read_file !path
     with
     | Sys_error e ->
         prerr_endline (Printf.sprintf "System error:\n%s" e);
         exit err_code_command_line
+
+let prog_ast_annotated =
+    try
+        Parser.parse_prog_with_path !path src
+    with
+    | Errors.LexingExn err ->
+        prerr_endline (Errors.LexingErrors.to_string_with_src err src);
+        exit err_code_lexing_parsing
+    | Errors.ParsingExn err ->
+        prerr_endline (Errors.ParsingErrors.to_string_with_src err src);
+        exit err_code_lexing_parsing
+
+(** Perform validation on AST with annotations, then remove
+    annotations so that the Rocq-extracted functions can do further
+    work. *)
+let prog_ast =
+    match Types.Validate.prog prog_ast_annotated with
+    | None -> Types.remove_annot_from_prog prog_ast_annotated
+    | Some err ->
+        let err_msg = Types.Validate.string_of_verr
+        (fun annot -> Utils.Parsingerrs.pp_pos_info_with_source ~source:src annot)
+        err in
+        prerr_endline err_msg ;
+        exit err_code_validation
+
 
 let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
 let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
