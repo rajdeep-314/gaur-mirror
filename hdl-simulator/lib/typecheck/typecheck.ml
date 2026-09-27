@@ -3,6 +3,7 @@ module Errors      = Errors
 module Init        = Init
 module Typechecker = Typechecker
 
+open Common
 open Hdlutils
 open Errors
 open Typechecker
@@ -15,7 +16,6 @@ let typecheck prog =
   let prog' = Init.prog Loc.dummy prog in
   let env = Init.env prog' in
   try tc_prog env prog'
-  with TypeError (loc, err) ->
-    Loc.errorl loc;
-    Pretty.pp Fmt.stderr err;
+  with TypeError error ->
+    Reporting.pp_short Fmt.stderr error;
     exit Exit.typeerror
