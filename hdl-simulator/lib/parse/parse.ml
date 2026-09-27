@@ -5,6 +5,16 @@ module Lexer  = Lexer
 module Messages = Messages
 
 open Hdlutils
+open Common
+
+let create source summary message =
+  Reporting.create
+    ~kind:Reporting.parsing
+    ~severity:Reporting.error
+    ~code:(-1)
+    ~source:source
+    ~summary:summary
+    ~message:message
 
 let from_channel fname ic =
   let lexbuf = Lexing.from_channel ic in
@@ -19,8 +29,8 @@ let parse s =
 
 (** [parse_ic fname ic] parses the program in file [fname] from in-channel [ic]. *)
 let parse_ic fname ic =
+  let lexbuf = from_channel fname ic in
   try
-    let lexbuf = from_channel fname ic in
     let ast = Parser.prog Lexer.read lexbuf in
     ast
   with
@@ -34,7 +44,11 @@ let parse_ic fname ic =
     exit Exit.lexing_error
 
   | Parser.Error st ->
-    prerr_endline (Messages.message st);
+    let open Lexing in
+    let loc = Loc.make (lexeme_start_p lexbuf) (lexeme_end_p lexbuf) in
+    let message = Messages.message st in
+    let error = create loc message message in
+    Reporting.pp_short Fmt.stderr error;
     exit Exit.parsing_error
 
 (** [parse_ic_many [(fname, ic); ....]] parses all programs in files
