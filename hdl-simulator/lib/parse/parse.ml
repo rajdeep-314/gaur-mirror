@@ -8,9 +8,9 @@ open Hdlutils
 open Common.Error
 
 let create source summary message =
-  Reporting.create
-    ~kind:Reporting.parsing
-    ~severity:Reporting.error
+  Diagnostics.create
+    ~kind:Diagnostics.parsing
+    ~severity:Diagnostics.error
     ~code:(-1)
     ~source:source
     ~summary:summary
@@ -48,7 +48,7 @@ let parse_ic fname ic =
     let loc = Loc.make (lexeme_start_p lexbuf) (lexeme_end_p lexbuf) in
     let message = Messages.message st in
     let error = create loc message message in
-    Reporting.pp_short Fmt.stderr error;
+    Diagnostics.pp_short Fmt.stderr error;
     exit Exit.parsing_error
 
 (** [parse_ic_many [(fname, ic); ....]] parses all programs in files

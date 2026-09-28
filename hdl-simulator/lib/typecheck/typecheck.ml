@@ -17,5 +17,5 @@ let typecheck prog =
   let env = Init.env prog' in
   try tc_prog env prog'
   with TypeError error ->
-    Reporting.pp_short Fmt.stderr error;
+    Diagnostics.pp_short Fmt.stderr error;
     exit Exit.typeerror

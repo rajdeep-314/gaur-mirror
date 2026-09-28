@@ -66,16 +66,16 @@ module Pretty = struct
 end
 
 let create source error =
-  Reporting.create
-    ~kind:Reporting.type_error
+  Diagnostics.create
+    ~kind:Diagnostics.type_error
     ~code:(code error)
-    ~severity:Reporting.error
+    ~severity:Diagnostics.error
     ~source
     ~summary:(Fmt.to_to_string summary error)
     ~message:(Fmt.to_to_string message error)
 ;;
 
-exception TypeError of Reporting.t
+exception TypeError of Diagnostics.t
 
 let raise_argument_mismatch source actual expected =
   raise (TypeError (create source (ArgumentMismatch (actual, expected))))
