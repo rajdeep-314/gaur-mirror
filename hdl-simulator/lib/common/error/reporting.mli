@@ -24,4 +24,5 @@ val create
   -> t
 
 val pp_detail : t Fmt.t
+
 val pp_short : t Fmt.t

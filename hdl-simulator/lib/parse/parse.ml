@@ -5,7 +5,7 @@ module Lexer  = Lexer
 module Messages = Messages
 
 open Hdlutils
-open Common
+open Common.Error
 
 let create source summary message =
   Reporting.create

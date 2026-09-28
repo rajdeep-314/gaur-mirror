@@ -3,7 +3,7 @@ module Errors      = Errors
 module Init        = Init
 module Typechecker = Typechecker
 
-open Common
+open Common.Error
 open Hdlutils
 open Errors
 open Typechecker

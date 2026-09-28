@@ -1,4 +1,4 @@
-open Common
+open Common.Error
 open Parse
 open Hdlutils
 
