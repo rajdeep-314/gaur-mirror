@@ -21,11 +21,9 @@ let pp_kind ppf kind =
 
 type severity =
   | Error
-  | Warning
   | Bug
 
 let error = Error
-let warning = Warning
 let bug = Bug
 
 let pp_severity ppf severity =
@@ -33,7 +31,6 @@ let pp_severity ppf severity =
     ppf
     (match severity with
      | Error -> "Error"
-     | Warning -> "Warning"
      | Bug -> "Buf")
 ;;
 

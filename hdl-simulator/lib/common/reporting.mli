@@ -10,7 +10,6 @@ val type_error : kind
 type severity
 
 val error : severity
-val warning : severity
 val bug : severity
 
 type t
