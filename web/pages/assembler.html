@@ -24,6 +24,14 @@
         <!-- Left: Assembly Input -->
         <div id="input-panel">
             <h2>Assembly Code</h2>
+
+            <div class="input-group source-upload">
+                <input
+                    type="file"
+                    id="assembly-file"
+                    accept=".asm">
+            </div>
+
             <div id="editor">
                 <div id="line-numbers" aria-hidden="true">1</div>
                 <textarea
@@ -48,7 +56,11 @@
                 <h2>Output</h2>
 
                 <div class="code-container">
-                    <button class="copy-button" id="copy-output">Copy</button>
+                    <div class="output-actions">
+                        <button class="copy-button" id="copy-output">Copy</button>
+                        <button class="download-button" id="download-output">Download</button>
+                    </div>
+
                     <pre id="assembly-result"></pre>
                 </div>
             </div>

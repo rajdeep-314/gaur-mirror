@@ -59,7 +59,7 @@ let assemble_to_inter source =
 
 
 (* Common code for format buttons *)
-let handle_format_button button result errors operation =
+let handle_format_button button result errors current_output current_filename filename operation =
   button##.onclick :=
     Dom_html.handler (fun _ ->
       let source =
@@ -71,9 +71,16 @@ let handle_format_button button result errors operation =
 
       begin
       match operation source with
-      | Error e   -> DU.set_text errors e
-      | Ok output -> DU.set_text result output
+      | Error e ->
+          current_output := None;
+          DU.set_text errors e
+
+      | Ok output ->
+          current_output := Some output;
+          current_filename := filename;
+          DU.set_text result output
       end;
+
       Js._false
     )
 
@@ -84,12 +91,19 @@ let () =
   let line_numbers = DU.get_element "line-numbers" in
   let result = DU.get_element "assembly-result" in
   let errors = DU.get_element "assembly-errors" in
+
   let fmt_ascii = DU.get_element "format-ascii" in
   let fmt_bin = DU.get_element "format-bin" in
   let fmt_inter = DU.get_element "format-inter" in
 
   let copy_output = DU.get_element "copy-output" in
   let copy_errors = DU.get_element "copy-errors" in
+
+  let assembly_file = DU.get_input "assembly-file" in
+  let download_output = DU.get_element "download-output" in
+
+  let current_output = ref None in
+  let current_filename = ref "assembled.txt" in
 
   DU.setup_line_numbers input line_numbers;
   DU.setup_copy_button copy_output result;
@@ -98,35 +112,44 @@ let () =
   DU.set_text result "Waiting for input...";
   DU.clear_text errors;
 
+  DU.setup_file_input assembly_file input line_numbers errors;
+
   (* Ascii *)
   handle_format_button fmt_ascii result errors
-    (fun source ->
-      match assemble_source source with
-      | Error e ->
-          Error e
-      | Ok mp ->
-          Ok (MacPrinters.ascii_prog mp)
-    );
+  current_output current_filename
+  "assembled_ascii.txt"
+  (fun source ->
+    match assemble_source source with
+    | Error e ->
+        Error e
+    | Ok mp ->
+        Ok (MacPrinters.ascii_prog mp)
+  );
 
 
   (* Binary *)
   handle_format_button fmt_bin result errors
-    (fun source ->
-      match assemble_source source with
-      | Error e ->
-          Error e
-      | Ok mp ->
-          Ok (MacPrinters.bin_prog mp)
-    );
-
+  current_output current_filename
+  "assembled.bin"
+  (fun source ->
+    match assemble_source source with
+    | Error e ->
+        Error e
+    | Ok mp ->
+        Ok (MacPrinters.bin_prog mp)
+  );
 
   (* Intermediate *)
   handle_format_button fmt_inter result errors
-    (fun source ->
-      match assemble_to_inter source with
-      | Error e ->
-          Error e
-      | Ok mp ->
-          Ok (IsaPrinters.prog mp)
-    )
+  current_output current_filename
+  "assembled_intermediate.txt"
+  (fun source ->
+    match assemble_to_inter source with
+    | Error e ->
+        Error e
+    | Ok mp ->
+        Ok (IsaPrinters.prog mp)
+  );
 
+  DU.setup_download_button download_output current_output
+  current_filename errors Misc.download_file

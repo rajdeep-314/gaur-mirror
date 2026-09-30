@@ -498,6 +498,73 @@ button:active {
     outline: none;
 }
 
+.source-upload {
+    margin-bottom: 16px;
+}
+
+.source-upload input[type="file"] {
+    width: 100%;
+
+    padding: 8px;
+
+    background-color: var(--surface);
+    color: var(--text-secondary);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    font-family: var(--font-body);
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+.source-upload input[type="file"]::file-selector-button {
+    margin-right: 12px;
+
+    padding: 7px 12px;
+
+    border: 1px solid #E5E5E5;
+    border-radius: 6px;
+
+    background-color: #E5E5E5;
+    color: #111111;
+
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.output-actions {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    display: flex;
+    gap: 6px;
+}
+
+.output-actions button {
+    position: static;
+
+    margin: 0;
+
+    opacity: 0;
+}
+
+.code-container:hover .output-actions button {
+    opacity: 1;
+}
+
+.output-actions button:focus {
+    opacity: 1;
+    outline: none;
+}
+
+
 /* ================================
    Responsive
    ================================ */

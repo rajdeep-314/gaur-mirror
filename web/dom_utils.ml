@@ -148,3 +148,75 @@ let setup_copy_button button element =
 
       Js._false
     )
+
+(* Read a browser file as text *)
+let read_file_as_text file callback =
+  let reader = new%js File.fileReader in
+
+  reader##.onload :=
+    Dom.handler (fun _ ->
+
+      begin
+        match Js.Opt.to_option (File.CoerceTo.string reader##.result) with
+        | None ->
+            callback None
+
+        | Some js_result ->
+            callback (Some (Js.to_string js_result))
+      end;
+
+      Js._false
+    );
+
+  reader##readAsText file
+
+
+(* Set up a file input that loads a text file into a textarea *)
+let setup_file_input file_input textarea line_numbers errors =
+  file_input##.onchange :=
+    Dom_html.handler (fun _ ->
+
+      begin
+        match Js.Opt.to_option file_input##.files with
+        | None ->
+            ()
+
+        | Some files ->
+            if files##.length = 0 then
+              ()
+            else
+              match Js.Opt.to_option (files##item 0) with
+              | None ->
+                  set_text errors "Unable to access selected file."
+
+              | Some file ->
+                  read_file_as_text file (function
+                    | None ->
+                        set_text errors "Unable to read source file."
+
+                    | Some source ->
+                        textarea##.value := Js.string source;
+                        update_line_numbers textarea line_numbers
+                  )
+      end;
+
+      Js._false
+    )
+
+
+(* Set up a download button for generated output *)
+let setup_download_button button output filename errors download =
+  button##.onclick :=
+    Dom_html.handler (fun _ ->
+
+      begin
+        match !output with
+        | None ->
+            set_text errors "Nothing to download."
+
+        | Some content ->
+            download !filename content
+      end;
+
+      Js._false
+    )
