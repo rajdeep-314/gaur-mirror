@@ -14,7 +14,7 @@ module DU = Dom_utils
 module M = Misc
 
 (*    Process selected memory-map file   *)
-let process_file file status errors ram_size word_size lendianb offset padding output_file =
+let process_file file status hex errors ram_size word_size lendianb offset padding output_file =
 
   let reader =
     new%js File.fileReader
@@ -38,6 +38,7 @@ let process_file file status errors ram_size word_size lendianb offset padding o
               (* Generate RAM contents *)
               let bs = Translate.translate_maps maps ram_size word_size lendianb offset padding in
               let binary = Binary.to_string bs in
+              DU.set_text hex (M.hex_dump binary);
               let filename = if output_file = "" then "ram.bin" else output_file in
 
               (* Download result *)
@@ -68,21 +69,26 @@ let () =
   let file_input = DU.get_input "ram-map-file" in
   let button = DU.get_element "ram-init-button" in
   let status = DU.get_element "ram-status" in
+  let hex = DU.get_element "ram-hex" in
   let errors = DU.get_element "ram-errors" in
   let copy_status = DU.get_element "copy-status" in
+  let copy_hex = DU.get_element "copy-hex" in
   let copy_errors = DU.get_element "copy-errors" in
 
   DU.setup_copy_button copy_status status;
+  DU.setup_copy_button copy_hex hex;
   DU.setup_copy_button copy_errors errors;
 
 
   DU.clear_text status;
+  DU.clear_text hex;
   DU.clear_text errors;
 
   button##.onclick :=
     Dom_html.handler (fun _ ->
 
       DU.clear_text status;
+      DU.clear_text hex;
       DU.clear_text errors;
 
       (match Js.Opt.to_option file_input##.files with
@@ -109,7 +115,7 @@ let () =
                       let output_file = DU.get_input_value "output-file" in
                       DU.set_text status "Reading memory map...";
 
-                      process_file file status errors ram_size word_size lendianb offset padding output_file
+                      process_file file status hex errors ram_size word_size lendianb offset padding output_file
 
                     with
 

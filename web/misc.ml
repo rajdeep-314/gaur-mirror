@@ -89,3 +89,53 @@ let download_file filename content =
     link;
 
   Dom_html.window##._URL##revokeObjectURL url
+
+
+(* Produce an xxd-like hexadecimal dump *)
+let hex_dump content =
+  let len = String.length content in
+
+  let ascii_char c =
+    let code = Char.code c in
+    if code >= 32 && code <= 126 then
+      c
+    else
+      '.'
+  in
+
+  let make_line offset =
+    let count = min 16 (len - offset) in
+
+    let hex =
+      String.concat " "
+        (List.init 16 (fun i ->
+          if i < count then
+            Printf.sprintf "%02x" (Char.code content.[offset + i])
+          else
+            "  "
+        ))
+    in
+
+    let ascii =
+      String.init count (fun i ->
+        ascii_char content.[offset + i]
+      )
+    in
+
+    Printf.sprintf
+      "%08x  %s  |%s|"
+      offset
+      hex
+      ascii
+  in
+
+  let rec loop offset acc =
+    if offset >= len then
+      String.concat "\n" (List.rev acc)
+    else
+      loop
+        (offset + 16)
+        (make_line offset :: acc)
+  in
+
+  loop 0 []

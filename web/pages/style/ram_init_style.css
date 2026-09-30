@@ -427,7 +427,7 @@ body {
 /* ================================
    Scrollbars
    ================================ */
-
+#ram-hex::-webkit-scrollbar,
 #ram-status::-webkit-scrollbar,
 #ram-errors::-webkit-scrollbar,
 #output-panel::-webkit-scrollbar {
@@ -435,14 +435,14 @@ body {
     height: 8px;
 }
 
-
+#ram-hex::-webkit-scrollbar,
 #ram-status::-webkit-scrollbar-track,
 #ram-errors::-webkit-scrollbar-track,
 #output-panel::-webkit-scrollbar-track {
     background: transparent;
 }
 
-
+#ram-hex::-webkit-scrollbar,
 #ram-status::-webkit-scrollbar-thumb,
 #ram-errors::-webkit-scrollbar-thumb,
 #output-panel::-webkit-scrollbar-thumb {
@@ -451,7 +451,7 @@ body {
     border-radius: 4px;
 }
 
-
+#ram-hex::-webkit-scrollbar,
 #ram-status::-webkit-scrollbar-thumb:hover,
 #ram-errors::-webkit-scrollbar-thumb:hover,
 #output-panel::-webkit-scrollbar-thumb:hover {
@@ -522,6 +522,54 @@ body {
     opacity: 1;
 
     outline: none;
+}
+
+/* ================================
+   RAM Contents
+   ================================ */
+
+#hex-section {
+    margin-bottom: 28px;
+}
+
+#hex-section:has(#ram-hex:empty) {
+    display: none;
+}
+
+#hex-section h2 {
+    font-family: var(--font-heading);
+
+    margin: 0 0 12px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: var(--text-primary);
+}
+
+#ram-hex {
+    margin: 0;
+
+    padding: 16px;
+
+    min-height: 120px;
+
+    max-height: 250px;
+
+    overflow: auto;
+
+    white-space: pre;
+
+    font-family: var(--font-code);
+    font-size: 13px;
+    line-height: 1.6;
+
+    color: var(--text-secondary);
+
+    background-color: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
 }
 
 /* ================================
