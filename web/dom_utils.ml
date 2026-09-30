@@ -1,5 +1,5 @@
 (*
-  web_utils.ml
+  dom_utils.ml
 
   Helper functions for Web interface.
 *)
@@ -135,5 +135,16 @@ let setup_copy_button button element =
   button##.onclick :=
     Dom_html.handler (fun _ ->
       copy_text element;
+
+      button##.textContent := Js.some (Js.string "✓");
+
+      ignore (
+        Dom_html.window##setTimeout
+          (Js.wrap_callback (fun () ->
+            button##.textContent := Js.some (Js.string "Copy")
+          ))
+          (Js.float 1500.)
+      );
+
       Js._false
     )
