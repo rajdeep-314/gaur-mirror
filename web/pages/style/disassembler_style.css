@@ -483,6 +483,33 @@ button:active {
     outline: none;
 }
 
+.output-actions {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    display: flex;
+    gap: 6px;
+}
+
+.output-actions button {
+    position: static;
+
+    margin: 0;
+
+    opacity: 0;
+}
+
+.code-container:hover .output-actions button {
+    opacity: 1;
+}
+
+.output-actions button:focus {
+    opacity: 1;
+    outline: none;
+}
+
 /* ================================
    Responsive
    ================================ */
