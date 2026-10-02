@@ -83,7 +83,7 @@ v}
 
 {2 Source code and documentation}
 
-The source code for the [ram-init] tool can be found on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools/} GitLab repository}, in the [ram-init] directory.
+The source code for the [ram-init] tool can be found on our {{:https://gitlab.com/verify-at-iitpkd/gaur/} GitLab repository}, in the [ram-init] directory.
 
 The [odoc] generated documentation for the libraries involved can be read here:
 
