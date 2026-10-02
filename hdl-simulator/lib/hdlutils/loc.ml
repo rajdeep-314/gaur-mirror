@@ -50,5 +50,7 @@ let errorf ~loc fmt =
 let errorl loc =
   output_string stderr (range loc ^ "\n")
 
-let error_fmt ppf loc =
-  Fmt.pf ppf "@[<v 0>%s@,@]" (range loc)
+let pp_range ppf loc = Fmt.string ppf (range loc)
+
+let error_fmt =
+  Fmt.(vbox (pp_range ++ cut))
