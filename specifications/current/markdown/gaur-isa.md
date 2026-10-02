@@ -1,4 +1,4 @@
-# PISA
+# Gaur ISA
 
 ## Instruction set
 

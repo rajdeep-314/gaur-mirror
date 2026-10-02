@@ -1,7 +1,7 @@
 (*
     parser_asm.mly
 
-    Parser specification for Menhir for PASM.
+    Parser specification for Menhir for Gaur ASM.
 *)
 
 

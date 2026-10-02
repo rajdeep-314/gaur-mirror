@@ -51,7 +51,7 @@ Definition symtable_of_prog (l:Set) (p:@ast.prog l) : symtable.t l :=
     build_symtable l p 0.
 
 
-(** Translate an assembly instruction to it's corresponding PISA instruction. *)
+(** Translate an assembly instruction to it's corresponding Gaur ISA instruction. *)
 Definition ast_to_isa (l:Set) (eqb:l -> l -> bool) (inst:@ast.t l) (tbl:symtable.t l) (pc:nat) : result (option isa.t) string :=
     match inst with
     | ast.li rd imm        => Ok (Some (isa.li rd (bits.int_to_bv_n 11 imm)))

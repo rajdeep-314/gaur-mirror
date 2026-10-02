@@ -1,7 +1,7 @@
 {1 CPU simulator}
 
 
-The CPU simulator is meant to take [PISA] binaries (for now), and simulate how the binaries would execute on a [PISA] processor. The initial RAM state can be specified in a binary format. The [ram-init] tool can be used to generate these binaries.
+The CPU simulator is meant to take [Gaur ISA] binaries (for now), and simulate how the binaries would execute on a [Gaur ISA] processor. The initial RAM state can be specified in a binary format. The [ram-init] tool can be used to generate these binaries.
 
 
 {2 Usage}

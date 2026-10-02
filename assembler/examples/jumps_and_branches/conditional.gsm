@@ -1,4 +1,4 @@
-# conditional.pasm
+# conditional.gsm
 
 # Test forward and backward conditional jumps.
 # Both BEQ and BLT use labels which must be resolved

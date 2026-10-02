@@ -1,4 +1,4 @@
-; Commented as the current theories depend on the old PISA.
+; Commented as the current theories depend on the old Gaur ISA.
 ; (rocq.theory
 ;   (name vm_translator)
 ;   (theories Stdlib assembler)

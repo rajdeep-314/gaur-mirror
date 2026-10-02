@@ -3,7 +3,7 @@
 *)
 
 
-(** PISA instructions, without labels. *)
+(** Gaur ISA instructions, without labels. *)
 type inst =
     | Li    of  Reg.t * int
     | Ld    of  Reg.t * Reg.t * int
@@ -21,7 +21,7 @@ type inst =
     | Apc   of  Reg.t * int
     | J     of  int
 
-(** PISA programs. *)
+(** Gaur ISA programs. *)
 type prog = inst list
 
 (** Types with arbitrary annotations. *)

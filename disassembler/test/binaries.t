@@ -1,11 +1,11 @@
-Testing output on some sample PISA binaries.
+Testing output on some sample Gaur ISA binaries.
 
 
-*** fib-out.pmac ***
+*** fib-out.gin ***
 
-  $ dis binaries/fib-out.pmac -o fib.pasm
-  Wrote: fib.pasm
-  $ cat fib.pasm
+  $ dis binaries/fib-out.gin -o fib.gsm
+  Wrote: fib.gsm
+  $ cat fib.gsm
   ld r1 r0 0
   ld r2 r0 1
   addi r3 r0 0

@@ -1,7 +1,7 @@
 (*
     translate.v
 
-    Translating VM programs to PASM programs.
+    Translating VM programs to Gaur ASM programs.
 *)
 
 
@@ -104,9 +104,9 @@ Translation for `ret`:
 Arguments:
     L           :   VM program's label name type
     F           :   VM program's function name type
-    L'          :   PASM program's label name type
+    L'          :   Gaur ASM program's label name type
     f_name      :   Function whose body the instruction is part of
-    lbl_f       :   Combine VM function name and label name to obtain PASM
+    lbl_f       :   Combine VM function name and label name to obtain Gaur ASM
                     label name
     leqb        :   Boolean equality function for VM program labels
     ls          :   List of labels declared inside the function body
@@ -114,7 +114,7 @@ Arguments:
     bntl        :   Branch not taken label for line number n
     feqb        :   Equality between function names
     fs          :   List of function names
-    fl          :   PASM label corresponding to VM function name
+    fl          :   Gaur ASM label corresponding to VM function name
     ln          :   Line number
 *)
 Definition translate_inst {L F L':Set}
@@ -318,14 +318,14 @@ Definition find_main {L F:Set} (mainb:F -> bool) (p:@V.prog L F)
 (*
 Initialization assembly code.
 
-This PASM snippet sets up frame for the main function, and makes sp point to
+This Gaur ASM snippet sets up frame for the main function, and makes sp point to
 this frame's working stack (address 259).
 
 The frame of the main function has an empty ARG segment, the previous LCL
 and ARG pointers point to 0, and the return address points to a `spin`
 instruction.
 
-The initialization code in (roughly) PASM syntax is:
+The initialization code in (roughly) Gaur ASM syntax is:
     # Setting up ap and lp.
     li w1 256
     mv sp w1

@@ -6,7 +6,7 @@
 (**
     {1 ISA Module}
 
-    This module defines the representation of the PISA instructions
+    This module defines the representation of the Gaur ISA instructions
     and programs in the assembler.
 *)
 

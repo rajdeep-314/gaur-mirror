@@ -1,7 +1,7 @@
 (*
     ast.ml
 
-    Captures the AST of PISA.
+    Captures the AST of Gaur ISA.
 
     NOTE:   Depends on assembler.
 *)
