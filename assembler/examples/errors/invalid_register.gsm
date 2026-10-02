@@ -1,4 +1,4 @@
-# invalid_register.pasm
+# invalid_register.gsm
 
 # Register numbers are limited to r0 through r31.
 # r32 should be rejected by the parser.

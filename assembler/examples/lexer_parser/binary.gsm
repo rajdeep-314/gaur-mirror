@@ -1,4 +1,4 @@
-# binary.pasm
+# binary.gsm
 
 # Test binary integer literals.
 # Both lowercase and uppercase prefixes are supported.

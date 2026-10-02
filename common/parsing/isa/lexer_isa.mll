@@ -1,7 +1,7 @@
 (*
     lexer.mll
 
-    Lexer specification for PISA.
+    Lexer specification for Gaur ISA.
 *)
 
 

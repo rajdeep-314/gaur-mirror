@@ -4,7 +4,7 @@ with various configurations.
 
 *** fib ***
 
-  $ cpusim snippets/fib.pasm.inter -r ram-imgs/fib.bram -ms=69 -fs -nt
+  $ cpusim snippets/fib.gsm.inter -r ram-imgs/fib.bram -ms=69 -fs -nt
   
   
   Final state
@@ -53,7 +53,7 @@ with various configurations.
   002c:	00000001
   002d:	00000002
   002e:	00000003
-  $ cpusim snippets/fib.pasm.inter -r ram-imgs/fib.bram -ms=69 -nfs -t
+  $ cpusim snippets/fib.gsm.inter -r ram-imgs/fib.bram -ms=69 -nfs -t
   (0000)	ld r1 r0 0
   	r1	0005
   (0001)	ld r2 r0 1

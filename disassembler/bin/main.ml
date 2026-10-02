@@ -16,7 +16,7 @@ let output_path = ref ""
 let help = ref false
 
 let speclist = [
-    ( "--out", Arg.Set_string output_path, "\n\tPath for the generated PASM output") ;
+    ( "--out", Arg.Set_string output_path, "\n\tPath for the generated Gaur ASM output") ;
     ( "-o", Arg.Set_string output_path, "\n\tShort for --out") ;
 
     ( "--help", Arg.Set help, "\n\tDisplay this list of options" ) ;
@@ -36,7 +36,7 @@ let anon_fun arg =
         exit 1 ;
         end
 
-let default_exten = ".pasm"
+let default_exten = ".gsm"
 
 let default_output_path ip op =
     if op <> "" then op else

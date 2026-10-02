@@ -3,5 +3,5 @@
   $ ocaml scripts/arbitary_binary.ml 5 > input.bram
   $ wc -c input.bram
   5 input.bram
-  $ cpusim snippets/fib.pasm.inter -r input.bram -ms=69 -fs -nt &> /dev/null
+  $ cpusim snippets/fib.gsm.inter -r input.bram -ms=69 -fs -nt &> /dev/null
   [1]

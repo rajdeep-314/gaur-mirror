@@ -1,4 +1,4 @@
-# forward.pasm
+# forward.gsm
 
 # Test forward jumps.
 # The target labels occur after the jump instructions.

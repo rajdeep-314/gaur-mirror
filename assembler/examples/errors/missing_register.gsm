@@ -1,4 +1,4 @@
-# missing_register.pasm
+# missing_register.gsm
 
 # ADD requires three registers.
 # The third register is missing.

@@ -1,12 +1,12 @@
 *** These test cases test that the example programs assemble correctly.
 ***
 *** List of current example programs being tested:
-*** - fib.pasm (Fibonacci numbers)
+*** - fib.gsm (Fibonacci numbers)
 
 
 *** Binary ***
 
-  $ assembler ../examples/fib.pasm -fmt bin -o fib-bin
+  $ assembler ../examples/fib.gsm -fmt bin -o fib-bin
   Wrote: fib-bin
   $ xxd -g 1 fib-bin
   00000000: 00 02 08 00 00 02 10 01 00 10 18 00 00 10 28 00  ..............(.
@@ -17,7 +17,7 @@
 
 *** Intermediate ***
 
-  $ assembler ../examples/fib.pasm -fmt inter -o fib-inter
+  $ assembler ../examples/fib.gsm -fmt inter -o fib-inter
   Wrote: fib-inter
   $ cat fib-inter
   ld r1 r0 0
@@ -37,7 +37,7 @@
 
 *** ASCII ***
 
-  $ assembler ../examples/fib.pasm -fmt ascii -o fib-ascii
+  $ assembler ../examples/fib.gsm -fmt ascii -o fib-ascii
   Wrote: fib-ascii
   $ cat fib-ascii
   00000000000000100000100000000000

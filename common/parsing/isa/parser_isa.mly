@@ -1,7 +1,7 @@
 (*
     parser_isa.mly
 
-    Parser specification for Menhir for PISA.
+    Parser specification for Menhir for Gaur ISA.
 *)
 
 

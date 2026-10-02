@@ -1,4 +1,4 @@
 # CPU Simulator
 
-CPU simulator for PISA.
+CPU simulator for Gaur ISA.
 

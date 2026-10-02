@@ -3,7 +3,7 @@
 *)
 
 
-(** PASM instructions with labels of type ['l]. *)
+(** Gaur ASM instructions with labels of type ['l]. *)
 type 'l inst =
     | Li    of  Reg.t * int             (** Load immediate. *)
     | Ld    of  Reg.t * Reg.t * int     (** Load. *)
@@ -23,7 +23,7 @@ type 'l inst =
     | Label of  'l                      (** Define a label. *)
     | Spin                              (** Spin endlessly. *)
 
-(** PASM programs. *)
+(** Gaur ASM programs. *)
 type 'l prog = 'l inst list
 
 (** Types with arbitrary annotations. *)
