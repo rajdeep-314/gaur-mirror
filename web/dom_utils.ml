@@ -194,6 +194,24 @@ let read_file_as_text file callback =
   reader##readAsText file
 
 
+(* Get the name of the currently selected file. *)
+let get_file_input_name input =
+  match Js.Opt.to_option input##.files with
+  | None ->
+      None
+
+  | Some files ->
+      if files##.length = 0 then
+        None
+
+      else
+        match Js.Opt.to_option (files##item 0) with
+        | None ->
+            None
+
+        | Some file ->
+            Some (Js.to_string file##.name)
+
 (* Set up a file input that loads a text file into a textarea *)
 let setup_file_input file_input textarea line_numbers errors =
   file_input##.onchange :=

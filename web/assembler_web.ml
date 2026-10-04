@@ -75,17 +75,40 @@ let perform_operation result errors current_output current_filename
             DU.set_text result display_content
     end
 
+let output_filename input_filename format =
+    match format with
+    | "bin" ->
+        Misc.swap_suffix input_filename ".gin"
+
+    | "ascii" ->
+        Misc.swap_suffix input_filename ".gsc"
+
+    | "inter" ->
+        Misc.swap_suffix input_filename ".gsm.inter"
+
+    | _ ->
+        raise (Invalid_argument "unknown format")
+
 (* Common code for format buttons *)
 let handle_format_button button result errors current_output current_filename
-    last_operation filename operation =
+    last_operation file_input format default_filename operation =
 
     button##.onclick :=
         Dom_html.handler (fun _ ->
 
-        last_operation := operation;
+        last_operation := (operation, format, default_filename);
 
         let source =
             DU.get_textarea_value "assembly-input"
+        in
+
+        let filename =
+            match DU.get_file_input_name file_input with
+            | Some input_filename ->
+                output_filename input_filename format
+
+            | None ->
+                default_filename
         in
 
         perform_operation result errors current_output
@@ -95,34 +118,55 @@ let handle_format_button button result errors current_output current_filename
         )
 
 let handle_editor_shortcuts input result errors current_output
-    current_filename last_operation (ev : Dom_html.keyboardEvent Js.t) =
+    current_filename last_operation file_input
+    (ev : Dom_html.keyboardEvent Js.t) =
 
-    if ev##.keyCode = 13 && (Js.to_bool ev##.ctrlKey) then begin
+  if ev##.keyCode = 13 &&
+     Js.to_bool ev##.ctrlKey then begin
 
-        Dom.preventDefault ev;
+    Dom.preventDefault ev;
 
-        if (Js.to_bool ev##.shiftKey) then begin
+    if Js.to_bool ev##.shiftKey then begin
 
-        match !current_output with
-        | None ->
-            DU.set_text errors "Nothing to download."
+      match !current_output with
+      | None ->
+          DU.set_text errors "Nothing to download."
 
-        | Some output ->
-            Misc.download_file !current_filename output
+      | Some output ->
+          Misc.download_file
+            !current_filename
+            output
 
-        end else begin
-
-        let source = DU.get_textarea_value "assembly-input" in
-
-        perform_operation result errors current_output current_filename
-            !current_filename !last_operation source
-
-        end;
-
-        Js._false
     end else begin
-        Js._true
-    end
+
+      let source =
+        DU.get_textarea_value "assembly-input"
+      in
+
+      let operation, format, default_filename =
+        !last_operation
+      in
+
+      let filename =
+        match DU.get_file_input_name file_input with
+        | Some input_filename ->
+            output_filename input_filename format
+
+        | None ->
+            default_filename
+      in
+
+      perform_operation result errors current_output
+        current_filename filename operation source
+
+    end;
+
+    Js._false
+
+  end else begin
+    Js._true
+  end
+
 
 let () =
 
@@ -168,13 +212,16 @@ let () =
             Ok (output, output)
         in
 
-    let last_operation = ref ascii_operation in
+    let last_operation =
+        ref (ascii_operation, "ascii", "assembled.gsc") in
+
     let current_output = ref None in
     let current_filename = ref "assembled_ascii.txt" in
 
     DU.setup_line_numbers_with_shortcuts input line_numbers
         (handle_editor_shortcuts input result errors
-            current_output current_filename last_operation);
+        current_output current_filename last_operation
+        assembly_file);
 
     DU.setup_copy_button copy_output result;
     DU.setup_copy_button copy_errors errors;
@@ -191,7 +238,9 @@ let () =
         current_output
         current_filename
         last_operation
-        "assembled_ascii.txt"
+        assembly_file
+        "ascii"
+        "assembled.gsc"
         ascii_operation;
 
     handle_format_button
@@ -201,6 +250,8 @@ let () =
         current_output
         current_filename
         last_operation
+        assembly_file
+        "bin"
         "assembled.bin"
         binary_operation;
 
@@ -211,7 +262,9 @@ let () =
         current_output
         current_filename
         last_operation
-        "assembled_intermediate.txt"
+        assembly_file
+        "inter"
+        "assembled.gsm.inter"
         inter_operation;
 
     DU.setup_download_button download_output current_output
