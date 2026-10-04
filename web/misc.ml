@@ -140,9 +140,10 @@ let hex_dump content =
 
   loop 0 []
 
-(* Replace one file suffix with another. *)
-let swap_suffix filename input_suffix output_suffix =
-  if Filename.check_suffix filename input_suffix then
-    Filename.chop_suffix filename input_suffix ^ output_suffix
+(* Replace the existing file extension with the given suffix.
+   If there is no extension, append the suffix. *)
+let swap_suffix filename suffix =
+  if Filename.extension filename = "" then
+    filename ^ suffix
   else
-    filename ^ output_suffix
+    Filename.chop_extension filename ^ suffix

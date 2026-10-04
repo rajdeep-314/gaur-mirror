@@ -160,7 +160,7 @@ let () =
                     let input_filename = Js.to_string file##.name in
 
                     let output_filename =
-                      M.swap_suffix input_filename ".ram" ".bin"
+                      M.swap_suffix input_filename ".bin"
                     in
 
                     if Js.to_string output_file_input##.value = "" then
