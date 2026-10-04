@@ -39,8 +39,8 @@ end
 
 module Make (P : PROG) () : STF = struct
   module Chipinfo = struct type t = P.t Ast.chip_info end
-  module Chiptbl  = Tbl.Make (String) (Chipinfo)
-  module Stftbl   = Tbl.Make (String) (Bool)
+  module Chiptbl  = Tbl.Make (String) (Chipinfo) ()
+  module Stftbl   = Tbl.Make (String) (Bool) ()
 
   open Errors
 
