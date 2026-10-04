@@ -220,3 +220,11 @@ let setup_download_button button output filename errors download =
 
       Js._false
     )
+
+(* Show an HTML element *)
+let show_element element =
+  element##.style##.display := Js.string "block"
+
+(* Hide an HTML element *)
+let hide_element element =
+  element##.style##.display := Js.string "none"
