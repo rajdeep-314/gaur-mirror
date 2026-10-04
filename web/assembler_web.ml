@@ -59,9 +59,12 @@ let assemble_to_inter source =
 
 
 (* Common code for format buttons *)
-let handle_format_button button result errors current_output current_filename filename operation =
+let handle_format_button button result errors current_output
+    current_filename filename operation =
+
   button##.onclick :=
     Dom_html.handler (fun _ ->
+
       let source =
         DU.get_textarea_value "assembly-input"
       in
@@ -70,15 +73,16 @@ let handle_format_button button result errors current_output current_filename fi
       DU.clear_text errors;
 
       begin
-      match operation source with
-      | Error e ->
-          current_output := None;
-          DU.set_text errors e
+        match operation source with
 
-      | Ok output ->
-          current_output := Some output;
-          current_filename := filename;
-          DU.set_text result output
+        | Error e ->
+            current_output := None;
+            DU.set_text errors e
+
+        | Ok (download_content, display_content) ->
+            current_output := Some download_content;
+            current_filename := filename;
+            DU.set_text result display_content
       end;
 
       Js._false
@@ -123,7 +127,8 @@ let () =
     | Error e ->
         Error e
     | Ok mp ->
-        Ok (MacPrinters.ascii_prog mp)
+        let output = MacPrinters.ascii_prog mp in
+        Ok (output, output)
   );
 
 
@@ -136,7 +141,8 @@ let () =
     | Error e ->
         Error e
     | Ok mp ->
-        Ok (MacPrinters.bin_prog mp)
+        let binary = MacPrinters.bin_prog mp in
+        Ok (binary, Misc.hex_dump binary)
   );
 
   (* Intermediate *)
@@ -148,7 +154,8 @@ let () =
     | Error e ->
         Error e
     | Ok mp ->
-        Ok (IsaPrinters.prog mp)
+        let output = IsaPrinters.prog mp in
+        Ok (output, output)
   );
 
   DU.setup_download_button download_output current_output
