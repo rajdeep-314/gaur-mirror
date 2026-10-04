@@ -56,23 +56,13 @@ let assemble_to_inter source =
         | Ok assembled_p -> Ok assembled_p
         | Error e        -> Error e
 
+let perform_operation result errors current_output current_filename
+    filename operation source =
 
+    DU.clear_text result;
+    DU.clear_text errors;
 
-(* Common code for format buttons *)
-let handle_format_button button result errors current_output
-    current_filename filename operation =
-
-  button##.onclick :=
-    Dom_html.handler (fun _ ->
-
-      let source =
-        DU.get_textarea_value "assembly-input"
-      in
-
-      DU.clear_text result;
-      DU.clear_text errors;
-
-      begin
+    begin
         match operation source with
 
         | Error e ->
@@ -83,80 +73,146 @@ let handle_format_button button result errors current_output
             current_output := Some download_content;
             current_filename := filename;
             DU.set_text result display_content
-      end;
+    end
 
-      Js._false
-    )
+(* Common code for format buttons *)
+let handle_format_button button result errors current_output current_filename
+    last_operation filename operation =
 
+    button##.onclick :=
+        Dom_html.handler (fun _ ->
+
+        last_operation := operation;
+
+        let source =
+            DU.get_textarea_value "assembly-input"
+        in
+
+        perform_operation result errors current_output
+            current_filename filename operation source;
+
+        Js._false
+        )
+
+let handle_editor_shortcuts input result errors current_output
+    current_filename last_operation (ev : Dom_html.keyboardEvent Js.t) =
+
+    if ev##.keyCode = 13 && (Js.to_bool ev##.ctrlKey) then begin
+
+        Dom.preventDefault ev;
+
+        if (Js.to_bool ev##.shiftKey) then begin
+
+        match !current_output with
+        | None ->
+            DU.set_text errors "Nothing to download."
+
+        | Some output ->
+            Misc.download_file !current_filename output
+
+        end else begin
+
+        let source = DU.get_textarea_value "assembly-input" in
+
+        perform_operation result errors current_output current_filename
+            !current_filename !last_operation source
+
+        end;
+
+        Js._false
+    end else begin
+        Js._true
+    end
 
 let () =
 
-  let input = DU.get_textarea "assembly-input" in
-  let line_numbers = DU.get_element "line-numbers" in
-  let result = DU.get_element "assembly-result" in
-  let errors = DU.get_element "assembly-errors" in
+    let input = DU.get_textarea "assembly-input" in
+    let line_numbers = DU.get_element "line-numbers" in
+    let result = DU.get_element "assembly-result" in
+    let errors = DU.get_element "assembly-errors" in
 
-  let fmt_ascii = DU.get_element "format-ascii" in
-  let fmt_bin = DU.get_element "format-bin" in
-  let fmt_inter = DU.get_element "format-inter" in
+    let fmt_ascii = DU.get_element "format-ascii" in
+    let fmt_bin = DU.get_element "format-bin" in
+    let fmt_inter = DU.get_element "format-inter" in
 
-  let copy_output = DU.get_element "copy-output" in
-  let copy_errors = DU.get_element "copy-errors" in
+    let copy_output = DU.get_element "copy-output" in
+    let copy_errors = DU.get_element "copy-errors" in
 
-  let assembly_file = DU.get_input "assembly-file" in
-  let download_output = DU.get_element "download-output" in
+    let assembly_file = DU.get_input "assembly-file" in
+    let download_output = DU.get_element "download-output" in
 
-  let current_output = ref None in
-  let current_filename = ref "assembled.txt" in
+    let ascii_operation source =
+        match assemble_source source with
+        | Error e ->
+            Error e
+        | Ok mp ->
+            let output = MacPrinters.ascii_prog mp in
+            Ok (output, output)
+        in
 
-  DU.setup_line_numbers input line_numbers;
-  DU.setup_copy_button copy_output result;
-  DU.setup_copy_button copy_errors errors;
+    let binary_operation source =
+        match assemble_source source with
+        | Error e ->
+            Error e
+        | Ok mp ->
+            let binary = MacPrinters.bin_prog mp in
+            Ok (binary, Misc.hex_dump binary)
+        in
 
-  DU.set_text result "Waiting for input...";
-  DU.clear_text errors;
+    let inter_operation source =
+        match assemble_to_inter source with
+        | Error e ->
+            Error e
+        | Ok mp ->
+            let output = IsaPrinters.prog mp in
+            Ok (output, output)
+        in
 
-  DU.setup_file_input assembly_file input line_numbers errors;
+    let last_operation = ref ascii_operation in
+    let current_output = ref None in
+    let current_filename = ref "assembled_ascii.txt" in
 
-  (* Ascii *)
-  handle_format_button fmt_ascii result errors
-  current_output current_filename
-  "assembled_ascii.txt"
-  (fun source ->
-    match assemble_source source with
-    | Error e ->
-        Error e
-    | Ok mp ->
-        let output = MacPrinters.ascii_prog mp in
-        Ok (output, output)
-  );
+    DU.setup_line_numbers_with_shortcuts input line_numbers
+        (handle_editor_shortcuts input result errors
+            current_output current_filename last_operation);
 
+    DU.setup_copy_button copy_output result;
+    DU.setup_copy_button copy_errors errors;
 
-  (* Binary *)
-  handle_format_button fmt_bin result errors
-  current_output current_filename
-  "assembled.bin"
-  (fun source ->
-    match assemble_source source with
-    | Error e ->
-        Error e
-    | Ok mp ->
-        let binary = MacPrinters.bin_prog mp in
-        Ok (binary, Misc.hex_dump binary)
-  );
+    DU.set_text result "Waiting for input...";
+    DU.clear_text errors;
 
-  (* Intermediate *)
-  handle_format_button fmt_inter result errors
-  current_output current_filename
-  "assembled_intermediate.txt"
-  (fun source ->
-    match assemble_to_inter source with
-    | Error e ->
-        Error e
-    | Ok mp ->
-        let output = IsaPrinters.prog mp in
-        Ok (output, output)
-  );
+    DU.setup_file_input assembly_file input line_numbers errors;
 
-  DU.setup_download_button download_output current_output
-  current_filename errors Misc.download_file
+    handle_format_button
+        fmt_ascii
+        result
+        errors
+        current_output
+        current_filename
+        last_operation
+        "assembled_ascii.txt"
+        ascii_operation;
+
+    handle_format_button
+        fmt_bin
+        result
+        errors
+        current_output
+        current_filename
+        last_operation
+        "assembled.bin"
+        binary_operation;
+
+    handle_format_button
+        fmt_inter
+        result
+        errors
+        current_output
+        current_filename
+        last_operation
+        "assembled_intermediate.txt"
+        inter_operation;
+
+    DU.setup_download_button download_output current_output
+    current_filename errors Misc.download_file
