@@ -139,3 +139,10 @@ let hex_dump content =
   in
 
   loop 0 []
+
+(* Replace one file suffix with another. *)
+let swap_suffix filename input_suffix output_suffix =
+  if Filename.check_suffix filename input_suffix then
+    Filename.chop_suffix filename input_suffix ^ output_suffix
+  else
+    filename ^ output_suffix

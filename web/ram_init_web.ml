@@ -27,13 +27,7 @@ let process_source source status hex errors status_section hex_section
 
     (* Generate RAM contents *)
     let bs =
-      Translate.translate_maps
-        maps
-        ram_size
-        word_size
-        lendianb
-        offset
-        padding
+      Translate.translate_maps maps ram_size word_size lendianb offset padding
     in
 
     let binary = Binary.to_string bs in
@@ -106,6 +100,8 @@ let () =
 
   let file_input = DU.get_input "ram-map-file" in
   let map_input = DU.get_textarea "ram-map-input" in
+  let output_file_input = DU.get_input "output-file" in
+  let line_numbers = DU.get_element "ram-line-numbers" in
 
   let button = DU.get_element "ram-init-button" in
   let download_section = DU.get_element "download-section" in
@@ -129,8 +125,10 @@ let () =
   DU.setup_copy_button copy_status status;
   DU.setup_copy_button copy_hex hex;
   DU.setup_copy_button copy_errors errors;
+  DU.setup_line_numbers map_input line_numbers;
 
   DU.setup_download_button download_output current_output current_filename errors M.download_file;
+  DU.setup_file_input file_input map_input line_numbers errors;
 
   DU.hide_element status_section;
   DU.hide_element hex_section;
@@ -159,12 +157,23 @@ let () =
               | None ->
                   DU.set_text errors "Unable to access selected file."
               | Some file ->
-                  DU.read_file_as_text file (function
-                    | None ->
-                        DU.set_text errors "Unable to read memory map file."
-                    | Some source ->
-                        map_input##.value := Js.string source
-                  )
+                    let input_filename = Js.to_string file##.name in
+
+                    let output_filename =
+                      M.swap_suffix input_filename ".ram" ".bin"
+                    in
+
+                    if Js.to_string output_file_input##.value = "" then
+                      output_file_input##.value := Js.string output_filename;
+
+                    DU.read_file_as_text file (function
+                      | None ->
+                          DU.set_text
+                            errors
+                            "Unable to read memory map file."
+
+                      | Some source ->
+                          map_input##.value := Js.string source)
             end
     end;
 
