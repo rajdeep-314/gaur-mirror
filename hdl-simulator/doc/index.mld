@@ -6,5 +6,5 @@ Simulating circuits described using [PHDL].
 
 {2 Source code}
 
-The source code for the HDL simulator can be found on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools/} GitLab repository}, in the [hdl-simulator] directory.
+The source code for the HDL simulator can be found on our {{:https://gitlab.com/verify-at-iitpkd/gaur/} GitLab repository}, in the [hdl-simulator] directory.
 

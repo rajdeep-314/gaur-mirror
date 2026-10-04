@@ -1,4 +1,4 @@
-# extra_operand.pasm
+# extra_operand.gsm
 
 # LI accepts exactly two operands.
 # The additional r2 should cause a parser error.

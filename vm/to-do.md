@@ -9,5 +9,5 @@
 
 ## Translator
 
-- Update as per new PISA.
+- Update as per new Gaur ISA.
 

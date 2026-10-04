@@ -10,7 +10,16 @@ module Er = VE.Err
 module P  = VE.State.PP
 module R  = VE.Repl
 module S  = Vm.Syntax.Emulator
+module PE = S.Parsing.Err
 module STbl = Hashtbl.Make (String)
+module W = Types.Word
+module U = Utils.Files
+
+(* Exit codes. *)
+let err_code_success        = 0     (* Exited successfully.              *)
+let err_code_lexing_parsing = 1     (* Lexing or parsing errors.         *)
+let err_code_semantic       = 2     (* Semantic errors during emulation. *)
+let err_code_execution      = 3     (* Execution errors.                 *)
 
 type src_tbl = string STbl.t
 
@@ -65,8 +74,15 @@ let () =
     if !help then
         begin
         Arg.usage speclist usage_msg ;
-        exit 0
+        exit err_code_success
         end ;
+
+    (* Reading all source files into a hash table with keys being paths and
+       strings being the content of the corresponding file. *)
+    let path_src_tbl : src_tbl =
+        STbl.of_seq (List.to_seq (
+            List.map (fun p -> (p, U.read_file p)) (List.rev !files))
+        ) in
 
     (* Parse all provided files (reversing list because Arg.parse prepends) *)
     let ps, ps_scs =
@@ -75,11 +91,15 @@ let () =
                 S.Parsing.Driver.parse_from_path (List.rev !files))
         with
         | Sys_error s ->
-            prerr_endline s; exit 1
-        | S.Parsing.Err.LexingErrorWI _ as e ->
-            prerr_endline (Printexc.to_string e); exit 1
-        | S.Parsing.Err.ParsingErrorWI _ as e ->
-            prerr_endline (Printexc.to_string e); exit 1
+            prerr_endline s; exit err_code_lexing_parsing
+        | PE.LexingExn err ->
+            let src = STbl.find path_src_tbl (PE.Lexer.fname_from_t err) in
+            prerr_endline (PE.Lexer.to_string_with_src err src) ;
+            exit err_code_lexing_parsing
+        | PE.ParsingExn err ->
+            let src = STbl.find path_src_tbl (PE.Parser.fname_from_t err) in
+            prerr_endline (PE.Parser.to_string_with_src err src);
+            exit err_code_lexing_parsing
     in
 
     let src_tbl : src_tbl = STbl.of_seq (List.to_seq ps_scs) in
@@ -101,7 +121,7 @@ let () =
                     | None -> print_endline
                         "Execution terminated with no return value."
                     | Some v -> Printf.printf
-                        "Execution terminated with %d\n" v end ;
+                        "Execution terminated with %s\n" (W.to_string v) end ;
 
                 (* Handle Screen output *)
                 if !show_screen then
@@ -118,9 +138,9 @@ let () =
                         Er.pp_execution_error src_tbl (a, e)
                 in
                 prerr_endline err_msg;
-                exit 3
+                exit err_code_execution
     with
     | Er.SemanticError (a, e) ->
         prerr_endline (Er.pp_semantic_error src_tbl (a, e));
-        exit 2
+        exit err_code_semantic
 

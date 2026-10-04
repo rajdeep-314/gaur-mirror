@@ -1,7 +1,7 @@
 {1 Disassembler}
 
 
-The disassembler is, in some sense, an inverse of the assembler. It takes [PISA] binaries as input and generates the corresponding [PASM] assembly files. However, the assembly files generated lack labels and pseudo-instructions (for now).
+The disassembler is, in some sense, an inverse of the assembler. It takes [Gaur ISA] binaries as input and generates the corresponding [Gaur ASM] assembly files. However, the assembly files generated lack labels and pseudo-instructions (for now).
 
 {2 Web tool}
 
@@ -15,7 +15,7 @@ The [dis] executable can be invoked with various flags. To see an exhaustive lis
 λ⟩ dis --help
 Usage: dis [options] <input_file_path>.
   --out 
-        Path for the generated PASM output
+        Path for the generated Gaur ASM output
   -o 
         Short for --out
   --help 
@@ -29,15 +29,15 @@ v}
 
 {2 Example}
 
-Assume that [fib.pmac] is the binary file corresponding to the [fib.pasm] program from [assembler/examples], generated using [assembler] with the [-fmt=bin] flag.
+Assume that [fib.gin] is the binary file corresponding to the [fib.gsm] program from [assembler/examples], generated using [assembler] with the [-fmt=bin] flag.
 
 It can be disassembled as follows:
 
 {v
-λ⟩ dis fib.pmac -o fib-disassembled.pasm
-Wrote: fib-disassembled.pasm
+λ⟩ dis fib.gin -o fib-disassembled.gsm
+Wrote: fib-disassembled.gsm
 
-λ⟩ cat fib-disassembled.pasm 
+λ⟩ cat fib-disassembled.gsm 
 ld r1 r0 0
 ld r2 r0 1
 addi r3 r0 0
@@ -56,12 +56,12 @@ v}
 
 {2 Source code and documentation}
 
-The source code for the assembler can be found on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools/} GitLab repository}, in the [disassembler] directory.
+The source code for the assembler can be found on our {{:https://gitlab.com/verify-at-iitpkd/gaur/} GitLab repository}, in the [disassembler] directory.
 
 The [odoc] generated documentation for the libraries involved can be read here:
 
 - {!Dis.Errors}: The errors that can be thrown by the disassembler.
-- {!Dis.Decode}: Functions to decode [PISA] instructions and programs.
+- {!Dis.Decode}: Functions to decode [Gaur ISA] instructions and programs.
 
 {b {i NOTE:}} The disassembler makes use of types and printers defined in the assembler.
 

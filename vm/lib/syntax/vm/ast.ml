@@ -5,6 +5,9 @@
 *)
 
 
+module W = Types.Word
+
+
 (* VM segments. *)
 type segment =
     | Temp
@@ -23,7 +26,7 @@ type ('l, 'f) inst_base =
     | Push of segment * int
     | Pop  of segment * int
     (* pushing constants. *)
-    | PushC of int
+    | PushC of W.t
     (* arithmetic operations *)
     | Add | Sub | Neg
     (* comparison operations *)
@@ -95,7 +98,7 @@ module PP = struct
         match inst with
         | Push (s, i)   -> Printf.sprintf "push %s %d" (seg s) i
         | Pop  (s, i)   -> Printf.sprintf "pop %s %d"  (seg s) i
-        | PushC n       -> "push constant " ^ string_of_int n
+        | PushC n       -> "push constant " ^ W.to_string n
         | Add           -> "add"
         | Sub           -> "sub"
         | Neg           -> "neg" 

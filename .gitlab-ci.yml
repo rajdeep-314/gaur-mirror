@@ -1,15 +1,15 @@
 # Structure of directory public/:
 # public/
 #   +- tools            # contains the web versions of tools and has entrypoint in tools/index.html
-#   +- ptools
+#   +- gaur
 #     +- index.html     # the main entrypoint for documentation, has link to tools/index.html
 #   +- assembler        # documentation page for assembler
 #   +- disassembler     # documentation page for disassembler
 #   +- <other tools>    # documentation pages for the other tools
-#   +- index.html       # main GitLab pages entrypoint -- symlinked to ptools/index.html
+#   +- index.html       # main GitLab pages entrypoint -- symlinked to gaur/index.html
 
 default:
-  image: registry.gitlab.com/verify-at-iitpkd/focs/ptools:latest
+  image: registry.gitlab.com/verify-at-iitpkd/gaur:latest
 
 stages:
   - build           # Build the main dune project
@@ -49,7 +49,7 @@ build-documentation:
     - dune build @doc
     - cp -r _build/default/_doc/_html/* public/
     - rm -f public/index.html
-    - ln -s ptools/index.html public/index.html
+    - ln -s gaur/index.html public/index.html
   artifacts:
     paths:
       - public

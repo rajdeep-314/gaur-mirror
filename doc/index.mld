@@ -1,54 +1,37 @@
-{0 Ptools}
+{0 Gaur}
 
+Gaur is a self-contained computing toolchain built around a custom ISA,
+assembly language, and virtual machine. It provides a suite of tools for
+working with this ecosystem.
 
-[Ptools] refers to the toolchain for [PISA], [PASM], [PHDL], etc.
+Gaur's primary objective is to serve as an educational tool.
+
+{1 Terminology}
+
+{i Coming soon...}
+
+This will be a section on some terminology, naming conventions, etc.
+
+{1 Tool suite}
+
+The following tools make up the Gaur toolchain:
+
+- {{:../assembler/index.html} Assembler}: Assembles Gaur assembly programs into Gaur binaries, or ASCII representations of Gaur binaries, or an intermediate form of assembly programs (with resolved labels and base instructions only).
+
+- {{:../disassembler/index.html} Disassembler}: Disassembles Gaur binaries to intermediate Gaur assembly programs.
+
+- {{:../cpu-simulator/index.html} CPU simulator}: An ISA simulator to simulate the execution of Gaur assembly programs on a Gaur processor. Shows the final processor state, the instruction-by-instruction traces and has a debug mode.
+
+- {{:../ram-init/index.html} RAM Init}: Initializes RAM images from a textual description of the RAM. Meant to be used to generate initial RAM images to feed the CPU simulator.
+
+- {{:../hdl-simulator/index.html} HDL simulator}: Simulating circuits described using Gaur HDL.
 
 
 {1 Web tools}
 
 Web versions of the tools can be found {{:../tools/index.html} here}.
 
-
-{1 The tools}
-
-Find the documentation for the tools here:
-
-- {{:../assembler/index.html} Assembler}: Assembles [PASM] programs into intermediate [PASM] programs (resolved labels, base instructions only), or ASCII representations of [PISA] binaries, or actual [PISA] binaries.
-
-- {{:../disassembler/index.html} Disassembler}: Disassembles [PISA] binaries to basic [PASM] programs.
-
-- {{:../cpu-simulator/index.html} CPU simulator}: An ISA simulator to simulate the execution of [PISA] programs on a [PISA] processor. Shows the final processor state, the instruction-by-instruction traces and has a debug mode.
-
-- {{:../ram-init/index.html} RAM Init}: Initializes RAM images from a textual description of the RAM. Meant to be used to generate initial RAM images to feed the CPU simulator.
-
-- {{:../hdl-simulator/index.html} HDL simulator}: Simulating circuits described using [PHDL].
-
-
-{1 Installation}
-
-The [build.sh] script can be used to build all the executables (using [dune build]). It places them all in the [executables] directory. Add it to your [PATH] to invoke the executables from any directory.
-
-{v
-λ:~/ptools⟩ ./build.sh 
-Buliding executables...
-Assembler        :    Build successful.
-Disassembler     :    Build successful.
-CPU simulator    :    Build successful.
-RAM Init         :    Build successful.
-HDL simulator    :    Build successful.
-Building successful. Placing executables in ./executables
-Script executed.
-
-λ:~/ptools⟩ ls -l executables
-assembler
-cpusim
-dis
-hdl-simulator
-ram-init
-v}
-
-
 {1 Source code}
 
-The source code for all of the tools can be viewd on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools} GitLab repository}.
+The source code for all of the tools can be viewd on our {{:https://gitlab.com/verify-at-iitpkd/gaur} GitLab repository}.
 

@@ -71,12 +71,12 @@ rule read_token = parse
     | digit             { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | lf_name           { ID (Lexing.lexeme lexbuf) }
     | eof               { EOF }
-    | _                 { raise cantmatch }
+    | _                 { raise (cantmatch Err.(pos_info_of_lexbuf lexbuf)) }
 and comment depth = parse
     | "(*"              { comment (depth +1) lexbuf }
     | "*)"              { if depth = 1 then read_token lexbuf
                           else comment (depth-1) lexbuf }
-    | eof               { raise (unterminated_comments depth) }
+    | eof               { raise (unterminated_comments depth Err.(pos_info_of_lexbuf lexbuf)) }
     | '\n'              { Lexing.new_line lexbuf; comment depth lexbuf }
     | _                 { comment depth lexbuf }
 

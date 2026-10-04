@@ -1,4 +1,4 @@
-# fib.pasm
+# fib.gsm
 
 # Let RAM[0] store n and RAM[1] store k.
 # This program computes the first n Fibonacci numbers and puts them

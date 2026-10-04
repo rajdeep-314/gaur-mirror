@@ -6,7 +6,7 @@
 (**
     {1 ISA Module}
 
-    This module defines the representation of the PISA instructions
+    This module defines the representation of the Gaur ISA instructions
     and programs in the assembler.
 *)
 
@@ -66,22 +66,23 @@ Inductive t_:Set :=
 Definition prog_erased := list t_.
 
 Definition erase (inst:t) : t_ :=
-    let f := bits.bv_to_int in
+    let fs := bits.bv_to_int in
+    let fu := bits.bv_to_unsigned in
     match inst with
-    | li rd imm         => li_ rd (f 11 imm)
-    | ld rd rs imm      => ld_ rd rs (f 6 imm)
-    | st rd rs imm      => st_ rd rs (f 6 imm)
+    | li rd imm         => li_ rd (fu 11 imm)
+    | ld rd rs imm      => ld_ rd rs (fs 6 imm)
+    | st rd rs imm      => st_ rd rs (fs 6 imm)
     | add rd rs1 rs2    => add_ rd rs1 rs2
-    | addi rd rs1 imm   => addi_ rd rs1 (f 6 imm)
+    | addi rd rs1 imm   => addi_ rd rs1 (fs 6 imm)
     | sub rd rs1 rs2    => sub_ rd rs1 rs2
     | and rd rs1 rs2    => and_ rd rs1 rs2
     | not rd rs         => not_ rd rs
-    | sl rd rs imm      => sl_ rd rs (f 5 imm)
-    | sr rd rs imm      => sr_ rd rs (f 5 imm)
-    | beq rs1 rs2 imm   => beq_ rs1 rs2 (f 6 imm)
-    | blt rs1 rs2 imm   => blt_ rs1 rs2 (f 6 imm)
-    | jalr rd rs imm    => jalr_ rd rs (f 6 imm)
-    | apc rd imm        => apc_ rd (f 11 imm)
-    | j imm             => j_ (f 16 imm)
+    | sl rd rs imm      => sl_ rd rs (fu 5 imm)
+    | sr rd rs imm      => sr_ rd rs (fu 5 imm)
+    | beq rs1 rs2 imm   => beq_ rs1 rs2 (fs 6 imm)
+    | blt rs1 rs2 imm   => blt_ rs1 rs2 (fs 6 imm)
+    | jalr rd rs imm    => jalr_ rd rs (fs 6 imm)
+    | apc rd imm        => apc_ rd (fs 11 imm)
+    | j imm             => j_ (fs 16 imm)
     end.
 
