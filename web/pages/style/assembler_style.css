@@ -138,9 +138,15 @@ body {
    Main application
    ================================ */
 
-#app {
+/* #app {
     display: flex;
     height: calc((100vh / 1.20) - 64px);
+} */
+
+#app {
+    display: flex;
+
+    height: calc((100vh / 1.20) - 64px - 52px);
 }
 
 
@@ -587,51 +593,50 @@ button:active {
     outline: none;
 }
 
-
 /* ================================
-   Responsive
+   Footer
    ================================ */
 
-@media (max-width: 860px) {
+#footer {
+    min-height: 52px;
 
-    #app {
-        flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-        height: auto;
-    }
+    padding: 0 32px;
 
-    #input-panel,
-    #output-panel {
-        width: 100%;
-    }
+    border-top: 1px solid var(--border);
 
-    #input-panel {
-        height: 500px;
-    }
+    background-color: var(--bg);
 
-    #output-panel {
-        border-left: none;
-        border-top: 1px solid var(--border);
-    }
+    font-size: 12px;
 }
 
+#footer-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-@media (max-width: 560px) {
+#footer a {
+    color: var(--text-secondary);
 
-    #navbar {
-        padding: 0 20px;
-    }
+    text-decoration: none;
 
-    #nav-links {
-        gap: 18px;
-    }
+    transition: color 0.15s ease;
+}
 
-    #input-panel,
-    #output-panel {
-        padding: 24px 20px;
-    }
+#footer a:hover {
+    color: var(--text-primary);
+}
 
-    #nav-links a {
-        font-size: 13px;
-    }
+.footer-separator {
+    color: #555555;
+}
+
+#footer-page {
+    color: #666666;
+
+    font-size: 11px;
 }
