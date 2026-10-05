@@ -79,6 +79,10 @@ body {
 #nav-title {
     font-family: var(--font-heading);
 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
     font-size: 18px;
     font-weight: 600;
 
@@ -87,6 +91,25 @@ body {
     letter-spacing: -0.2px;
 }
 
+.logo-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background-color: var(--accent);
+}
+
+#nav-title a {
+    text-decoration: none;
+    color: var(--text-primary);
+
+    transition: color 0.15s ease;
+}
+
+#nav-title a:hover {
+    color: var(--text-secondary);
+}
 
 #nav-links {
     display: flex;
@@ -118,9 +141,8 @@ body {
 #app {
     display: flex;
 
-    height: calc((100vh / 1.2) - 64px);
+    height: calc((100vh / 1.2) - 64px - 52px);
 }
-
 
 /* ================================
    Left side
@@ -417,52 +439,146 @@ button:active {
     background: #505050;
 }
 
-
 /* ================================
-   Responsive
+   Output containers
    ================================ */
 
-@media (max-width: 860px) {
-
-    #app {
-        flex-direction: column;
-
-        height: auto;
-    }
-
-    #input-panel,
-    #output-panel {
-        width: 100%;
-    }
-
-    #input-panel {
-        min-height: 350px;
-    }
-
-    #output-panel {
-        border-left: none;
-
-        border-top: 1px solid var(--border);
-    }
+.code-container {
+    position: relative;
 }
 
 
-@media (max-width: 560px) {
+/* ================================
+   Copy button
+   ================================ */
 
-    #navbar {
-        padding: 0 20px;
-    }
+.copy-button {
+    position: absolute;
 
-    #nav-links {
-        gap: 18px;
-    }
+    top: 10px;
+    right: 10px;
 
-    #input-panel,
-    #output-panel {
-        padding: 24px 20px;
-    }
+    padding: 5px 10px;
 
-    #nav-links a {
-        font-size: 13px;
-    }
+    margin: 0;
+
+    border: 1px solid var(--border);
+    border-radius: 5px;
+
+    background-color: var(--surface-hover);
+    color: var(--text-secondary);
+
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.15s ease,
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+/* Show button when hovering over output/error */
+
+.code-container:hover .copy-button {
+    opacity: 1;
+}
+
+
+.copy-button:hover {
+    background-color: #FFFFFF;
+    color: #111111;
+
+    border-color: #FFFFFF;
+}
+
+
+.copy-button:focus {
+    opacity: 1;
+
+    outline: none;
+}
+
+.output-actions {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    display: flex;
+    gap: 6px;
+}
+
+.output-actions button {
+    position: static;
+
+    margin: 0;
+
+    opacity: 0;
+}
+
+.code-container:hover .output-actions button {
+    opacity: 1;
+}
+
+.output-actions button:focus {
+    opacity: 1;
+    outline: none;
+}
+
+
+/* ================================
+   Footer
+   ================================ */
+
+
+#footer {
+    min-height: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 32px;
+
+    border-top: 1px solid var(--border);
+
+    background-color: var(--bg);
+
+    font-size: 12px;
+}
+
+#footer-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#footer a {
+    color: var(--text-secondary);
+
+    text-decoration: none;
+
+    transition: color 0.15s ease;
+}
+
+#footer a:hover {
+    color: var(--text-primary);
+}
+
+.footer-separator {
+    color: #555555;
+}
+
+#footer-page {
+    color: #666666;
+
+    font-size: 11px;
 }

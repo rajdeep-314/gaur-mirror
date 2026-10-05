@@ -10,7 +10,10 @@
 </head>
 <body>
     <nav id="navbar">
-        <div id="nav-title">Gaur</div>
+        <div id="nav-title">
+            <span class="logo-dot"></span>
+            <a href="index.html">Gaur</a>
+        </div>
 
         <div id="nav-links">
             <a href="index.html">Home</a>
@@ -24,6 +27,13 @@
         <!-- Left: Assembly Input -->
         <div id="input-panel">
             <h2>Assembly Code</h2>
+
+            <div class="input-group source-upload">
+                <input
+                    type="file"
+                    id="assembly-file">
+            </div>
+
             <div id="editor">
                 <div id="line-numbers" aria-hidden="true">1</div>
                 <textarea
@@ -46,16 +56,50 @@
 
             <div id="result-section">
                 <h2>Output</h2>
-                <pre id="assembly-result"></pre>
+
+                <div class="code-container">
+                    <div class="output-actions">
+                        <button class="copy-button" id="copy-output">Copy</button>
+                        <button class="download-button" id="download-output">Download</button>
+                    </div>
+
+                    <pre id="assembly-result"></pre>
+                </div>
             </div>
 
             <div id="error-section">
                 <h2>Errors</h2>
-                <pre id="assembly-errors"></pre>
+
+                <div class="code-container">
+                    <button class="copy-button" id="copy-errors">Copy</button>
+                    <pre id="assembly-errors"></pre>
+                </div>
             </div>
         </div>
 
     </div>
+    <footer id="footer">
+        <div id="footer-links">
+            <a
+                href="https://verify-at-iitpkd.gitlab.io/gaur/assembler/index.html"
+                target="_blank"
+                rel="noopener noreferrer">
+                Documentation
+            </a>
+
+            <span class="footer-separator">·</span>
+
+            <a
+                href="https://gitlab.com/verify-at-iitpkd/gaur"
+                target="_blank"
+                rel="noopener noreferrer">
+                GitLab Repository
+            </a>
+        </div>
+
+        <span id="footer-page">Gaur Assembler</span>
+    </footer>
+
     <script src="./assembler_web.bc.js"></script>
 
 </body>
