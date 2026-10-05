@@ -1,4 +1,4 @@
-# zero_offset.pasm
+# zero_offset.gsm
 
 # Test a jump whose target is the current instruction position.
 # This exercises zero jump offsets.

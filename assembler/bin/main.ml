@@ -57,9 +57,9 @@ let remove_extension filename =
 
 let default_output_name str =
     match !format with
-    | "bin"     -> remove_extension str ^ ".pmac"
-    | "ascii"   -> remove_extension str ^ ".pasc"
-    | "inter"   -> remove_extension str ^ ".pasm.inter"
+    | "bin"     -> remove_extension str ^ ".gin"
+    | "ascii"   -> remove_extension str ^ ".gsc"
+    | "inter"   -> remove_extension str ^ ".gsm.inter"
     | _         -> raise (Invalid_argument "unknown format")
 
 

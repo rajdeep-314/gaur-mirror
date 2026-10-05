@@ -12,10 +12,10 @@
 
 *** Default format is bin ***
 
-  $ assembler ../examples/fib.pasm --format bin --out manual
+  $ assembler ../examples/fib.gsm --format bin --out manual
   Wrote: manual
 
-  $ assembler ../examples/fib.pasm --out default
+  $ assembler ../examples/fib.gsm --out default
   Wrote: default
 
   $ diff manual default && echo "no difference"
@@ -24,41 +24,41 @@
 
 *** Default output file name for format bin ***
 
-  $ assembler ../examples/fib.pasm -fmt bin
-  Wrote: ../examples/fib.pmac
+  $ assembler ../examples/fib.gsm -fmt bin
+  Wrote: ../examples/fib.gin
 
-  $ [ -f ../examples/fib.pmac ] && echo "fib.pmac exists"
-  fib.pmac exists
+  $ [ -f ../examples/fib.gin ] && echo "fib.gin exists"
+  fib.gin exists
 
 
 *** Default output file name for format inter ***
 
-  $ assembler ../examples/fib.pasm -fmt inter
-  Wrote: ../examples/fib.pasm.inter
+  $ assembler ../examples/fib.gsm -fmt inter
+  Wrote: ../examples/fib.gsm.inter
 
-  $ [ -f ../examples/fib.pasm.inter ] && echo "fib.pasm.inter exists"
-  fib.pasm.inter exists
+  $ [ -f ../examples/fib.gsm.inter ] && echo "fib.gsm.inter exists"
+  fib.gsm.inter exists
 
 
 *** Default output file name for format ascii ***
 
-  $ assembler ../examples/fib.pasm -fmt ascii
-  Wrote: ../examples/fib.pasc
+  $ assembler ../examples/fib.gsm -fmt ascii
+  Wrote: ../examples/fib.gsc
 
-  $ [ -f ../examples/fib.pasc ] && echo "fib.pasc exists"
-  fib.pasc exists
+  $ [ -f ../examples/fib.gsc ] && echo "fib.gsc exists"
+  fib.gsc exists
 
-
-
-*** Long and short format flags ***
 
 
 *** Long and short format flags ***
 
-  $ assembler ../examples/fib.pasm --format inter -o long-format
+
+*** Long and short format flags ***
+
+  $ assembler ../examples/fib.gsm --format inter -o long-format
   Wrote: long-format
 
-  $ assembler ../examples/fib.pasm -fmt inter -o short-format
+  $ assembler ../examples/fib.gsm -fmt inter -o short-format
   Wrote: short-format
 
   $ diff long-format short-format && echo "no difference"
@@ -67,10 +67,10 @@
 
 *** Long and short output flags ***
 
-  $ assembler ../examples/fib.pasm --format inter --out long-out
+  $ assembler ../examples/fib.gsm --format inter --out long-out
   Wrote: long-out
 
-  $ assembler ../examples/fib.pasm -fmt inter -o short-out
+  $ assembler ../examples/fib.gsm -fmt inter -o short-out
   Wrote: short-out
 
   $ diff long-out short-out && echo "no difference"
@@ -101,7 +101,7 @@
 
 *** Too many positional arguments ***
 
-  $ assembler ../examples/fib.pasm ../examples/fib.pasm >/dev/null 2>&1
+  $ assembler ../examples/fib.gsm ../examples/fib.gsm >/dev/null 2>&1
   [1]
 
 
@@ -111,5 +111,5 @@
 
 *** Unknown format flag value ***
 
-  $ assembler ../examples/fib.pasm --format xyz >/dev/null 2>&1
+  $ assembler ../examples/fib.gsm --format xyz >/dev/null 2>&1
   [1]

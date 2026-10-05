@@ -1,4 +1,4 @@
-# backward.pasm
+# backward.gsm
 
 # Test backward jumps.
 # The jump targets occur before the jump instructions.

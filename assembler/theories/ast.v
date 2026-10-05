@@ -6,7 +6,7 @@
 (**
     {1 Abstract Syntax Module}
 
-    Type for the abstract syntax of PASM and functions on the same.
+    Type for the abstract syntax of Gaur ASM and functions on the same.
 *)
 
 

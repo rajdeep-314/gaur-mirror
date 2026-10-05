@@ -2,7 +2,7 @@
 
 *** All 16 instructions ***
 
-  $ assembler ../examples/all_insts.pasm -fmt ascii -o all_insts-ascii
+  $ assembler ../examples/all_insts.gsm -fmt ascii -o all_insts-ascii
   Wrote: all_insts-ascii
   $ cat all_insts-ascii
   00000000000000010000100000001010

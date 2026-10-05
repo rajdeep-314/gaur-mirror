@@ -1,4 +1,4 @@
-# hexadecimal.pasm
+# hexadecimal.gsm
 
 # Test hexadecimal integer literals.
 # Both lowercase and uppercase prefixes are supported.

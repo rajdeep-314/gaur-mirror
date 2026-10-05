@@ -1,0 +1,5 @@
+# invalid_instruction.gsm
+
+# "foo" is not a valid Gaur ASM instruction.
+
+foo r1 10

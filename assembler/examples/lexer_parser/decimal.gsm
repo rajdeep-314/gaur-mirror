@@ -1,4 +1,4 @@
-# decimal.pasm
+# decimal.gsm
 
 # Test decimal integer literals.
 # Both positive and negative values should be accepted.

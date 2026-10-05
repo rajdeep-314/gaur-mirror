@@ -1,4 +1,4 @@
 # Disassembler
 
-Disassembler for PISA programs.
+Disassembler for Gaur ISA programs.
 
