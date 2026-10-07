@@ -141,7 +141,7 @@ body {
 #app {
     display: flex;
 
-    height: calc((100vh / 1.2) - 64px -52px);
+    height: calc((100vh / 1.2) - 64px - 52px);
 }
 
 
