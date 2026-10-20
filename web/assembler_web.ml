@@ -218,7 +218,7 @@ let () =
     let current_output = ref None in
     let current_filename = ref "assembled_ascii.txt" in
 
-    DU.setup_line_numbers_with_shortcuts input line_numbers
+    DU.setup_line_numbers_with_shortcuts (Js.Unsafe.coerce input) line_numbers
         (handle_editor_shortcuts input result errors
         current_output current_filename last_operation
         assembly_file);

@@ -125,7 +125,7 @@ let () =
   DU.setup_copy_button copy_status status;
   DU.setup_copy_button copy_hex hex;
   DU.setup_copy_button copy_errors errors;
-  DU.setup_line_numbers map_input line_numbers;
+  DU.setup_line_numbers (Js.Unsafe.coerce map_input) line_numbers;
 
   DU.setup_download_button download_output current_output current_filename errors M.download_file;
   DU.setup_file_input file_input map_input line_numbers errors;
@@ -143,7 +143,7 @@ let () =
   Dom_html.handler (fun _ ->
 
     begin
-      match Js.Opt.to_option file_input##.files with
+      match Js.Optdef.to_option file_input##.files with
 
       | None -> ()
 

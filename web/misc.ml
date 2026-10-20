@@ -46,15 +46,9 @@ let words_of_array_buffer buffer =
 (*   Download binary output    *)
 let download_file filename content =
 
-  (* Convert OCaml string containing raw bytes
-     into a JavaScript Uint8Array. *)
-  let bytes =
-    Bytes.of_string content
-  in
-
-  let uint8 =
-    Typed_array.Bytes.to_uint8Array bytes
-  in
+  (* Convert OCaml string containing raw bytes into a JavaScript Uint8Array. *)
+  let uint8 = new%js Typed_array.uint8Array (String.length content) in
+  String.iteri (fun i c -> Typed_array.set uint8 i (Char.code c)) content;
 
   (* Create Blob from the Uint8Array. *)
   let blob =

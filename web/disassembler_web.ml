@@ -90,7 +90,7 @@ let () =
       DU.clear_text errors;
       current_output := None;
 
-      (match Js.Opt.to_option input_file##.files with
+      (match Js.Optdef.to_option input_file##.files with
       | None ->
           DU.set_text errors "No file selected."
 

@@ -195,8 +195,8 @@ let read_file_as_text file callback =
 
 
 (* Get the name of the currently selected file. *)
-let get_file_input_name input =
-  match Js.Opt.to_option input##.files with
+let get_file_input_name (input : Dom_html.inputElement Js.t) =
+  match Js.Optdef.to_option input##.files with
   | None ->
       None
 
@@ -218,7 +218,7 @@ let setup_file_input file_input textarea line_numbers errors =
     Dom_html.handler (fun _ ->
 
       begin
-        match Js.Opt.to_option file_input##.files with
+        match Js.Optdef.to_option file_input##.files with
         | None ->
             ()
 
