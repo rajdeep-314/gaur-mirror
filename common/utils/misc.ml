@@ -39,3 +39,20 @@ let find_duplicate mask xs =
                 aux xs
     in aux xs
 
+(** Compose functions [f] and [g]. *)
+let fun_compose f g = fun x -> f (g x)
+
+(** Take the first [n] elements of list [xs]. *)
+let rec list_take n xs =
+    match xs with
+    | []      -> []
+    | y :: ys ->
+        if n <= 0 then [] else list_take (n - 1) ys
+
+(** Drop the first [n] elements of list [xs]. *)
+let rec list_drop n xs =
+    match xs with
+    | [] -> []
+    | _ :: ys ->
+        if n <= 0 then [] else list_drop (n - 1) ys
+

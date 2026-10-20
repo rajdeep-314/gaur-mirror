@@ -3,6 +3,9 @@
 *)
 
 
+open Utils.Misc
+
+
 (** Gaur ISA instructions, without labels. *)
 type inst =
     | Li    of  Reg.t * int
@@ -70,8 +73,8 @@ module Printers = struct
     let prog p = String.concat "\n" (List.map inst p)
 
     (** Printing ISA instructions and programs to standard output. *)
-    let print_inst = Fun.compose print_string inst
-    let print_prog = Fun.compose print_string prog
+    let print_inst = fun_compose print_string inst
+    let print_prog = fun_compose print_string prog
 
     (** Printing an ISA program with a marker pointing to the instruction
         corresponding to [pc]. *)

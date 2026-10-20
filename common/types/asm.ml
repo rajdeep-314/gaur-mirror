@@ -51,7 +51,7 @@ let annot_of (i:('a, 'l) annot_inst) : 'a = snd i
 (** Module [Validate] contains functions to validate ASM instructions and
     programs. *)
 module Validate = struct
-    open Utils
+    open Common_types_utils
 
     (** ['a verr] denotes a validation error, with ['a] being the type of
         annotations for instructions. *)

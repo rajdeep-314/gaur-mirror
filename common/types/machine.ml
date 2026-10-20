@@ -3,6 +3,9 @@
 *)
 
 
+open Utils.Misc
+
+
 (** Machine instructions. *)
 type inst = bool list
 
@@ -54,7 +57,7 @@ module Printers = struct
             let char2_int = bool_list_to_int l2 in
             let char3_int = bool_list_to_int l3 in
             let char4_int = bool_list_to_int l4 in
-            String.concat "" (List.map (Fun.compose (String.make 1) char_of_int)
+            String.concat "" (List.map (fun_compose (String.make 1) char_of_int)
                 [char1_int; char2_int; char3_int; char4_int])
         (* NOTE: Maybe this failwith thing could be handled better? *)
         | _ ->

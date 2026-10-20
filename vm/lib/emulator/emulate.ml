@@ -61,7 +61,7 @@ let uf _ = ()
 let top_frame s = List.hd s.frames
 
 (* Tuple of the top frame, and the other frames in the call stack. *)
-let top_and_rest_frames s = List.hd s.frames, List.drop 1 s.frames
+let top_and_rest_frames s = List.hd s.frames, list_drop 1 s.frames
 
 let fname_of_top_frame s    = (top_frame s).f_name
 let pc_of_top_frame s       = (top_frame s).pc

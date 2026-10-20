@@ -1,5 +1,5 @@
 (library
   (name types)
   (public_name common.types)
-  (libraries num))
+  (libraries num common.utils))
 

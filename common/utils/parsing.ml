@@ -5,6 +5,9 @@
 *)
 
 
+open Misc
+
+
 (* Get the ln'th line from source code string src. ln is 1-indexed.
    NOTE: It is assumed that the line number is valid. *)
 let get_line src ln =
@@ -34,7 +37,7 @@ let get_lines src l1 l2 =
     let lines = String.split_on_char '\n' src in
     (* Sub-list. *)
     let sub_list l i j =
-        List.take (j - i + 1) (List.drop i l) in
+        list_take (j - i + 1) (list_drop i l) in
     sub_list lines (l1 - 1) (l2 - 1)
 
 

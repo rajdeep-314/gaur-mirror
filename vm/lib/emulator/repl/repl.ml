@@ -14,6 +14,7 @@ module W = Types.Word
 
 open Ast
 open Er.Helper.Repl
+open Utils.Misc
 
 
 (*
@@ -82,7 +83,7 @@ let show_stack p s =
 (* Show the top (at most) n entries of the current working stack. *)
 let show_stack_top n p s =
     match I.wstack_of_top_frame s with
-    | Some st   -> ("Stack top: " ^ SP.stack (List.take n st), s)
+    | Some st   -> ("Stack top: " ^ SP.stack (list_take n st), s)
     | None      -> raise empty_call_stack
 
 (* Show current function. *)

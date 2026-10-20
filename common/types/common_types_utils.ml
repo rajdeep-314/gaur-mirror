@@ -1,7 +1,9 @@
 (*
-    utils.ml
+    priv_utils.ml
 
     Contains some utility functions used by files in this library.
+
+    NOTE: Prefixed with [common_types_] to avoid name collisions.
 *)
 
 
