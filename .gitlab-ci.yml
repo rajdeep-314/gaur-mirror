@@ -1,6 +1,7 @@
 # Structure of directory public/:
 # public/
 #   +- tools            # contains the web versions of tools and has entrypoint in tools/index.html
+#   +- guide            # user guide (Sphinx), entrypoint in guide/index.html
 #   +- gaur
 #     +- index.html     # the main entrypoint for documentation, has link to tools/index.html
 #   +- assembler        # documentation page for assembler
@@ -53,6 +54,17 @@ build-documentation:
   artifacts:
     paths:
       - public
+
+build-user-guide:
+  stage: documentation
+  image: python:3.12-slim          # the gaur image has no Python/Sphinx
+  dependencies: []                 # needs nothing from earlier jobs
+  script:
+    - pip install --no-cache-dir -r documentation/requirements.txt
+    - sphinx-build -W -b html documentation public/guide
+  artifacts:
+    paths:
+      - public/guide
 
 host-web:
   stage: host-on-pages
