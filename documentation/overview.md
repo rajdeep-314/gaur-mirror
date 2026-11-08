@@ -1,14 +1,4 @@
-# Gaur
-
-**Gaur** is a self-contained toolchain built for teaching
-*Foundations of Computing Systems* (CS2011) at IIT Palakkad. It gives students
-a complete path from machine instructions to a stack-based virtual machine,
-with tools that are easy to learn, script, and debug.
-
-[Try the web tools :material-arrow-right:](https://verify-at-iitpkd.gitlab.io/gaur/tools){ .md-button .md-button--primary }
-[Source code](https://gitlab.com/verify-at-iitpkd/gaur){ .md-button }
-
----
+# Overview
 
 ## Why Gaur?
 
@@ -37,7 +27,7 @@ designed around what a teaching toolchain needs:
 
 ## How the pieces fit together
 
-```mermaid
+```{mermaid}
 flowchart LR
     VM["VM source"] --> TR["VM translator"]
     TR --> ASM["Gaur assembly"]
@@ -63,15 +53,16 @@ flowchart LR
 - A small instruction set covering loads and stores, arithmetic, logic, shifts,
   branches, and jumps.
 
-!!! note
-    Exact instruction formats and immediate ranges are in the
-    [specifications](https://gitlab.com/verify-at-iitpkd/gaur/-/tree/main/specifications).
+```{note}
+Exact instruction formats and immediate ranges are in the
+[specifications](https://gitlab.com/verify-at-iitpkd/gaur/-/tree/main/specifications).
+```
 
 ### Example program
 
 Computes the first `n` Fibonacci numbers and stores them in RAM.
 
-```asm
+```text
 # Let RAM[0] store n and RAM[1] store k.
 ld   r1 r0 0
 ld   r2 r0 1
@@ -101,36 +92,6 @@ The VM is stack-based and inspired by Nand2Tetris' Jack VM.
 - **Screen**: an 80×24 character display.
 - **Standard library**: `Math` (`mul`, `div`, `mod`, `pow`, ...) and
   `Screen` (`print_char`, `print_int`, `newline`, ...).
-
-## Online resources
-
-<div class="grid cards" markdown>
-
-- :material-web: **Web tools**
-
-    ---
-
-    Assembler, disassembler, and RAM initializer in the browser.
-
-    [:octicons-arrow-right-24: Open](https://verify-at-iitpkd.gitlab.io/gaur/tools)
-
-- :material-code-braces: **API documentation**
-
-    ---
-
-    Generated from the OCaml sources (odoc).
-
-    [:octicons-arrow-right-24: Open](https://verify-at-iitpkd.gitlab.io/gaur/)
-
-- :material-gitlab: **Repository**
-
-    ---
-
-    Source code, issues, and specifications.
-
-    [:octicons-arrow-right-24: Open](https://gitlab.com/verify-at-iitpkd/gaur)
-
-</div>
 
 ## Project
 

@@ -1,3 +1,7 @@
-properdocs>=1.6
-mkdocs-material>=9.5,<10
-mkdocs-redirects>=1.2
+sphinx>=7
+furo
+myst-parser
+sphinx-design
+sphinx-copybutton
+sphinxcontrib-mermaid
+sphinx-autobuild

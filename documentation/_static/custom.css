@@ -1,0 +1,299 @@
+/* ==========================================================================
+   Gaur user guide: monochrome theme for Furo
+
+   1. Fonts
+   2. Colour tokens: light
+   3. Colour tokens: dark
+   4. Typography
+   5. Code
+   6. Tables
+   7. Admonitions
+   8. Buttons
+   9. Cards
+  10. Scrollbar
+   ========================================================================== */
+
+/* 1. Fonts
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+body {
+  --font-stack: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-stack--headings: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-stack--monospace: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+
+/* 2. Colour tokens: light
+   ========================================================================== */
+
+body {
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #fafafa;
+  --color-background-hover: #f4f4f5;
+  --color-background-border: #ebebeb;
+
+  --color-foreground-primary: #262626;
+  --color-foreground-secondary: #525252;
+  --color-foreground-muted: #737373;
+  --color-foreground-border: #d4d4d4;
+
+  --color-brand-primary: #0a0a0a;
+  --color-brand-content: #0a0a0a;
+
+  --color-link: #0a0a0a;
+  --color-link--hover: #0a0a0a;
+  --color-link-underline: #a3a3a3;
+  --color-link-underline--hover: #0a0a0a;
+
+  --color-sidebar-background: #fafafa;
+  --color-sidebar-background-border: #ebebeb;
+  --color-sidebar-item-background--hover: #f0f0f0;
+
+  --color-header-background: #ffffff;
+  --color-header-text: #0a0a0a;
+  --color-header-border: #ebebeb;
+
+  --color-code-background: #f5f5f5;
+  --color-code-foreground: #171717;
+  --color-inline-code-background: #f0f0f0;
+
+  --color-table-header-background: #fafafa;
+  --color-table-border: #ebebeb;
+  --color-card-border: #ebebeb;
+  --color-card-background: transparent;
+
+  /* Buttons */
+  --sd-color-primary: #2f5fd0;
+  --sd-color-primary-text: #ffffff;
+  --sd-color-primary-highlight: #2450b8;
+
+  /* Admonitions: all grey */
+  --color-admonition-title: #0a0a0a;
+  --color-admonition-title-background: #f5f5f5;
+  --color-admonition-background: transparent;
+}
+
+
+/* 3. Colour tokens: dark
+   Furo needs the tokens twice: once for the manual toggle, once for
+   "auto" mode following the operating system.
+   ========================================================================== */
+
+body[data-theme="dark"] {
+  --color-background-primary: #0a0a0a;
+  --color-background-secondary: #0f0f0f;
+  --color-background-hover: #141414;
+  --color-background-border: #262626;
+
+  --color-foreground-primary: #d4d4d4;
+  --color-foreground-secondary: #a3a3a3;
+  --color-foreground-muted: #737373;
+  --color-foreground-border: #404040;
+
+  --color-brand-primary: #ffffff;
+  --color-brand-content: #ffffff;
+
+  --color-link: #ffffff;
+  --color-link--hover: #ffffff;
+  --color-link-underline: #525252;
+  --color-link-underline--hover: #ffffff;
+
+  --color-sidebar-background: #0f0f0f;
+  --color-sidebar-background-border: #262626;
+  --color-sidebar-item-background--hover: #1a1a1a;
+
+  --color-header-background: #0a0a0a;
+  --color-header-text: #fafafa;
+  --color-header-border: #262626;
+
+  --color-code-background: #141414;
+  --color-code-foreground: #e5e5e5;
+  --color-inline-code-background: #1a1a1a;
+
+  --color-table-header-background: #111111;
+  --color-table-border: #262626;
+  --color-card-border: #262626;
+  --color-card-background: transparent;
+
+  --sd-color-primary: #6a8ee6;
+  --sd-color-primary-text: #0a0a0a;
+  --sd-color-primary-highlight: #86a4ee;
+
+  --color-admonition-title: #fafafa;
+  --color-admonition-title-background: #141414;
+  --color-admonition-background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"]) {
+    --color-background-primary: #0a0a0a;
+    --color-background-secondary: #0f0f0f;
+    --color-background-hover: #141414;
+    --color-background-border: #262626;
+
+    --color-foreground-primary: #d4d4d4;
+    --color-foreground-secondary: #a3a3a3;
+    --color-foreground-muted: #737373;
+    --color-foreground-border: #404040;
+
+    --color-brand-primary: #ffffff;
+    --color-brand-content: #ffffff;
+
+    --color-link: #ffffff;
+    --color-link--hover: #ffffff;
+    --color-link-underline: #525252;
+    --color-link-underline--hover: #ffffff;
+
+    --color-sidebar-background: #0f0f0f;
+    --color-sidebar-background-border: #262626;
+    --color-sidebar-item-background--hover: #1a1a1a;
+
+    --color-header-background: #0a0a0a;
+    --color-header-text: #fafafa;
+    --color-header-border: #262626;
+
+    --color-code-background: #141414;
+    --color-code-foreground: #e5e5e5;
+    --color-inline-code-background: #1a1a1a;
+
+    --color-table-header-background: #111111;
+    --color-table-border: #262626;
+    --color-card-border: #262626;
+    --color-card-background: transparent;
+
+    --sd-color-primary: #6a8ee6;
+    --sd-color-primary-text: #0a0a0a;
+    --sd-color-primary-highlight: #86a4ee;
+
+    --color-admonition-title: #fafafa;
+    --color-admonition-title-background: #141414;
+    --color-admonition-background: transparent;
+  }
+}
+
+
+/* 4. Typography
+   ========================================================================== */
+
+article h1 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+article h2 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--color-background-border);
+}
+article h3 {
+  font-weight: 600;
+}
+
+/* Sidebar: current page is bold, not coloured */
+.sidebar-tree .current-page > .reference {
+  font-weight: 600;
+  color: var(--color-foreground-primary);
+}
+
+
+/* 5. Code
+   ========================================================================== */
+
+.highlight {
+  border: 1px solid var(--color-background-border);
+  border-radius: 8px;
+}
+code.literal {
+  border-radius: 4px;
+}
+
+
+/* 6. Tables
+   ========================================================================== */
+
+table.docutils {
+  border: 1px solid var(--color-table-border);
+  border-radius: 8px;
+  box-shadow: none;
+}
+table.docutils th {
+  font-weight: 600;
+}
+
+
+/* 7. Admonitions
+   Replace Furo's per-type colours with grey.
+   ========================================================================== */
+
+body {
+  --color-admonition-title--note: var(--color-admonition-title);
+  --color-admonition-title-background--note: var(--color-admonition-title-background);
+  --color-admonition-title--tip: var(--color-admonition-title);
+  --color-admonition-title-background--tip: var(--color-admonition-title-background);
+  --color-admonition-title--hint: var(--color-admonition-title);
+  --color-admonition-title-background--hint: var(--color-admonition-title-background);
+  --color-admonition-title--important: var(--color-admonition-title);
+  --color-admonition-title-background--important: var(--color-admonition-title-background);
+  --color-admonition-title--warning: var(--color-admonition-title);
+  --color-admonition-title-background--warning: var(--color-admonition-title-background);
+  --color-admonition-title--caution: var(--color-admonition-title);
+  --color-admonition-title-background--caution: var(--color-admonition-title-background);
+  --color-admonition-title--attention: var(--color-admonition-title);
+  --color-admonition-title-background--attention: var(--color-admonition-title-background);
+  --color-admonition-title--danger: var(--color-admonition-title);
+  --color-admonition-title-background--danger: var(--color-admonition-title-background);
+  --color-admonition-title--error: var(--color-admonition-title);
+  --color-admonition-title-background--error: var(--color-admonition-title-background);
+  --color-admonition-title--seealso: var(--color-admonition-title);
+  --color-admonition-title-background--seealso: var(--color-admonition-title-background);
+}
+
+.admonition {
+  box-shadow: none;
+  border-radius: 6px;
+}
+
+
+/* 8. Buttons
+   ========================================================================== */
+
+article a.sd-btn,
+article a.sd-btn:hover {
+  text-decoration: none;
+}
+.sd-btn {
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+
+/* 9. Cards
+   ========================================================================== */
+
+.sd-card {
+  border-radius: 10px;
+  box-shadow: none !important;
+  border: 1px solid var(--color-card-border);
+  transition: border-color 0.2s;
+}
+.sd-card:hover {
+  border-color: var(--color-foreground-primary);
+}
+.sd-card-title {
+  font-weight: 600;
+}
+
+
+/* 10. Scrollbar
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-foreground-border);
+  border-radius: 4px;
+}
