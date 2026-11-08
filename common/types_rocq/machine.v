@@ -61,5 +61,7 @@ Module Printers.
                 (fun shift s => String (byte z shift) s)
                 EmptyString [24; 16; 8; 0].
 
-End Binary.
+    End Binary.
+
+End Printers.
 
