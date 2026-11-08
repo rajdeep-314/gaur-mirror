@@ -1,0 +1,71 @@
+site_name: Gaur
+site_description: User guide for Gaur, the toolchain for Foundations of Computing Systems
+site_url: https://verify-at-iitpkd.gitlab.io/gaur/guide/
+repo_url: https://gitlab.com/verify-at-iitpkd/gaur
+repo_name: verify-at-iitpkd/gaur
+edit_uri: -/blob/main/documentation/docs/
+
+theme:
+  name: material
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: white
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - redirects:
+      redirect_maps:
+        index.md: overview.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+
+nav:
+  - Overview: overview.md
+  # Add more later, for example:
+  # - Getting started:
+  #     - Installation: getting-started/installation.md
+  # - Tools:
+  #     - Assembler: tools/assembler.md
