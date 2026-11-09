@@ -1,8 +1,0 @@
-(library
- (name runtime)
- (public_name hdl-simulator.runtime)
- (modules (:standard))
- (modes byte)
- (libraries menhirLib fmt))
-
-(include_subdirs qualified)
