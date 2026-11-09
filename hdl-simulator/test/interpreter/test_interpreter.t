@@ -84,6 +84,14 @@ Parity checker chip (4-bit parity).
   t: 0	 | {eq = 0, gt = 1, lt = 0}
   t: 0	 | {eq = 1, gt = 0, lt = 0}
 
+Toggle Flip-Flop (stateful chip).
+
+  $ printf 'OUTPUT\nINPUT {en=1}\nCLOCK\nOUTPUT\nCLOCK\nOUTPUT\nINPUT {en=0}\nCLOCK\nOUTPUT\n' | sim Tff $GATES files/tff.phdl
+  t: 0	 | 0
+  t: 1	 | 1
+  t: 2	 | 0
+  t: 3	 | 0
+
 An ill-typed input is reported instead of crashing.
 
   $ printf 'INPUT {a=1}\nOUTPUT\n' | sim And $GATES

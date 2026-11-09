@@ -1,0 +1,9 @@
+# Toggle Flip-Flop: toggles state on clock tick when en is 1
+CHIP Tff {
+  INPUT in: {en: bits 1}
+  OUTPUT out: bits 1
+  STATES st: bits 1
+
+  out := st
+  st' <- Xor {a=st, b=in.en}
+}
