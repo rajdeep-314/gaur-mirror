@@ -1,0 +1,5 @@
+(cram
+ (shell bash)
+ (deps
+  %{bin:hdl-simulator}
+  (source_tree ./files)))
