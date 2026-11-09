@@ -12,40 +12,40 @@
 
 *** Decimal integer literals ***
 
-  $ assembler ../examples/lexer_parser/decimal.pasm --format ascii -o decimal-ascii
+  $ assembler ../examples/lexer_parser/decimal.gsm --format ascii -o decimal-ascii
   Wrote: decimal-ascii
   $ cat decimal-ascii
-  00000000000000010000100000101010
-  00000000000000010001011111010110
-  00000000000100000001100001100100
-  00000000000100000010000010011100
+  00100000000000000000100000101010
+  00100000000000000001011111010110
+  00000000000100000001100001001010
+  00000000000100000010000010110110
 
 
 *** Hexadecimal integer literals ***
 
-  $ assembler ../examples/lexer_parser/hexadecimal.pasm --format ascii -o hexadecimal-ascii
+  $ assembler ../examples/lexer_parser/hexadecimal.gsm --format ascii -o hexadecimal-ascii
   Wrote: hexadecimal-ascii
   $ cat hexadecimal-ascii
-  00000000000000010000100000101010
-  00000000000000010001011111010110
-  00000000000000010001100000101010
-  00000000000000010010011111010110
+  00100000000000000000100000101010
+  00100000000000000001011111010110
+  00100000000000000001100000101010
+  00100000000000000010011111010110
 
 
 *** Binary integer literals ***
 
-  $ assembler ../examples/lexer_parser/binary.pasm --format ascii -o binary-ascii
+  $ assembler ../examples/lexer_parser/binary.gsm --format ascii -o binary-ascii
   Wrote: binary-ascii
   $ cat binary-ascii
-  00000000000000010000100000101010
-  00000000000000010001011111010110
-  00000000000000010001100000101010
-  00000000000000010010011111010110
+  00100000000000000000100000101010
+  00100000000000000001011111010110
+  00100000000000000001100000101010
+  00100000000000000010011111010110
 
 
 *** Whitespace and comments ***
 
-  $ assembler ../examples/lexer_parser/comments_whitespaces.pasm --format ascii -o comments_whitespaces-ascii
+  $ assembler ../examples/lexer_parser/comments_whitespaces.gsm --format ascii -o comments_whitespaces-ascii
   Wrote: comments_whitespaces-ascii
   $ cat comments_whitespaces-ascii
   00000000000000010000100000001010
@@ -56,7 +56,7 @@
 
 *** Labels ***
 
-  $ assembler ../examples/lexer_parser/labels.pasm --format ascii -o labels-ascii
+  $ assembler ../examples/lexer_parser/labels.gsm --format ascii -o labels-ascii
   Wrote: labels-ascii
   $ cat labels-ascii
   00000000000000010000100000001010
@@ -68,7 +68,7 @@
 
 *** Registers ***
 
-  $ assembler ../examples/lexer_parser/registers.pasm --format ascii -o registers-ascii
+  $ assembler ../examples/lexer_parser/registers.gsm --format ascii -o registers-ascii
   Wrote: registers-ascii
   $ cat registers-ascii
   00000000000000010000000000000000

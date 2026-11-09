@@ -1,4 +1,4 @@
-# Initial RAM configuration for fib.pasm
+# Initial RAM configuration for fib.gsm
 
 0	:	5		# How many numbers?
 1	:	42		# Starting address.

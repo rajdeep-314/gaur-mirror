@@ -1,0 +1,6 @@
+# missing_register.gsm
+
+# ADD requires three registers.
+# The third register is missing.
+
+add r1 r2

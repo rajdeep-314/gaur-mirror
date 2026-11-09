@@ -1,0 +1,9 @@
+# hexadecimal.gsm
+
+# Test hexadecimal integer literals.
+# Both lowercase and uppercase prefixes are supported.
+
+apc r1 0x2A
+apc r2 -0x2A
+apc r3 0X2A
+apc r4 -0X2A

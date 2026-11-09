@@ -1,7 +1,7 @@
 (*
     subroutines.v
 
-    Subroutines are helper PASM programs.
+    Subroutines are helper Gaur ASM programs.
 *)
 
 

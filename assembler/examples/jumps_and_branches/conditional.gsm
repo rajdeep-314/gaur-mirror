@@ -1,0 +1,19 @@
+# conditional.gsm
+
+# Test forward and backward conditional jumps.
+# Both BEQ and BLT use labels which must be resolved
+# to relative instruction offsets.
+
+start:
+li r1 10
+li r2 20
+
+beq r1 r2 forward
+blt r1 r2 forward
+
+forward:
+addi r3 r3 1
+beq r3 r3 backward
+
+backward:
+j start

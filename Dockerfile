@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y libgmp-dev pkg-config linux-libc-dev vi
 
 USER opam
 RUN opam update && \
-    opam install -y dune menhir num ocamlgraph odoc && \
+    opam install -y dune menhir num ocamlgraph odoc js_of_ocaml js_of_ocaml-ppx && \
     opam pin add -y rocq-prover 9.0.0
 
 ENTRYPOINT [ "opam", "exec", "--" ]

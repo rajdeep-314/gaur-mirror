@@ -1,9 +1,13 @@
 {1 RAM Init}
 
 
-[ram-init] was created to convert textual descriptions of the initial RAM state for a [PISA] processor into a simple binary format, which is used by [cpusim] to execute programs on an initial RAM state.
+[ram-init] was created to convert textual descriptions of the initial RAM state for a [Gaur ISA] processor into a simple binary format, which is used by [cpusim] to execute programs on an initial RAM state.
 
 However, the tool is general and can be configured to produce RAM images outside of usage for this toolchain.
+
+{2 Web tool}
+
+The web version of the RAM initializer can be found {{:../tools/ram-init.html} here}
 
 {2 Usage}
 
@@ -47,10 +51,10 @@ v}
 
 {2 Example}
 
-Consider the following textual description of the RAM, on which the [fib.pasm] program from [assembler/examples] is to be executed.
+Consider the following textual description of the RAM, on which the [fib.gsm] program from [assembler/examples] is to be executed.
 
 {v
-# Initial RAM configuration for fib.pasm
+# Initial RAM configuration for fib.gsm
 
 0    :    5        # How many numbers?
 1    :    42       # Starting address.
@@ -79,7 +83,7 @@ v}
 
 {2 Source code and documentation}
 
-The source code for the [ram-init] tool can be found on our {{:https://gitlab.com/verify-at-iitpkd/focs/ptools/} GitLab repository}, in the [ram-init] directory.
+The source code for the [ram-init] tool can be found on our {{:https://gitlab.com/verify-at-iitpkd/gaur/} GitLab repository}, in the [ram-init] directory.
 
 The [odoc] generated documentation for the libraries involved can be read here:
 

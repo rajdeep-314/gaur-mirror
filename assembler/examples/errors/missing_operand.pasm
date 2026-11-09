@@ -1,6 +1,0 @@
-# missing_operand.pasm
-
-# The LI requires a register and an immediate.
-# The immediate operand is missing.
-
-li r1

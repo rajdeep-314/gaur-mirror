@@ -37,7 +37,7 @@ module Printers = struct
             "Invalid Zero Bit Error:\n  Inst     : %s\n  Offset   : %d\n  Expected : %s" (int_to_hex inst) offset (zero_bits_layout op)
 
         | InvalidFileSize size -> Printf.sprintf
-            "Invalid File Size Error:\n  Size : %d, Expected the file size to be a multiple of 4 bytes" size
+            "Invalid File Size Error:\n  Size : %d bytes, Expected the file size to be a multiple of 4 bytes" size
 end
 
 

@@ -1,0 +1,5 @@
+# missing_blt_target.gsm
+
+# blt requires a target.
+
+blt r0 r0 imaginary_target

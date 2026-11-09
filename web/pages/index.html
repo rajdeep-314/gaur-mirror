@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gaur</title>
+    <link rel="stylesheet" href="style/home_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav id="navbar">
+        <div id="nav-title">
+            <span class="logo-dot"></span>
+            <a href="index.html">Gaur</a>
+        </div>
+        <div id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="assembler.html">Assembler</a>
+            <a href="disassembler.html">Disassembler</a>
+            <a href="ram-init.html">RAM Init</a>
+        </div>
+    </nav>
+
+
+    <main id="home">
+        <span class="eyebrow">Gaur Toolchain</span>
+        <h1>Gaur</h1>
+        <p>
+            A collection of tools to work in the Gaur ecosystem.
+        </p>
+        <div id="tools">
+            <a class="tool-card" href="assembler.html">
+                <div class="tool-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <path d="M4 17L10 11L4 5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 19H20" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>Assembler</h2>
+                <p>
+                    Assemble Gaur assembly programs into
+                    ASCII, binary, or intermediate formats.
+                </p>
+                <span class="tool-arrow">=></span>
+            </a>
+            <a class="tool-card" href="ram-init.html">
+                <div class="tool-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                        <path d="M8 9H16" stroke-linecap="round" />
+                        <path d="M8 13H16" stroke-linecap="round" />
+                        <path d="M8 17H12" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <h2>RAM Initializer</h2>
+                <p>
+                    Generate RAM initialization data from
+                    memory maps.
+                </p>
+                <span class="tool-arrow">=></span>
+            </a>
+            <a class="tool-card" href="disassembler.html">
+                <div class="tool-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <path d="M20 17L14 11L20 5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M4 19H12" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>Disassembler</h2>
+                <p>
+                    Disassembles Binary Program to
+                    Intermediate Assembly Program
+                </p>
+                <span class="tool-arrow">=></span>
+            </a>
+        </div>
+
+        <div id="external-links">
+            <a href="https://gitlab.com/verify-at-iitpkd/gaur"
+            target="_blank"
+            rel="noopener noreferrer">
+                <img
+                    src="https://about.gitlab.com/images/press/gitlab-logo-500-rgb.svg"
+                    alt="GitLab"
+                >
+                <span>GitLab Repository</span>
+            </a>
+
+            <a href="https://verify-at-iitpkd.gitlab.io/gaur/"
+            target="_blank"
+            rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.7" aria-hidden="true">
+                    <path d="M5 3h10l4 4v14H5z"
+                        stroke-linejoin="round"/>
+                    <path d="M15 3v5h4"/>
+                    <path d="M8 12h8M8 16h8"/>
+                </svg>
+                <span>Programmer Documentation</span>
+            </a>
+        </div>
+    </main>
+</body>
+</html>

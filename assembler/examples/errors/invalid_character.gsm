@@ -1,0 +1,5 @@
+# invalid_character.gsm
+
+# '@' is not a valid Gaur ASM token.
+
+li r1 @

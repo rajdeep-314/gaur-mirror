@@ -1,0 +1,11 @@
+# dup_label.gsm
+
+# the code contains duplicate labels.
+
+
+j label
+
+label:
+spin
+label:
+spin

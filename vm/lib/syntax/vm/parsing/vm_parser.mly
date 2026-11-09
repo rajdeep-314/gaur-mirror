@@ -5,12 +5,24 @@
 *)
 
 %{
+    module W = Types.Word
+
     open Ast
     open Err.Helper.Parser
 
-    let syscall_of_iden = function
+    let syscall_of_iden f ps =
+        match f with
         | "putchar" -> PutChar
-        | s         -> raise (invalid_syscall s)
+        | s         -> raise (invalid_syscall s ps)
+
+    (** [word_of_int n b ps] attempts to convert int [n] to [W.t], and raises
+        a parsing exception if it is unable to do so -- an exception for
+        [PushC] statements. [ps] is of type [Lexing.position * Lexing.position]
+        and it corresponds to the offending positions. *)
+    let word_of_int n ps =
+        match W.of_int_opt n with
+        | Some n -> n
+        | None   -> raise (oob_pushc n ps)
 %}
 
 %token CONSTANT TEMP STATIC LOCAL ARGUMENT
@@ -37,12 +49,12 @@ segment:
     | ARGUMENT    { Argument }
 
 syscall:
-    | f=ID        { syscall_of_iden f }
+    | f=ID        { syscall_of_iden f ($startpos(f), $endpos(f)) }
 
 inst:
     | PUSH; s=segment; n=NUM       { Push (s, n), ($startpos, $endpos) }
     | POP; s=segment; n=NUM        { Pop (s,n), ($startpos, $endpos) }
-    | PUSH; CONSTANT; n=NUM        { PushC n, ($startpos, $endpos) }
+    | PUSH; CONSTANT; n=NUM        { PushC (word_of_int n ($startpos(n), $endpos(n))), ($startpos, $endpos) }
     | ADD                          { Add, ($startpos, $endpos) }
     | SUB                          { Sub, ($startpos, $endpos) }
     | NEG                          { Neg, ($startpos, $endpos) }
