@@ -76,6 +76,14 @@ Parity checker chip (4-bit parity).
   t: 0	 | 0
   t: 0	 | 0
 
+2-bit magnitude comparator.
+
+  $ printf 'INPUT {a=00, b=00}\nOUTPUT\nINPUT {a=01, b=10}\nOUTPUT\nINPUT {a=11, b=10}\nOUTPUT\nINPUT {a=10, b=10}\nOUTPUT\n' | sim Comparator2 $GATES files/comparator.phdl
+  t: 0	 | {eq = 1, gt = 0, lt = 0}
+  t: 0	 | {eq = 0, gt = 0, lt = 1}
+  t: 0	 | {eq = 0, gt = 1, lt = 0}
+  t: 0	 | {eq = 1, gt = 0, lt = 0}
+
 An ill-typed input is reported instead of crashing.
 
   $ printf 'INPUT {a=1}\nOUTPUT\n' | sim And $GATES
