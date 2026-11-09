@@ -1,0 +1,27 @@
+CHIP Comparator2 {
+  INPUT in: {a: bits 2, b: bits 2}
+  OUTPUT out: {eq: bits 1, lt: bits 1, gt: bits 1}
+
+  na0 := Not in.a[0]
+  na1 := Not in.a[1]
+  nb0 := Not in.b[0]
+  nb1 := Not in.b[1]
+
+  xor0 := Xor {a=in.a[0], b=in.b[0]}
+  xor1 := Xor {a=in.a[1], b=in.b[1]}
+  eq0 := Not xor0
+  eq1 := Not xor1
+  eq := And {a=eq0, b=eq1}
+
+  g0 := And {a=in.a[0], b=nb0}
+  g1 := And {a=in.a[1], b=nb1}
+  gt_lo := And {a=eq0, b=g1}
+  gt := Or {a=g0, b=gt_lo}
+
+  l0 := And {a=na0, b=in.b[0]}
+  l1 := And {a=na1, b=in.b[1]}
+  lt_lo := And {a=eq0, b=l1}
+  lt := Or {a=l0, b=lt_lo}
+
+  out := {eq=eq, lt=lt, gt=gt}
+}

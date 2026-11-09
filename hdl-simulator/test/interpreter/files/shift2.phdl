@@ -1,0 +1,19 @@
+# 1-stage unit delay cell
+CHIP Cell {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+  STATES st: bits 1
+
+  out := st
+  st' <- in
+}
+
+# 2-stage shift register: two instances of the stateful Cell chip
+CHIP Shift2 {
+  INPUT in: bits 1
+  OUTPUT out: {s0: bits 1, s1: bits 1}
+
+  s0 := Cell in
+  s1 := Cell s0
+  out := {s0=s0, s1=s1}
+}

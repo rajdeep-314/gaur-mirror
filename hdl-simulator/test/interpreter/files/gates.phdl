@@ -1,0 +1,44 @@
+CHIP Not {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := Nand {a=in, b=in}
+}
+
+CHIP And {
+  INPUT in: {a: bits 1, b: bits 1}
+  OUTPUT out: bits 1
+
+  n := Nand {a=in.a, b=in.b}
+  out := Not n
+}
+
+CHIP Or {
+  INPUT in: {a: bits 1, b: bits 1}
+  OUTPUT out: bits 1
+
+  na := Not in.a
+  nb := Not in.b
+  out := Nand {a=na, b=nb}
+}
+
+CHIP Xor {
+  INPUT in: {a: bits 1, b: bits 1}
+  OUTPUT out: bits 1
+
+  na := Not in.a
+  nb := Not in.b
+  w1 := Nand {a=na, b=in.b}
+  w2 := Nand {a=in.a, b=nb}
+  out := Nand {a=w1, b=w2}
+}
+
+CHIP Mux {
+  INPUT in: {a: bits 1, b: bits 1, sel: bits 1}
+  OUTPUT out: bits 1
+
+  nsel := Not in.sel
+  w1 := And {a=in.a, b=nsel}
+  w2 := And {a=in.b, b=in.sel}
+  out := Or {a=w1, b=w2}
+}
