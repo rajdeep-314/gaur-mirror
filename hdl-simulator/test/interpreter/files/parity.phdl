@@ -1,0 +1,8 @@
+CHIP Parity4 {
+  INPUT in: bits 4
+  OUTPUT out: bits 1
+
+  p01 := Xor {a=in[0], b=in[1]}
+  p23 := Xor {a=in[2], b=in[3]}
+  out := Xor {a=p01, b=p23}
+}

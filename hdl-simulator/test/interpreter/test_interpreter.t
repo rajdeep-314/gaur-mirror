@@ -66,6 +66,16 @@ Majority gate (3-way voting circuit).
   t: 0	 | 1
   t: 0	 | 1
 
+Parity checker chip (4-bit parity).
+
+  $ printf 'INPUT 0000\nOUTPUT\nINPUT 0001\nOUTPUT\nINPUT 0011\nOUTPUT\nINPUT 0111\nOUTPUT\nINPUT 1111\nOUTPUT\nINPUT 1010\nOUTPUT\n' | sim Parity4 $GATES files/parity.phdl
+  t: 0	 | 0
+  t: 0	 | 1
+  t: 0	 | 0
+  t: 0	 | 1
+  t: 0	 | 0
+  t: 0	 | 0
+
 An ill-typed input is reported instead of crashing.
 
   $ printf 'INPUT {a=1}\nOUTPUT\n' | sim And $GATES
