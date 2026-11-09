@@ -5,6 +5,7 @@
 
 From Stdlib Require Vector.
 From Stdlib Require Import String ZArith DecimalString ssrfun.
+Import Vector.VectorNotations.
 
 Open Scope string_scope.
 Open Scope Z_scope.
@@ -25,6 +26,14 @@ Definition to_int_unsigned {n:nat} (v:Vector.t bool n) : Z :=
 Definition to_int_signed {n:nat} (v:Vector.t bool n) : Z :=
   let h := 2 ^ (Z.of_nat n - 1) in
   (to_int_unsigned v + h) mod (2*h) - h.
+
+(** [of_Z z n] returns the [n]-length bit-vector in MSB corresponding to the
+    integer [z]. Overflows and underflows are ignored. *)
+Fixpoint of_Z (z:Z) (n:nat) : t n :=
+    match n with
+    | O    => Vector.nil bool
+    | S n' => (Z.testbit z (Z.of_nat  n')) :: of_Z z n'
+    end.
 
 
 (** Module [Printers] contains string representation(s) of bit-vectors. *)
