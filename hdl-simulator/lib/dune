@@ -1,6 +1,6 @@
 (library
  (name lib)
- (libraries fmt menhirLib ocamlgraph))
+ (libraries fmt menhirLib ocamlgraph incremental))
 
 (include_subdirs qualified)
 (dirs parse hdlutils typecheck backend analyze common)
