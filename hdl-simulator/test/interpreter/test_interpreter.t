@@ -92,6 +92,13 @@ Toggle Flip-Flop (stateful chip).
   t: 2	 | 0
   t: 3	 | 0
 
+Two instances of the same stateful chip keep separate states.
+
+  $ printf 'INPUT 1\nCLOCK\nOUTPUT\nINPUT 0\nCLOCK\nOUTPUT\nCLOCK\nOUTPUT\n' | sim Shift2 files/shift2.phdl
+  t: 1	 | {s0 = 1, s1 = 0}
+  t: 2	 | {s0 = 0, s1 = 1}
+  t: 3	 | {s0 = 0, s1 = 0}
+
 An ill-typed input is reported instead of crashing.
 
   $ printf 'INPUT {a=1}\nOUTPUT\n' | sim And $GATES
