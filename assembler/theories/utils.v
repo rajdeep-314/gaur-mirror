@@ -2,47 +2,33 @@
     utils.v
 *)
 
-(**
-    {1 Utility Module}
 
-    Some utility functions and constants.
-*)
+From Stdlib Require Import ZArith String Numbers.DecimalString.
 
 
-From Stdlib Require Import Ascii String.
-Open Scope string_scope.
-
-
-(** {2 Utility constants.} *)
-
-(** [new_line] = '\n' *)
-Definition new_line : string := String (ascii_of_nat 10) EmptyString.
-
-(** [tab] = '\t' *)
-Definition tab : string := String (ascii_of_nat 9) EmptyString.
-
-
-(** {2 Utility functions.} *)
-
-(** [digit_to_char n] returns ascii of the digit n. *)
-Definition digit_to_char (n:nat) : ascii :=
-    ascii_of_nat (n + 48).
-
-(** Auxiliary function to convert a natural number to a string. *)
-Fixpoint nat_to_string_aux (time:nat) (n:nat) (acc:string) : string :=
-    match time with
-    | 0       => "0"
-    | S time' =>
-        if Nat.ltb n 10 then String (digit_to_char n) acc
-        else
-            let d   := Nat.modulo n 10 in
-            let n'  := Nat.div n 10 in
-            nat_to_string_aux time' n' (String (digit_to_char d) acc)
+(** [result_map f r] returns [Ok (f v)] if [r] is [Ok v], and if [r] is
+    [Error e], then [Error e] is returned. *)
+Definition result_map {A B E:Type} (f:A -> B) (r:result A E) : result B E :=
+    match r with
+    | Ok v    => Ok (f v)
+    | Error e => Error e
     end.
 
+(** [po2_signed_range nbits] returns [(-(2^m), 2^m - 1)] where [m] is
+    [n - 1]. "po2" stands for "power of 2".
+    NOTE: It is expected that [nbits > 0]. *)
+Definition po2_signed_range (nbits:nat) : Z * Z :=
+    let n := Z.of_nat (nbits - 1) in
+    let magnitude := (2^n)%Z in
+    (-magnitude, magnitude - 1)%Z.
 
-
-(* [nat_to_string n] returns the string representation of n. *)
+(** [nat_to_string n] is the string representation of natural number [n]
+    in its decimal form. *)
 Definition nat_to_string (n:nat) : string :=
-    nat_to_string_aux n n "".
+    DecimalString.NilZero.string_of_uint (Nat.to_uint n).
+
+(** [Z_of_string z] is the string representation of integer [z] in its decimal
+    form. *)
+Definition Z_to_string (z:Z) : string :=
+    DecimalString.NilZero.string_of_int (Z.to_int z).
 

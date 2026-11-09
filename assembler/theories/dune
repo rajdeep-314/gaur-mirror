@@ -1,5 +1,5 @@
 (rocq.theory
- (name assembler_new)
- (theories Stdlib)
+ (name assembler)
+ (theories Stdlib common.types)
  (generate_project_file)
 )
