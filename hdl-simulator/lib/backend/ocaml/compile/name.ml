@@ -1,4 +1,4 @@
-(** {1 Compiling PHDL identifiers to OCaml identifiers}  *)
+(** {1 Compiling Gaur HDL identifiers to OCaml identifiers}  *)
 
 (** {2 Prefixes} *)
 

@@ -1,6 +1,6 @@
 Foundational logic gates test.
 
-  $ GATES=files/gates.phdl
+  $ GATES=files/gates.ghdl
   $ sim() { name=$1; shift; hdl-simulator -name $name "$@" | tr '>' '\n' | sed -e 's/^ *//' -e '/^$/d'; }
   $ tt() { for a in 0 1; do for b in 0 1; do echo "INPUT {a=$a, b=$b}"; echo OUTPUT; done; done; }
 
@@ -56,7 +56,7 @@ Mux gate.
 
 Majority gate (3-way voting circuit).
 
-  $ for a in 0 1; do for b in 0 1; do for c in 0 1; do echo "INPUT {a=$a, b=$b, c=$c}"; echo OUTPUT; done; done; done | sim Majority $GATES files/majority.phdl
+  $ for a in 0 1; do for b in 0 1; do for c in 0 1; do echo "INPUT {a=$a, b=$b, c=$c}"; echo OUTPUT; done; done; done | sim Majority $GATES files/majority.ghdl
   t: 0	 | 0
   t: 0	 | 0
   t: 0	 | 0
@@ -68,7 +68,7 @@ Majority gate (3-way voting circuit).
 
 Parity checker chip (4-bit parity).
 
-  $ printf 'INPUT 0000\nOUTPUT\nINPUT 0001\nOUTPUT\nINPUT 0011\nOUTPUT\nINPUT 0111\nOUTPUT\nINPUT 1111\nOUTPUT\nINPUT 1010\nOUTPUT\n' | sim Parity4 $GATES files/parity.phdl
+  $ printf 'INPUT 0000\nOUTPUT\nINPUT 0001\nOUTPUT\nINPUT 0011\nOUTPUT\nINPUT 0111\nOUTPUT\nINPUT 1111\nOUTPUT\nINPUT 1010\nOUTPUT\n' | sim Parity4 $GATES files/parity.ghdl
   t: 0	 | 0
   t: 0	 | 1
   t: 0	 | 0
@@ -78,7 +78,7 @@ Parity checker chip (4-bit parity).
 
 2-bit magnitude comparator.
 
-  $ printf 'INPUT {a=00, b=00}\nOUTPUT\nINPUT {a=01, b=10}\nOUTPUT\nINPUT {a=11, b=10}\nOUTPUT\nINPUT {a=10, b=10}\nOUTPUT\n' | sim Comparator2 $GATES files/comparator.phdl
+  $ printf 'INPUT {a=00, b=00}\nOUTPUT\nINPUT {a=01, b=10}\nOUTPUT\nINPUT {a=11, b=10}\nOUTPUT\nINPUT {a=10, b=10}\nOUTPUT\n' | sim Comparator2 $GATES files/comparator.ghdl
   t: 0	 | {eq = 1, gt = 0, lt = 0}
   t: 0	 | {eq = 0, gt = 0, lt = 1}
   t: 0	 | {eq = 0, gt = 1, lt = 0}
@@ -86,7 +86,7 @@ Parity checker chip (4-bit parity).
 
 Toggle Flip-Flop (stateful chip).
 
-  $ printf 'OUTPUT\nINPUT {en=1}\nCLOCK\nOUTPUT\nCLOCK\nOUTPUT\nINPUT {en=0}\nCLOCK\nOUTPUT\n' | sim Tff $GATES files/tff.phdl
+  $ printf 'OUTPUT\nINPUT {en=1}\nCLOCK\nOUTPUT\nCLOCK\nOUTPUT\nINPUT {en=0}\nCLOCK\nOUTPUT\n' | sim Tff $GATES files/tff.ghdl
   t: 0	 | 0
   t: 1	 | 1
   t: 2	 | 0
@@ -94,7 +94,7 @@ Toggle Flip-Flop (stateful chip).
 
 Two instances of the same stateful chip keep separate states.
 
-  $ printf 'INPUT 1\nCLOCK\nOUTPUT\nINPUT 0\nCLOCK\nOUTPUT\nCLOCK\nOUTPUT\n' | sim Shift2 files/shift2.phdl
+  $ printf 'INPUT 1\nCLOCK\nOUTPUT\nINPUT 0\nCLOCK\nOUTPUT\nCLOCK\nOUTPUT\n' | sim Shift2 files/shift2.ghdl
   t: 1	 | {s0 = 1, s1 = 0}
   t: 2	 | {s0 = 0, s1 = 1}
   t: 3	 | {s0 = 0, s1 = 0}

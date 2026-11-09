@@ -6,7 +6,7 @@ open Backend.Interpreter
 (* Argument Parsing *)
 
 let usage_msg =
-  Hdlutils.Io.make_usage_msg "chip1.phdl [ chip2.phdl ... ]"
+  Hdlutils.Io.make_usage_msg "chip1.ghdl [ chip2.ghdl ... ]"
 
 let chip_name = ref "Nand"
 let input_files = ref []

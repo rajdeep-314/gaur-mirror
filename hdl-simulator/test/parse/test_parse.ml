@@ -2,7 +2,7 @@ open Lib.Parse
 open Lib.Hdlutils
 
 let usage_txt =
-  Printf.sprintf "Usage: %s <file.phdl>" Sys.argv.(0)
+  Printf.sprintf "Usage: %s <file.ghdl>" Sys.argv.(0)
 
 let () = Io.usage usage_txt
 

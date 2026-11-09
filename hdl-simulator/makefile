@@ -1,23 +1,23 @@
-.PHONY: phdlc clean_all clean
+.PHONY: ghdls clean_all clean
 
-phdlc:
-	rm -rf _phdlc
+ghdls:
+	rm -rf _ghdls
 
-	mkdir _phdlc
-	mkdir _phdlc/runtime
+	mkdir _ghdls
+	mkdir _ghdls/runtime
 
 	dune build
 
 # copy main executable
-	cp ../_build/default/hdl-simulator/bin/phdlc.exe _phdlc/phdlc
+	cp ../_build/default/hdl-simulator/bin/ghdls.exe _ghdls/ghdls
 # copy .cmi files
-	cp ../_build/default/hdl-simulator/lib/backend/ocaml/runtime/.runtime.objs/byte/*.cmi _phdlc/runtime/
+	cp ../_build/default/hdl-simulator/lib/backend/ocaml/runtime/.runtime.objs/byte/*.cmi _ghdls/runtime/
 # copy runtime.cma
-	cp ../_build/default/hdl-simulator/lib/backend/ocaml/runtime/runtime.cma _phdlc/runtime/runtime.cma
+	cp ../_build/default/hdl-simulator/lib/backend/ocaml/runtime/runtime.cma _ghdls/runtime/runtime.cma
 
 clean:
-	rm -rf _phdlc
+	rm -rf _ghdls
 
 clean_all:
 	dune clean
-	rm -rf _phdlc
+	rm -rf _ghdls
