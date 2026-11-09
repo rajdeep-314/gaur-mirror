@@ -54,6 +54,18 @@ Mux gate.
   t: 0	 | 0
   t: 0	 | 1
 
+Majority gate (3-way voting circuit).
+
+  $ for a in 0 1; do for b in 0 1; do for c in 0 1; do echo "INPUT {a=$a, b=$b, c=$c}"; echo OUTPUT; done; done; done | sim Majority $GATES files/majority.phdl
+  t: 0	 | 0
+  t: 0	 | 0
+  t: 0	 | 0
+  t: 0	 | 1
+  t: 0	 | 0
+  t: 0	 | 1
+  t: 0	 | 1
+  t: 0	 | 1
+
 An ill-typed input is reported instead of crashing.
 
   $ printf 'INPUT {a=1}\nOUTPUT\n' | sim And $GATES
