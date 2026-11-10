@@ -15,7 +15,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        ocamlPackages = pkgs.ocamlPackages;
+        ocamlPackages = pkgs.ocaml-ng.ocamlPackages_5_4;
         rocqPackages = pkgs.rocqPackages;
 
         # OCaml and C libraries required for building and running Gaur
