@@ -1,6 +1,11 @@
 {
   description = "Gaur - An assembly to VM toolchain for educational purposes";
 
+  nixConfig = {
+    extra-substituters = [ "https://gaur.cachix.org" ];
+    extra-trusted-public-keys = [ "gaur.cachix.org-1:coUoQpRBH3x3jVx2nJwxeeVgwG7rQAYtljYJY3J3sho=" ];
+  };
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";

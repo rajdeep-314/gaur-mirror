@@ -26,6 +26,20 @@ build-project:
     paths:
       - _build
 
+nix-build-and-cache:
+  stage: build
+  image: nixos/nix:latest
+  script:
+    - nix-env -iA nixpkgs.cachix
+    - cachix use gaur
+    - nix --extra-experimental-features "nix-command flakes" build .#gaur
+    - nix --extra-experimental-features "nix-command flakes" build .#web
+    - |
+      if [ -n "$CACHIX_AUTH_TOKEN" ]; then
+        echo "Pushing build artifacts to gaur.cachix.org..."
+        cachix push gaur ./result
+      fi
+
 cram-tests:
   stage: test
   dependencies:
