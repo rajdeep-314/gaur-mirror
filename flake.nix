@@ -16,7 +16,7 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         ocamlPackages = pkgs.ocaml-ng.ocamlPackages_5_4;
-        rocqPackages = pkgs.rocqPackages;
+        rocqPackages = pkgs.rocqPackages_9_0;
 
         # OCaml and C libraries required for building and running Gaur
         buildInputs = [
