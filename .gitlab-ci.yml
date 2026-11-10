@@ -9,7 +9,7 @@
 #   +- index.html       # main GitLab pages entrypoint -- symlinked to gaur/index.html
 
 default:
-  image: registry.gitlab.com/verify-at-iitpkd/gaur:1.0.1
+  image: registry.gitlab.com/verify-at-iitpkd/gaur:incremental
 
 stages:
   - build           # Build the main dune project
