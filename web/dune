@@ -9,7 +9,7 @@
  (name assembler_web)
  (modules assembler_web)
  (modes js)
- (libraries js_of_ocaml web_utils assembler common.types common.parsing)
+ (libraries js_of_ocaml web_utils extracted common.types common.parsing common.utils)
  (preprocess (pps js_of_ocaml-ppx)))
 
 (executable

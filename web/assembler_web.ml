@@ -6,25 +6,21 @@
 
 open Js_of_ocaml
 
-module Assemble = Assembler.Assemble
+module Assemble = Extracted.Assemble
 module Parser = Parsing.Asm.Driver
-module IsaPrinters = Types.Isa.Printers
-module MacPrinters = Types.Machine.Printers
-module Types = Types.Asm
+module Isa = Extracted.Isa
+module IsaPrinters = Isa.Printers
+module MacPrinters = Extracted.Machine.Printers
+module AssembleErrors = Extracted.Errors
 module Errors = Parsing.Asm.Errors
 module DU = Dom_utils
 
 
-(** [parse_source src] parses string program [src] and returns a value in the
-    type [(string prog, string] result]. The return value being [Ok p]
-    denotes that there were no lexing or parsing errors, and the resultant
-    AST program is [p]. [Error e] denotes that there was some error, the
-    string representation of which is [e]. *)
+(** [parse_source src] parses string program [src] and returns its annotated
+    AST. *)
 let parse_source source =
     try
-        let prog_ast =
-        Parser.parse_prog_with_path "<web-input>" source in
-        Ok (Types.remove_annot_from_prog prog_ast)
+        Ok (Parser.parse_prog_with_path "<web-input>" source)
     with
     | Errors.LexingExn err ->
         Error (Errors.LexingErrors.to_string_with_src err source)
@@ -41,9 +37,12 @@ let assemble_source source =
     match parse_source source with
     | Error e -> Error e
     | Ok p    ->
-        match Assemble.assemble_prog p with
+        match Assemble.assemble p with
         | Ok assembled_p -> Ok assembled_p
-        | Error e        -> Error e
+        | Error e        ->
+            Error (AssembleErrors.to_string
+                (fun annot -> Utils.Parsingerrs.pp_pos_info_with_source
+                    ~source annot) e)
 
 (** [assemble_to_inter src] is the variant of [assemble_source src] that does
     not go all the way through with the assembly and returns the intermediate
@@ -52,9 +51,12 @@ let assemble_to_inter source =
     match parse_source source with
     | Error e -> Error e
     | Ok p    ->
-        match Assemble.to_inter p with
+        match Assemble.asm_prog_to_isa_prog p with
         | Ok assembled_p -> Ok assembled_p
-        | Error e        -> Error e
+        | Error e        ->
+            Error (AssembleErrors.to_string
+                (fun annot -> Utils.Parsingerrs.pp_pos_info_with_source
+                    ~source annot) e)
 
 let perform_operation result errors current_output current_filename
     filename operation source =
@@ -190,7 +192,7 @@ let () =
         | Error e ->
             Error e
         | Ok mp ->
-            let output = MacPrinters.ascii_prog mp in
+            let output = MacPrinters.Ascii.prog mp in
             Ok (output, output)
         in
 
@@ -199,7 +201,7 @@ let () =
         | Error e ->
             Error e
         | Ok mp ->
-            let binary = MacPrinters.bin_prog mp in
+            let binary = MacPrinters.Binary.prog mp in
             Ok (binary, Misc.hex_dump binary)
         in
 
@@ -208,7 +210,8 @@ let () =
         | Error e ->
             Error e
         | Ok mp ->
-            let output = IsaPrinters.prog mp in
+            let output =
+                IsaPrinters.prog (Isa.prog_of_annot_prog mp) in
             Ok (output, output)
         in
 
