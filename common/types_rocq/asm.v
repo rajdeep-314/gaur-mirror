@@ -90,7 +90,7 @@ Module Printers.
         | Sl rd rs i     => "sl" ^^ regs [rd; rs] ^^ bvu i
         | Sr rd rs i     => "sr" ^^ regs [rd; rs] ^^ bvu i
         | Beq rd rs l    => "beq" ^^ regs [rd; rs] ^^ lbl l
-        | Blt rd rs l    => "beq" ^^ regs [rd; rs] ^^ lbl l
+        | Blt rd rs l    => "blt" ^^ regs [rd; rs] ^^ lbl l
         | Jalr rd rs i   => "jalr" ^^ regs [rd; rs] ^^ bvs i
         | Apc rd i       => "apc" ^^ reg rd ^^ bvs i
         | J l            => "j" ^^ lbl l
