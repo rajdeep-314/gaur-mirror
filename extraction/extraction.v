@@ -73,7 +73,7 @@ Extract Inductive Datatypes.result => "result" [ "Ok" "Error" ].
 Separate Extraction
     (* Rocq theory: [rocq_utils]. *)
     arith
-    result
+    rocq_utils.result   (* qualified to disambiguate with Datatypes.result *)
     strings
 
     (* Rocq theory: [rocq_types]. *)
