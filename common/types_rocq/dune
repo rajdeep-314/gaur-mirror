@@ -1,5 +1,5 @@
 (rocq.theory
- (name common.types)
+ (name rocq_types)
  (theories Stdlib rocq_utils)
  (generate_project_file)
 )

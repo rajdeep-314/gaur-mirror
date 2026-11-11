@@ -17,10 +17,11 @@ Import ListNotations.
 From Stdlib Require Vector.
 Import Vector.VectorNotations.
 
-From common.types Require asm isa bv machine.
+From rocq_types Require asm isa bv machine.
+From rocq_utils Require Import arith result.
 
-From assembler Require utils symtable errors.
-Import utils errors.
+From assembler Require symtable.
+From assembler Require Import errors.
 
 Open Scope string_scope.
 Open Scope list_scope.
@@ -33,7 +34,6 @@ Definition inst_width {L A:Type} (ins:@asm.annot_inst L A) : nat :=
     | asm.Label _ => 0
     | _           => 1
     end.
-
 
 (** A symbol table here is [symtable.t] with bindings of value [nat * A]. A
     binding [s -> (n, a)] in the symbol table denotes that the string [s]
