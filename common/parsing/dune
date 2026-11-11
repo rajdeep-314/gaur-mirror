@@ -1,7 +1,7 @@
 (library
   (name parsing)
   (public_name common.parsing)
-  (libraries common.types common.utils))
+  (libraries extracted common.utils))
 
 (include_subdirs qualified)
 
