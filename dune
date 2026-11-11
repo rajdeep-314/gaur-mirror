@@ -1,0 +1,5 @@
+(env
+ (_
+  (rocq
+   (flags :standard -w -stdlib-vector))))
+
