@@ -1,6 +1,6 @@
-(lang dune 3.22)
+(lang dune 3.23)
 (using menhir 3.0)
-(using rocq 0.11)
+(using rocq 0.13)
 
 (name gaur)
 
