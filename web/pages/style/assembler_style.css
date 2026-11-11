@@ -593,6 +593,40 @@ button:active {
     outline: none;
 }
 
+/* Simulate button - accent color for quick visual distinction */
+.simulate-button {
+    position: static;
+    padding: 5px 10px;
+    border: 1px solid rgba(99, 179, 237, 0.4);
+    border-radius: 5px;
+    background-color: rgba(99, 179, 237, 0.08);
+    color: #90cdf4;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        opacity 0.15s ease,
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.code-container:hover .simulate-button {
+    opacity: 1;
+}
+
+.simulate-button:hover {
+    background-color: #90cdf4;
+    color: #111111;
+    border-color: #90cdf4;
+}
+
+.simulate-button:focus {
+    opacity: 1;
+    outline: none;
+}
+
 /* ================================
    Footer
    ================================ */
