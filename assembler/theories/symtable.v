@@ -37,6 +37,10 @@ Definition add_binding {A:Type} (b:bindings A) (x:A) : bindings A :=
     | Bindings y ys => Bindings x (y :: ys)
     end.
 
+(** [bindings_to_list b] gives the list of bindings that are a part of [b]. *)
+Definition bindings_to_list {A:Type} '(Bindings x xs:bindings A)
+    : list A := x :: xs.
+
 
 (** [t A] represents a symbol table with keys of type [string] and values of
     type [bindings A]. *)
@@ -58,4 +62,9 @@ Definition add {A:Type} (m:t A) (s:string) (x:A) : t A :=
     [None]. *)
 Definition find {A:Type} (m:t A) (s:string) : option (bindings A) :=
     StringMap.find s m.
+
+(** [to_list m] returns a list with each element being a tuple [(s, xs)], [s]
+    being a string and [xs] being the bindings corresponding to it. *)
+Definition to_list {A:Type} (m:t A) : list (StringMap.key * list A) :=
+    List.map (fun '(s, b) => (s, bindings_to_list b)) (StringMap.elements m).
 
