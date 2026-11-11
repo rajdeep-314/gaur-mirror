@@ -44,9 +44,9 @@ v}
   | 1 | Command-line issues: more or less arguments than expected, invalid flag passed, etc. |
   | 2 | Lexing or parsing errors |
   | 3 | Assembling errors |
-  | 4 | Immediate range validation: some instruction has an immediate outside the valid range |
 }
 
+Note that errors for instructions having immediate arguments outside their valid range of immediates (such as [addi r0 r0 420]) are flagged as "Lexing or parsing errors", as it is the parser that actually catches these errors.
 
 
 {2 Example}
