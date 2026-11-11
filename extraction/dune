@@ -50,11 +50,11 @@
 
 
 ; Dummy Rocq theory so a _RocqProject file can be generated for editor support.
-(rocq.theory
-  (name extraction_dummy_theory)
-  (modules )
-  (theories Stdlib rocq_utils rocq_types assembler)
-  (generate_project_file))
+; (rocq.theory
+;   (name extraction_dummy_theory)
+;   (modules )
+;   (theories Stdlib rocq_utils rocq_types assembler)
+;   (generate_project_file))
 
 (library
   (name extracted)
