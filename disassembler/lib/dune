@@ -1,4 +1,4 @@
 (library
  (name dis)
+ (public_name disassembler)
  (libraries common.types common.utils))
-

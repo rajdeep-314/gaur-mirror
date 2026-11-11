@@ -6,11 +6,20 @@
 
 
 %{
-    open Types.Reg
-    open Types.Asm.Helper
+    open Extracted.Reg
+    open Extracted.Asm
+    open Extracted.Arith
+    open Extracted.Bv
 
     open Errors.Helper.ParsingExns
 
+    (** [syn_inst] -- syntactic instructions with lexing info as annotations. *)
+    type syn_inst = (string, Lexing.position * Lexing.position) annot_inst
+
+    (** [syn_prog] -- syntactic programs with lexing info as annotations. *)
+    type syn_prog = (string, Lexing.position * Lexing.position) annot_prog
+
+    (** Register corresponding to index [n]. *)
     let reg_of_int n ps =
         match n with
         | 0    -> R0  | 1    -> R1  | 2    -> R2  | 3    -> R3
@@ -22,6 +31,30 @@
         | 24   -> R24 | 25   -> R25 | 26   -> R26 | 27   -> R27
         | 28   -> R28 | 29   -> R29 | 30   -> R30 | 31   -> R31
         | _    -> invalidregnum n ps
+
+    (** 11-bit unsigned immediate corresponding to int [n]. *)
+    let imm11u_of_int n ps =
+        let (lb, ub) = po2_unsigned_range 11 in
+        if lb <= n && n <= ub then of_Z n 11
+        else oobimm11u n ps
+
+    (** 11-bit signed immediate corresponding to int [n]. *)
+    let imm11s_of_int n ps =
+        let (lb, ub) = po2_signed_range 11 in
+        if lb <= n && n <= ub then of_Z n 11
+        else oobimm11s n ps
+
+    (** 6-bit signed immediate corresponding to int [n]. *)
+    let imm6s_of_int n ps =
+        let (lb, ub) = po2_signed_range 6 in
+        if lb <= n && n <= ub then of_Z n 6
+        else oobimm6s n ps
+
+    (** 5-bit unsigned immediate corresponding to int [n]. *)
+    let imm5u_of_int n ps =
+        let (lb, ub) = po2_unsigned_range 5 in
+        if lb <= n && n <= ub then of_Z n 5
+        else oobimm5u n ps
 %}
 
 
@@ -44,12 +77,15 @@
 %token <string> LABEL
 %token <int> REG IMM
 
-%type <Types.Reg.t> reg
-%type <int> imm
+%type <Extracted.Reg.t> reg
+%type <Extracted.Bv.t> imm11u       (* 11-bit unsigned immediate *)
+%type <Extracted.Bv.t> imm11s       (* 11-bit signed immediate   *)
+%type <Extracted.Bv.t> imm6s        (* 6-bit signed immediate    *)
+%type <Extracted.Bv.t> imm5u        (* 5-bit unsigned immediate  *)
 %type <string> lbl
-%type <Types.Asm.syn_inst> inst
-%type <Types.Asm.syn_inst list> insts
-%type <Types.Asm.syn_prog> prog
+%type <(string, Lexing.position * Lexing.position) annot_inst> inst
+%type <(string, Lexing.position * Lexing.position) annot_inst list> insts
+%type <(string, Lexing.position * Lexing.position) annot_prog> prog
 
 %start prog
 
@@ -60,47 +96,56 @@
 reg:
     | i = REG   { reg_of_int i ($startpos, $endpos) }
 
-imm:
-    | n = IMM   { n }
+imm11u:
+    | n = IMM   { imm11u_of_int n ($startpos, $endpos) }
+
+imm11s:
+    | n = IMM   { imm11s_of_int n ($startpos, $endpos) }
+
+imm6s:
+    | n = IMM   { imm6s_of_int n ($startpos, $endpos) }
+
+imm5u:
+    | n = IMM   { imm5u_of_int n ($startpos, $endpos) }
 
 lbl:
     | l = LABEL { l }
 
 inst:
-    | LI; r = reg; n = imm
-        { li r n, ($startpos, $endpos) }
-    | LD; rd = reg; rs1 = reg; n = imm
-        { ld rd rs1 n, ($startpos, $endpos) }
-    | ST; rd = reg; rs1 = reg; n = imm
-        { st rd rs1 n, ($startpos, $endpos) }
+    | LI; r = reg; n = imm11u
+        { Li (r, n), ($startpos, $endpos) }
+    | LD; rd = reg; rs1 = reg; n = imm6s
+        { Ld (rd, rs1, n), ($startpos, $endpos) }
+    | ST; rd = reg; rs1 = reg; n = imm6s
+        { St (rd, rs1, n), ($startpos, $endpos) }
     | ADD; rd = reg; rs1 = reg; rs2 = reg
-        { add rd rs1 rs2, ($startpos, $endpos) }
-    | ADDI; rd = reg; rs1 = reg; n = imm
-        { addi rd rs1 n, ($startpos, $endpos) }
+        { Add (rd, rs1, rs2), ($startpos, $endpos) }
+    | ADDI; rd = reg; rs1 = reg; n = imm6s
+        { Addi (rd, rs1, n), ($startpos, $endpos) }
     | SUB; rd = reg; rs1 = reg; rs2 = reg
-        { sub rd rs1 rs2, ($startpos, $endpos) }
+        { Sub (rd, rs1, rs2), ($startpos, $endpos) }
     | AND; rd = reg; rs1 = reg; rs2 = reg
-        { and' rd rs1 rs2, ($startpos, $endpos) }
+        { And (rd, rs1, rs2), ($startpos, $endpos) }
     | NOT; rd = reg; rs1 = reg
-        { not rd rs1, ($startpos, $endpos) }
-    | SL; rd = reg; rs = reg ; n = imm
-        { sl rd rs n, ($startpos, $endpos) }
-    | SR; rd = reg; rs = reg ; n = imm
-        { sr rd rs n , ($startpos, $endpos)} 
+        { Not (rd, rs1), ($startpos, $endpos) }
+    | SL; rd = reg; rs = reg ; n = imm5u
+        { Sl (rd, rs, n), ($startpos, $endpos) }
+    | SR; rd = reg; rs = reg ; n = imm5u
+        { Sr (rd, rs, n), ($startpos, $endpos)} 
     | BEQ; rs1 = reg; rs2 = reg; l = lbl
-        { beq rs1 rs2 l, ($startpos, $endpos) }
+        { Beq (rs1, rs2, l), ($startpos, $endpos) }
     | BLT; rs1 = reg; rs2 = reg; l = lbl
-        { blt rs1 rs2 l, ($startpos, $endpos) }
-    | JALR; rd = reg; rs1 = reg; n = imm
-        { jalr rd rs1 n, ($startpos, $endpos) }
-    | APC; rd = reg; n = imm
-        { apc rd n, ($startpos, $endpos) }
+        { Blt (rs1, rs2, l), ($startpos, $endpos) }
+    | JALR; rd = reg; rs1 = reg; n = imm6s
+        { Jalr (rd, rs1, n), ($startpos, $endpos) }
+    | APC; rd = reg; n = imm11s
+        { Apc (rd, n), ($startpos, $endpos) }
     | J; l = lbl
-        { j l, ($startpos, $endpos) }
+        { J l, ($startpos, $endpos) }
     | l = lbl; COLON
-        { label l, ($startpos, $endpos) }
+        { Label l, ($startpos, $endpos) }
     | SPIN
-        { spin, ($startpos, $endpos) }
+        { Spin, ($startpos, $endpos) }
 
 insts:
     | is=inst*                              { is }
