@@ -1,0 +1,62 @@
+(rocq.extraction
+  (prelude extraction)
+  (extracted_files
+    ; Dependencies, etc.
+    Ascii.ml Ascii.mli
+    BinInt.ml BinInt.mli
+    BinNat.ml BinNat.mli
+    BinNums.ml BinNums.mli
+    BinPos.ml BinPos.mli
+    Datatypes.ml Datatypes.mli
+    Decimal.ml Decimal.mli
+    DecimalString.ml DecimalString.mli
+    FMapAVL.ml FMapAVL.mli
+    FMapList.ml FMapList.mli
+    Int.ml Int.mli
+    ListDef.ml ListDef.mli
+    List0.ml List0.mli
+    Nat.ml Nat.mli
+    OrderedTypeEx.ml OrderedTypeEx.mli
+    OrderedType.ml OrderedType.mli
+    Orders.ml Orders.mli
+    OrdersTac.ml OrdersTac.mli
+    PeanoNat.ml PeanoNat.mli
+    PosDef.ml PosDef.mli
+    Specif.ml Specif.mli
+    ssrfun.ml ssrfun.mli
+    String0.ml String0.mli
+    VectorDef.ml VectorDef.mli
+    Vector.ml Vector.mli
+
+    ; From Rocq (*.v) scripts
+
+    ; Theory: rocq_utils
+    arith.ml arith.mli
+    result.ml result.mli
+    strings.ml strings.mli
+
+    ; Theory: rocq_types
+    reg.ml reg.mli
+    bv.ml bv.mli
+    machine.ml machine.mli
+    isa.ml isa.mli
+    asm.ml asm.mli
+
+    ; Theory: assemble
+    assemble.ml assemble.mli
+    errors.ml errors.mli
+    symtable.ml symtable.mli)
+  (theories Stdlib rocq_utils rocq_types assembler))
+
+
+; Dummy Rocq theory so a _RocqProject file can be generated for editor support.
+(rocq.theory
+  (name extraction_dummy_theory)
+  (modules )
+  (theories Stdlib rocq_utils rocq_types assembler)
+  (generate_project_file))
+
+(library
+  (name extracted)
+  (public_name extracted))
+

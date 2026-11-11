@@ -34,6 +34,14 @@
  (name common))
 
 (package
+  (name extracted)
+  (synopsis "Extracted OCaml code from Gaur's Rocq theories")
+  (depends
+    (ocaml (>= 4.14))
+    (rocq-core (>= 9.0.0))
+    dune))
+
+(package
   (name assembler)
   (synopsis "Assembler for Gaur ASM")
   (depends
