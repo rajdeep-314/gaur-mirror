@@ -4,7 +4,8 @@
 
 
 From Stdlib Require Import String.
-From common.types Require bv reg.
+From rocq_types Require bv reg.
+From rocq_utils Require strings.
 
 Import bv List.ListNotations.
 
@@ -101,7 +102,7 @@ Module Printers.
         with the function [lbl:L -> string] being the function that gives
         string representations of labels of type [L]. *)
     Definition prog {L:Type} (lbl:L -> string) (p:@prog L) : string :=
-        concat "\n" (List.map (@inst L lbl) p).
+        concat strings.newline (List.map (@inst L lbl) p).
 
 End Printers.
 

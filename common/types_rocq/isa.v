@@ -4,7 +4,8 @@
 
 
 From Stdlib Require Import String.
-From common.types Require bv reg.
+From rocq_types Require bv reg.
+From rocq_utils Require strings.
 
 Import bv List.ListNotations.
 
@@ -93,7 +94,7 @@ Module Printers.
         end.
 
     (** [prog i] is the string representation of ISA program [p]. *)
-    Definition prog (p:prog) : string := concat "\n" (List.map inst p).
+    Definition prog (p:prog) : string := concat strings.newline (List.map inst p).
 
 End Printers.
 

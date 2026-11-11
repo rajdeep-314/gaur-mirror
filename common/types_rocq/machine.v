@@ -4,6 +4,8 @@
 
 
 From Stdlib Require Import ZArith String List.
+From rocq_utils Require strings.
+
 Import ListNotations.
 
 Require bv.
@@ -27,7 +29,7 @@ Module Printers.
 
         (** [bit true] is ['1'] and [bit false] is ['0']. *)
         Definition bit (b:bool) : Ascii.ascii :=
-            Ascii.ascii_of_nat (if b then 1 else 0).
+            Ascii.ascii_of_nat (if b then 49 else 48).
 
         (** [inst ins] is the string representation of instructrion [ins].
             Each instruction is represented by an [inst_size]-length string
@@ -39,7 +41,7 @@ Module Printers.
             A program is represented as a bunch of lines, each line being the
             string representation of an instruction in the program. *)
         Definition prog (p:prog) : string :=
-            String.concat "\n" (List.map inst p).
+            String.concat strings.newline (List.map inst p).
 
     End Ascii.
 
@@ -60,6 +62,12 @@ Module Printers.
             List.fold_right
                 (fun shift s => String (byte z shift) s)
                 EmptyString [24; 16; 8; 0].
+
+        (** [prog p] is the binary program representation of a program [p].
+            This is simply the four bytes of every instruction in the program
+            stitched together. *)
+        Definition prog (p:prog) : string :=
+            String.concat "" (List.map inst p).
 
     End Binary.
 
