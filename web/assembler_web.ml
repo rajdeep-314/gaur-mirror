@@ -186,6 +186,7 @@ let () =
 
     let assembly_file = DU.get_input "assembly-file" in
     let download_output = DU.get_element "download-output" in
+    let simulate_output = DU.get_element "simulate-output" in
 
     let ascii_operation source =
         match assemble_source source with
@@ -271,4 +272,27 @@ let () =
         inter_operation;
 
     DU.setup_download_button download_output current_output
-    current_filename errors Misc.download_file
+    current_filename errors Misc.download_file;
+
+    simulate_output##.onclick :=
+        Dom_html.handler (fun _ ->
+            let source = DU.get_textarea_value "assembly-input" in
+            match assemble_to_inter source with
+            | Error e ->
+                DU.set_text errors e;
+                Js._false
+            | Ok mp ->
+                let output = IsaPrinters.prog (Isa.prog_of_annot_prog mp) in
+                let ss = Js.Optdef.get
+                    Dom_html.window##.sessionStorage
+                    (fun () -> failwith "sessionStorage unavailable")
+                in
+                ss##setItem
+                    (Js.string "gaur_sim_program")
+                    (Js.string output);
+                ss##setItem
+                    (Js.string "gaur_sim_filename")
+                    (Js.string "from_assembler.gsm.inter");
+                Dom_html.window##.location##.href := Js.string "cpu-simulator.html";
+                Js._false
+        )

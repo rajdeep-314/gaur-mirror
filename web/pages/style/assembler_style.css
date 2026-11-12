@@ -42,6 +42,39 @@
     box-sizing: border-box;
 }
 
+/* ================================
+   Global Scrollbars
+   ================================ */
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #3A3A3A;
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #505050;
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox only (Chrome/Edge/Safari use the rules above) */
+@supports not selector(::-webkit-scrollbar) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #3A3A3A transparent;
+    }
+}
 
 body {
     margin: 0;
@@ -470,10 +503,12 @@ button:active {
 
 
 /* ================================
-   Copy button
+   Copy, Download, and Simulate buttons
    ================================ */
 
-.copy-button {
+.copy-button,
+.download-button,
+.simulate-button {
     position: absolute;
 
     top: 10px;
@@ -504,14 +539,18 @@ button:active {
 }
 
 
-/* Show copy button when hovering over output */
+/* Show button when hovering over output */
 
-.code-container:hover .copy-button {
+.code-container:hover .copy-button,
+.code-container:hover .download-button,
+.code-container:hover .simulate-button {
     opacity: 1;
 }
 
 
-.copy-button:hover {
+.copy-button:hover,
+.download-button:hover,
+.simulate-button:hover {
     background-color: #FFFFFF;
     color: #111111;
 
@@ -521,7 +560,9 @@ button:active {
 
 /* Keep button visible after focus */
 
-.copy-button:focus {
+.copy-button:focus,
+.download-button:focus,
+.simulate-button:focus {
     opacity: 1;
 
     outline: none;
