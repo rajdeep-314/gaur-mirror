@@ -55,6 +55,10 @@ let state : app_state = {
   batch_last_trace = "";
 }
 
+(* RAM inspector view mode: live non-zero listing or live address range *)
+type ram_view = RamNonZero | RamRange
+let ram_view_mode = ref RamNonZero
+
 (* Format single trace entry *)
 let format_trace_item tr =
   match tr with
@@ -334,7 +338,42 @@ let () =
   let sim_errors = DU.get_element "sim-errors" in
   let copy_errors = DU.get_element "copy-errors" in
 
+  let current_batch_download_trace = ref None in
+  let current_batch_filename = ref "execution_trace.txt" in
+
+  (* Put batch + debugger panels back to their first-visit look *)
+  let reset_views_on_error () =
+    (* Batch *)
+    DU.hide_element batch_results_container;
+    DU.set_text batch_stat_pc "0000";
+    DU.set_text batch_stat_steps "0";
+    DU.set_text batch_stat_status "Ready";
+    clear_children batch_registers_grid;
+    clear_children batch_ram_tbody;
+    DU.clear_text batch_trace_output;
+    DU.hide_element batch_trace_section;
+    current_batch_download_trace := None;
+    state.batch_last_trace <- "";
+
+    (* Debugger *)
+    DU.set_text debug_pc_val "0000";
+    DU.set_text debug_step_val "0";
+    DU.set_text debug_status_val "Ready";
+    clear_children debug_registers_grid;
+    clear_children debug_ram_tbody;
+    DU.clear_text debug_trace_output;
+    (match state.prog with
+     | Some prog ->
+         DU.set_text debug_prog_count
+           (Printf.sprintf "%d instructions" (List.length prog))
+     | None ->
+         DU.set_text debug_prog_count "0 instructions";
+         debug_prog_container##.innerHTML :=
+           Js.string "<div class=\"empty-state\">No program loaded. Upload a .gsm.inter or .gsm file above.</div>")
+  in
+
   let show_error msg =
+    reset_views_on_error ();
     DU.set_text sim_errors msg;
     DU.show_element error_section
   in
@@ -344,12 +383,24 @@ let () =
     DU.hide_element error_section
   in
 
+  (* A failed program load leaves no valid program: drop the old one *)
+  let discard_loaded_program () =
+    state.prog <- None;
+    state.prog_source <- "";
+    state.prog_filename <- "";
+    state.debug_proc <- None;
+    state.debug_steps <- 0;
+    state.debug_prev_regs <- [];
+    state.debug_traces <- [];
+    state.debug_halted <- false;
+    prog_file_status##.className := Js.string "file-status";
+    DU.set_text prog_file_status "No program loaded"
+  in
+
   DU.setup_copy_button copy_errors sim_errors;
   DU.setup_copy_button batch_copy_trace batch_trace_output;
   DU.setup_copy_button debug_copy_trace debug_trace_output;
 
-  let current_batch_download_trace = ref None in
-  let current_batch_filename = ref "execution_trace.txt" in
   DU.setup_download_button
     batch_download_trace
     current_batch_download_trace
@@ -399,6 +450,27 @@ let () =
   subtab_ram##.onclick := Dom_html.handler (fun _ -> set_debug_subtab "ram"; Js._false);
   subtab_trace##.onclick := Dom_html.handler (fun _ -> set_debug_subtab "trace"; Js._false);
 
+  (* Re-render the RAM inspector according to the current view mode *)
+  let refresh_ram_view () =
+    match state.debug_proc with
+    | None -> clear_children debug_ram_tbody
+    | Some proc ->
+        let ram = Proc.get_ram proc in
+        let entries =
+          match !ram_view_mode with
+          | RamNonZero -> get_all_nonzero_ram ram
+          | RamRange ->
+              let addr =
+                try int_of_string (Js.to_string ram_inspect_addr##.value)
+                with _ -> 0 in
+              let count =
+                try int_of_string (Js.to_string ram_inspect_count##.value)
+                with _ -> 16 in
+              get_ram_range ram addr count
+        in
+        render_ram_table debug_ram_tbody entries
+  in
+
   (* Sync Debugger UI elements with current state.debug_proc *)
   let sync_debugger_view status_msg =
     match state.debug_proc, state.prog with
@@ -415,6 +487,9 @@ let () =
         (* Render registers with change diffs *)
         render_registers_grid debug_registers_grid rf (Some state.debug_prev_regs);
 
+        (* Live RAM view *)
+        refresh_ram_view ();
+
         (* Update trace box *)
         DU.set_text debug_trace_output (String.concat "\n" (List.rev state.debug_traces))
 
@@ -423,6 +498,7 @@ let () =
         DU.set_text debug_step_val "0";
         DU.set_text debug_status_val "No state";
         clear_children debug_registers_grid;
+        clear_children debug_ram_tbody;
         clear_children debug_prog_container
 
     | _, None ->
@@ -430,6 +506,7 @@ let () =
         DU.set_text debug_step_val "0";
         DU.set_text debug_status_val "No program";
         clear_children debug_registers_grid;
+        clear_children debug_ram_tbody;
         clear_children debug_prog_container
   in
 
@@ -561,38 +638,29 @@ let () =
       Js._false
     );
 
-  (* RAM Inspector buttons *)
+  (* RAM Inspector: buttons switch the live view mode *)
   ram_inspect_range_btn##.onclick :=
     Dom_html.handler (fun _ ->
-      match state.debug_proc with
-      | None ->
-          show_error "Simulator state is not initialized.";
-          Js._false
-      | Some proc ->
-          let addr =
-            try int_of_string (Js.to_string ram_inspect_addr##.value)
-            with _ -> 0
-          in
-          let count =
-            try int_of_string (Js.to_string ram_inspect_count##.value)
-            with _ -> 16
-          in
-          let entries = get_ram_range (Proc.get_ram proc) addr count in
-          render_ram_table debug_ram_tbody entries;
-          Js._false
+      ram_view_mode := RamRange;
+      refresh_ram_view ();
+      Js._false
     );
 
   ram_inspect_nz_btn##.onclick :=
     Dom_html.handler (fun _ ->
-      match state.debug_proc with
-      | None ->
-          show_error "Simulator state is not initialized.";
-          Js._false
-      | Some proc ->
-          let entries = get_all_nonzero_ram (Proc.get_ram proc) in
-          render_ram_table debug_ram_tbody entries;
-          Js._false
+      ram_view_mode := RamNonZero;
+      refresh_ram_view ();
+      Js._false
     );
+
+  (* Typing in address/count updates the range view live *)
+  let on_range_input =
+    Dom_html.handler (fun _ ->
+      if !ram_view_mode = RamRange then refresh_ram_view ();
+      Js._false)
+  in
+  ram_inspect_addr##.oninput := on_range_input;
+  ram_inspect_count##.oninput := on_range_input;
 
   (* Successful program load setup *)
   let on_program_loaded filename source prog =
@@ -619,10 +687,14 @@ let () =
             | Some file ->
                 let filename = Js.to_string file##.name in
                 DU.read_file_as_text file (function
-                  | None -> show_error ("Failed to read file: " ^ filename)
+                  | None ->
+                      discard_loaded_program ();
+                      show_error ("Failed to read file: " ^ filename)
                   | Some content ->
                       match load_program_from_string filename content with
-                      | Error err -> show_error err
+                      | Error err ->
+                          discard_loaded_program ();
+                          show_error err
                       | Ok prog -> on_program_loaded filename content prog
                 );
                 Js._false
@@ -810,6 +882,7 @@ let () =
                   DU.set_input_file prog_file_input filename prog_str;
                   on_program_loaded filename prog_str prog
               | Error err ->
+                  discard_loaded_program ();
                   show_error ("Failed to load program from Assembler: " ^ err)
             end
           )
