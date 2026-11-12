@@ -2,5 +2,5 @@
  (package assembler)
  (public_name assembler)
  (name main)
- (libraries assembler common.types common.parsing))
+ (libraries extracted common.parsing))
 

@@ -15,8 +15,8 @@ module P = Utils.Parsing
     file with path [path] and returns an AST ASM program annotated with a tuple
     of [Lexing.position], with string labels (i.e. the type [syn_prog]).
 
-    @raise LexingExn if the lexing stage fails.
-    @raise ParsingExn if the parsing stage fails (includes Menhir errors).
+    @raise E.LexingExn if the lexing stage fails.
+    @raise E.ParsingExn if the parsing stage fails (includes Menhir errors).
 *)
 let parse_with_path src path =
     let lexbuf = Lexing.from_string src in
@@ -38,10 +38,9 @@ let parse_with_path src path =
 
     Calls [parse_with_path] after reading the file and expanding tabs.
 
-    @raise LexingExn if the lexing stage fails.
-    @raise ParsingExn if the parsing stage fails (includes Menhir errors).
+    @raise E.LexingExn if the lexing stage fails.
+    @raise E.ParsingExn if the parsing stage fails (includes Menhir errors).
 *)
 let parse_from_path path =
     let src = P.expand_tabs 4 (F.read_file path) in
     parse_with_path src path
-

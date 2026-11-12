@@ -10,6 +10,7 @@
 ***   - Extra operand
 *** - Assembly errors, namely:
 ***   - Missing jump target
+***   - Undefined jump label
 ***   - Missing beq target
 ***   - Missing blt target
 ***   - Duplicate label target
@@ -72,6 +73,11 @@
 
   $ assembler ../examples/errors/missing_jump_target.gsm --format inter 2>/dev/null
   [2]
+
+*** Undefined jump label ***
+
+  $ assembler ../examples/errors/undefined_jump_label.gsm --format inter 2>/dev/null
+  [3]
 
 
 *** Missing beq target ***

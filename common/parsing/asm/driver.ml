@@ -10,8 +10,8 @@ open Utils.Files
     with path [path] and returns an AST ASM program annotated with a tuple of
     [Lexing.position], with string labels (i.e. the type [syn_prog]).
 
-    @raise LexingExn if the lexing stage fails.
-    @raise ParsingExn if the parsing stage fails (includes Menhir errors).
+    @raise Errors.LexingExn if the lexing stage fails.
+    @raise Errors.ParsingExn if the parsing stage fails (includes Menhir errors).
 *)
 let parse_prog_with_path path prog =
     let buf = Lexing.from_string prog in
@@ -27,10 +27,9 @@ let parse_prog_with_path path prog =
     returns an AST ISA program annotated with a tuple of [Lexing.position],
     with string labels (i.e. the type [syn_prog]).
 
-    @raise LexingExn if the lexing stage fails.
-    @raise ParsingExn if the parsing stage fails.
+    @raise Errors.LexingExn if the lexing stage fails.
+    @raise Errors.ParsingExn if the parsing stage fails.
 *)
 let parse_prog_from_path path =
     let prog = read_file path in
     parse_prog_with_path path prog
-

@@ -17,7 +17,7 @@ doc: "https://verify-at-iitpkd.gitlab.io/gaur"
 bug-reports: "https://gitlab.com/verify-at-iitpkd/gaur/-/issues"
 depends: [
   "ocaml" {>= "4.14"}
-  "dune" {>= "3.22"}
+  "dune" {>= "3.23"}
   "menhir" {>= "20180523"}
   "ocamlgraph"
   "odoc" {with-doc}

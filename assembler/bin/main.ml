@@ -6,12 +6,12 @@
 
 
 (* Module aliases. *)
-module Assemble     = Assembler.Assemble
-module Parser       = Parsing.Asm.Driver
-module IsaPrinters  = Types.Isa.Printers
-module MacPrinters  = Types.Machine.Printers
-module Types        = Types.Asm
-module Errors       = Parsing.Asm.Errors
+module Assemble       = Extracted.Assemble
+module Parser         = Parsing.Asm.Driver
+module Isa            = Extracted.Isa
+module MacPrinters    = Extracted.Machine.Printers
+module AssembleErrors = Extracted.Errors
+module Errors         = Parsing.Asm.Errors
 
 
 (* Exit codes. *)
@@ -19,8 +19,6 @@ let err_code_success        = 0     (* Exited successfully.           *)
 let err_code_command_line   = 1     (* Command-line errors.           *)
 let err_code_lexing_parsing = 2     (* Lexing or parsing errors.      *)
 let err_code_assembling     = 3     (* Errors at the assembler level. *)
-let err_code_validation     = 4     (* Errors at the immediate
-                                                    validation level. *)
 
 
 (* Parameters. *)
@@ -111,37 +109,33 @@ let prog_ast_annotated =
         prerr_endline (Errors.ParsingErrors.to_string_with_src err src);
         exit err_code_lexing_parsing
 
-(** Perform validation on AST with annotations, then remove
-    annotations so that the Rocq-extracted functions can do further
-    work. *)
-let prog_ast =
-    match Types.Validate.prog prog_ast_annotated with
-    | None -> Types.remove_annot_from_prog prog_ast_annotated
-    | Some err ->
-        let err_msg = Types.Validate.string_of_verr
-        (fun annot -> Utils.Parsingerrs.pp_pos_info_with_source ~source:src annot)
-        err in
-        prerr_endline err_msg ;
-        exit err_code_validation
+(** Intermediate (ISA) program. *)
+let inter_prog = Assemble.asm_prog_to_isa_prog prog_ast_annotated
 
-
-let inter_prog = Assemble.to_inter prog_ast         (* Intermediate assembly. *)
-let mach_prog = Assemble.assemble_prog prog_ast     (* Machine program. *)
+(** Machine program. *)
+let mach_prog = Assemble.assemble prog_ast_annotated
 
 let output_str =
     match mach_prog with
     | Error e   ->
-            prerr_endline e;
+            prerr_endline (AssembleErrors.to_string
+                (fun annot -> Utils.Parsingerrs.pp_pos_info_with_source
+                    ~source:src annot) e);
             exit err_code_assembling
     | Ok mp     ->
             match !format with
-            | "ascii" -> MacPrinters.ascii_prog mp ^ "\n"
-            | "bin"   -> MacPrinters.bin_prog mp
+            | "ascii" -> MacPrinters.Ascii.prog mp ^ "\n"
+            | "bin"   -> MacPrinters.Binary.prog mp
             | "inter" ->
                     begin
                     match inter_prog with
-                    | Error e   -> prerr_endline e; exit err_code_assembling
-                    | Ok inter  -> IsaPrinters.prog inter ^ "\n"
+                    | Error e   ->
+                            prerr_endline (AssembleErrors.to_string
+                                (fun annot -> Utils.Parsingerrs.pp_pos_info_with_source
+                                    ~source:src annot) e);
+                            exit err_code_assembling
+                    | Ok inter  ->
+                            Isa.Printers.prog (Isa.prog_of_annot_prog inter) ^ "\n"
                     end
             | _       ->
                 prerr_endline ("Unknown format: " ^ !format);
