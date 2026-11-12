@@ -29,27 +29,23 @@
         <!-- Top Configuration Header -->
         <header id="config-bar">
             <div class="config-row">
-                <div class="input-card">
-                    <label for="prog-file-input">
-                        <span class="label-title">Program File</span>
-                        <span class="label-desc">Intermediate ISA (.gsm.inter) or Gaur Assembly (.gsm)</span>
-                    </label>
-                    <div class="file-upload-wrapper">
-                        <input type="file" id="prog-file-input" accept=".inter,.gsm,.txt">
+                <div class="input-group file-group">
+                    <div class="input-header-row">
+                        <label for="prog-file-input">Program File <span class="input-subtitle">(.gsm.inter, .gsm)</span></label>
                         <span id="prog-file-status" class="file-status">No program loaded</span>
                     </div>
+                    <input type="file" id="prog-file-input" accept=".inter,.gsm,.txt">
                 </div>
 
-                <div class="input-card">
-                    <label for="ram-file-input">
-                        <span class="label-title">Initial RAM File</span>
-                        <span class="label-desc">Binary RAM image (.bram, .bin) &mdash; Optional</span>
-                    </label>
-                    <div class="file-upload-wrapper">
-                        <input type="file" id="ram-file-input" accept=".bram,.bin">
-                        <button id="clear-ram-btn" class="small-btn" title="Reset to all-zero RAM">Clear RAM</button>
-                        <span id="ram-file-status" class="file-status">Zero-initialized RAM</span>
+                <div class="input-group file-group">
+                    <div class="input-header-row">
+                        <label for="ram-file-input">Initial RAM File <span class="input-subtitle">(.bram, .bin) &mdash; Optional</span></label>
+                        <div class="ram-status-actions">
+                            <button id="clear-ram-btn" class="clear-ram-btn" title="Reset to all-zero RAM">Clear RAM</button>
+                            <span id="ram-file-status" class="file-status">Zero-initialized RAM</span>
+                        </div>
                     </div>
+                    <input type="file" id="ram-file-input" accept=".bram,.bin">
                 </div>
             </div>
 
