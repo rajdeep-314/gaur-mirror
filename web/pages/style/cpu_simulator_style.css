@@ -1043,19 +1043,43 @@ pre {
    ================================ */
 
 #error-section {
-    margin-top: 12px;
+    margin: 8px 0 12px 0;
     flex-shrink: 0;
-    max-height: 120px;
-    overflow-y: auto;
+}
+
+#error-section .section-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+#error-section .section-header-actions h2 {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--error);
+    margin: 0;
 }
 
 .error-container {
+    position: relative;
     background-color: var(--error-bg);
-    border-color: var(--error-border);
+    border: 1px solid var(--error-border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    overflow: hidden;
 }
 
 .error-container pre {
     color: var(--error);
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow: hidden;
 }
 
 /* ================================

@@ -264,10 +264,6 @@ let () =
   let ram_file_status = DU.get_element "ram-file-status" in
   let clear_ram_btn = DU.get_element "clear-ram-btn" in
 
-  let notification_banner = DU.get_element "notification-banner" in
-  let notification_msg = DU.get_element "notification-msg" in
-  let notification_close = DU.get_element "notification-close" in
-
   let tab_batch = DU.get_element "tab-batch" in
   let tab_debug = DU.get_element "tab-debug" in
   let batch_panel = DU.get_element "batch-panel" in
@@ -340,17 +336,6 @@ let () =
     DU.clear_text sim_errors;
     DU.hide_element error_section
   in
-
-  let show_notification msg =
-    DU.set_text notification_msg msg;
-    DU.show_element notification_banner
-  in
-
-  notification_close##.onclick :=
-    Dom_html.handler (fun _ ->
-      DU.hide_element notification_banner;
-      Js._false
-    );
 
   DU.setup_copy_button copy_errors sim_errors;
   DU.setup_copy_button batch_copy_trace batch_trace_output;
@@ -816,8 +801,7 @@ let () =
               match load_program_from_string filename prog_str with
               | Ok prog ->
                   DU.set_input_file prog_file_input filename prog_str;
-                  on_program_loaded filename prog_str prog;
-                  show_notification ("Loaded assembled intermediate program (" ^ filename ^ ") from Assembler.")
+                  on_program_loaded filename prog_str prog
               | Error err ->
                   show_error ("Failed to load program from Assembler: " ^ err)
             end
