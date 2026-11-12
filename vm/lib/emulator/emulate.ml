@@ -43,6 +43,14 @@ let write_segment seg n v =
 let write_to_screen s x y =
     s.screen.(W.to_int x) <- y; s
 
+(* Set the pressed key in state s to c and return new state. *)
+let set_key_pressed s c =
+    { s with keyboard = Some c }
+
+(* Unset the pressed key in state s and return new state. *)
+let unset_key_pressed s =
+    { s with keyboard = None }
+
 (* Get instruction number n from function f, whose body is body.
    Previous checks in the pipeline ensure that this does not cause an error. *)
 let get_inst f body n = body.(n)
@@ -83,6 +91,7 @@ let init f_name n_lcls n_args = {
     temp   = make_segment 16 ;
     static = make_segment 240 ;
     screen = make_screen (80 * 24) ;
+    keyboard = None ;
     frames = [
     {
         f_name = f_name ;

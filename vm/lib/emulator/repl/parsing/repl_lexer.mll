@@ -10,6 +10,8 @@ let iden = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_' '.' '$']*
 let dig = ['0'-'9']
 let nat = dig+
 
+let char = '\'' [' '-'~'] '\''
+
 
 rule read_tokens = parse
     | whitespace    { read_tokens lexbuf }
@@ -39,7 +41,11 @@ rule read_tokens = parse
     | "frame"       { FRAME }
     | "state"       { STATE }
     | "segment"     { SEGMENT }
+    | "keyboard"    { KEYBOARD }
+    | "set"         { SET }
+    | "unset"       { UNSET }
     | nat           { NUM (int_of_string (Lexing.lexeme lexbuf)) }
+    | char          { CHAR (Lexing.lexeme lexbuf).[1] }
     | iden          { ID (Lexing.lexeme lexbuf) }
     | eof           { EOF }
     | _             { raise unmatched_character }
