@@ -1068,18 +1068,36 @@ pre {
     border: 1px solid var(--error-border);
     border-radius: 6px;
     padding: 10px 14px;
+    max-height: 120px;
     overflow: hidden;
 }
 
 .error-container pre {
     color: var(--error);
     margin: 0;
+    padding-right: 64px;
     font-family: var(--font-code);
     font-size: 12px;
     line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-all;
-    overflow: hidden;
+    max-height: 96px;
+    overflow-y: auto;
+}
+
+.error-container .copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 1;
+    border-color: var(--error-border);
+    color: var(--error);
+}
+
+.error-container .copy-button:hover {
+    background-color: var(--error);
+    color: var(--bg);
+    border-color: var(--error);
 }
 
 /* ================================
