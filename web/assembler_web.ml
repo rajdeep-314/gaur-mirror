@@ -282,7 +282,7 @@ let () =
                 DU.set_text errors e;
                 Js._false
             | Ok mp ->
-                let output = IsaPrinters.prog mp in
+                let output = IsaPrinters.prog (Isa.prog_of_annot_prog mp) in
                 let ss = Js.Optdef.get
                     Dom_html.window##.sessionStorage
                     (fun () -> failwith "sessionStorage unavailable")

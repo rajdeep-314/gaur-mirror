@@ -30,5 +30,5 @@
  (name cpu_simulator_web)
  (modules cpu_simulator_web)
  (modes js)
- (libraries js_of_ocaml web_utils cpusim syntax common.types common.parsing assembler)
+ (libraries js_of_ocaml web_utils cpusim syntax common.types common.parsing extracted)
  (preprocess (pps js_of_ocaml-ppx)))

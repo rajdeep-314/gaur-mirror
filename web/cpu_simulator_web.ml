@@ -18,9 +18,10 @@ module IsaParser = Parsing.Isa.Driver
 module IsaErrors = Parsing.Isa.Errors
 
 module AsmParser = Parsing.Asm.Driver
-module AsmAssemble = Assembler.Assemble
+module AsmAssemble = Extracted.Assemble
+module Isa = Extracted.Isa
 module AsmErrors = Parsing.Asm.Errors
-module AsmTypes = Types.Asm
+module AssembleErrors = Extracted.Errors
 
 module DU = Dom_utils
 module M = Misc
@@ -118,12 +119,18 @@ let parse_isa_source name source =
 let parse_and_assemble_gsm name source =
   try
     let raw_ast = AsmParser.parse_prog_with_path name source in
-    let stripped = AsmTypes.remove_annot_from_prog raw_ast in
-    match AsmAssemble.to_inter stripped with
-    | Ok inter_prog -> Ok inter_prog
-    | Error e -> Error ("Assembly error: " ^ e)
+    match AsmAssemble.asm_prog_to_isa_prog raw_ast with
+    | Ok annot_prog ->
+        let text = Isa.Printers.prog (Isa.prog_of_annot_prog annot_prog) in
+        parse_isa_source name text
+    | Error e ->
+        Error ("Assembly error: " ^
+          AssembleErrors.to_string
+            (fun annot ->
+               Utils.Parsingerrs.pp_pos_info_with_source ~source annot)
+            e)
   with
-  | AsmErrors.LexingExn err ->
+  | AsmErrors.LexingExn err  ->
       Error (AsmErrors.LexingErrors.to_string_with_src err source)
   | AsmErrors.ParsingExn err ->
       Error (AsmErrors.ParsingErrors.to_string_with_src err source)
