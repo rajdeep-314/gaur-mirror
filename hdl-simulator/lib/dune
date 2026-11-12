@@ -1,5 +1,6 @@
 (library
- (name lib)
+ (name hdl_simulator)
+ (public_name hdl-simulator.lib)
  (libraries fmt menhirLib ocamlgraph incremental))
 
 (include_subdirs qualified)

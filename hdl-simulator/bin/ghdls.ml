@@ -1,4 +1,4 @@
-open Lib
+open Hdl_simulator
 open Hdlutils
 open Analyze
 open Backend.Interpreter
