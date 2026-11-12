@@ -35,6 +35,7 @@ let help_msg =
                                             entries
     show function               :       show current function call
     show screen                 :       show current scren
+    show keyboard               :       show keyboard state
     show segment s              :       show contents of segment s
     show frame                  :       show top-most function frame
     show state                  :       show the entire VM state, except the
@@ -50,6 +51,8 @@ let help_msg =
                                             function returns
     execute till termination    :       execute till the program terminates
 
+    set keyboard 'c'            :       set the pressed key to the character c
+    unset keyboard              :       unset the pressed key
     reset                       :       reset emulator state
     exit                        :       exit REPL"
 
@@ -93,6 +96,9 @@ let show_function p s =
 
 (* Show the current screen. *)
 let show_screen p s = (SP.screen s, s)
+
+(* Show the current keyboard state. *)
+let show_keyboard p s = (SP.keyboard s, s)
 
 (* Show contents of segment seg. *)
 let show_segment seg p s = (SP.segment seg s, s)
@@ -159,6 +165,14 @@ let e_till_termination p s =
     | Some rv   -> "Execution terminated with return value " ^ W.to_string rv
     in msg, s'
 
+(* Set the pressed key to the character c. *)
+let set_keyboard c p s =
+    (Printf.sprintf "keyboard pressed with key %c" c,
+     E.set_key_pressed s c)
+
+(* Unset the pressed key. *)
+let unset_keyboard p s = ("keyboard not pressed", E.unset_key_pressed s)
+
 let reset_f p s = ("Resetting.", E.init_from_prog p)
 let exit_f p s = ("Exiting", s)
 let empty_f p s = ("", s)
@@ -174,6 +188,7 @@ let repl_func_of_cmd = function
     | ShowStackTop n            -> show_stack_top n
     | ShowFunction              -> show_function
     | ShowScreen                -> show_screen
+    | ShowKeyboard              -> show_keyboard
     | ShowSegment s             -> show_segment s
     | ShowFrame                 -> show_frame
     | ShowFrames                -> show_frames
@@ -185,6 +200,8 @@ let repl_func_of_cmd = function
     | ExecuteTillReturn         -> e_till_return
     | ExecuteTillBeforeReturn   -> e_till_before_return
     | ExecuteTillTermination    -> e_till_termination
+    | SetKeyboard s             -> set_keyboard s
+    | UnsetKeyboard             -> unset_keyboard
     | Reset                     -> reset_f
     | Exit                      -> exit_f
 

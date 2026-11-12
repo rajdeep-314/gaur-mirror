@@ -19,11 +19,12 @@ type frame = {
 }
 
 type t = {
-    temp   : segment ;          (* global temporary segment *)
-    static : segment ;          (* global static segment *)
+    temp     : segment ;        (* global temporary segment *)
+    static   : segment ;        (* global static segment *)
     (* TODO: Extend ASCII to UTF. *)
-    screen : segment ;          (* 80 x 24 characters screen. ASCII, for now. *)
-    frames : frame list         (* function frames -- working stack *)
+    screen   : segment ;        (* 80 x 24 characters screen. ASCII, for now. *)
+    keyboard : char option ;    (* keyboard info -- pressed or not, and what key. *)
+    frames   : frame list       (* function frames -- working stack *)
 }
 
 
@@ -42,6 +43,9 @@ module Inspect = struct
     (* Function call. *)
     type call =
         | Call  of string * W.t list
+
+    (* Is a key pressed in VM state s? *)
+    let key_pressed s = Option.is_some s.keyboard
 
     (* Call corresponding to a frame. *)
     let call_of_frame f = Call (f.f_name, Array.to_list f.argument)
@@ -106,6 +110,12 @@ module PP = struct
         let hor_border = "+" ^ String.make 80 '-' ^ "+" in
         let lines' = List.map (fun x -> "|" ^ x ^ "|") (lines s) in
         String.concat "\n" (hor_border :: lines' @ [hor_border])
+
+    (* Keyboard in VM state s. *)
+    let keyboard s =
+        match s.keyboard with
+        | Some c -> Printf.sprintf "keyboard pressed with key %c" c
+        | None   -> "keyboard not pressed"
 
     (* Screen in VM state s, without any borders. *)
     let screen_no_border s = String.concat "\n" (lines s)

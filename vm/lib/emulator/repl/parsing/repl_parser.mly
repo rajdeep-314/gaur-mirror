@@ -5,11 +5,13 @@
 
 %token <int> NUM
 %token <string> ID
+%token <char> CHAR
 %token HELP
 %token TEMP STATIC LOCAL ARGUMENT
-%token SHOW CALLS STACK TOP FUNCTION SCREEN SEGMENT FRAME FRAMES STATE
+%token SHOW CALLS STACK TOP FUNCTION SCREEN SEGMENT FRAME FRAMES STATE KEYBOARD
 %token EXECUTE STEPS STEP TILL BEFORE RETURN TERMINATION
 %token NEXT BREAKPOINT
+%token SET UNSET
 %token RESET EXIT
 %token EOF
 
@@ -40,6 +42,8 @@ stmt:
         { ShowFunction }
     | SHOW; SCREEN
         { ShowScreen }
+    | SHOW; KEYBOARD
+        { ShowKeyboard }
     | SHOW; SEGMENT; s = segment
         { ShowSegment s }
     | SHOW; FRAME
@@ -62,6 +66,10 @@ stmt:
         { ExecuteTillBeforeReturn }
     | EXECUTE; TILL; TERMINATION
         { ExecuteTillTermination }
+    | SET; KEYBOARD; c = CHAR
+        { SetKeyboard c }
+    | UNSET; KEYBOARD
+        { UnsetKeyboard }
     | RESET
         { Reset }
     | EXIT
