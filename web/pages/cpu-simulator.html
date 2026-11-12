@@ -85,12 +85,21 @@
                         </label>
                     </div>
 
-                    <button id="batch-run-btn" class="primary-action-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
-                        Run Simulation
-                    </button>
+                    <div class="controls-actions">
+                        <button id="batch-run-btn" class="primary-action-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Run Simulation
+                        </button>
+                        <button id="batch-reset-btn" class="action-btn reset-btn" title="Reset batch results">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                <path d="M3 3v5h5"></path>
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -234,7 +243,7 @@
                             <button id="ram-inspect-nz-btn" class="small-btn">Show Non-Zero</button>
                         </div>
 
-                        <div class="table-wrapper" style="max-height: 400px;">
+                        <div class="table-wrapper">
                             <table class="data-table">
                                 <thead>
                                     <tr>
@@ -257,7 +266,7 @@
                                 <button class="small-btn" id="debug-clear-trace">Clear</button>
                             </div>
                         </div>
-                        <div class="code-container" style="max-height: 400px; overflow-y: auto;">
+                        <div class="code-container">
                             <pre id="debug-trace-output"></pre>
                         </div>
                     </div>

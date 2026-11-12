@@ -134,7 +134,7 @@ input[type="number"]::-webkit-inner-spin-button {
     height: calc((100vh / 1.20) - 64px - 52px);
     display: flex;
     flex-direction: column;
-    padding: 20px 32px;
+    padding: 14px 28px;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -144,15 +144,15 @@ input[type="number"]::-webkit-inner-spin-button {
    ================================ */
 
 #config-bar {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     flex-shrink: 0;
 }
 
 .config-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 14px;
+    gap: 16px;
+    margin-bottom: 8px;
 }
 
 @media (max-width: 860px) {
@@ -339,27 +339,39 @@ input[type="number"]::-webkit-inner-spin-button {
    ================================ */
 
 .mode-panel {
+    display: none;
     flex: 1;
     min-height: 0;
-    display: flex;
+    height: 100%;
     flex-direction: column;
     overflow: hidden;
+}
+
+.mode-panel.active {
+    display: flex;
 }
 
 .controls-panel {
     background-color: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 12px 20px;
-    margin-bottom: 16px;
+    padding: 10px 16px;
+    margin-bottom: 12px;
     flex-shrink: 0;
 }
 
 .controls-group {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
     flex-wrap: wrap;
+}
+
+.controls-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
 }
 
 .setting-item {
@@ -598,8 +610,8 @@ input[type="number"]::-webkit-inner-spin-button {
     background-color: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 12px 20px;
-    margin-bottom: 16px;
+    padding: 8px 16px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -619,7 +631,7 @@ input[type="number"]::-webkit-inner-spin-button {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 7px 14px;
+    padding: 6px 12px;
     border-radius: 5px;
     font-family: var(--font-heading);
     font-size: 12px;
@@ -709,9 +721,10 @@ input[type="number"]::-webkit-inner-spin-button {
 .debug-workspace {
     flex: 1;
     min-height: 0;
+    height: 100%;
     display: grid;
-    grid-template-columns: 420px 1fr;
-    gap: 20px;
+    grid-template-columns: 390px 1fr;
+    gap: 16px;
     overflow: hidden;
 }
 
@@ -725,10 +738,12 @@ input[type="number"]::-webkit-inner-spin-button {
     background-color: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 16px;
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
     min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -736,7 +751,7 @@ input[type="number"]::-webkit-inner-spin-button {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     flex-shrink: 0;
 }
 
@@ -766,7 +781,7 @@ input[type="number"]::-webkit-inner-spin-button {
     border-radius: 6px;
     flex: 1;
     min-height: 0;
-    height: auto;
+    height: 100%;
     overflow-y: auto;
     font-family: var(--font-code);
     font-size: 12px;
@@ -832,8 +847,8 @@ input[type="number"]::-webkit-inner-spin-button {
     display: flex;
     gap: 4px;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 8px;
-    margin-bottom: 16px;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
     flex-shrink: 0;
 }
 
@@ -862,16 +877,17 @@ input[type="number"]::-webkit-inner-spin-button {
 .state-panel {
     flex: 1;
     min-height: 0;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .ram-query-bar {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
     flex-shrink: 0;
 }
@@ -902,15 +918,32 @@ input[type="number"]::-webkit-inner-spin-button {
 #state-panel-ram .table-wrapper {
     flex: 1;
     min-height: 0;
-    max-height: none;
+    height: 100%;
     overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+#state-panel-trace .section-header-actions {
+    flex-shrink: 0;
+    margin-bottom: 6px;
 }
 
 #state-panel-trace .code-container {
     flex: 1;
     min-height: 0;
-    max-height: none;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+#debug-trace-output {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    margin: 0;
 }
 
 .small-btn {

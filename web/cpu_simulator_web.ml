@@ -36,6 +36,7 @@ type app_state = {
   mutable debug_steps : int;
   mutable debug_prev_regs : (Sast.reg * int) list;
   mutable debug_traces : string list;
+  mutable debug_halted : bool;
   mutable batch_last_trace : string;
 }
 
@@ -49,6 +50,7 @@ let state : app_state = {
   debug_steps = 0;
   debug_prev_regs = [];
   debug_traces = [];
+  debug_halted = false;
   batch_last_trace = "";
 }
 
@@ -276,6 +278,7 @@ let () =
   let batch_trace_toggle = DU.get_input "batch-trace-toggle" in
   let batch_fs_toggle = DU.get_input "batch-fs-toggle" in
   let batch_run_btn = DU.get_element "batch-run-btn" in
+  let batch_reset_btn = DU.get_element "batch-reset-btn" in
 
   let batch_results_container = DU.get_element "batch-results-container" in
   let batch_stat_pc = DU.get_element "batch-stat-pc" in
@@ -367,13 +370,13 @@ let () =
     if mode = "batch" then begin
       tab_batch##.className := Js.string "mode-tab active";
       tab_debug##.className := Js.string "mode-tab";
-      DU.show_element batch_panel;
-      DU.hide_element debug_panel;
+      batch_panel##.style##.display := Js.string "flex";
+      debug_panel##.style##.display := Js.string "none";
     end else begin
       tab_batch##.className := Js.string "mode-tab";
       tab_debug##.className := Js.string "mode-tab active";
-      DU.hide_element batch_panel;
-      DU.show_element debug_panel;
+      batch_panel##.style##.display := Js.string "none";
+      debug_panel##.style##.display := Js.string "flex";
     end
   in
 
@@ -395,9 +398,9 @@ let () =
     subtab_ram##.className := Js.string (if tab = "ram" then "state-tab active" else "state-tab");
     subtab_trace##.className := Js.string (if tab = "trace" then "state-tab active" else "state-tab");
 
-    if tab = "regs" then DU.show_element state_panel_regs else DU.hide_element state_panel_regs;
-    if tab = "ram" then DU.show_element state_panel_ram else DU.hide_element state_panel_ram;
-    if tab = "trace" then DU.show_element state_panel_trace else DU.hide_element state_panel_trace
+    state_panel_regs##.style##.display := Js.string (if tab = "regs" then "flex" else "none");
+    state_panel_ram##.style##.display := Js.string (if tab = "ram" then "flex" else "none");
+    state_panel_trace##.style##.display := Js.string (if tab = "trace" then "flex" else "none");
   in
 
   subtab_regs##.onclick := Dom_html.handler (fun _ -> set_debug_subtab "regs"; Js._false);
@@ -444,6 +447,7 @@ let () =
     state.debug_steps <- 0;
     state.debug_prev_regs <- [];
     state.debug_traces <- [];
+    state.debug_halted <- false;
     sync_debugger_view "Ready"
   in
 
@@ -462,23 +466,38 @@ let () =
 
   (* Debugger Single Step *)
   let execute_single_step () =
-    match state.prog, state.debug_proc with
-    | None, _ ->
-        show_error "Please load a program first."
-    | _, None ->
-        show_error "Simulator state is not initialized."
-    | Some prog, Some proc ->
-        clear_error ();
-        let current_rf = Proc.get_regfile proc in
-        state.debug_prev_regs <- get_all_registers current_rf;
-        match Proc.step_prog_wt proc prog with
-        | None ->
-            sync_debugger_view "Halted (PC out of bounds)"
-        | Some (proc', tr) ->
-            state.debug_proc <- Some proc';
-            state.debug_steps <- state.debug_steps + 1;
-            state.debug_traces <- format_trace_item tr :: state.debug_traces;
-            sync_debugger_view "Running"
+    if state.debug_halted then ()
+    else
+      match state.prog, state.debug_proc with
+      | None, _ ->
+          show_error "Please load a program first."
+      | _, None ->
+          show_error "Simulator state is not initialized."
+      | Some prog, Some proc ->
+          clear_error ();
+          let current_pc = Proc.get_pc proc in
+          match List.nth_opt prog current_pc with
+          | None ->
+              state.debug_halted <- true;
+              sync_debugger_view "Halted (End of program)"
+          | Some _ ->
+              let current_rf = Proc.get_regfile proc in
+              state.debug_prev_regs <- get_all_registers current_rf;
+              match Proc.step_prog_wt proc prog with
+              | None ->
+                  state.debug_halted <- true;
+                  sync_debugger_view "Halted (End of program)"
+              | Some (proc', tr) ->
+                  let next_pc = Proc.get_pc proc' in
+                  state.debug_proc <- Some proc';
+                  state.debug_steps <- state.debug_steps + 1;
+                  state.debug_traces <- format_trace_item tr :: state.debug_traces;
+                  if next_pc = current_pc then begin
+                    state.debug_halted <- true;
+                    sync_debugger_view "Halted"
+                  end else begin
+                    sync_debugger_view "Running"
+                  end
   in
 
   debug_step_btn##.onclick :=
@@ -489,34 +508,47 @@ let () =
 
   (* Debugger Step N *)
   let execute_step_n count =
-    match state.prog, state.debug_proc with
-    | None, _ ->
-        show_error "Please load a program first."
-    | _, None ->
-        show_error "Simulator state is not initialized."
-    | Some prog, Some _ ->
-        clear_error ();
-        let rec loop remaining halted =
-          if remaining <= 0 || halted then halted
-          else
-            match state.debug_proc with
-            | None -> true
-            | Some proc ->
-                let current_rf = Proc.get_regfile proc in
-                state.debug_prev_regs <- get_all_registers current_rf;
-                match Proc.step_prog_wt proc prog with
-                | None -> true
-                | Some (proc', tr) ->
-                    state.debug_proc <- Some proc';
-                    state.debug_steps <- state.debug_steps + 1;
-                    state.debug_traces <- format_trace_item tr :: state.debug_traces;
-                    loop (remaining - 1) false
-        in
-        let was_halted = loop count false in
-        let status =
-          if was_halted then "Halted (PC out of bounds)" else "Running"
-        in
-        sync_debugger_view status
+    if state.debug_halted then ()
+    else
+      match state.prog, state.debug_proc with
+      | None, _ ->
+          show_error "Please load a program first."
+      | _, None ->
+          show_error "Simulator state is not initialized."
+      | Some prog, Some _ ->
+          clear_error ();
+          let rec loop remaining =
+            if remaining <= 0 then "Running"
+            else
+              match state.debug_proc with
+              | None -> "No state"
+              | Some proc ->
+                  let current_pc = Proc.get_pc proc in
+                  match List.nth_opt prog current_pc with
+                  | None ->
+                      state.debug_halted <- true;
+                      "Halted (End of program)"
+                  | Some _ ->
+                      let current_rf = Proc.get_regfile proc in
+                      state.debug_prev_regs <- get_all_registers current_rf;
+                      match Proc.step_prog_wt proc prog with
+                      | None ->
+                          state.debug_halted <- true;
+                          "Halted (End of program)"
+                      | Some (proc', tr) ->
+                          let next_pc = Proc.get_pc proc' in
+                          state.debug_proc <- Some proc';
+                          state.debug_steps <- state.debug_steps + 1;
+                          state.debug_traces <- format_trace_item tr :: state.debug_traces;
+                          if next_pc = current_pc then begin
+                            state.debug_halted <- true;
+                            "Halted"
+                          end else begin
+                            loop (remaining - 1)
+                          end
+          in
+          let status = loop count in
+          sync_debugger_view status
   in
 
   debug_step_n_btn##.onclick :=
@@ -532,7 +564,8 @@ let () =
   (* Debugger Run to End *)
   debug_run_btn##.onclick :=
     Dom_html.handler (fun _ ->
-      execute_step_n 50000;
+      if not state.debug_halted then
+        execute_step_n 100000;
       Js._false
     );
 
@@ -671,20 +704,29 @@ let () =
 
           let init_proc = make_initial_proc () in
 
-          (* Execute batch with traces *)
+          (* Execute batch with traces and halt detection *)
           let rec run_loop proc traces count =
             if count >= max_steps then
               (proc, traces, count, "Max steps reached")
             else
-              match Proc.step_prog_wt proc prog with
+              let pc = Proc.get_pc proc in
+              match List.nth_opt prog pc with
               | None ->
-                  (proc, traces, count, "Halted (PC out of bounds)")
-              | Some (proc', tr) ->
-                  let traces' =
-                    if trace_on then (format_trace_item tr) :: traces
-                    else traces
-                  in
-                  run_loop proc' traces' (count + 1)
+                  (proc, traces, count, "Halted")
+              | Some _ ->
+                  match Proc.step_prog_wt proc prog with
+                  | None ->
+                      (proc, traces, count, "Halted")
+                  | Some (proc', tr) ->
+                      let next_pc = Proc.get_pc proc' in
+                      let traces' =
+                        if trace_on then (format_trace_item tr) :: traces
+                        else traces
+                      in
+                      if next_pc = pc then
+                        (proc', traces', count + 1, "Halted")
+                      else
+                        run_loop proc' traces' (count + 1)
           in
 
           let final_proc, rev_traces, total_steps, status =
@@ -734,6 +776,25 @@ let () =
           Js._false
     );
 
+  (* Batch Reset button *)
+  let reset_batch () =
+    DU.hide_element batch_results_container;
+    DU.set_text batch_stat_pc "0000";
+    DU.set_text batch_stat_steps "0";
+    DU.set_text batch_stat_status "Ready";
+    clear_children batch_registers_grid;
+    clear_children batch_ram_tbody;
+    DU.clear_text batch_trace_output;
+    DU.hide_element batch_trace_section;
+    clear_error ()
+  in
+
+  batch_reset_btn##.onclick :=
+    Dom_html.handler (fun _ ->
+      reset_batch ();
+      Js._false
+    );
+
   (* Check sessionStorage for program transferred from Assembler *)
   let check_session_storage () =
     try
@@ -749,11 +810,12 @@ let () =
               let filename =
                 match Js.Opt.to_option (ss##getItem (Js.string "gaur_sim_filename")) with
                 | Some js_name -> Js.to_string js_name
-                | None -> "assembled.gsm.inter"
+                | None -> "from_assembler.gsm.inter"
               in
               ss##removeItem (Js.string "gaur_sim_filename");
               match load_program_from_string filename prog_str with
               | Ok prog ->
+                  DU.set_input_file prog_file_input filename prog_str;
                   on_program_loaded filename prog_str prog;
                   show_notification ("Loaded assembled intermediate program (" ^ filename ^ ") from Assembler.")
               | Error err ->
