@@ -10,7 +10,7 @@ module type VAL = sig
 end
 
 
-module Make (K : KEY) (V : VAL) : sig
+module Make (K : KEY) (V : VAL) () : sig
   type node
   val add      : K.t  -> V.t -> node
   val add_list : (K.t * V.t) list -> (K.t * node) list

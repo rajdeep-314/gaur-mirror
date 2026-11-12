@@ -1,90 +1,114 @@
+open Common.Error
 open Parse
 open Hdlutils
 
 type t =
-  | Access        of string
-  | Assign        of Types.t * Types.t
-  | Call_arg      of Types.t * Types.t
-  | Call_typ      of Types.t (* Unreachable exception *)
-  | Call_unbound  of string
-  | Concat_type   of Types.t * Types.t
-  | Member_field  of string
-  | Member_type   of Types.t
-  | Splice_bounds of int * int * int
-  | Splice_type   of Types.t
+  | ArgumentMismatch of Types.t * Types.t
+  | AssignmentMismatch of Types.t * Types.t
+  | ConcatMismatch of Types.t * Types.t
+  | NotAChip of Types.t (* Unreachable exception *)
+  | NotARecord of Types.t
+  | NotSpliceable of Types.t
+  | SpliceOutOfBounds of int * int * int
+  | UnboundChip of string
+  | UnboundVariable of string
+  | UnknownField of string
 
-exception TypeError of Loc.t * t
+let code error =
+  match error with
+  | ArgumentMismatch _ -> 0
+  | AssignmentMismatch _ -> 1
+  | ConcatMismatch _ -> 2
+  | NotAChip _ -> 3
+  | NotARecord _ -> 4
+  | NotSpliceable _ -> 5
+  | SpliceOutOfBounds _ -> 6
+  | UnboundChip _ -> 7
+  | UnboundVariable _ -> 8
+  | UnknownField _ -> 9
+;;
 
-let raise_splice_bounds loc lb ub l =
-  raise (TypeError (loc, Splice_bounds (lb, ub, l)))
+let message ppf error =
+  let open Types.Pretty in
+  match error with
+  | SpliceOutOfBounds (lb, ub, l) ->
+    Fmt.pf ppf "Splice indices [%d, %d] out of range [0, %d]" lb ub (l - 1)
+  | NotSpliceable t -> Fmt.pf ppf "Can not splice an expression of type %a" pp_t t
+  | ConcatMismatch (t1, t2) ->
+    Fmt.pf ppf "Can not concatenate expressions of types %a and %a" pp_t t1 pp_t t2
+  | UnboundVariable id -> Fmt.pf ppf "Unbound variable %s" id
+  | UnknownField fld -> Fmt.pf ppf "The record has no field '%s'" fld
+  | NotARecord t -> Fmt.pf ppf "The expression has type %a which is not a record" pp_t t
+  | ArgumentMismatch (ta, te) ->
+    Fmt.pf
+      ppf
+      "The expression has type %a but an expression was expected of type %a"
+      pp_t
+      ta
+      pp_t
+      te
+  | NotAChip t -> Fmt.pf ppf "The expression of type %a is not a chip" pp_t t
+  | UnboundChip id -> Fmt.pf ppf "Unbound chip %s" id
+  | AssignmentMismatch (ta, te) ->
+    Fmt.pf
+      ppf
+      "The variable of type %a can not be assigned an expression of type %a"
+      pp_t
+      te
+      pp_t
+      ta
+;;
 
-let raise_splice_type loc typ =
-  raise (TypeError (loc, Splice_type (typ)))
-
-let raise_concat_type loc typ1 typ2 =
-  raise (TypeError (loc, Concat_type (typ1, typ2)))
-
-let raise_access loc id =
-  raise (TypeError (loc, Access id))
-
-let raise_member_field loc fld =
-  raise (TypeError (loc, Member_field fld))
-
-let raise_member_type loc typ =
-  raise (TypeError (loc, Member_type typ))
-
-let raise_call_arg loc ta te =
-  raise (TypeError (loc, Call_arg (ta, te)))
-
-let raise_call_typ loc typ =
-  raise (TypeError (loc, Call_typ typ))
-
-let raise_call_unbound loc id =
-  raise (TypeError (loc, Call_unbound id))
-
-let raise_assign loc ta te =
-  raise (TypeError (loc, Assign (ta, te)))
+let summary = message
 
 module Pretty = struct
-  open Types.Pretty
-
-  let pp ppf err =
-    match err with
-    | Splice_bounds (lb, ub, l)  ->
-      Fmt.pf ppf
-        "Splice indices [%d, %d] out of range [0, %d]" lb ub (l - 1)
-
-    | Splice_type t ->
-      Fmt.pf ppf "Can not splice an expression of type %a" pp_t t
-
-    | Concat_type (t1, t2) ->
-      Fmt.pf ppf "Can not concatenate expressions of types %a and %a"
-        pp_t t1
-        pp_t t2
-
-    | Access id ->
-      Fmt.pf ppf "Unbound variable %s" id
-
-    | Member_field fld ->
-      Fmt.pf ppf "The record has no field '%s'" fld
-
-    | Member_type t ->
-      Fmt.pf ppf "The expression has type %a which is not a record"
-        pp_t t
-
-    | Call_arg (ta, te) ->
-      Fmt.pf ppf "The expression has type %a but an expression was expected of type %a"
-        pp_t ta
-        pp_t te
-
-    | Call_typ t ->
-      Fmt.pf ppf "The expression of type %a is not a chip" pp_t t
-
-    | Call_unbound id ->
-      Fmt.pf ppf "Unbound chip %s" id
-
-    | Assign (ta, te) ->
-      Fmt.pf ppf "The variable of type %a can not be assigned an expression of type %a"
-        pp_t te
-        pp_t ta
+  let pp = message
 end
+
+let create source error =
+  Diagnostics.create
+    ~kind:Diagnostics.type_error
+    ~code:(code error)
+    ~severity:Diagnostics.error
+    ~source
+    ~summary:(Fmt.to_to_string summary error)
+    ~message:(Fmt.to_to_string message error)
+;;
+
+exception TypeError of Diagnostics.t
+
+let raise_argument_mismatch source actual expected =
+  raise (TypeError (create source (ArgumentMismatch (actual, expected))))
+;;
+
+let raise_assignment_mismatch source actual expected =
+  raise (TypeError (create source (AssignmentMismatch (actual, expected))))
+;;
+
+let raise_concat_mismatch source left right =
+  raise (TypeError (create source (ConcatMismatch (left, right))))
+;;
+
+let raise_not_a_chip source actual = raise (TypeError (create source (NotAChip actual)))
+
+let raise_not_a_record source actual =
+  raise (TypeError (create source (NotARecord actual)))
+;;
+
+let raise_not_spliceable source actual =
+  raise (TypeError (create source (NotSpliceable actual)))
+;;
+
+let raise_splice_out_of_bounds source lower upper length =
+  raise (TypeError (create source (SpliceOutOfBounds (lower, upper, length))))
+;;
+
+let raise_unbound_chip source chip = raise (TypeError (create source (UnboundChip chip)))
+
+let raise_unbound_variable source var =
+  raise (TypeError (create source (UnboundVariable var)))
+;;
+
+let raise_unknown_field source field =
+  raise (TypeError (create source (UnknownField field)))
+;;

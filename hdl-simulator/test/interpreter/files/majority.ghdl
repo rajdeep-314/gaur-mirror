@@ -1,0 +1,10 @@
+CHIP Majority {
+  INPUT in: {a: bits 1, b: bits 1, c: bits 1}
+  OUTPUT out: bits 1
+
+  ab := And {a=in.a, b=in.b}
+  bc := And {a=in.b, b=in.c}
+  ac := And {a=in.a, b=in.c}
+  w := Or {a=ab, b=bc}
+  out := Or {a=w, b=ac}
+}
