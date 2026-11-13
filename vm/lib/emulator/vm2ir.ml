@@ -36,9 +36,10 @@ ln  :   current line number
 *)
 let translate_inst tbl ln i =
     let base = match A.base_inst i with
-    | A.Push (s, n) -> Some (I.Push (s, n))
-    | A.Pop (s, n)  -> Some (I.Pop (s, n))
-    | A.PushC n     -> Some (I.PushC n)
+    | A.Push (s, n)  -> Some (I.Push (s, n))
+    | A.Pop (s, n)   -> Some (I.Pop (s, n))
+    | A.PushC n      -> Some (I.PushC n)
+    | A.PushKeyboard -> Some I.PushKeyboard
     | A.Add -> Some I.Add | A.Sub -> Some I.Sub | A.Neg -> Some I.Neg
     | A.Eq -> Some I.Eq   | A.Lt -> Some I.Lt   | A.Gt -> Some I.Gt
     | A.And -> Some I.And | A.Or -> Some I.Or   | A.Not -> Some I.Not

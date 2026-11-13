@@ -63,13 +63,14 @@ prog: FUNCTION ID NUM PUSH SUB
 ## Ends in an error in state: 9.
 ##
 ## inst -> PUSH . segment NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
+## inst -> PUSH . KEYBOARD [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
 ## inst -> PUSH . CONSTANT NUM [ SUB SCALL RETURN PUSH POP OR NOT NEG LT LABEL IFGOTO GT GOTO FUNCTION EQ EOF CALL AND ADD ]
 ##
 ## The known suffix of the stack is as follows:
 ## PUSH
 ##
 
-Expecting "constant" or segment name.
+Expecting "constant", "keyboard" or segment name.
 
 prog: FUNCTION ID NUM PUSH CONSTANT TEMP
 ##
