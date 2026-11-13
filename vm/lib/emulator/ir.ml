@@ -20,6 +20,8 @@ type inst_base =
     | Pop  of segment * int
     (* pushing constants. *)
     | PushC of W.t
+    (* push keyboard content to working stack. *)
+    | PushKeyboard
     (* arithmetic operations *)
     | Add | Sub | Neg
     (* comparison operations *)
@@ -124,6 +126,7 @@ module PP = struct
         | Push (s, i)   -> Printf.sprintf "push %s %d" (seg s) i
         | Pop  (s, i)   -> Printf.sprintf "pop %s %d"  (seg s) i
         | PushC n       -> "push constant " ^ W.to_string n
+        | PushKeyboard  -> "push keyboard"
         | Add           -> "add"
         | Sub           -> "sub"
         | Neg           -> "neg"

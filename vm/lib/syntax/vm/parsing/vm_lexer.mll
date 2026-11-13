@@ -22,6 +22,7 @@ rule read_token = parse
     | '\n'              { Lexing.new_line lexbuf; read_token lexbuf }
     | "(*"              { comment 1 lexbuf }
     | "constant"        { CONSTANT }
+    | "keyboard"        { KEYBOARD }
     | "temp"            { TEMP }
     | "static"          { STATIC }
     | "local"           { LOCAL }
