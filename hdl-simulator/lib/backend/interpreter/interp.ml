@@ -30,18 +30,24 @@ module Builtin = struct
   module Nand = struct
     let name = "Nand"
 
-    let def : chip_def =
+    let make_def ?(on_nand = fun () -> ()) () : chip_def =
       { input_t=TRecord (StrMap.of_list [("a", TBitvec 1); ("b", TBitvec 1)])
       ; state_t=empty_state_t
       ; fn=(fun inputs ->
+          on_nand ();
           let bit f = (get_bitvec (get_field inputs.input f)).(0) in
           { output=Bitvec [| Incr.map2 ~f:(fun x y -> not (x && y)) (bit "a") (bit "b") |]
           ; state=empty_state
           })
       }
+
+    let def : chip_def = make_def ()
   end
 
-  let env : chip_env = StrMap.of_list [ (Nand.name, Nand.def) ]
+  let env_with ?(on_nand = fun () -> ()) () : chip_env =
+    StrMap.of_list [ (Nand.name, Nand.make_def ~on_nand ()) ]
+
+  let env : chip_env = env_with ()
 end
 
 let find_chip (env : chip_env) name =
@@ -175,5 +181,6 @@ let nand_counts (p : prog) : int StrMap.t =
 
 (** [interp_prog p] compiles every chip of [p]. Chips must be in topological
     order: callees before callers. *)
-let interp_prog (p : prog) : chip_env =
-  List.fold_left add_chip Builtin.env p
+let interp_prog ?(on_nand = fun () -> ()) (p : prog) : chip_env =
+  List.fold_left add_chip (Builtin.env_with ~on_nand ()) p
+
