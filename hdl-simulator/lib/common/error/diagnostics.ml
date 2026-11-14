@@ -51,7 +51,15 @@ let pp_header ppf error = Fmt.pf ppf "[%d] %a" error.code pp_kind error.kind
 let pp_line width ppf (idx, line) = Fmt.pf ppf " %-*d | %s" width idx line
 let pp_lines width = Fmt.(vbox (list ~sep:cut (pp_line width)))
 
-(* TODO Add caret highlighting *)
+let pp_carets width ppf (pos1, pos2) =
+  let char1 = max 0 (pos1.Lexing.pos_cnum - pos1.Lexing.pos_bol) in
+  let char2 = max (char1 + 1) (pos2.Lexing.pos_cnum - pos1.Lexing.pos_bol) in
+  let len = char2 - char1 in
+  let spaces = String.make char1 ' ' in
+  let carets = String.make len '^' in
+  Fmt.pf ppf " %*s | %s%s" width "" spaces carets
+;;
+
 let pp_source ppf error =
   let source = error.source in
   let fname = source.loc_start.pos_fname in
