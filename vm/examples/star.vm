@@ -1,0 +1,55 @@
+function main 0
+    push constant 4
+    call star_pattern 1
+
+    push constant 0
+    return
+
+function star_pattern 1
+    push constant 1
+    pop local 0
+
+    label begin_loop
+    push local 0
+    push argument 0
+    gt
+    if-goto end_loop
+
+    push local 0
+    call print_line 1
+
+    push local 0
+    push constant 1
+    add
+    pop local 0
+
+    goto begin_loop
+
+    label end_loop
+    push constant 0
+    return
+
+function print_line 1
+    push argument 0
+    pop local 0
+
+    label line_loop
+    push local 0
+    push constant 0
+    eq
+    if-goto line_done
+
+    push constant '*'
+    call Screen.print_char 1
+
+    push local 0
+    push constant 1
+    sub
+    pop local 0
+
+    goto line_loop
+
+    label line_done
+    call Screen.newline 0
+    push constant 0
+    return

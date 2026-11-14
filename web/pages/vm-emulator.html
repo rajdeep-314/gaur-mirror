@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaur VM Emulator</title>
+    <link rel="stylesheet" href="style/vm_emulator_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav id="navbar">
+        <div id="nav-title">
+            <span class="logo-dot"></span>
+            <a href="index.html">Gaur</a>
+        </div>
+        <div id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="assembler.html">Assembler</a>
+            <a href="disassembler.html">Disassembler</a>
+            <a href="ram-init.html">RAM Init</a>
+            <a href="cpu-simulator.html">CPU Simulator</a>
+            <a href="vm-emulator.html" class="active">VM Emulator</a>
+        </div>
+    </nav>
+
+    <div id="app-container">
+        <!-- Top Configuration Header -->
+        <header id="top-bar">
+            <div class="top-bar-left">
+                <input type="file" id="prog-file-input" accept=".vm,.txt" style="display: none;">
+                <button id="upload-prog-btn" class="btn-file-upload">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Upload Program
+                </button>
+                <span id="file-name-label" class="file-name-label">hello.vm</span>
+            </div>
+
+            <div class="top-bar-right">
+                <label class="checkbox-label" title="Enable standard library (Screen and Math functions)">
+                    <input type="checkbox" id="stdlib-toggle" checked>
+                    <span>Stdlib enabled</span>
+                </label>
+            </div>
+        </header>
+
+        <!-- Main 3-Partition Work Area -->
+        <main id="main-partitions">
+            <!-- Partition 1: Source VM File -->
+            <section id="source-partition" class="partition-card">
+                <div class="card-header">
+                    <span class="card-title">Source VM</span>
+                    <div class="card-actions">
+                        <button id="edit-btn" class="btn-card-action" title="Edit source code (resets simulation)">Edit</button>
+                        <button id="emulate-btn" class="btn-card-action primary" style="display: none;" title="Start emulation (Ctrl + Enter)">Emulate</button>
+                    </div>
+                </div>
+
+                <div id="editor-wrapper">
+                    <div id="line-numbers" class="line-numbers" style="display: none;">1</div>
+                    <textarea id="source-textarea" spellcheck="false" placeholder="// Paste or type VM code here..."></textarea>
+                    <div id="source-viewer"></div>
+                </div>
+
+                <pre id="vm-error-box"></pre>
+            </section>
+
+            <!-- Partition 2: Middle Screen, Keyboard & Controls -->
+            <section id="screen-partition">
+                <!-- Screen Card -->
+                <div class="screen-container">
+                    <pre id="screen-display"></pre>
+                </div>
+
+                <!-- Keyboard Status Row -->
+                <div class="keyboard-row">
+                    <span class="key-pressed-tag">Key pressed <span id="key-pressed-val" class="key-pressed-val">none</span></span>
+                    <label class="checkbox-label" title="Capture keypresses on the page and send them to the VM state">
+                        <input type="checkbox" id="enable-keyboard-toggle">
+                        <span>Enable keyboard</span>
+                    </label>
+                </div>
+
+                <!-- Execution Controls -->
+                <div class="controls-card">
+                    <div class="controls-row">
+                        <button id="step-btn" class="ctrl-btn primary" title="Execute one instruction">Step</button>
+                        <div class="ctrl-input-group">
+                            <button id="step-n-btn" class="ctrl-btn" title="Execute N instructions">Step N</button>
+                            <input type="text" id="step-n-count" class="ctrl-input" value="10" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                        <button id="run-btn" class="ctrl-btn" title="Execute until program terminates">Run</button>
+                        <button id="reset-btn" class="ctrl-btn danger" title="Reset emulator state">Reset</button>
+                    </div>
+
+                    <div class="controls-row">
+                        <button id="till-return-btn" class="ctrl-btn" title="Execute until current function returns">Till Return</button>
+                        <button id="till-before-return-btn" class="ctrl-btn" title="Execute until just before current function returns">Till Before Return</button>
+                        <button id="next-bpt-btn" class="ctrl-btn" title="Execute until next breakpoint">Next Bpt</button>
+                        <div class="ctrl-input-group">
+                            <button id="till-named-bpt-btn" class="ctrl-btn" title="Execute until named breakpoint">Till Bpt</button>
+                            <input type="text" id="bpt-name-input" class="ctrl-input text-input" placeholder="name">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Banner -->
+                <div id="status-banner">
+                    <span id="status-text" class="status-text">Ready</span>
+                    <span id="rv-text" class="status-rv"></span>
+                </div>
+            </section>
+
+            <!-- Partition 3: VM State & Call Stack -->
+            <section id="state-partition">
+                <!-- Static Segment Preview -->
+                <div id="static-preview-card" class="segment-preview-card" title="Click to inspect all static segment entries">
+                    <div class="segment-header">
+                        <span>Static Segment (240 words)</span>
+                        <span class="segment-expand-hint">View all ↗</span>
+                    </div>
+                    <div id="static-preview-cells" class="segment-cells-preview"></div>
+                </div>
+
+                <!-- Temp Segment Preview -->
+                <div id="temp-preview-card" class="segment-preview-card" title="Click to inspect all temp segment entries">
+                    <div class="segment-header">
+                        <span>Temp Segment (16 words)</span>
+                        <span class="segment-expand-hint">View all ↗</span>
+                    </div>
+                    <div id="temp-preview-cells" class="segment-cells-preview"></div>
+                </div>
+
+                <!-- Call Stack -->
+                <div class="call-stack-card">
+                    <div class="card-header">
+                        <span class="card-title">Call Stack</span>
+                    </div>
+                    <div id="call-stack-list">
+                        <!-- Function frame buttons injected dynamically -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Frame Inspection Modal (Level 1) -->
+    <div id="frame-modal" class="modal-overlay">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <span id="frame-modal-title" class="modal-title">Screen.print_char(108)</span>
+                <button id="close-frame-modal" class="btn-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <span class="modal-section-title">Arguments</span>
+                    <div id="frame-arg-preview" class="modal-preview-box" title="Click to expand full argument segment">
+                        <span id="frame-arg-text">argument (0)</span>
+                        <span class="segment-expand-hint">Expand ↗</span>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <span class="modal-section-title">Locals</span>
+                    <div id="frame-local-preview" class="modal-preview-box" title="Click to expand full local segment">
+                        <span id="frame-local-text">local (0)</span>
+                        <span class="segment-expand-hint">Expand ↗</span>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <span class="modal-section-title">Working Stack (top to bottom)</span>
+                    <div id="frame-wstack-list" class="stack-list">
+                        <!-- Stack items injected dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segment Detail Modal (Level 2) -->
+    <div id="segment-modal" class="modal-overlay secondary">
+        <div class="modal-dialog wide">
+            <div class="modal-header">
+                <span id="segment-modal-title" class="modal-title">Segment Entries</span>
+                <button id="close-segment-modal" class="btn-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="segment-table-wrapper">
+                    <div id="segment-modal-grid" class="segment-grid">
+                        <!-- Segment cells injected dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+        <div id="footer-links">
+            <a
+                href="https://verify-at-iitpkd.gitlab.io/gaur/ram-init/index.html"
+                target="_blank"
+                rel="noopener noreferrer">
+                Documentation
+            </a>
+
+            <span class="footer-separator">·</span>
+
+            <a
+                href="https://gitlab.com/verify-at-iitpkd/gaur"
+                target="_blank"
+                rel="noopener noreferrer">
+                GitLab Repository
+            </a>
+        </div>
+
+        <span id="footer-page">Gaur VM Emulator</span>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="vm_emulator_web.bc.js"></script>
+</body>
+</html>

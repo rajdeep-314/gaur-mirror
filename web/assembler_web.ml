@@ -7,6 +7,7 @@
 open Js_of_ocaml
 
 module Assemble = Extracted.Assemble
+module Symtable = Extracted.Symtable
 module Parser = Parsing.Asm.Driver
 module Isa = Extracted.Isa
 module IsaPrinters = Isa.Printers
@@ -58,11 +59,69 @@ let assemble_to_inter source =
                 (fun annot -> Utils.Parsingerrs.pp_pos_info_with_source
                     ~source annot) e)
 
+(** [update_symtable symtable_section symtable_body source] refreshes the
+    symbol table panel to reflect [source]. If [source] fails to parse
+    (e.g. a syntax error), there is no meaningful table to show, so the
+    panel is hidden. Assembly-stage failures (undefined labels, branch
+    offsets out of range, ...) still yield a displayable table, so the
+    panel is shown in those cases too, just like on success. *)
+let update_symtable symtable_section symtable_body source =
+    match parse_source source with
+    | Error _ ->
+        DU.hide_element symtable_section
+    | Ok p    ->
+        let rows =
+            Symtable.to_list (Assemble.symtable_of_prog p)
+        in
+        symtable_body##.innerHTML := Js.string "";
+
+        let document = Dom_html.document in
+
+        if List.length rows = 0 then begin
+            let tr = Dom_html.createTr document in
+            let td = Dom_html.createTd document in
+            td##setAttribute (Js.string "colspan") (Js.string "2");
+            td##setAttribute (Js.string "class") (Js.string "symtable-empty");
+            td##.textContent :=
+                Js.some (Js.string "No symbols defined.");
+            Dom.appendChild tr td;
+            Dom.appendChild symtable_body tr
+        end else
+            List.iter (fun (label, bindings) ->
+                let tr = Dom_html.createTr document in
+
+                let td_label = Dom_html.createTd document in
+                td_label##.textContent := Js.some (Js.string label);
+
+                let td_pcs = Dom_html.createTd document in
+                let pcs =
+                    bindings
+                    |> List.map fst
+                    |> List.rev
+                    |> List.map string_of_int
+                in
+                td_pcs##.textContent :=
+                    Js.some (Js.string (String.concat ", " pcs));
+                td_pcs##setAttribute (Js.string "class")
+                    (Js.string
+                        (if List.length bindings > 1 then
+                            "symtable-pc duplicate"
+                        else
+                            "symtable-pc"));
+
+                Dom.appendChild tr td_label;
+                Dom.appendChild tr td_pcs;
+                Dom.appendChild symtable_body tr
+            ) rows;
+
+        DU.show_element symtable_section
+
 let perform_operation result errors current_output current_filename
-    filename operation source =
+    filename operation source update_symtable =
 
     DU.clear_text result;
     DU.clear_text errors;
+    update_symtable source;
 
     begin
         match operation source with
@@ -93,7 +152,7 @@ let output_filename input_filename format =
 
 (* Common code for format buttons *)
 let handle_format_button button result errors current_output current_filename
-    last_operation file_input format default_filename operation =
+    last_operation file_input format default_filename operation update_symtable =
 
     button##.onclick :=
         Dom_html.handler (fun _ ->
@@ -114,13 +173,13 @@ let handle_format_button button result errors current_output current_filename
         in
 
         perform_operation result errors current_output
-            current_filename filename operation source;
+            current_filename filename operation source update_symtable;
 
         Js._false
         )
 
 let handle_editor_shortcuts input result errors current_output
-    current_filename last_operation file_input
+    current_filename last_operation file_input update_symtable
     (ev : Dom_html.keyboardEvent Js.t) =
 
   if ev##.keyCode = 13 &&
@@ -159,7 +218,7 @@ let handle_editor_shortcuts input result errors current_output
       in
 
       perform_operation result errors current_output
-        current_filename filename operation source
+        current_filename filename operation source update_symtable
 
     end;
 
@@ -186,6 +245,13 @@ let () =
 
     let assembly_file = DU.get_input "assembly-file" in
     let download_output = DU.get_element "download-output" in
+    let simulate_output = DU.get_element "simulate-output" in
+    let symtable_section = DU.get_element "symtable-section" in
+    let symtable_body = DU.get_element "symtable-body" in
+
+    let update_symtable source =
+        update_symtable symtable_section symtable_body source
+    in
 
     let ascii_operation source =
         match assemble_source source with
@@ -224,7 +290,7 @@ let () =
     DU.setup_line_numbers_with_shortcuts input line_numbers
         (handle_editor_shortcuts input result errors
         current_output current_filename last_operation
-        assembly_file);
+        assembly_file update_symtable);
 
     DU.setup_copy_button copy_output result;
     DU.setup_copy_button copy_errors errors;
@@ -244,7 +310,8 @@ let () =
         assembly_file
         "ascii"
         "assembled.gsc"
-        ascii_operation;
+        ascii_operation
+        update_symtable;
 
     handle_format_button
         fmt_bin
@@ -256,7 +323,8 @@ let () =
         assembly_file
         "bin"
         "assembled.bin"
-        binary_operation;
+        binary_operation
+        update_symtable;
 
     handle_format_button
         fmt_inter
@@ -268,7 +336,32 @@ let () =
         assembly_file
         "inter"
         "assembled.gsm.inter"
-        inter_operation;
+        inter_operation
+        update_symtable;
 
     DU.setup_download_button download_output current_output
-    current_filename errors Misc.download_file
+    current_filename errors Misc.download_file;
+
+    simulate_output##.onclick :=
+        Dom_html.handler (fun _ ->
+            let source = DU.get_textarea_value "assembly-input" in
+            update_symtable source;
+            match assemble_to_inter source with
+            | Error e ->
+                DU.set_text errors e;
+                Js._false
+            | Ok mp ->
+                let output = IsaPrinters.prog (Isa.prog_of_annot_prog mp) in
+                let ss = Js.Optdef.get
+                    Dom_html.window##.sessionStorage
+                    (fun () -> failwith "sessionStorage unavailable")
+                in
+                ss##setItem
+                    (Js.string "gaur_sim_program")
+                    (Js.string output);
+                ss##setItem
+                    (Js.string "gaur_sim_filename")
+                    (Js.string "from_assembler.gsm.inter");
+                Dom_html.window##.location##.href := Js.string "cpu-simulator.html";
+                Js._false
+        )

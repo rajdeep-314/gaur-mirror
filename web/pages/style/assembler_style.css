@@ -42,6 +42,39 @@
     box-sizing: border-box;
 }
 
+/* ================================
+   Global Scrollbars
+   ================================ */
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #3A3A3A;
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #505050;
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox only (Chrome/Edge/Safari use the rules above) */
+@supports not selector(::-webkit-scrollbar) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #3A3A3A transparent;
+    }
+}
 
 body {
     margin: 0;
@@ -167,7 +200,8 @@ body {
 #input-panel h2,
 #format-buttons h2,
 #result-section h2,
-#error-section h2 {
+#error-section h2,
+#symtable-section h2 {
     font-family: var(--font-heading);
 
     margin: 0 0 14px;
@@ -461,6 +495,94 @@ button:active {
 }
 
 /* ================================
+   Symbol table
+   ================================ */
+
+#symtable-section {
+    display: none;
+
+    margin-bottom: 28px;
+}
+
+.table-container {
+    max-height: 280px;
+
+    overflow: auto;
+
+    background-color: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+#symbol-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-family: var(--font-code);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#symbol-table th {
+    position: sticky;
+
+    top: 0;
+
+    padding: 10px 16px;
+
+    text-align: left;
+
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    color: var(--text-secondary);
+
+    background-color: var(--surface);
+
+    border-bottom: 1px solid var(--border);
+}
+
+#symbol-table td {
+    padding: 8px 16px;
+
+    color: var(--text-primary);
+
+    border-bottom: 1px solid var(--border);
+}
+
+#symbol-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#symbol-table tbody tr:hover {
+    background-color: var(--accent-dim);
+}
+
+#symbol-table .symtable-pc {
+    color: var(--text-secondary);
+}
+
+#symbol-table .symtable-pc.duplicate {
+    color: var(--error);
+}
+
+#symbol-table .symtable-empty {
+    padding: 16px;
+
+    text-align: center;
+
+    font-family: var(--font-body);
+    font-style: italic;
+
+    color: var(--text-secondary);
+}
+
+/* ================================
    Output containers
    ================================ */
 
@@ -470,10 +592,12 @@ button:active {
 
 
 /* ================================
-   Copy button
+   Copy, Download, and Simulate buttons
    ================================ */
 
-.copy-button {
+.copy-button,
+.download-button,
+.simulate-button {
     position: absolute;
 
     top: 10px;
@@ -504,14 +628,18 @@ button:active {
 }
 
 
-/* Show copy button when hovering over output */
+/* Show button when hovering over output */
 
-.code-container:hover .copy-button {
+.code-container:hover .copy-button,
+.code-container:hover .download-button,
+.code-container:hover .simulate-button {
     opacity: 1;
 }
 
 
-.copy-button:hover {
+.copy-button:hover,
+.download-button:hover,
+.simulate-button:hover {
     background-color: #FFFFFF;
     color: #111111;
 
@@ -521,7 +649,9 @@ button:active {
 
 /* Keep button visible after focus */
 
-.copy-button:focus {
+.copy-button:focus,
+.download-button:focus,
+.simulate-button:focus {
     opacity: 1;
 
     outline: none;

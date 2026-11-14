@@ -43,6 +43,21 @@ let write_segment seg n v =
 let write_to_screen s x y =
     s.screen.(W.to_int x) <- y; s
 
+(* Get the [word] corresponding to the pressed key in state [s] -- 0 if no key
+   is pressed, else the ASCII value of the pressed key. *)
+let keyboard_code s =
+    match s.keyboard with
+    | Some c -> Int32.of_int (Char.code c)
+    | None   -> 0l
+
+(* Set the pressed key in state s to c and return new state. *)
+let set_key_pressed s c =
+    { s with keyboard = Some c }
+
+(* Unset the pressed key in state s and return new state. *)
+let unset_key_pressed s =
+    { s with keyboard = None }
+
 (* Get instruction number n from function f, whose body is body.
    Previous checks in the pipeline ensure that this does not cause an error. *)
 let get_inst f body n = body.(n)
@@ -83,6 +98,7 @@ let init f_name n_lcls n_args = {
     temp   = make_segment 16 ;
     static = make_segment 240 ;
     screen = make_screen (80 * 24) ;
+    keyboard = None ;
     frames = [
     {
         f_name = f_name ;
@@ -384,7 +400,8 @@ let execute_inst p s i =
     match inst_base i with
     | Push (seg, x) -> exec_push i s seg x
     | Pop (seg, x)  -> exec_pop i s seg x
-    | PushC n   -> apply_on_wstack (push_const n) s
+    | PushC n       -> apply_on_wstack (push_const n) s
+    | PushKeyboard  -> apply_on_wstack (push_const (keyboard_code s)) s
     | Add       -> exec_add i s | Sub -> exec_sub i s | And -> exec_and i s
     | Or        -> exec_or i s  | Neg -> exec_neg i s | Not -> exec_not i s
     | Eq        -> exec_eq i s  | Lt  -> exec_lt i s  | Gt  -> exec_gt i s

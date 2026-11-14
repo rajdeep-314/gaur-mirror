@@ -1,0 +1,321 @@
+(*******************************************************)
+(*                                                     *)
+(*   Move a 2x2 grid of 'x' characters on the screen.  *)
+(*                                                     *)
+(*   Press and hold w to move up, s to move down,      *)
+(*   a to move left and d to move right. The grid      *)
+(*   keeps moving while the key is held, wrapping      *)
+(*   around the edges of the screen.                   *)
+(*                                                     *)
+(*******************************************************)
+
+(*
+(row, col, c) writes character c at the block at row `row`, column `col`.
+*)
+
+function CellAt 3
+    push argument 0
+    push argument 1
+    call Screen.set_cursor 2
+    push argument 2
+    call Screen.print_char 1
+    push constant 0
+    return
+
+(*
+(row, col, c) writes character c at the two horizontal blocks at row `row`,
+starting from column `col`.
+*)
+
+function PairAt 3
+    push argument 0
+    push argument 1
+    call Screen.set_cursor 2
+    push argument 2
+    call Screen.print_char 1
+    push argument 2
+    call Screen.print_char 1
+    push constant 0
+    return
+
+(*
+Erase the four cells of the grid (overwrite them with spaces).
+*)
+
+function Erase 0
+    push static 0
+    push static 1
+    push constant ' '
+    call PairAt 3
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant ' '
+    call PairAt 3
+    push constant 0
+    return
+
+(*
+Draw 'x' in the four cells of the grid.
+*)
+
+function Draw 0
+    push static 0
+    push static 1
+    push constant 'x'
+    call PairAt 3
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant 'x'
+    call PairAt 3
+    push constant 0
+    return
+
+
+function main 0
+    (* Start in the middle of the screen: the grid spans
+       rows 11-12, columns 39-40. *)
+    push constant 11
+    pop static 0
+    push constant 39
+    pop static 1
+    call Draw 0
+
+    label loop
+    (* Wait while no key is pressed (0 means not pressed). *)
+    push keyboard
+    push constant 1
+    lt
+    if-goto loop
+
+    (* 'w' : move up. Wraps to the bottom row at the top edge. *)
+    push keyboard
+    push constant 'w'
+    eq
+    if-goto w_do
+
+    (* 's' : move down. Wraps to the top row at the bottom edge. *)
+    push keyboard
+    push constant 's'
+    eq
+    if-goto s_do
+
+    (* 'd' : move right. Wraps to the next row at the right edge. *)
+    push keyboard
+    push constant 'd'
+    eq
+    if-goto d_do
+
+    (* 'a' : move left. Wraps to the previous row at the left edge. *)
+    push keyboard
+    push constant 'a'
+    eq
+    if-goto a_do
+
+    goto pace
+
+    (* w *)
+    label w_do
+    push static 0
+    push constant 1
+    lt
+    if-goto w_wrap
+    (* Erasing the bottom row, moving up and drawing the new top row. *)
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant ' '
+    call PairAt 3
+    push static 0
+    push constant 1
+    sub
+    pop static 0
+    push static 0
+    push static 1
+    push constant 'x'
+    call PairAt 3
+    goto pace
+    label w_wrap
+    call Erase 0
+    push constant 22
+    pop static 0
+    call Draw 0
+    goto pace
+
+    (* s *)
+    label s_do
+    push static 0
+    push constant 22
+    eq
+    if-goto s_wrap
+    (* Erasing the top row, moving down and drawing the new bottom row. *)
+    push static 0
+    push static 1
+    push constant ' '
+    call PairAt 3
+    push static 0
+    push constant 1
+    add
+    pop static 0
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant 'x'
+    call PairAt 3
+    goto pace
+    label s_wrap
+    call Erase 0
+    push constant 0
+    pop static 0
+    call Draw 0
+    goto pace
+
+    (* d *)
+    label d_do
+    push static 1
+    push constant 78
+    eq
+    if-goto d_wrap
+    (* Erasing the left column, moving right and drawing the new
+       right column. *)
+    push static 0
+    push static 1
+    push constant ' '
+    call CellAt 3
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant ' '
+    call CellAt 3
+    push static 1
+    push constant 1
+    add
+    pop static 1
+    (* New right column is at column static1 + 1. *)
+    push static 0
+    push static 1
+    push constant 1
+    add
+    push constant 'x'
+    call CellAt 3
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant 1
+    add
+    push constant 'x'
+    call CellAt 3
+    goto pace
+    label d_wrap
+    call Erase 0
+    push constant 0
+    pop static 1
+    (* Moving down one row, wrapping to the top row at the bottom. *)
+    push static 0
+    push constant 1
+    add
+    push constant 23
+    lt
+    if-goto d_wrap_row_ok
+    push constant 0
+    pop static 0
+    goto d_wrap_draw
+    label d_wrap_row_ok
+    push static 0
+    push constant 1
+    add
+    pop static 0
+    label d_wrap_draw
+    call Draw 0
+    goto pace
+
+    (* a *)
+    label a_do
+    push static 1
+    push constant 1
+    lt
+    if-goto a_wrap
+    (* Erasing the right column, moving left and drawing the new
+       left column. *)
+    push static 0
+    push static 1
+    push constant 1
+    add
+    push constant ' '
+    call CellAt 3
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant 1
+    add
+    push constant ' '
+    call CellAt 3
+    push static 1
+    push constant 1
+    sub
+    pop static 1
+    (* New left column is the current column. *)
+    push static 0
+    push static 1
+    push constant 'x'
+    call CellAt 3
+    push static 0
+    push constant 1
+    add
+    push static 1
+    push constant 'x'
+    call CellAt 3
+    goto pace
+    label a_wrap
+    call Erase 0
+    push constant 78
+    pop static 1
+    (* Moving up one row, wrapping to the bottom row at the top. *)
+    push static 0
+    push constant 1
+    lt
+    if-goto a_wrap_row_top
+    push static 0
+    push constant 1
+    sub
+    pop static 0
+    goto a_wrap_draw
+    label a_wrap_row_top
+    push constant 22
+    pop static 0
+    label a_wrap_draw
+    call Draw 0
+    goto pace
+
+    (* Some other key: ignore it. *)
+    goto pace
+
+    (* Pace movement so a held key moves at a watchable rate. The VM has no
+       clock, so this is a busy-wait calibrated by instruction count; at
+       fast host speeds you may want to raise the constant, at slow speeds
+       lower it. *)
+    label pace
+    push constant 40000
+    pop static 2
+    label pace_loop
+    push static 2
+    push constant 1
+    sub
+    pop static 2
+    push static 2
+    push constant 0
+    gt
+    if-goto pace_loop
+    goto loop
+
+    push constant 0
+    return
+

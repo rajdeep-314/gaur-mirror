@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaur CPU Simulator</title>
+    <link rel="stylesheet" href="style/cpu_simulator_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav id="navbar">
+        <div id="nav-title">
+            <span class="logo-dot"></span>
+            <a href="index.html">Gaur</a>
+        </div>
+
+        <div id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="assembler.html">Assembler</a>
+            <a href="disassembler.html">Disassembler</a>
+            <a href="ram-init.html">RAM Init</a>
+            <a href="cpu-simulator.html">CPU Simulator</a>
+            <a href="vm-emulator.html">VM Emulator</a>
+        </div>
+    </nav>
+
+    <div id="app">
+        <!-- Top Configuration Header -->
+        <header id="config-bar">
+            <div class="config-row">
+                <div class="input-group file-group">
+                    <div class="input-header-row">
+                        <label for="prog-file-input">Program File <span class="input-subtitle">(.gsm.inter, .gsm)</span></label>
+                        <span id="prog-file-status" class="file-status">No program loaded</span>
+                    </div>
+                    <input type="file" id="prog-file-input" accept=".inter,.gsm,.txt">
+                </div>
+
+                <div class="input-group file-group">
+                    <div class="input-header-row">
+                        <label for="ram-file-input">Initial RAM File <span class="input-subtitle"> Optional (.bram, .bin) </span></label>
+                        <div class="ram-status-actions">
+                            <button id="clear-ram-btn" class="clear-ram-btn" title="Reset to all-zero RAM">Clear RAM</button>
+                            <span id="ram-file-status" class="file-status">Zero-initialized RAM</span>
+                        </div>
+                    </div>
+                    <input type="file" id="ram-file-input" accept=".bram,.bin">
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <section id="error-section" style="display: none;">
+                <div class="section-header-actions">
+                    <h2>Errors</h2>
+                </div>
+                <div class="code-container error-container">
+                    <pre id="sim-errors"></pre>
+                    <button class="copy-button" id="copy-errors">Copy</button>
+                </div>
+            </section>
+
+            <!-- Mode Selector -->
+            <div id="mode-selector">
+                <button id="tab-batch" class="mode-tab active">Batch Run Mode</button>
+                <button id="tab-debug" class="mode-tab">Interactive Debugger Mode</button>
+            </div>
+        </header>
+
+        <!-- Notification Banner -->
+        <div id="notification-banner" class="notification" style="display: none;">
+            <span id="notification-msg"></span>
+            <button id="notification-close">&times;</button>
+        </div>
+
+        <!-- ======================= BATCH RUN MODE ======================= -->
+        <main id="batch-panel" class="mode-panel active">
+            <section class="controls-panel">
+                <div class="controls-group">
+                    <div class="setting-item">
+                        <label for="batch-max-steps">Max Steps</label>
+                        <input type="number" id="batch-max-steps" value="2000" min="1" max="1000000">
+                    </div>
+
+                    <div class="setting-item-checkbox">
+                        <label>
+                            <input type="checkbox" id="batch-trace-toggle">
+                            <span>Enable Trace</span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item-checkbox">
+                        <label>
+                            <input type="checkbox" id="batch-fs-toggle" checked>
+                            <span>Display Final State</span>
+                        </label>
+                    </div>
+
+                    <div class="controls-actions">
+                        <button id="batch-run-btn" class="primary-action-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Run Simulation
+                        </button>
+                        <button id="batch-reset-btn" class="action-btn reset-btn" title="Reset batch results">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                <path d="M3 3v5h5"></path>
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Batch Results Container -->
+            <section id="batch-results-container" style="display: none;">
+                <!-- Summary Header -->
+                <div id="batch-summary" class="summary-badge-container">
+                    <div class="stat-badge">
+                        <span class="stat-label">Final PC</span>
+                        <span id="batch-stat-pc" class="stat-value">0000</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-label">Steps Executed</span>
+                        <span id="batch-stat-steps" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-label">Status</span>
+                        <span id="batch-stat-status" class="stat-value">Halted</span>
+                    </div>
+                </div>
+
+                <!-- Structured Final State Section -->
+                <div id="batch-final-state-section">
+                    <div class="panel-section-title">
+                        <h2>Final Register File</h2>
+                    </div>
+                    <div id="batch-registers-grid" class="registers-grid"></div>
+
+                    <div class="panel-section-title" style="margin-top: 24px;">
+                        <h2>Final RAM (Non-Zero Values)</h2>
+                    </div>
+                    <div id="batch-ram-table-wrapper" class="table-wrapper">
+                        <table id="batch-ram-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Address (Hex)</th>
+                                    <th>Value (Hex)</th>
+                                    <th>Decimal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batch-ram-tbody"></tbody>
+                        </table>
+                        <div id="batch-ram-empty" class="empty-state">All memory words are 00000000.</div>
+                    </div>
+                </div>
+
+                <!-- Trace Log Section -->
+                <div id="batch-trace-section" style="margin-top: 24px;">
+                    <div class="section-header-actions">
+                        <h2>Execution Trace</h2>
+                        <div class="output-actions">
+                            <button class="copy-button" id="batch-copy-trace">Copy</button>
+                            <button class="download-button" id="batch-download-trace">Download</button>
+                        </div>
+                    </div>
+                    <div class="code-container">
+                        <pre id="batch-trace-output"></pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ======================= INTERACTIVE DEBUGGER MODE ======================= -->
+        <main id="debug-panel" class="mode-panel" style="display: none;">
+            <!-- Debugger Action Controls -->
+            <section class="debugger-toolbar">
+                <div class="toolbar-actions">
+                    <button id="debug-step-btn" class="action-btn step-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                        Step 1
+                    </button>
+
+                    <div class="step-n-container">
+                        <button id="debug-step-n-btn" class="action-btn step-n-btn">Step N</button>
+                        <input type="number" id="debug-step-n-count" value="10" min="1" max="100000">
+                    </div>
+
+                    <button id="debug-run-btn" class="action-btn run-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Run to End
+                    </button>
+
+                    <button id="debug-reset-btn" class="action-btn reset-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                        Reset
+                    </button>
+                </div>
+
+                <div class="debugger-status">
+                    <span class="status-item">PC: <strong id="debug-pc-val">0000</strong></span>
+                    <span class="status-item">Steps: <strong id="debug-step-val">0</strong></span>
+                    <span class="status-item">Status: <strong id="debug-status-val">Ready</strong></span>
+                </div>
+            </section>
+
+            <!-- Debugger Workspace Grid -->
+            <section class="debug-workspace">
+                <!-- Left: Program Listing -->
+                <div class="debug-column debug-prog-col">
+                    <div class="column-header">
+                        <h2>Program Code</h2>
+                        <span id="debug-prog-count" class="badge">0 instructions</span>
+                    </div>
+                    <div id="debug-prog-container" class="prog-listing">
+                        <div class="empty-state">No program loaded. Upload a .gsm.inter or .gsm file above.</div>
+                    </div>
+                </div>
+
+                <!-- Right: Machine State Tabs (Registers, RAM, Trace) -->
+                <div class="debug-column debug-state-col">
+                    <div class="state-tabs">
+                        <button id="subtab-regs" class="state-tab active">Register File</button>
+                        <button id="subtab-ram" class="state-tab">RAM Inspector</button>
+                        <button id="subtab-trace" class="state-tab">Live Trace</button>
+                    </div>
+
+                    <!-- Tab 1: Registers Grid -->
+                    <div id="state-panel-regs" class="state-panel active">
+                        <div id="debug-registers-grid" class="registers-grid"></div>
+                    </div>
+
+                    <!-- Tab 2: RAM Inspector -->
+                    <div id="state-panel-ram" class="state-panel" style="display: none;">
+                        <div class="ram-query-bar">
+                            <div class="query-field">
+                                <label for="ram-inspect-addr">Address</label>
+                                <input type="number" id="ram-inspect-addr" value="0" min="0">
+                            </div>
+                            <div class="query-field">
+                                <label for="ram-inspect-count">Count</label>
+                                <input type="number" id="ram-inspect-count" value="16" min="1" max="512">
+                            </div>
+                            <button id="ram-inspect-range-btn" class="small-btn">Inspect Range</button>
+                            <button id="ram-inspect-nz-btn" class="small-btn">Show Non-Zero</button>
+                        </div>
+
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Address (Hex)</th>
+                                        <th>Value (Hex)</th>
+                                        <th>Decimal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="debug-ram-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Live Trace -->
+                    <div id="state-panel-trace" class="state-panel" style="display: none;">
+                        <div class="section-header-actions" style="margin-bottom: 8px;">
+                            <span class="sub-heading">Step Trace History</span>
+                            <div class="output-actions">
+                                <button class="copy-button" id="debug-copy-trace">Copy</button>
+                                <button class="small-btn" id="debug-clear-trace">Clear</button>
+                            </div>
+                        </div>
+                        <div class="code-container">
+                            <pre id="debug-trace-output"></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer id="footer">
+        <div id="footer-links">
+            <a href="https://verify-at-iitpkd.gitlab.io/gaur/" target="_blank" rel="noopener noreferrer">
+                Documentation
+            </a>
+            <span class="footer-separator">&middot;</span>
+            <a href="https://gitlab.com/verify-at-iitpkd/gaur" target="_blank" rel="noopener noreferrer">
+                GitLab Repository
+            </a>
+        </div>
+        <span id="footer-page">Gaur CPU Simulator</span>
+    </footer>
+
+    <script src="./cpu_simulator_web.bc.js"></script>
+</body>
+</html>

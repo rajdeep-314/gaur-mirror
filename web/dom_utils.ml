@@ -269,3 +269,21 @@ let show_element element =
 (* Hide an HTML element *)
 let hide_element element =
   element##.style##.display := Js.string "none"
+
+(* Set file on an input[type=file] element via DataTransfer *)
+let set_input_file input filename content =
+  try
+    let set_fn = Js.Unsafe.js_expr "(function(inp, name, text) {
+      try {
+        var dt = new DataTransfer();
+        var f = new File([text], name, { type: 'text/plain' });
+        dt.items.add(f);
+        inp.files = dt.files;
+      } catch (e) {}
+    })" in
+    let _ = Js.Unsafe.fun_call set_fn [|
+      Js.Unsafe.inject input;
+      Js.Unsafe.inject (Js.string filename);
+      Js.Unsafe.inject (Js.string content)
+    |] in ()
+  with _ -> ()

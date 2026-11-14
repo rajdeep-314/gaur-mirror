@@ -1,0 +1,588 @@
+(*******************************************************)
+(*                                                     *)
+(*   Pong.                                             *)
+(*                                                     *)
+(*   Left paddle: you ('w' up, 's' down).              *)
+(*   Right paddle: AI.                                 *)
+(*   First player to 5 points wins; press any key at   *)
+(*   the end to exit.                                  *)
+(*                                                     *)
+(*******************************************************)
+
+(* static 0  : row of the player's paddle's top cell (0 - 20)   *)
+(* static 1  : row of the AI paddle's top cell (0 - 20)         *)
+(* static 2  : ball column (3 - 76)                             *)
+(* static 3  : ball row (0 - 23)                                *)
+(* static 4  : ball dx (1 = right, -1 = left)                   *)
+(* static 5  : ball dy (1 = down, -1 = up)                      *)
+(* static 6  : player score                                     *)
+(* static 7  : AI score                                         *)
+(* static 8  : pace counter                                     *)
+(* static 9  : AI tick counter                                  *)
+(* static 12 : ball tick counter                                *)
+(* static 10 : ball new row (scratch)                           *)
+(* static 11 : ball new column (scratch)                        *)
+(* static 13 : serve direction toggle                           *)
+(* static 14 : old player paddle row (scratch)                  *)
+(* static 15 : old AI paddle row (scratch)                      *)
+(* static 16 : old ball column (scratch)                        *)
+(* static 17 : old ball row (scratch)                           *)
+
+(* Paddles are 4 tall, at columns 2 (player) and 76 (AI). *)
+
+(* (row, col, c) writes c at (row, col). *)
+
+function PutAt 3
+    push argument 0
+    push constant 80
+    call Math.mul 2
+    push argument 1
+    add
+    push argument 2
+    scall putchar
+    push constant 0
+    return
+
+(* (row, col) erases the four cells of a paddle at (row, col). *)
+
+function ErasePaddle 2
+    push argument 0
+    push argument 1
+    push constant ' '
+    call PutAt 3
+    push argument 0
+    push constant 1
+    add
+    push argument 1
+    push constant ' '
+    call PutAt 3
+    push argument 0
+    push constant 2
+    add
+    push argument 1
+    push constant ' '
+    call PutAt 3
+    push argument 0
+    push constant 3
+    add
+    push argument 1
+    push constant ' '
+    call PutAt 3
+    push constant 0
+    return
+
+(* (row, col) draws the four cells of a paddle at (row, col). *)
+
+function DrawPaddle 2
+    push argument 0
+    push argument 1
+    push constant '#'
+    call PutAt 3
+    push argument 0
+    push constant 1
+    add
+    push argument 1
+    push constant '#'
+    call PutAt 3
+    push argument 0
+    push constant 2
+    add
+    push argument 1
+    push constant '#'
+    call PutAt 3
+    push argument 0
+    push constant 3
+    add
+    push argument 1
+    push constant '#'
+    call PutAt 3
+    push constant 0
+    return
+
+(* Redraw the score digits on row 0. *)
+
+function DrawScores 0
+    push constant 37
+    push static 6
+    push constant 48
+    add
+    scall putchar
+    push constant 43
+    push static 7
+    push constant 48
+    add
+    scall putchar
+    push constant 0
+    return
+
+(* Reset the ball to the centre; direction alternates. *)
+
+function Serve 0
+    push constant 40
+    pop static 2
+    push constant 12
+    pop static 3
+    push static 13
+    push constant 1
+    eq
+    if-goto serve_b
+    (* serve_a: dx = -1, dy = -1 *)
+    push constant 0
+    push constant 1
+    sub
+    pop static 4
+    push constant 0
+    push constant 1
+    sub
+    pop static 5
+    goto serve_flip
+    label serve_b
+    (* dx = 1, dy = 1 *)
+    push constant 1
+    pop static 4
+    push constant 1
+    pop static 5
+    label serve_flip
+    push constant 1
+    push static 13
+    sub
+    pop static 13
+    push constant 0
+    return
+
+(* Erase the cell at (row, col) with a space. *)
+
+function EraseCell 2
+    push argument 0
+    push argument 1
+    push constant ' '
+    call PutAt 3
+    push constant 0
+    return
+
+(* Reset paddle rows to the centre. *)
+
+function ResetPaddles 0
+    push constant 10
+    pop static 0
+    push constant 10
+    pop static 1
+    push constant 0
+    return
+
+(* Win screens: print a message and wait for a key; then return from
+   main. The two arguments distinguish the winner. *)
+
+function EndGame 1
+    push argument 0
+    push constant 1
+    eq
+    if-goto you_win
+    (* AI WINS! *)
+    push constant 11
+    push constant 36
+    call Screen.set_cursor 2
+    push constant 'A'
+    call Screen.print_char 1
+    push constant 'I'
+    call Screen.print_char 1
+    push constant ' '
+    call Screen.print_char 1
+    push constant 'W'
+    call Screen.print_char 1
+    push constant 'I'
+    call Screen.print_char 1
+    push constant 'N'
+    call Screen.print_char 1
+    push constant 'S'
+    call Screen.print_char 1
+    push constant '!'
+    call Screen.print_char 1
+    goto press_any
+    label you_win
+    (* YOU WIN! *)
+    push constant 11
+    push constant 36
+    call Screen.set_cursor 2
+    push constant 'Y'
+    call Screen.print_char 1
+    push constant 'O'
+    call Screen.print_char 1
+    push constant 'U'
+    call Screen.print_char 1
+    push constant ' '
+    call Screen.print_char 1
+    push constant 'W'
+    call Screen.print_char 1
+    push constant 'I'
+    call Screen.print_char 1
+    push constant 'N'
+    call Screen.print_char 1
+    push constant '!'
+    call Screen.print_char 1
+    label press_any
+    push constant 13
+    push constant 33
+    call Screen.set_cursor 2
+    push constant 'P'
+    call Screen.print_char 1
+    push constant 'R'
+    call Screen.print_char 1
+    push constant 'E'
+    call Screen.print_char 1
+    push constant 'S'
+    call Screen.print_char 1
+    push constant 'S'
+    call Screen.print_char 1
+    push constant ' '
+    call Screen.print_char 1
+    push constant 'A'
+    call Screen.print_char 1
+    push constant 'N'
+    call Screen.print_char 1
+    push constant 'Y'
+    call Screen.print_char 1
+    push constant ' '
+    call Screen.print_char 1
+    push constant 'K'
+    call Screen.print_char 1
+    push constant 'E'
+    call Screen.print_char 1
+    push constant 'Y'
+    call Screen.print_char 1
+    label wait_key
+    push keyboard
+    push constant 1
+    lt
+    if-goto wait_key
+    push constant 0
+    return
+
+function main 0
+    (* Initial state. *)
+    push constant 0
+    pop static 13
+    push constant 0
+    pop static 6
+    push constant 0
+    pop static 7
+    push constant 0
+    pop static 9
+    call ResetPaddles 0
+
+    (* Divider on row 0. *)
+    push constant 40
+    push constant '|'
+    scall putchar
+
+    call DrawScores 0
+    push static 0
+    push constant 2
+    call DrawPaddle 2
+    push static 1
+    push constant 76
+    call DrawPaddle 2
+    call Serve 0
+
+    label game_loop
+
+    (* Capture the old positions. *)
+    push static 0
+    pop static 14
+    push static 1
+    pop static 15
+    push static 2
+    pop static 16
+    push static 3
+    pop static 17
+
+    (* Player input: 'w' up, 's' down. *)
+    push keyboard
+    push constant 'w'
+    eq
+    if-goto up
+    push keyboard
+    push constant 's'
+    eq
+    if-goto down
+    goto ai
+    label up
+    push static 0
+    push constant 1
+    lt
+    if-goto ai
+    push static 0
+    push constant 1
+    sub
+    pop static 0
+    goto ai
+    label down
+    push static 0
+    push constant 19
+    gt
+    if-goto ai
+    push static 0
+    push constant 1
+    add
+    pop static 0
+
+    (* AI: one cell toward the ball every second frame. *)
+    label ai
+    push static 9
+    push constant 1
+    add
+    pop static 9
+    push static 9
+    push constant 1
+    gt
+    if-goto ai_move
+    goto ball_y
+    label ai_move
+    push constant 0
+    pop static 9
+    (* Move the AI paddle toward the ball. *)
+    push static 1
+    push constant 2
+    add
+    push static 3
+    gt
+    if-goto ai_up
+    push static 1
+    push constant 2
+    add
+    push static 3
+    lt
+    if-goto ai_down
+    goto ball_y
+    label ai_down
+    push static 1
+    push constant 19
+    gt
+    if-goto ball_y
+    push static 1
+    push constant 1
+    add
+    pop static 1
+    goto ball_y
+    label ai_up
+    push static 1
+    push constant 1
+    lt
+    if-goto ball_y
+    push static 1
+    push constant 1
+    sub
+    pop static 1
+
+    (* The ball moves every fifth frame; the paddles move every frame. *)
+    push static 12
+    push constant 1
+    add
+    pop static 12
+    push static 12
+    push constant 4
+    gt
+    if-goto ball_frame
+    goto after_move
+    label ball_frame
+    push constant 0
+    pop static 12
+
+    (* Ball vertical movement, with bouncing off the top/bottom. *)
+    label ball_y
+    push static 3
+    push static 5
+    add
+    pop static 10
+    push static 10
+    push constant 0
+    lt
+    if-goto y_bounce
+    push static 10
+    push constant 23
+    gt
+    if-goto y_bounce
+    push static 10
+    pop static 3
+    goto ball_x
+    label y_bounce
+    push static 5
+    neg
+    pop static 5
+
+    (* Ball horizontal movement, with paddle checks. *)
+    label ball_x
+    push static 4
+    push constant 1
+    eq
+    if-goto x_right
+
+    (* Moving left. *)
+    push static 2
+    push constant 3
+    eq
+    if-goto left_paddle
+    push static 2
+    push constant 3
+    gt
+    if-goto x_move
+    goto goal_left
+    label left_paddle
+    (* Hit only if the ball's row is within the paddle. *)
+    push static 3
+    push static 0
+    lt
+    if-goto goal_left
+    push static 3
+    push static 0
+    push constant 3
+    add
+    gt
+    if-goto goal_left
+    push constant 1
+    pop static 4
+    (* Top half of the paddle: dy = -1, else dy = 1. *)
+    push static 3
+    push static 0
+    push constant 2
+    add
+    lt
+    if-goto dy_up_l
+    push constant 1
+    pop static 5
+    goto x_move
+    label dy_up_l
+    push constant 1
+    neg
+    pop static 5
+    goto x_move
+
+    label x_right
+    push static 2
+    push constant 76
+    eq
+    if-goto right_paddle
+    push static 2
+    push constant 76
+    lt
+    if-goto x_move
+    goto goal_right
+    label right_paddle
+    push static 3
+    push static 1
+    lt
+    if-goto goal_right
+    push static 3
+    push static 1
+    push constant 3
+    add
+    gt
+    if-goto goal_right
+    push constant 1
+    neg
+    pop static 4
+    push static 3
+    push static 1
+    push constant 2
+    add
+    lt
+    if-goto dy_up_r
+    push constant 1
+    pop static 5
+    goto x_move
+    label dy_up_r
+    push constant 1
+    neg
+    pop static 5
+
+    (* Advance the ball horizontally. *)
+    label x_move
+    push static 2
+    push static 4
+    add
+    pop static 2
+
+    label after_move
+
+    (* Erase the old ball and paddles. *)
+    push static 17
+    push static 16
+    call EraseCell 2
+    push static 14
+    push constant 2
+    call ErasePaddle 2
+    push static 15
+    push constant 76
+    call ErasePaddle 2
+
+    (* Draw the new ball and paddles. *)
+    push static 3
+    push static 2
+    push constant 'O'
+    call PutAt 3
+    push static 0
+    push constant 2
+    call DrawPaddle 2
+    push static 1
+    push constant 76
+    call DrawPaddle 2
+
+    (* Pace the game. The VM has no clock, so this is a busy-wait
+       calibrated by instruction count; adjust to taste. Small value
+       keeps the game responsive; the ball's speed is controlled by
+       the ball tick counter above, not by this pace. *)
+    push constant 12000
+    pop static 8
+    label pace
+    push static 8
+    push constant 1
+    sub
+    pop static 8
+    push static 8
+    push constant 0
+    gt
+    if-goto pace
+
+    goto game_loop
+
+    (* A goal on the right edge: the player scores. *)
+    label goal_right
+    push static 6
+    push constant 1
+    add
+    pop static 6
+    call DrawScores 0
+    push static 6
+    push constant 4
+    gt
+    if-goto player_wins
+    call Serve 0
+    goto after_move
+
+    (* A goal on the left edge: the AI scores. *)
+    label goal_left
+    push static 7
+    push constant 1
+    add
+    pop static 7
+    call DrawScores 0
+    push static 7
+    push constant 4
+    gt
+    if-goto ai_wins
+    call Serve 0
+    goto after_move
+
+    label player_wins
+    push constant 1
+    call EndGame 1
+    push constant 0
+    return
+
+    label ai_wins
+    push constant 0
+    call EndGame 1
+
+    push constant 0
+    return
+

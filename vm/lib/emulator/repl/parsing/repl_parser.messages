@@ -180,3 +180,41 @@ cmd: SHOW SEGMENT TOP
 ##
 
 Expecting segment name (temp, static, local, argument) here.
+
+cmd: UNSET UNSET
+##
+## Ends in an error in state: 1.
+##
+## stmt -> UNSET . KEYBOARD [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## UNSET
+##
+
+Was expecting "keyboard" here.
+
+cmd: SET UNSET
+##
+## Ends in an error in state: 20.
+##
+## stmt -> SET . KEYBOARD CHAR [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## SET
+##
+
+Was expecting "keyboard" here.
+
+cmd: SET KEYBOARD UNSET
+##
+## Ends in an error in state: 21.
+##
+## stmt -> SET KEYBOARD . CHAR [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## SET KEYBOARD
+##
+
+Expecting a character in single quotes here.
+For example:
+    - set keyboard 'a'

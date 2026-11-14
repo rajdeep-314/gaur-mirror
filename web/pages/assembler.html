@@ -20,6 +20,8 @@
             <a href="assembler.html">Assembler</a>
             <a href="disassembler.html">Disassembler</a>
             <a href="ram-init.html">RAM Init</a>
+            <a href="cpu-simulator.html">CPU Simulator</a>
+            <a href="vm-emulator.html">VM Emulator</a>
         </div>
     </nav>
 
@@ -59,6 +61,7 @@
 
                 <div class="code-container">
                     <div class="output-actions">
+                        <button class="simulate-button" id="simulate-output" title="Simulate assembled intermediate code in CPU Simulator">Simulate</button>
                         <button class="copy-button" id="copy-output">Copy</button>
                         <button class="download-button" id="download-output">Download</button>
                     </div>
@@ -73,6 +76,22 @@
                 <div class="code-container">
                     <button class="copy-button" id="copy-errors">Copy</button>
                     <pre id="assembly-errors"></pre>
+                </div>
+            </div>
+
+            <div id="symtable-section">
+                <h2>Symbol Table</h2>
+
+                <div class="table-container">
+                    <table id="symbol-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>PC</th>
+                            </tr>
+                        </thead>
+                        <tbody id="symtable-body"></tbody>
+                    </table>
                 </div>
             </div>
         </div>

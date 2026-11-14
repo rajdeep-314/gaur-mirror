@@ -19,6 +19,7 @@ type t =
     | ShowStackTop  of int
     | ShowFunction
     | ShowScreen
+    | ShowKeyboard
     | ShowSegment   of A.segment
     | ShowFrame
     | ShowFrames
@@ -32,6 +33,8 @@ type t =
     | ExecuteTillBeforeReturn
     | ExecuteTillTermination
     (* Meta commands. *)
+    | SetKeyboard   of char
+    | UnsetKeyboard
     (*| PrintProgram*)
     (*| PrintFunction*)
     | Reset

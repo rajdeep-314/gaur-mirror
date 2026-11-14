@@ -25,7 +25,7 @@
         | None   -> raise (oob_pushc n ps)
 %}
 
-%token CONSTANT TEMP STATIC LOCAL ARGUMENT
+%token CONSTANT KEYBOARD TEMP STATIC LOCAL ARGUMENT
 %token ADD SUB NEG EQ GT LT AND OR NOT
 %token POP PUSH LABEL GOTO IFGOTO FUNCTION CALL SCALL RETURN EOF
 %token <string> ID
@@ -55,6 +55,7 @@ inst:
     | PUSH; s=segment; n=NUM       { Push (s, n), ($startpos, $endpos) }
     | POP; s=segment; n=NUM        { Pop (s,n), ($startpos, $endpos) }
     | PUSH; CONSTANT; n=NUM        { PushC (word_of_int n ($startpos(n), $endpos(n))), ($startpos, $endpos) }
+    | PUSH; KEYBOARD               { PushKeyboard, ($startpos, $endpos) }
     | ADD                          { Add, ($startpos, $endpos) }
     | SUB                          { Sub, ($startpos, $endpos) }
     | NEG                          { Neg, ($startpos, $endpos) }

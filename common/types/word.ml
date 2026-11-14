@@ -58,7 +58,7 @@ let bnot = Int32.lognot                     (** Bitwise not. *)
 
 (** Relational operations on words (type being [t -> t -> bool]). *)
 
-let eq : t -> t -> bool = ( == )
+let eq : t -> t -> bool = ( Int32.equal )
 let lt : t -> t -> bool = ( < )             (** Signed comparison. *)
 let le : t -> t -> bool = ( <= )            (** Signed comparison. *)
 let gt : t -> t -> bool = ( > )             (** Signed comparison. *)
