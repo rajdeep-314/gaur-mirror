@@ -22,3 +22,18 @@ let get_lines source ~first ~last =
     then In_channel.with_open_text path (Io.file_range first last)
     else []
 ;;
+
+type resolver = string -> t option
+
+let default_resolver path =
+  if Sys.file_exists path then Some (from_file path)
+  else None
+
+let of_list (sources : t list) : resolver =
+  fun fname -> List.find_opt (fun s -> String.equal s.name fname) sources
+
+let of_string_lookup (lookup : string -> string option) : resolver =
+  fun fname ->
+    match lookup fname with
+    | Some content -> Some (from_string ~name:fname content)
+    | None -> None

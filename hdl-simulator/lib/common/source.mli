@@ -27,3 +27,15 @@ val origin : t -> origin
     Returns [(line_number, line_text)] pairs.
 *)
 val get_lines : t -> first:int -> last:int -> (int * string) list
+
+(** [resolver] maps a filename or identifier to a [Source.t]. *)
+type resolver = string -> t option
+
+(** [default_resolver] checks disk filesystem, returning [Some (from_file path)] if it exists. *)
+val default_resolver : resolver
+
+(** [of_list sources] resolves names against an in-memory list of sources. *)
+val of_list : t list -> resolver
+
+(** [of_string_lookup f] adapts a simple [(string -> string option)] function into a resolver. *)
+val of_string_lookup : (string -> string option) -> resolver
