@@ -313,7 +313,16 @@ body.resizing-h * {
     margin-bottom: 20px;
 }
 
-#io-panes:has(#visual-input:empty) {
+#io-panes:has(#visual-input:empty):has(#visual-output:empty) {
+    display: none;
+}
+
+#io-panes:has(#visual-output:empty) #io-splitter {
+    display: none;
+}
+
+#visual-input-section:has(#visual-input:empty),
+#result-section:has(#visual-output:empty) {
     display: none;
 }
 
@@ -416,6 +425,7 @@ body.resizing-h * {
 }
 
 .bit-toggle {
+    position: relative;
     min-width: 30px;
     padding: 5px 8px;
     border: 1px solid var(--border);
@@ -428,10 +438,45 @@ body.resizing-h * {
     text-align: center;
 }
 
+.bit-toggle.bit-low::after,
+.bit-toggle.bit-high::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+.bit-toggle.bit-low::after {
+    background-color: #60A5FA;
+}
+
+.bit-toggle.bit-high::after {
+    background-color: #F59E0B;
+}
+
 .bit-toggle.bit-on {
     background-color: var(--success-bg);
     color: var(--success);
     border-color: var(--success-border);
+}
+
+.bit-toggle.bit-readonly {
+    cursor: default;
+    user-select: none;
+}
+
+.output-placeholder {
+    margin: 0;
+    padding: 12px 14px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
 }
 
 #sim-status {

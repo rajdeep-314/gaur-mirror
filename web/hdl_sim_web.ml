@@ -40,7 +40,7 @@ type ui_state =
   ; mutable input_type_str  : string
   ; mutable input_type      : P.wire_typ option
   ; mutable shape           : P.wire_shape option
-  ; mutable log_lines       : string list
+  ; mutable output_shape    : P.wire_shape option
   ; mutable busy            : bool
   ; mutable needs_recompile : bool
   ; mutable pending_chip    : string option
@@ -59,15 +59,13 @@ let () =
   let visual_section = DU.get_element "visual-input-section" in
   let sim_buttons_el = DU.get_element "sim-buttons" in
   let visual_el      = DU.get_element "visual-input" in
+  let output_el      = DU.get_element "visual-output" in
   let group_select   = get_select "bit-group-select" in
   let output_btn     = DU.get_element "btn-output" in
   let clock_btn      = DU.get_element "btn-clock" in
   let reset_btn      = DU.get_element "btn-reset" in
-  let clear_btn      = DU.get_element "btn-clear" in
 
-  let log_el       = DU.get_element "sim-result" in
   let errors_el    = DU.get_element "sim-errors" in
-  let copy_output  = DU.get_element "copy-output" in
   let copy_errors  = DU.get_element "copy-errors" in
 
   let state =
@@ -76,7 +74,7 @@ let () =
     ; input_type_str = ""
     ; input_type = None
     ; shape = None
-    ; log_lines = []
+    ; output_shape = None
     ; busy = false
     ; needs_recompile = false
     ; pending_chip = None
@@ -109,74 +107,106 @@ let () =
              name state.time state.input_type_str)
   in
 
-  let rec render_visual_input () =
-    visual_el##.innerHTML := Js.string "";
-    match state.chip, state.shape with
-    | Some _, Some shape ->
-      let group_size =
-        match int_of_string_opt (Js.to_string group_select##.value) with
-        | Some n when n > 0 -> n
-        | _ -> 4
-      in
-      let rec render_shape (v : P.wire_shape) : Dom_html.element Js.t =
-        match v with
-        | P.WSBitvec arr ->
-          let row = Dom_html.createDiv Dom_html.document in
-          row##.className := Js.string "bit-row";
-          let len = Array.length arr in
-          let rec add_groups start =
-            if start < len then begin
-              let stop = min len (start + group_size) in
-              let grp = Dom_html.createDiv Dom_html.document in
-              grp##.className := Js.string "bit-group";
-              for idx = start to stop - 1 do
+  let render_shape_into ~editable container root_shape =
+    let group_size =
+      match int_of_string_opt (Js.to_string group_select##.value) with
+      | Some n when n > 0 -> n
+      | _ -> 4
+    in
+    let rec render_shape (v : P.wire_shape) : Dom_html.element Js.t =
+      match v with
+      | P.WSBitvec arr ->
+        let row = Dom_html.createDiv Dom_html.document in
+        row##.className := Js.string "bit-row";
+        let len = Array.length arr in
+        let tile_class b idx =
+          let state_cls = if b then "bit-toggle bit-on" else "bit-toggle" in
+          let mode_cls = if editable then "" else " bit-readonly" in
+          let end_cls =
+            if len <= 1 then ""
+            else if idx = 0 then " bit-low"
+            else if idx = len - 1 then " bit-high"
+            else ""
+          in
+          state_cls ^ mode_cls ^ end_cls
+        in
+        let rec add_groups start =
+          if start < len then begin
+            let grp = Dom_html.createSpan Dom_html.document in
+            grp##.className := Js.string "bit-group";
+            let stop = min (start + group_size) len in
+            for i = 0 to stop - start - 1 do
+              let idx = len - 1 - (start + i) in
+              if editable then begin
                 let btn = Dom_html.createButton Dom_html.document in
                 let sync_btn b =
                   btn##.textContent := Js.some (Js.string (if b then "1" else "0"));
-                  btn##.className :=
-                    Js.string (if b then "bit-toggle bit-on" else "bit-toggle")
+                  btn##.className := Js.string (tile_class b idx)
                 in
                 sync_btn arr.(idx);
                 btn##.onclick := Dom_html.handler (fun _ ->
                   if not state.busy then begin
-                    let next = not arr.(idx) in
-                    arr.(idx) <- next;
-                    sync_btn next;
+                    arr.(idx) <- not arr.(idx);
+                    sync_btn arr.(idx);
                     DU.clear_text errors_el;
-                    send (P.Req_set_input shape)
+                    match state.shape with
+                    | Some s -> send (P.Req_set_input s)
+                    | None -> ()
                   end;
                   Js._false);
                 Dom.appendChild grp btn
-              done;
-              Dom.appendChild row grp;
-              add_groups stop
-            end
-          in
-          add_groups 0;
-          (row :> Dom_html.element Js.t)
-        | P.WSRecord fields ->
-          let group = Dom_html.createDiv Dom_html.document in
-          group##.className := Js.string "record-group";
-          List.iter
-            (fun (name, sub) ->
-               let field_el = Dom_html.createDiv Dom_html.document in
-               field_el##.className := Js.string "record-field";
-               let label_el = Dom_html.createSpan Dom_html.document in
-               label_el##.className := Js.string "record-label";
-               label_el##.textContent := Js.some (Js.string name);
-               Dom.appendChild field_el label_el;
-               Dom.appendChild field_el (render_shape sub);
-               Dom.appendChild group field_el)
-            fields;
-          (group :> Dom_html.element Js.t)
-      in
-      Dom.appendChild visual_el (render_shape shape)
+              end else begin
+                let tile = Dom_html.createSpan Dom_html.document in
+                let b = arr.(idx) in
+                tile##.textContent := Js.some (Js.string (if b then "1" else "0"));
+                tile##.className := Js.string (tile_class b idx);
+                Dom.appendChild grp tile
+              end
+            done;
+            Dom.appendChild row grp;
+            add_groups stop
+          end
+        in
+        add_groups 0;
+        (row :> Dom_html.element Js.t)
+      | P.WSRecord fields ->
+        let group = Dom_html.createDiv Dom_html.document in
+        group##.className := Js.string "record-group";
+        List.iter
+          (fun (name, sub) ->
+             let field_el = Dom_html.createDiv Dom_html.document in
+             field_el##.className := Js.string "record-field";
+             let label_el = Dom_html.createSpan Dom_html.document in
+             label_el##.className := Js.string "record-label";
+             label_el##.textContent := Js.some (Js.string name);
+             Dom.appendChild field_el label_el;
+             Dom.appendChild field_el (render_shape sub);
+             Dom.appendChild group field_el)
+          fields;
+        (group :> Dom_html.element Js.t)
+    in
+    Dom.appendChild container (render_shape root_shape)
+  in
+
+  let render_visual_input () =
+    visual_el##.innerHTML := Js.string "";
+    match state.chip, state.shape with
+    | Some _, Some shape -> render_shape_into ~editable:true visual_el shape
     | _ -> ()
   in
 
-  let append_log line =
-    state.log_lines <- state.log_lines @ [ line ];
-    DU.set_text log_el (String.concat "\n" state.log_lines)
+  let render_visual_output () =
+    output_el##.innerHTML := Js.string "";
+    match state.chip, state.output_shape with
+    | Some _, Some shape ->
+      render_shape_into ~editable:false output_el shape
+    | Some _, None ->
+      let msg = Dom_html.createP Dom_html.document in
+      msg##.className := Js.string "output-placeholder";
+      msg##.textContent :=
+        Js.some (Js.string "Press Output to evaluate and display the current output.");
+      Dom.appendChild output_el msg
+    | None, _ -> ()
   in
 
   let rec respawn_worker () =
@@ -215,37 +245,38 @@ let () =
         state.input_type_str <- input_type_str;
         state.input_type <- Some input_type;
         state.shape <- Some (zero_shape_of_typ input_type);
-        state.log_lines <- [];
-        DU.set_text log_el "Waiting for simulation commands...";
+        state.output_shape <- None;
         update_status ();
-        render_visual_input ()
+        render_visual_input ();
+        render_visual_output ()
       | P.Resp_input_set ->
         ()
       | P.Resp_output { time; shape } ->
         state.time <- time;
-        let value = string_of_shape shape in
-        append_log (Printf.sprintf "t: %d\t | %s" time value);
-        update_status ()
+        state.output_shape <- Some shape;
+        update_status ();
+        render_visual_output ()
       | P.Resp_clocked { time } ->
         state.time <- time;
-        append_log (Printf.sprintf "t: %d\t | [clock]" time);
         update_status ()
       | P.Resp_reset { time } ->
         state.time <- time;
-        state.log_lines <- [];
-        DU.set_text log_el "Waiting for simulation commands...";
+        state.output_shape <- None;
         (match state.input_type with
          | Some it -> state.shape <- Some (zero_shape_of_typ it)
          | None -> ());
         update_status ();
-        render_visual_input ()
+        render_visual_input ();
+        render_visual_output ()
       | P.Resp_error { msg; clear_session } ->
         if clear_session then begin
           state.chip <- None;
           state.input_type <- None;
           state.shape <- None;
+          state.output_shape <- None;
           populate_chip_select chip_select [];
-          render_visual_input ()
+          render_visual_input ();
+          render_visual_output ()
         end else begin
           match state.chip with
           | Some active -> chip_select##.value := Js.string active
@@ -311,7 +342,6 @@ let () =
       Js._true);
 
   DU.setup_file_input hdl_file hdl_input line_nums errors_el;
-  DU.setup_copy_button copy_output log_el;
   DU.setup_copy_button copy_errors errors_el;
 
   compile_btn##.onclick := Dom_html.handler (fun _ ->
@@ -325,6 +355,7 @@ let () =
 
   group_select##.onchange := Dom_html.handler (fun _ ->
     render_visual_input ();
+    render_visual_output ();
     Js._false);
 
   output_btn##.onclick := Dom_html.handler (fun _ ->
@@ -355,11 +386,6 @@ let () =
       else
         send P.Req_reset
     end;
-    Js._false);
-
-  clear_btn##.onclick := Dom_html.handler (fun _ ->
-    state.log_lines <- [];
-    DU.set_text log_el "";
     Js._false);
 
   let setup_splitter ~horizontal splitter prev_el container min_pct max_pct =
@@ -418,5 +444,4 @@ let () =
     20. 80.;
 
   update_status ();
-  DU.set_text log_el "Waiting for simulation commands...";
   DU.clear_text errors_el
