@@ -225,16 +225,24 @@ let () =
         row##.className := Js.string "bit-row";
         let len = Array.length arr in
         let create_tile idx =
-          let end_cls =
-            if len <= 1 then ""
-            else if idx = 0 then " bit-low"
-            else if idx = len - 1 then " bit-high"
+          let lsb_cls =
+            if len > 1 && idx = 0 then " bit-lsb"
             else ""
           in
           let tile_class b =
             let base = if b then "bit-toggle bit-on" else "bit-toggle" in
             let ro = if editable then "" else " bit-readonly" in
-            base ^ ro ^ end_cls
+            base ^ ro ^ lsb_cls
+          in
+          let tile_title =
+            if len <= 1 then
+              (if editable then "Click to toggle" else "")
+            else if idx = 0 then
+              "bit 0 (LSB)" ^ (if editable then " • Click to toggle" else "")
+            else if idx = len - 1 then
+              Printf.sprintf "bit %d (MSB)%s" idx (if editable then " • Click to toggle" else "")
+            else
+              Printf.sprintf "bit %d%s" idx (if editable then " • Click to toggle" else "")
           in
           if editable then begin
             let btn = Dom_html.createButton Dom_html.document in
@@ -243,6 +251,8 @@ let () =
               btn##.className := Js.string (tile_class b)
             in
             sync_btn arr.(idx);
+            if tile_title <> "" then
+              btn##setAttribute (Js.string "title") (Js.string tile_title);
             btn##.onclick := Dom_html.handler (fun _ ->
               if not state.busy then begin
                 let next = not arr.(idx) in
@@ -258,6 +268,8 @@ let () =
             let b = arr.(idx) in
             tile##.textContent := Js.some (Js.string (if b then "1" else "0"));
             tile##.className := Js.string (tile_class b);
+            if tile_title <> "" then
+              tile##setAttribute (Js.string "title") (Js.string tile_title);
             (tile :> Dom_html.element Js.t)
           end
         in
@@ -555,11 +567,11 @@ let () =
     if !is_big_endian then begin
       endian_btn##.textContent := Js.some (Js.string "Big");
       endian_btn##setAttribute (Js.string "title")
-        (Js.string "Click to toggle endianness (currently Big-endian: MSB on left, bit 0 on right)")
+        (Js.string "Click to toggle endianness (currently Big-endian: MSB on left, LSB [0] on right)")
     end else begin
       endian_btn##.textContent := Js.some (Js.string "Little");
       endian_btn##setAttribute (Js.string "title")
-        (Js.string "Click to toggle endianness (currently Little-endian: bit 0 on left, MSB on right)")
+        (Js.string "Click to toggle endianness (currently Little-endian: LSB [0] on left, MSB on right)")
     end
   in
 
