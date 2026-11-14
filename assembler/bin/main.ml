@@ -112,8 +112,11 @@ let prog_ast_annotated =
 (** Intermediate (ISA) program. *)
 let inter_prog = Assemble.asm_prog_to_isa_prog prog_ast_annotated
 
-(** Machine program. *)
-let mach_prog = Assemble.assemble prog_ast_annotated
+(** Machine program (derived from the intermediate program, assembled only once). *)
+let mach_prog =
+    match inter_prog with
+    | Ok isa_prog -> Ok (Assemble.isa_prog_to_machine_prog isa_prog)
+    | Error e     -> Error e
 
 let output_str =
     match mach_prog with
