@@ -117,7 +117,8 @@ body {
 /* Input panel */
 
 #input-panel {
-    width: 50%;
+    flex: 0 0 50%;
+    min-width: 0;
     padding: 32px;
     display: flex;
     flex-direction: column;
@@ -194,10 +195,23 @@ body {
 
 #compile-bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-top: 14px;
+}
+
+.compile-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.compile-actions button {
+    flex-shrink: 0;
 }
 
 .chip-picker {
@@ -219,36 +233,125 @@ body {
     min-width: 140px;
 }
 
+/* Splitters */
+
+.splitter {
+    position: relative;
+    flex-shrink: 0;
+    background-color: var(--border);
+    transition: background-color 0.15s ease;
+    z-index: 10;
+}
+
+.splitter::after {
+    content: "";
+    position: absolute;
+}
+
+.splitter-v {
+    width: 1px;
+    cursor: col-resize;
+}
+
+.splitter-v::after {
+    inset: 0 -4px;
+}
+
+.splitter-h {
+    height: 1px;
+    cursor: row-resize;
+}
+
+.splitter-h::after {
+    inset: -4px 0;
+}
+
+.splitter:hover,
+.splitter.active {
+    background-color: var(--success);
+}
+
+body.resizing-v,
+body.resizing-v * {
+    cursor: col-resize !important;
+    user-select: none !important;
+}
+
+body.resizing-h,
+body.resizing-h * {
+    cursor: row-resize !important;
+    user-select: none !important;
+}
+
 /* Output panel */
 
 #output-panel {
-    width: 50%;
+    flex: 1;
+    min-width: 0;
     padding: 32px;
-    border-left: 1px solid var(--border);
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 #status-section,
-#visual-input-section,
-#cmd-section,
-#result-section,
 #error-section {
-    margin-bottom: 24px;
+    flex-shrink: 0;
+    margin-bottom: 20px;
 }
 
-#visual-input-header {
+#error-section {
+    margin-bottom: 0;
+}
+
+#io-panes {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+#io-panes:has(#visual-input:empty) {
+    display: none;
+}
+
+#visual-input-section,
+#result-section {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+#visual-input-header,
+#result-header {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     margin-bottom: 14px;
 }
 
-#visual-input-section h2 {
+#visual-input-section h2,
+#result-header h2 {
     font-family: var(--font-heading);
     margin: 0;
     font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
+}
+
+#visual-input,
+#visual-output {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .group-picker {
@@ -343,9 +446,17 @@ body {
     white-space: pre-wrap;
 }
 
+#visual-input-section.busy,
+#sim-buttons.busy {
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
 #sim-buttons {
-    margin-top: 14px;
+    margin-top: 0;
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: 6px;
 }
@@ -388,9 +499,6 @@ button.primary-btn:hover {
     border-color: #FFFFFF;
 }
 
-#result-section:has(#sim-result:empty) {
-    display: none;
-}
 
 #error-section:has(#sim-errors:empty) {
     display: none;
@@ -471,32 +579,44 @@ button.primary-btn:hover {
 }
 
 .source-upload {
-    margin-bottom: 16px;
+    margin-bottom: 0;
+    min-width: 0;
+    flex: 1;
 }
 
 .source-upload input[type="file"] {
     width: 100%;
-    padding: 8px;
-    background-color: var(--surface);
+    max-width: 100%;
+    padding: 0;
+    background: transparent;
     color: var(--text-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border: none;
     font-family: var(--font-body);
     font-size: 13px;
     cursor: pointer;
 }
 
 .source-upload input[type="file"]::file-selector-button {
-    margin-right: 12px;
-    padding: 7px 12px;
-    border: 1px solid #E5E5E5;
+    margin-right: 10px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
     border-radius: 6px;
-    background-color: #E5E5E5;
-    color: #111111;
+    background-color: var(--surface);
+    color: var(--text-secondary);
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.source-upload input[type="file"]::file-selector-button:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-primary);
+    border-color: #4A4A4A;
 }
 
 .output-actions {

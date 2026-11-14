@@ -55,13 +55,15 @@ let () =
   let compile_btn  = DU.get_element "compile-btn" in
   let chip_select  = get_select "chip-select" in
 
-  let status_el    = DU.get_element "sim-status" in
-  let visual_el    = DU.get_element "visual-input" in
-  let group_select = get_select "bit-group-select" in
-  let output_btn   = DU.get_element "btn-output" in
-  let clock_btn    = DU.get_element "btn-clock" in
-  let reset_btn    = DU.get_element "btn-reset" in
-  let clear_btn    = DU.get_element "btn-clear" in
+  let status_el      = DU.get_element "sim-status" in
+  let visual_section = DU.get_element "visual-input-section" in
+  let sim_buttons_el = DU.get_element "sim-buttons" in
+  let visual_el      = DU.get_element "visual-input" in
+  let group_select   = get_select "bit-group-select" in
+  let output_btn     = DU.get_element "btn-output" in
+  let clock_btn      = DU.get_element "btn-clock" in
+  let reset_btn      = DU.get_element "btn-reset" in
+  let clear_btn      = DU.get_element "btn-clear" in
 
   let log_el       = DU.get_element "sim-result" in
   let errors_el    = DU.get_element "sim-errors" in
@@ -91,8 +93,13 @@ let () =
 
   let update_status ?busy_msg () =
     match busy_msg with
-    | Some msg -> DU.set_text status_el msg
+    | Some msg ->
+      DU.set_text status_el msg;
+      visual_section##.classList##add (Js.string "busy");
+      sim_buttons_el##.classList##add (Js.string "busy")
     | None ->
+      visual_section##.classList##remove (Js.string "busy");
+      sim_buttons_el##.classList##remove (Js.string "busy");
       match state.chip with
       | None ->
         DU.set_text status_el "No chip loaded. Compile GHDL source to begin."
@@ -209,7 +216,7 @@ let () =
         state.input_type <- Some input_type;
         state.shape <- Some (zero_shape_of_typ input_type);
         state.log_lines <- [];
-        DU.set_text log_el "";
+        DU.set_text log_el "Waiting for simulation commands...";
         update_status ();
         render_visual_input ()
       | P.Resp_input_set ->
@@ -226,7 +233,7 @@ let () =
       | P.Resp_reset { time } ->
         state.time <- time;
         state.log_lines <- [];
-        DU.set_text log_el "";
+        DU.set_text log_el "Waiting for simulation commands...";
         (match state.input_type with
          | Some it -> state.shape <- Some (zero_shape_of_typ it)
          | None -> ());
@@ -354,6 +361,61 @@ let () =
     state.log_lines <- [];
     DU.set_text log_el "";
     Js._false);
+
+  let setup_splitter ~horizontal splitter prev_el container min_pct max_pct =
+    let dragging = ref false in
+    let body_cls = if horizontal then "resizing-h" else "resizing-v" in
+    splitter##.onmousedown := Dom_html.handler (fun ev ->
+      Dom.preventDefault ev;
+      dragging := true;
+      splitter##.classList##add (Js.string "active");
+      Dom_html.document##.body##.classList##add (Js.string body_cls);
+      Js._false);
+    ignore (Dom_html.addEventListener Dom_html.document Dom_html.Event.mousemove
+      (Dom_html.handler (fun ev ->
+         if !dragging then begin
+           let rect = container##getBoundingClientRect in
+           let r_top = Js.to_float rect##.top in
+           let r_bottom = Js.to_float rect##.bottom in
+           let r_left = Js.to_float rect##.left in
+           let r_right = Js.to_float rect##.right in
+           let span =
+             if horizontal then r_bottom -. r_top
+             else r_right -. r_left
+           in
+           if span > 0. then begin
+             let offset =
+               if horizontal then Js.to_float ev##.clientY -. r_top
+               else Js.to_float ev##.clientX -. r_left
+             in
+             let raw = (offset /. span) *. 100. in
+             let pct = max min_pct (min max_pct raw) in
+             prev_el##.style##.flex := Js.string (Printf.sprintf "0 0 %.2f%%" pct)
+           end
+         end;
+         Js._true))
+      Js._false);
+    ignore (Dom_html.addEventListener Dom_html.document Dom_html.Event.mouseup
+      (Dom_html.handler (fun _ ->
+         if !dragging then begin
+           dragging := false;
+           splitter##.classList##remove (Js.string "active");
+           Dom_html.document##.body##.classList##remove (Js.string body_cls)
+         end;
+         Js._true))
+      Js._false)
+  in
+
+  setup_splitter ~horizontal:false
+    (DU.get_element "main-splitter")
+    (DU.get_element "input-panel")
+    (DU.get_element "app")
+    20. 80.;
+  setup_splitter ~horizontal:true
+    (DU.get_element "io-splitter")
+    visual_section
+    (DU.get_element "io-panes")
+    20. 80.;
 
   update_status ();
   DU.set_text log_el "Waiting for simulation commands...";

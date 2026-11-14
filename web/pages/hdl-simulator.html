@@ -31,12 +31,6 @@
         <div id="input-panel">
             <h2>GHDL Source</h2>
 
-            <div class="input-group source-upload">
-                <input
-                    type="file"
-                    id="hdl-file">
-            </div>
-
             <div id="editor">
                 <div id="line-numbers" aria-hidden="true">1</div>
                 <textarea
@@ -47,13 +41,22 @@
             </div>
 
             <div id="compile-bar">
-                <button id="compile-btn" class="primary-btn">Compile (Ctrl+Enter)</button>
+                <div class="compile-actions">
+                    <button id="compile-btn" class="primary-btn">Compile (Ctrl+Enter)</button>
+                    <div class="source-upload">
+                        <input
+                            type="file"
+                            id="hdl-file">
+                    </div>
+                </div>
                 <div class="chip-picker">
                     <label for="chip-select">Chip:</label>
                     <select id="chip-select"></select>
                 </div>
             </div>
         </div>
+
+        <div id="main-splitter" class="splitter splitter-v" role="separator" aria-orientation="vertical"></div>
 
         <!-- Right: Simulation Console & Output -->
         <div id="output-panel">
@@ -62,33 +65,39 @@
                 <pre id="sim-status"></pre>
             </div>
 
-            <div id="visual-input-section">
-                <div id="visual-input-header">
-                    <h2>Input Pins</h2>
-                    <div class="group-picker">
-                        <label for="bit-group-select">Group:</label>
-                        <select id="bit-group-select">
-                            <option value="4" selected>4 bits</option>
-                            <option value="8">8 bits</option>
-                        </select>
+            <div id="io-panes">
+                <div id="visual-input-section">
+                    <div id="visual-input-header">
+                        <h2>Input Pins</h2>
+                        <div class="group-picker">
+                            <label for="bit-group-select">Group:</label>
+                            <select id="bit-group-select">
+                                <option value="4" selected>4 bits</option>
+                                <option value="8">8 bits</option>
+                            </select>
+                        </div>
                     </div>
+                    <div id="visual-input"></div>
                 </div>
-                <div id="visual-input"></div>
-                <div id="sim-buttons">
-                    <button id="btn-output" class="primary-btn">Output</button>
-                    <button id="btn-clock">Clock</button>
-                    <button id="btn-reset">Reset</button>
-                    <button id="btn-clear">Clear Log</button>
-                </div>
-            </div>
 
-            <div id="result-section">
-                <h2>Output</h2>
-                <div class="code-container">
-                    <div class="output-actions">
-                        <button class="copy-button" id="copy-output">Copy</button>
+                <div id="io-splitter" class="splitter splitter-h" role="separator" aria-orientation="horizontal"></div>
+
+                <div id="result-section">
+                    <div id="result-header">
+                        <h2>Output</h2>
+                        <div id="sim-buttons">
+                            <button id="btn-output" class="primary-btn">Output</button>
+                            <button id="btn-clock">Clock</button>
+                            <button id="btn-reset">Reset</button>
+                            <button id="btn-clear">Clear Log</button>
+                        </div>
                     </div>
-                    <pre id="sim-result"></pre>
+                    <div class="code-container">
+                        <div class="output-actions">
+                            <button class="copy-button" id="copy-output">Copy</button>
+                        </div>
+                        <pre id="sim-result"></pre>
+                    </div>
                 </div>
             </div>
 
