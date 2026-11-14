@@ -1,0 +1,10 @@
+(executable
+ (name test_causality)
+ (public_name test_causality)
+ (package hdl-simulator)
+ (libraries hdl-simulator.lib))
+
+(cram
+ (shell bash)
+ (deps %{bin:test_causality}
+       (source_tree ./files)))

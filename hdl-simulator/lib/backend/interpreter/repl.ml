@@ -53,27 +53,60 @@ type sim =
   ; obs     : bool Incr.Observer.t output_interface
   }
 
+exception Build_error of string
+
+type build_phase =
+  | Building of { built : int; total : int }
+  | Stabilizing of { total : int }
+
 let fail_build name msg =
   prerr_endline (Printf.sprintf "Error: can not simulate chip %s: %s" name msg);
   exit 1
 
-let build (name : string) (p : Ast.prog) : sim =
+let build_exn ?on_progress (name : string) (p : Ast.prog) : sim =
   try
-    let env = Interp.interp_prog p in
+    let total =
+      Ast.StrMap.find_opt name (Interp.nand_counts p)
+      |> Option.value ~default:0
+    in
+    let built = ref 0 in
+    let step = max 1 (total / 40) in
+    let on_nand () =
+      incr built;
+      match on_progress with
+      | Some cb when !built mod step = 0 || !built = total ->
+        cb (Building { built = !built; total })
+      | _ -> ()
+    in
+    let env = Interp.interp_prog ~on_nand p in
     let def =
       match Ast.StrMap.find_opt name env with
       | Some def -> def
-      | None -> fail_build name "no chip with this name"
+      | None -> raise (Build_error "no chip with this name")
     in
     let vars = create_input_interface def.input_t def.state_t (fun () -> Var.create false) in
     let watched = map_input_interface Var.watch vars in
     let out = def.fn watched in
     let obs = map_output_interface Incr.observe out in
+    (match on_progress with
+     | Some cb -> cb (Stabilizing { total })
+     | None -> ());
     Incr.stabilize ();
     { input_t=typ_of_tipe def.input_t; vars; obs }
   with
   | Interp.Interp_error msg | Shape_mismatch msg | Invalid_argument msg ->
-    fail_build name msg
+    raise (Build_error msg)
+  | Out_of_memory ->
+    raise (Build_error "chip is too large (out of memory)")
+
+let build_result ?on_progress (name : string) (p : Ast.prog) : (sim, string) result =
+  try Ok (build_exn ?on_progress name p)
+  with Build_error msg ->
+    Error (Printf.sprintf "Error: can not simulate chip %s: %s" name msg)
+
+let build (name : string) (p : Ast.prog) : sim =
+  try build_exn name p
+  with Build_error msg -> fail_build name msg
 
 let set_input (s : sim) (v : bool shape) =
   iter2 Var.set s.vars.input v
@@ -89,6 +122,12 @@ let clock (s : sim) =
   Incr.stabilize ();
   let next = map_state Incr.Observer.value_exn s.obs.state in
   iter2_state Var.set s.vars.state next
+
+let reset (s : sim) =
+  iter (fun v -> Var.set v false) s.vars.input;
+  iter_state (fun v -> Var.set v false) s.vars.state;
+  Incr.stabilize ()
+
 
 (** {1 Loop} *)
 

@@ -2,7 +2,7 @@
  (name test_parse)
  (public_name test_parse)
  (package hdl-simulator)
- (libraries lib))
+ (libraries hdl-simulator.lib))
 
 (cram
  (shell bash)

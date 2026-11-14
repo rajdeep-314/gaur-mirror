@@ -1,7 +1,7 @@
 (library
  (name web_utils)
  (wrapped false)
- (modules dom_utils misc)
+ (modules dom_utils misc hdl_sim_proto)
  (libraries js_of_ocaml)
  (preprocess (pps js_of_ocaml-ppx)))
 
@@ -9,7 +9,7 @@
  (name assembler_web)
  (modules assembler_web)
  (modes js)
- (libraries js_of_ocaml web_utils assembler common.types common.parsing)
+ (libraries js_of_ocaml web_utils extracted common.types common.parsing common.utils)
  (preprocess (pps js_of_ocaml-ppx)))
 
 (executable
@@ -25,3 +25,11 @@
  (modes js)
  (libraries js_of_ocaml web_utils ram-init common.types common.parsing)
  (preprocess (pps js_of_ocaml-ppx)))
+
+(executable
+ (name hdl_sim_worker)
+ (modules hdl_sim_worker)
+ (modes js)
+ (libraries js_of_ocaml str web_utils hdl-simulator.lib)
+ (preprocess (pps js_of_ocaml-ppx)))
+

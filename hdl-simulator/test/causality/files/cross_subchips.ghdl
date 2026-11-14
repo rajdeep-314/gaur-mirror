@@ -1,0 +1,15 @@
+CHIP Pass {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  n1 := Nand { a = in, b = in }
+  out := Nand { a = n1, b = n1 }
+}
+
+CHIP LoopSubchips {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  w := Pass out
+  out := Pass w
+}

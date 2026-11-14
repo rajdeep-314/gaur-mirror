@@ -1,0 +1,24 @@
+CHIP Inverter {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := Nand { a = in, b = in }
+}
+
+CHIP Register {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+  STATES st: bits 1
+
+  out := st
+  st' <- in
+}
+
+CHIP ClosedLoop {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  c := Inverter out
+  s := Register c
+  out := s
+}

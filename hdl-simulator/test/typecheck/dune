@@ -2,7 +2,7 @@
  (name test_typecheck)
  (public_name test_typecheck)
  (package hdl-simulator)
- (libraries lib))
+ (libraries hdl-simulator.lib))
 
 (cram
  (shell bash)

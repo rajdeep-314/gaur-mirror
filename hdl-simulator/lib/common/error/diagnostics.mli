@@ -36,3 +36,9 @@ val pp_detail : t Fmt.t
 
 (** Print error diagnostics in short. *)
 val pp_short : t Fmt.t
+
+(** Print error diagnostics in detail using a custom source resolver. *)
+val pp_detail_with : Source.resolver -> t Fmt.t
+
+(** Print error diagnostics in short using a custom source resolver. *)
+val pp_short_with : Source.resolver -> t Fmt.t

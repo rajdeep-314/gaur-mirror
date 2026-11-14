@@ -1,0 +1,14 @@
+CHIP Not {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := Nand { a = in, b = in }
+}
+
+CHIP And {
+  INPUT in: { a: bits 1, b: bits 1 }
+  OUTPUT out: bits 1
+
+  n := Nand { a = in.a, b = in.b }
+  out := Not n
+}

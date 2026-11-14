@@ -1,0 +1,37 @@
+CHIP Stage1 {
+  INPUT in: bits 2
+  OUTPUT out: { high: bits 1, low: bits 1 }
+
+  out := { high = in[1:1], low = in[0:0] }
+}
+
+CHIP Stage2A {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := Nand { a = in, b = in }
+}
+
+CHIP Stage2B {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := Nand { a = in, b = in }
+}
+
+CHIP Stage3 {
+  INPUT in: { a: bits 1, b: bits 1 }
+  OUTPUT out: bits 1
+
+  out := Nand { a = in.a, b = in.b }
+}
+
+CHIP DiamondCircuit {
+  INPUT in: bits 2
+  OUTPUT out: bits 1
+
+  s1 := Stage1 in
+  a := Stage2A s1.high
+  b := Stage2B s1.low
+  out := Stage3 { a = a, b = b }
+}

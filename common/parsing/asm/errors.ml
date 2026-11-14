@@ -34,17 +34,34 @@ end
 (** Parsing errors. *)
 module ParsingErrors = struct
     (** Base errors.
-        These errors contain two kinds of errors, essentially:
+        These errors contain:
             - Those that arise due to custom logic, such as invalid register number.
             - Those that arise due to Menhir -- grammatical issues.
+            - Out-of-bound immediates where the expected immediate is:
+                - 11-bit unsigned
+                - 11-bit signed
+                - 6-bit signed
+                - 5-bit unsigned
     *)
     type base =
         | InvalidRegNum of int
         | MenhirError   of string
+        | OOBimm11u     of int
+        | OOBimm11s     of int
+        | OOBimm6s      of int
+        | OOBimm5u      of int
 
     let to_string = function
         | InvalidRegNum n -> Printf.sprintf "Invalid register index: %d" n
         | MenhirError s   -> s
+        | OOBimm11u n     -> Printf.sprintf
+            "Outside the 11-bit unsigned range [0, 2047]: %d" n
+        | OOBimm11s n     -> Printf.sprintf
+            "Outside the 11-bit signed range [-1024, 1023]: %d" n
+        | OOBimm6s n      -> Printf.sprintf
+            "Outside the 6-bit signed range [-32, 31]: %d" n
+        | OOBimm5u n      -> Printf.sprintf
+            "Outside the 5-bit unsigned range [0, 31]: %d" n
 
     (** Errors with info about the position where it occurred. *)
     type t = pos_info * base
@@ -84,6 +101,10 @@ module Helper = struct
 
         let invalidregnum n ps = of_err_and_ps (InvalidRegNum n) ps
         let menhirerror n ps = of_err_and_ps (MenhirError (Messages.message n)) ps
+        let oobimm11u n ps = of_err_and_ps (OOBimm11u n) ps
+        let oobimm11s n ps = of_err_and_ps (OOBimm11s n) ps
+        let oobimm6s n ps = of_err_and_ps (OOBimm6s n) ps
+        let oobimm5u n ps = of_err_and_ps (OOBimm5u n) ps
     end
 end
 

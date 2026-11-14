@@ -1,6 +1,6 @@
+open Errors
 open Parse
 open Var
-open Errors
 
 module VarSet = Set.Make(Var)
 module StrMap = Map.Make(String)

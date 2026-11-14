@@ -122,9 +122,19 @@ let rec iter2 (f : 'a -> 'b -> unit) (v1 : 'a shape) (v2 : 'b shape) : unit =
   | Bitvec _, Record _
   | Record _, Bitvec _ -> mismatch "bit vector and record"
 
+let rec iter (f : 'a -> unit) (v : 'a shape) : unit =
+  match v with
+  | Bitvec b -> Array.iter f b
+  | Record r -> StrMap.iter (fun _ v -> iter f v) r
+
+let rec iter_state (f : 'a -> unit) (s : 'a state) : unit =
+  StrMap.iter (fun _ v -> iter f v) s.self;
+  IntMap.iter (fun _ sub -> iter_state f sub) s.recu
+
 let rec iter2_state (f : 'a -> 'b -> unit) (s1 : 'a state) (s2 : 'b state) : unit =
   iter2_bindings "state" (iter2 f) (StrMap.bindings s1.self) (StrMap.bindings s2.self);
   iter2_bindings "child states" (iter2_state f) (IntMap.bindings s1.recu) (IntMap.bindings s2.recu)
+
 
 (** {1 Accessors} *)
 

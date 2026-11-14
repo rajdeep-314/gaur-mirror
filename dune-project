@@ -1,6 +1,6 @@
-(lang dune 3.22)
+(lang dune 3.23)
 (using menhir 3.0)
-(using rocq 0.11)
+(using rocq 0.13)
 
 (name gaur)
 
@@ -32,6 +32,14 @@
 (package
  (allow_empty)
  (name common))
+
+(package
+  (name extracted)
+  (synopsis "Extracted OCaml code from Gaur's Rocq theories")
+  (depends
+    (ocaml (>= 4.14))
+    (rocq-core (>= 9.0.0))
+    dune))
 
 (package
   (name assembler)
