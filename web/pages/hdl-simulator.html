@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gaur HDL Simulator</title>
+    <link rel="stylesheet" href="style/hdl_simulator_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav id="navbar">
+        <div id="nav-title">
+            <span class="logo-dot"></span>
+            <a href="index.html">Gaur</a>
+        </div>
+
+        <div id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="assembler.html">Assembler</a>
+            <a href="disassembler.html">Disassembler</a>
+            <a href="ram-init.html">RAM Init</a>
+            <a href="cpu-simulator.html">CPU Simulator</a>
+            <a href="vm-emulator.html">VM Emulator</a>
+            <a href="hdl-simulator.html">HDL Simulator</a>
+        </div>
+    </nav>
+
+    <div id="app">
+        <!-- Left: GHDL Source Input -->
+        <div id="input-panel">
+            <h2>GHDL Source</h2>
+
+            <div class="input-group source-upload">
+                <input
+                    type="file"
+                    id="hdl-file">
+            </div>
+
+            <div id="editor">
+                <div id="line-numbers" aria-hidden="true">1</div>
+                <textarea
+                    id="hdl-input"
+                    placeholder="CHIP Not {&#10;  INPUT in: bits 1&#10;  OUTPUT out: bits 1&#10;&#10;  out := Nand {a=in, b=in}&#10;}"
+                    spellcheck="false"
+                    wrap="off"></textarea>
+            </div>
+
+            <div id="compile-bar">
+                <button id="compile-btn" class="primary-btn">Compile (Ctrl+Enter)</button>
+                <div class="chip-picker">
+                    <label for="chip-select">Chip:</label>
+                    <select id="chip-select"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Simulation Console & Output -->
+        <div id="output-panel">
+            <div id="status-section">
+                <h2>Simulation</h2>
+                <pre id="sim-status"></pre>
+            </div>
+
+            <div id="visual-input-section">
+                <div id="visual-input-header">
+                    <h2>Input Pins</h2>
+                    <div class="group-picker">
+                        <label for="bit-group-select">Group:</label>
+                        <select id="bit-group-select">
+                            <option value="4" selected>4 bits</option>
+                            <option value="8">8 bits</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="visual-input"></div>
+                <div id="sim-buttons">
+                    <button id="btn-output" class="primary-btn">Output</button>
+                    <button id="btn-clock">Clock</button>
+                    <button id="btn-reset">Reset</button>
+                    <button id="btn-clear">Clear Log</button>
+                </div>
+            </div>
+
+            <div id="result-section">
+                <h2>Output</h2>
+                <div class="code-container">
+                    <div class="output-actions">
+                        <button class="copy-button" id="copy-output">Copy</button>
+                    </div>
+                    <pre id="sim-result"></pre>
+                </div>
+            </div>
+
+            <div id="error-section">
+                <h2>Errors</h2>
+                <div class="code-container">
+                    <button class="copy-button" id="copy-errors">Copy</button>
+                    <pre id="sim-errors"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <div id="footer-links">
+            <a
+                href="https://verify-at-iitpkd.gitlab.io/gaur/"
+                target="_blank"
+                rel="noopener noreferrer">
+                Documentation
+            </a>
+
+            <span class="footer-separator">·</span>
+
+            <a
+                href="https://gitlab.com/verify-at-iitpkd/gaur"
+                target="_blank"
+                rel="noopener noreferrer">
+                GitLab Repository
+            </a>
+        </div>
+
+        <span id="footer-page">Gaur HDL Simulator</span>
+    </footer>
+
+    <script src="./hdl_sim_web.bc.js"></script>
+</body>
+</html>

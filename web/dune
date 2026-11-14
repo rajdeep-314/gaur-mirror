@@ -46,3 +46,11 @@
  (modes js)
  (libraries js_of_ocaml str web_utils hdl-simulator.lib)
  (preprocess (pps js_of_ocaml-ppx)))
+
+(executable
+ (name hdl_sim_web)
+ (modules hdl_sim_web)
+ (modes js)
+ (libraries js_of_ocaml web_utils)
+ (preprocess (pps js_of_ocaml-ppx)))
+
