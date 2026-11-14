@@ -96,6 +96,8 @@ let build_exn ?on_progress (name : string) (p : Ast.prog) : sim =
   with
   | Interp.Interp_error msg | Shape_mismatch msg | Invalid_argument msg ->
     raise (Build_error msg)
+  | Stack_overflow ->
+    raise (Build_error "chip is too large (stack overflow)")
   | Out_of_memory ->
     raise (Build_error "chip is too large (out of memory)")
 

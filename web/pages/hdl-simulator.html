@@ -69,6 +69,13 @@
                     <div id="sim-progress-wrap">
                         <div id="sim-progress-bar"></div>
                     </div>
+                    <div id="sim-progress-timeout" class="progress-timeout hidden">
+                        <span id="sim-timeout-msg">⏱ Timing out in <strong id="sim-timeout-seconds">10</strong>s...</span>
+                        <div class="timeout-actions">
+                            <button type="button" id="btn-extend-timeout" class="timeout-btn" title="Add 30 seconds to the timeout">+30s</button>
+                            <button type="button" id="btn-cancel-sim" class="timeout-btn cancel" title="Stop simulation">Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -111,6 +111,22 @@ let () =
   let progress_overlay = DU.get_element "sim-progress-overlay" in
   let progress_msg_el  = DU.get_element "sim-progress-msg" in
   let progress_bar     = DU.get_element "sim-progress-bar" in
+  let progress_timeout_el = DU.get_element "sim-progress-timeout" in
+  let timeout_seconds_el  = DU.get_element "sim-timeout-seconds" in
+  let btn_extend_timeout  = DU.get_element "btn-extend-timeout" in
+  let btn_cancel_sim      = DU.get_element "btn-cancel-sim" in
+
+  let timeout_timer : Dom_html.interval_id option ref = ref None in
+  let remaining_timeout = ref 30 in
+
+  let stop_watchdog () =
+    match !timeout_timer with
+    | None -> ()
+    | Some tid ->
+      Dom_html.window##clearInterval tid;
+      timeout_timer := None;
+      progress_timeout_el##.classList##add (Js.string "hidden")
+  in
   let visual_section   = DU.get_element "visual-input-section" in
   let sim_buttons_el   = DU.get_element "sim-buttons" in
   let visual_el        = DU.get_element "visual-input" in
@@ -161,6 +177,7 @@ let () =
   in
 
   let hide_progress () =
+    stop_watchdog ();
     progress_overlay##.classList##add (Js.string "hidden");
     progress_bar##.classList##remove (Js.string "indeterminate");
     progress_bar##.style##.width := Js.string "0%"
@@ -319,6 +336,9 @@ let () =
     | None, _ -> ()
   in
 
+  let start_watchdog_impl = ref (fun ?(seconds = 30) () -> ()) in
+  let start_watchdog ?(seconds = 30) () = !start_watchdog_impl ~seconds () in
+
   let rec respawn_worker () =
     (match state.worker with
      | Some w -> w##terminate
@@ -343,6 +363,7 @@ let () =
            chip_select##.value := Js.string chip_name;
            state.busy <- true;
            update_status ~busy_msg:("Building " ^ chip_name ^ "...") ();
+           start_watchdog ();
            send (P.Req_load chip_name)
          | None ->
            update_status ())
@@ -399,6 +420,7 @@ let () =
       Js._false);
     w##.onerror := Dom.handler (fun ev ->
       Dom.preventDefault ev;
+      stop_watchdog ();
       state.busy <- false;
       state.needs_recompile <- true;
       state.pending_chip <- None;
@@ -413,6 +435,54 @@ let () =
     state.worker <- Some w
   in
 
+  let cancel_simulation msg =
+    stop_watchdog ();
+    state.busy <- false;
+    state.needs_recompile <- true;
+    state.pending_chip <- None;
+    respawn_worker ();
+    (match state.chip with
+     | Some active -> chip_select##.value := Js.string active
+     | None -> ());
+    DU.set_text errors_el msg;
+    update_status ()
+  in
+
+  let start_watchdog_fn ?(seconds = 30) () =
+    stop_watchdog ();
+    remaining_timeout := seconds;
+    progress_timeout_el##.classList##add (Js.string "hidden");
+    let tid =
+      Dom_html.window##setInterval
+        (Js.wrap_callback (fun () ->
+           decr remaining_timeout;
+           if !remaining_timeout <= 0 then
+             cancel_simulation
+               "Operation timed out. The chip may be too complex, exceeded browser limits, or is in an infinite loop."
+           else if !remaining_timeout <= 10 then begin
+             progress_timeout_el##.classList##remove (Js.string "hidden");
+             DU.set_text timeout_seconds_el (string_of_int !remaining_timeout)
+           end else begin
+             progress_timeout_el##.classList##add (Js.string "hidden")
+           end))
+        (Js.float 1000.)
+    in
+    timeout_timer := Some tid
+  in
+  start_watchdog_impl := start_watchdog_fn;
+
+  btn_extend_timeout##.onclick := Dom_html.handler (fun _ ->
+    remaining_timeout := !remaining_timeout + 30;
+    if !remaining_timeout > 10 then
+      progress_timeout_el##.classList##add (Js.string "hidden")
+    else
+      DU.set_text timeout_seconds_el (string_of_int !remaining_timeout);
+    Js._false);
+
+  btn_cancel_sim##.onclick := Dom_html.handler (fun _ ->
+    cancel_simulation "Simulation cancelled by user.";
+    Js._false);
+
   let request_compile () =
     if state.busy then respawn_worker ();
     let src = DU.get_textarea_value "hdl-input" in
@@ -420,6 +490,7 @@ let () =
     state.pending_chip <- None;
     state.busy <- true;
     DU.clear_text errors_el;
+    start_watchdog ();
     update_status ~busy_msg:"Compiling GHDL source..." ();
     send (P.Req_compile src)
   in
@@ -433,10 +504,12 @@ let () =
     if state.needs_recompile then begin
       state.pending_chip <- Some chip_name;
       state.busy <- true;
+      start_watchdog ();
       update_status ~busy_msg:("Building " ^ chip_name ^ "...") ();
       send (P.Req_compile state.last_source)
     end else begin
       state.busy <- true;
+      start_watchdog ();
       update_status ~busy_msg:("Building " ^ chip_name ^ "...") ();
       send (P.Req_load chip_name)
     end
@@ -509,6 +582,7 @@ let () =
         DU.set_text errors_el "Worker was restarted after an error. Please re-compile or re-select a chip."
       else begin
         state.busy <- true;
+        start_watchdog ();
         update_status ~busy_msg ();
         send req
       end
