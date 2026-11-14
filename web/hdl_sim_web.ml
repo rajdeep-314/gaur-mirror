@@ -36,6 +36,7 @@ let rec string_of_shape = function
 
 type ui_state =
   { mutable chip            : string option
+  ; mutable nands           : int
   ; mutable time            : int
   ; mutable input_type_str  : string
   ; mutable input_type      : P.wire_typ option
@@ -55,21 +56,27 @@ let () =
   let compile_btn  = DU.get_element "compile-btn" in
   let chip_select  = get_select "chip-select" in
 
-  let status_el      = DU.get_element "sim-status" in
-  let visual_section = DU.get_element "visual-input-section" in
-  let sim_buttons_el = DU.get_element "sim-buttons" in
-  let visual_el      = DU.get_element "visual-input" in
-  let output_el      = DU.get_element "visual-output" in
-  let group_select   = get_select "bit-group-select" in
-  let output_btn     = DU.get_element "btn-output" in
-  let clock_btn      = DU.get_element "btn-clock" in
-  let reset_btn      = DU.get_element "btn-reset" in
+  let status_el        = DU.get_element "sim-status" in
+  let timer_el         = DU.get_element "sim-timer" in
+  let time_value_el    = DU.get_element "sim-time-value" in
+  let progress_overlay = DU.get_element "sim-progress-overlay" in
+  let progress_msg_el  = DU.get_element "sim-progress-msg" in
+  let progress_bar     = DU.get_element "sim-progress-bar" in
+  let visual_section   = DU.get_element "visual-input-section" in
+  let sim_buttons_el   = DU.get_element "sim-buttons" in
+  let visual_el        = DU.get_element "visual-input" in
+  let output_el        = DU.get_element "visual-output" in
+  let group_select     = get_select "bit-group-select" in
+  let output_btn       = DU.get_element "btn-output" in
+  let clock_btn        = DU.get_element "btn-clock" in
+  let reset_btn        = DU.get_element "btn-reset" in
 
   let errors_el    = DU.get_element "sim-errors" in
   let copy_errors  = DU.get_element "copy-errors" in
 
   let state =
     { chip = None
+    ; nands = 0
     ; time = 0
     ; input_type_str = ""
     ; input_type = None
@@ -89,22 +96,52 @@ let () =
     | None -> ()
   in
 
-  let update_status ?busy_msg () =
+  let show_progress msg (pct : int option) =
+    progress_overlay##.classList##remove (Js.string "hidden");
+    DU.set_text progress_msg_el msg;
+    match pct with
+    | None ->
+      progress_bar##.style##.width := Js.string "";
+      progress_bar##.classList##add (Js.string "indeterminate")
+    | Some p ->
+      let p = max 0 (min 100 p) in
+      progress_bar##.classList##remove (Js.string "indeterminate");
+      progress_bar##.style##.width := Js.string (Printf.sprintf "%d%%" p)
+  in
+
+  let hide_progress () =
+    progress_overlay##.classList##add (Js.string "hidden");
+    progress_bar##.classList##remove (Js.string "indeterminate");
+    progress_bar##.style##.width := Js.string "0%"
+  in
+
+  let update_timer () =
+    match state.chip with
+    | None ->
+      timer_el##.classList##add (Js.string "hidden")
+    | Some _ ->
+      timer_el##.classList##remove (Js.string "hidden");
+      DU.set_text time_value_el (string_of_int state.time)
+  in
+
+  let update_status ?busy_msg ?(progress : int option = None) () =
+    update_timer ();
     match busy_msg with
     | Some msg ->
-      DU.set_text status_el msg;
+      show_progress msg progress;
       visual_section##.classList##add (Js.string "busy");
       sim_buttons_el##.classList##add (Js.string "busy")
     | None ->
+      hide_progress ();
       visual_section##.classList##remove (Js.string "busy");
       sim_buttons_el##.classList##remove (Js.string "busy");
       match state.chip with
       | None ->
+        status_el##.classList##remove (Js.string "hidden");
         DU.set_text status_el "No chip loaded. Compile GHDL source to begin."
-      | Some name ->
-        DU.set_text status_el
-          (Printf.sprintf "Chip: %s  |  t: %d  |  Input type: %s"
-             name state.time state.input_type_str)
+      | Some _ ->
+        status_el##.classList##add (Js.string "hidden");
+        DU.set_text status_el ""
   in
 
   let render_shape_into ~editable container root_shape =
@@ -236,11 +273,12 @@ let () =
            send (P.Req_load chip_name)
          | None ->
            update_status ())
-      | P.Resp_progress { msg; pct = _ } ->
+      | P.Resp_progress { msg; pct } ->
         state.busy <- true;
-        update_status ~busy_msg:msg ()
-      | P.Resp_loaded { chip; nands = _; time; input_type_str; input_type } ->
+        update_status ~busy_msg:msg ~progress:pct ()
+      | P.Resp_loaded { chip; nands; time; input_type_str; input_type } ->
         state.chip <- Some chip;
+        state.nands <- nands;
         state.time <- time;
         state.input_type_str <- input_type_str;
         state.input_type <- Some input_type;
@@ -358,34 +396,29 @@ let () =
     render_visual_output ();
     Js._false);
 
-  output_btn##.onclick := Dom_html.handler (fun _ ->
-    if not state.busy then begin
+  let run_sim_cmd busy_msg req =
+    if not state.busy && state.chip <> None then begin
       DU.clear_text errors_el;
       if state.needs_recompile then
         DU.set_text errors_el "Worker was restarted after an error. Please re-compile or re-select a chip."
-      else
-        send P.Req_output
-    end;
+      else begin
+        state.busy <- true;
+        update_status ~busy_msg ();
+        send req
+      end
+    end
+  in
+
+  output_btn##.onclick := Dom_html.handler (fun _ ->
+    run_sim_cmd "Stabilizing output..." P.Req_output;
     Js._false);
 
   clock_btn##.onclick := Dom_html.handler (fun _ ->
-    if not state.busy then begin
-      DU.clear_text errors_el;
-      if state.needs_recompile then
-        DU.set_text errors_el "Worker was restarted after an error. Please re-compile or re-select a chip."
-      else
-        send P.Req_clock
-    end;
+    run_sim_cmd "Clocking circuit..." P.Req_clock;
     Js._false);
 
   reset_btn##.onclick := Dom_html.handler (fun _ ->
-    if not state.busy then begin
-      DU.clear_text errors_el;
-      if state.needs_recompile then
-        DU.set_text errors_el "Worker was restarted after an error. Please re-compile or re-select a chip."
-      else
-        send P.Req_reset
-    end;
+    run_sim_cmd "Resetting circuit..." P.Req_reset;
     Js._false);
 
   let setup_splitter ~horizontal splitter prev_el container min_pct max_pct =
