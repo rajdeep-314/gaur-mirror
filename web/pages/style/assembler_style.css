@@ -200,7 +200,8 @@ body {
 #input-panel h2,
 #format-buttons h2,
 #result-section h2,
-#error-section h2 {
+#error-section h2,
+#symtable-section h2 {
     font-family: var(--font-heading);
 
     margin: 0 0 14px;
@@ -491,6 +492,94 @@ button:active {
 
     border: 1px solid var(--error-border);
     border-radius: 8px;
+}
+
+/* ================================
+   Symbol table
+   ================================ */
+
+#symtable-section {
+    display: none;
+
+    margin-bottom: 28px;
+}
+
+.table-container {
+    max-height: 280px;
+
+    overflow: auto;
+
+    background-color: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+#symbol-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-family: var(--font-code);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#symbol-table th {
+    position: sticky;
+
+    top: 0;
+
+    padding: 10px 16px;
+
+    text-align: left;
+
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    color: var(--text-secondary);
+
+    background-color: var(--surface);
+
+    border-bottom: 1px solid var(--border);
+}
+
+#symbol-table td {
+    padding: 8px 16px;
+
+    color: var(--text-primary);
+
+    border-bottom: 1px solid var(--border);
+}
+
+#symbol-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#symbol-table tbody tr:hover {
+    background-color: var(--accent-dim);
+}
+
+#symbol-table .symtable-pc {
+    color: var(--text-secondary);
+}
+
+#symbol-table .symtable-pc.duplicate {
+    color: var(--error);
+}
+
+#symbol-table .symtable-empty {
+    padding: 16px;
+
+    text-align: center;
+
+    font-family: var(--font-body);
+    font-style: italic;
+
+    color: var(--text-secondary);
 }
 
 /* ================================
