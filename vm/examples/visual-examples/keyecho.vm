@@ -1,0 +1,33 @@
+(************************************************************)
+(*                                                          *)
+(*   Print the latest pressed keyboard input in the         *)
+(*   top-left corner of the screen.                         *)
+(*                                                          *)
+(*   Shows the currently pressed key; the corner is         *)
+(*   cleared (a space is written) when no key is pressed.   *)
+(*                                                          *)
+(************************************************************)
+
+function main 0
+    label loop
+    push keyboard
+    push constant 0
+    eq
+    if-goto no_key
+
+    (* Write the pressed key at the top-left corner (offset 0). *)
+    push constant 0
+    push keyboard
+    scall putchar
+    goto loop
+
+    (* No key pressed: clear the corner with a space. *)
+    label no_key
+    push constant 0
+    push constant ' '
+    scall putchar
+    goto loop
+
+    push constant 0
+    return
+

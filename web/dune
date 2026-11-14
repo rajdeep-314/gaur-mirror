@@ -32,3 +32,11 @@
  (modes js)
  (libraries js_of_ocaml web_utils cpusim syntax common.types common.parsing extracted)
  (preprocess (pps js_of_ocaml-ppx)))
+
+(executable
+ (name vm_emulator_web)
+ (modules vm_emulator_web)
+ (modes js)
+ (libraries js_of_ocaml web_utils vm common.types common.parsing common.utils)
+ (preprocess (pps js_of_ocaml-ppx)))
+
