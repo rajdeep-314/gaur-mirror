@@ -154,6 +154,25 @@ let add_chip (env : chip_env) (chip : chip) : chip_env =
       }
       env
 
+(** [nand_counts p] computes the static number of [Nand] gates instantiated
+    by each chip in [p] (which must be in topological order). *)
+let nand_counts (p : prog) : int StrMap.t =
+  let init = StrMap.singleton Builtin.Nand.name 1 in
+  List.fold_left
+    (fun acc (chip : chip) ->
+       if StrMap.mem chip.name init then acc
+       else
+         let count =
+           List.fold_left
+             (fun sum (_, callee) ->
+                sum + (StrMap.find_opt callee acc |> Option.value ~default:0))
+             0
+             (calls chip)
+         in
+         StrMap.add chip.name count acc)
+    init
+    p
+
 (** [interp_prog p] compiles every chip of [p]. Chips must be in topological
     order: callees before callers. *)
 let interp_prog (p : prog) : chip_env =
