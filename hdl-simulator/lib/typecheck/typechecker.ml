@@ -1,6 +1,6 @@
 open Hdlutils
-open Parse
 open Errors
+open Parse
 
 module StrMap = Stdlib.Map.Make(String)
 
