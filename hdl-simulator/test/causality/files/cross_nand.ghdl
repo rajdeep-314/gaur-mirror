@@ -1,0 +1,8 @@
+CHIP CrossNand {
+  INPUT in: { s: bits 1, r: bits 1 }
+  OUTPUT out: { q: bits 1, not_q: bits 1 }
+
+  q := Nand { a = in.s, b = out.not_q }
+  not_q := Nand { a = in.r, b = q }
+  out := { q = q, not_q = not_q }
+}
