@@ -1,7 +1,7 @@
-(executable
+(executables
   (package vm)
-  (public_name vme)
-  (name vme)
-  (libraries vm)
+  (public_names vme vme-live)
+  (names vme vme_live)
+  (libraries vm unix)
 )
 
