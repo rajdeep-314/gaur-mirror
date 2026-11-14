@@ -1,0 +1,8 @@
+CHIP CrossFields {
+  INPUT in: { a: bits 1, b: bits 1 }
+  OUTPUT out: { a: bits 1, b: bits 1 }
+
+  x := { a = out.b, b = in.b }
+  y := { a = in.a, b = x.a }
+  out := { a = x.b, b = y.b }
+}

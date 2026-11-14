@@ -1,0 +1,15 @@
+CHIP DualPass {
+  INPUT in: { a: bits 1, b: bits 1 }
+  OUTPUT out: { a: bits 1, b: bits 1 }
+
+  out := { a = in.a, b = in.b }
+}
+
+CHIP PingPong {
+  INPUT in: { data: bits 1, other: bits 1 }
+  OUTPUT out: { res1: bits 1, res2: bits 1 }
+
+  x := DualPass { a = in.data, b = out.res2 }
+  y := DualPass { a = x.a, b = in.other }
+  out := { res1 = y.a, res2 = y.b }
+}

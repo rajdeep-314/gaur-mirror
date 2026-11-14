@@ -1,0 +1,8 @@
+CHIP BusLoop {
+  INPUT in: bits 2
+  OUTPUT out: bits 2
+
+  w1 := out[0:0] ++ in[0:0]
+  w2 := in[1:1] ++ w1[1:1]
+  out := w2
+}
