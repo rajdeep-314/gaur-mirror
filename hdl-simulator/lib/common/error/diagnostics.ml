@@ -31,7 +31,7 @@ let pp_severity ppf severity =
     ppf
     (match severity with
      | Error -> "Error"
-     | Bug -> "Buf")
+     | Bug -> "Bug")
 ;;
 
 type t =
