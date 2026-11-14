@@ -76,7 +76,7 @@ rule read =
 
   | eof       { EOF }
 
-  | _         { raise (SyntaxError  ( Printf.sprintf
+  | _         { raise (LexerError   ( Printf.sprintf
                                       "Unexpected char '%s'.\n"
                                       (Lexing.lexeme lexbuf)
                                     ))
