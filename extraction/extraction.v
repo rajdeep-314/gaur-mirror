@@ -12,6 +12,7 @@ definitions, etc. from Rocq theories to appropriate OCaml code.
 
 (** {2 Extraction setup} *)
 
+From Stdlib Require Import ZArith.
 From Stdlib Require Extraction.
 Extraction Language OCaml.
 
@@ -66,6 +67,11 @@ Extract Inductive Vector.t =>
 
 (** [Datatypes.result] gets mapped to OCaml's [result] type. *)
 Extract Inductive Datatypes.result => "result" [ "Ok" "Error" ].
+
+(** [Z.of_nat] is the identity function, because both [nat] and [Z] are already
+    extracted to OCaml [int]s.
+    NOTE: Optimization. *)
+Extract Constant Z.of_nat => "(fun n -> n)".
 
 
 (** {2 Extraction} *)
