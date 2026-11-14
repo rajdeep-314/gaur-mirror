@@ -1,0 +1,4 @@
+CHIP DupKey {
+  INPUT in: { a: bits 1, a: bits 1 }
+  OUTPUT out: bits 1
+}

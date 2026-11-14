@@ -1,0 +1,3 @@
+CHIP MissingInput {
+  OUTPUT out: bits 1
+}
