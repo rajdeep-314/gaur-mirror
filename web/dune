@@ -51,6 +51,6 @@
  (name hdl_sim_web)
  (modules hdl_sim_web)
  (modes js)
- (libraries js_of_ocaml web_utils)
+ (libraries js_of_ocaml str web_utils)
  (preprocess (pps js_of_ocaml-ppx)))
 

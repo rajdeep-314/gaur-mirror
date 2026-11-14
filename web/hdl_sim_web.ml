@@ -49,12 +49,61 @@ type ui_state =
   ; mutable worker          : (Js.js_string Js.t, Js.js_string Js.t) Worker.worker Js.t option
   }
 
+let escape_html_into buf s start len =
+  for i = start to start + len - 1 do
+    match s.[i] with
+    | '&' -> Buffer.add_string buf "&amp;"
+    | '<' -> Buffer.add_string buf "&lt;"
+    | '>' -> Buffer.add_string buf "&gt;"
+    | c   -> Buffer.add_char buf c
+  done
+
+let token_re =
+  Str.regexp
+    "#[^\n]*\\|\\b\\(CHIP\\|INPUT\\|OUTPUT\\|STATES\\|bits\\)\\b\\|\\bNand\\b\\|\\b[A-Z][a-zA-Z0-9_]*\\b\\|\\b[0-9]+\\b\\|\\+\\+\\|<-\\|:=\\|\\."
+
+let token_class tok =
+  match tok with
+  | "CHIP" | "INPUT" | "OUTPUT" | "STATES" | "bits" -> "tok-keyword"
+  | "Nand" -> "tok-builtin"
+  | _ ->
+    match tok.[0] with
+    | '#' -> "tok-comment"
+    | 'A' .. 'Z' -> "tok-type"
+    | '0' .. '9' -> "tok-number"
+    | _ -> "tok-op"
+
+let highlight_phdl src =
+  let len = String.length src in
+  let buf = Buffer.create (len + 64) in
+  let rec loop pos =
+    if pos >= len then ()
+    else
+      match Str.search_forward token_re src pos with
+      | idx ->
+        if idx > pos then escape_html_into buf src pos (idx - pos);
+        let tok = Str.matched_string src in
+        let tlen = String.length tok in
+        Buffer.add_string buf "<span class=\"";
+        Buffer.add_string buf (token_class tok);
+        Buffer.add_string buf "\">";
+        escape_html_into buf src idx tlen;
+        Buffer.add_string buf "</span>";
+        loop (idx + tlen)
+      | exception Not_found ->
+        escape_html_into buf src pos (len - pos)
+  in
+  loop 0;
+  if len > 0 && src.[len - 1] = '\n' then Buffer.add_char buf ' ';
+  Buffer.contents buf
+
 let () =
-  let hdl_input    = DU.get_textarea "hdl-input" in
-  let line_nums    = DU.get_element "line-numbers" in
-  let hdl_file     = DU.get_input "hdl-file" in
-  let compile_btn  = DU.get_element "compile-btn" in
-  let chip_select  = get_select "chip-select" in
+  let hdl_input     = DU.get_textarea "hdl-input" in
+  let hdl_highlight = DU.get_element "hdl-highlight" in
+  let line_nums     = DU.get_element "line-numbers" in
+  let hdl_file      = DU.get_input "hdl-file" in
+  let compile_btn   = DU.get_element "compile-btn" in
+  let chip_select   = get_select "chip-select" in
 
   let status_el        = DU.get_element "sim-status" in
   let timer_el         = DU.get_element "sim-timer" in
@@ -371,13 +420,27 @@ let () =
 
   respawn_worker ();
 
-  DU.setup_line_numbers_with_shortcuts hdl_input line_nums (fun ev ->
+  DU.setup_line_numbers_with_shortcuts ~expand_placeholder:true hdl_input line_nums (fun ev ->
     if ev##.keyCode = 13 && Js.to_bool ev##.ctrlKey then begin
       Dom.preventDefault ev;
       request_compile ();
       Js._false
     end else
       Js._true);
+
+  let update_highlight () =
+    let src = Js.to_string hdl_input##.value in
+    hdl_highlight##.innerHTML := Js.string (highlight_phdl src)
+  in
+  let sync_highlight_scroll () =
+    hdl_highlight##.scrollTop := hdl_input##.scrollTop;
+    hdl_highlight##.scrollLeft := hdl_input##.scrollLeft
+  in
+  ignore (Dom_html.addEventListener hdl_input Dom_html.Event.input
+    (Dom_html.handler (fun _ -> update_highlight (); Js._true)) Js._false);
+  ignore (Dom_html.addEventListener hdl_input Dom_html.Event.scroll
+    (Dom_html.handler (fun _ -> sync_highlight_scroll (); Js._true)) Js._false);
+  update_highlight ();
 
   DU.setup_file_input hdl_file hdl_input line_nums errors_el;
   DU.setup_copy_button copy_errors errors_el;

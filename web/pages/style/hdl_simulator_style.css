@@ -167,20 +167,78 @@ body {
     user-select: none;
 }
 
-#hdl-input {
+#editor-code {
+    position: relative;
     flex: 1;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#hdl-highlight,
+#hdl-input {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
+    margin: 0;
     padding: 14px;
-    resize: none;
     border: none;
-    outline: none;
-    background-color: var(--surface);
-    color: var(--text-primary);
     font-family: var(--font-code);
     font-size: 13px;
     line-height: 1.6;
     tab-size: 4;
+    white-space: pre;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+#hdl-highlight {
+    pointer-events: none;
+    background-color: var(--surface);
+    color: var(--text-primary);
+    z-index: 1;
+    scrollbar-width: none;
+}
+
+#hdl-highlight::-webkit-scrollbar {
+    display: none;
+}
+
+.tok-comment {
+    color: #6B7280;
+    font-style: italic;
+}
+
+.tok-keyword {
+    color: #C084FC;
+    font-weight: 600;
+}
+
+.tok-builtin {
+    color: #7CC68A;
+    font-weight: 600;
+}
+
+.tok-type {
+    color: #60A5FA;
+}
+
+.tok-number {
+    color: #F59E0B;
+}
+
+.tok-op {
+    color: #94A3B8;
+}
+
+#hdl-input {
+    z-index: 2;
+    resize: none;
+    outline: none;
+    background: transparent;
+    color: transparent;
+    caret-color: var(--text-primary);
 }
 
 #hdl-input::placeholder,
@@ -188,7 +246,10 @@ body {
     color: #666666;
 }
 
-#hdl-input::selection,
+#hdl-input::selection {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
 #cmd-input::selection {
     background-color: #444444;
 }

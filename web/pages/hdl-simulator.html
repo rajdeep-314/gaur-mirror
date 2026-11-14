@@ -33,11 +33,14 @@
 
             <div id="editor">
                 <div id="line-numbers" aria-hidden="true">1</div>
-                <textarea
-                    id="hdl-input"
-                    placeholder="CHIP Not {&#10;  INPUT in: bits 1&#10;  OUTPUT out: bits 1&#10;&#10;  out := Nand {a=in, b=in}&#10;}"
-                    spellcheck="false"
-                    wrap="off"></textarea>
+                <div id="editor-code">
+                    <pre id="hdl-highlight" aria-hidden="true"></pre>
+                    <textarea
+                        id="hdl-input"
+                        placeholder="CHIP Not {&#10;  INPUT in: bits 1&#10;  OUTPUT out: bits 1&#10;&#10;  out := Nand {a=in, b=in}&#10;}"
+                        spellcheck="false"
+                        wrap="off"></textarea>
+                </div>
             </div>
 
             <div id="compile-bar">
