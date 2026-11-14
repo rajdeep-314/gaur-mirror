@@ -92,12 +92,18 @@
                 <div id="visual-input-section">
                     <div id="visual-input-header">
                         <h2>Input Pins</h2>
-                        <div class="group-picker">
-                            <label for="bit-group-select">Group:</label>
-                            <select id="bit-group-select">
-                                <option value="4" selected>4 bits</option>
-                                <option value="8">8 bits</option>
-                            </select>
+                        <div class="io-controls">
+                            <div class="endian-picker">
+                                <label for="endian-toggle">Endian:</label>
+                                <button type="button" id="endian-toggle" class="endian-btn" title="Click to toggle endianness (currently Big-endian: MSB on left, bit 0 on right)">Big</button>
+                            </div>
+                            <div class="group-picker">
+                                <label for="bit-group-select">Group:</label>
+                                <select id="bit-group-select">
+                                    <option value="4" selected>4 bits</option>
+                                    <option value="8">8 bits</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div id="visual-input"></div>

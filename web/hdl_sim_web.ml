@@ -116,6 +116,8 @@ let () =
   let visual_el        = DU.get_element "visual-input" in
   let output_el        = DU.get_element "visual-output" in
   let group_select     = get_select "bit-group-select" in
+  let endian_btn       = DU.get_element "endian-toggle" in
+  let is_big_endian     = ref true in
   let output_btn       = DU.get_element "btn-output" in
   let clock_btn        = DU.get_element "btn-clock" in
   let reset_btn        = DU.get_element "btn-reset" in
@@ -205,55 +207,77 @@ let () =
         let row = Dom_html.createDiv Dom_html.document in
         row##.className := Js.string "bit-row";
         let len = Array.length arr in
-        let tile_class b idx =
-          let state_cls = if b then "bit-toggle bit-on" else "bit-toggle" in
-          let mode_cls = if editable then "" else " bit-readonly" in
+        let create_tile idx =
           let end_cls =
             if len <= 1 then ""
             else if idx = 0 then " bit-low"
             else if idx = len - 1 then " bit-high"
             else ""
           in
-          state_cls ^ mode_cls ^ end_cls
-        in
-        let rec add_groups start =
-          if start < len then begin
-            let grp = Dom_html.createSpan Dom_html.document in
-            grp##.className := Js.string "bit-group";
-            let stop = min (start + group_size) len in
-            for i = 0 to stop - start - 1 do
-              let idx = len - 1 - (start + i) in
-              if editable then begin
-                let btn = Dom_html.createButton Dom_html.document in
-                let sync_btn b =
-                  btn##.textContent := Js.some (Js.string (if b then "1" else "0"));
-                  btn##.className := Js.string (tile_class b idx)
-                in
-                sync_btn arr.(idx);
-                btn##.onclick := Dom_html.handler (fun _ ->
-                  if not state.busy then begin
-                    arr.(idx) <- not arr.(idx);
-                    sync_btn arr.(idx);
-                    DU.clear_text errors_el;
-                    match state.shape with
-                    | Some s -> send (P.Req_set_input s)
-                    | None -> ()
-                  end;
-                  Js._false);
-                Dom.appendChild grp btn
-              end else begin
-                let tile = Dom_html.createSpan Dom_html.document in
-                let b = arr.(idx) in
-                tile##.textContent := Js.some (Js.string (if b then "1" else "0"));
-                tile##.className := Js.string (tile_class b idx);
-                Dom.appendChild grp tile
-              end
-            done;
-            Dom.appendChild row grp;
-            add_groups stop
+          let tile_class b =
+            let base = if b then "bit-toggle bit-on" else "bit-toggle" in
+            let ro = if editable then "" else " bit-readonly" in
+            base ^ ro ^ end_cls
+          in
+          if editable then begin
+            let btn = Dom_html.createButton Dom_html.document in
+            let sync_btn b =
+              btn##.textContent := Js.some (Js.string (if b then "1" else "0"));
+              btn##.className := Js.string (tile_class b)
+            in
+            sync_btn arr.(idx);
+            btn##.onclick := Dom_html.handler (fun _ ->
+              if not state.busy then begin
+                let next = not arr.(idx) in
+                arr.(idx) <- next;
+                sync_btn next;
+                DU.clear_text errors_el;
+                send (P.Req_set_input root_shape)
+              end;
+              Js._false);
+            (btn :> Dom_html.element Js.t)
+          end else begin
+            let tile = Dom_html.createSpan Dom_html.document in
+            let b = arr.(idx) in
+            tile##.textContent := Js.some (Js.string (if b then "1" else "0"));
+            tile##.className := Js.string (tile_class b);
+            (tile :> Dom_html.element Js.t)
           end
         in
-        add_groups 0;
+        if not !is_big_endian then begin
+          (* Little-endian: bit 0 (blue) on left, MSB (orange) on right *)
+          let rec add_groups start =
+            if start < len then begin
+              let stop = min len (start + group_size) in
+              let grp = Dom_html.createDiv Dom_html.document in
+              grp##.className := Js.string "bit-group";
+              for idx = start to stop - 1 do
+                Dom.appendChild grp (create_tile idx)
+              done;
+              Dom.appendChild row grp;
+              add_groups stop
+            end
+          in
+          add_groups 0
+        end else begin
+          (* Big-endian: MSB (orange) on left, bit 0 (blue) on right *)
+          let rem = len mod group_size in
+          let first_size = if rem = 0 then group_size else rem in
+          let rec loop hi =
+            if hi >= 0 then begin
+              let size = if hi = len - 1 then first_size else group_size in
+              let lo = hi - size + 1 in
+              let grp = Dom_html.createDiv Dom_html.document in
+              grp##.className := Js.string "bit-group";
+              for idx = hi downto lo do
+                Dom.appendChild grp (create_tile idx)
+              done;
+              Dom.appendChild row grp;
+              loop (lo - 1)
+            end
+          in
+          loop (len - 1)
+        end;
         (row :> Dom_html.element Js.t)
       | P.WSRecord fields ->
         let group = Dom_html.createDiv Dom_html.document in
@@ -452,6 +476,25 @@ let () =
   chip_select##.onchange := Dom_html.handler (fun _ ->
     let chip_name = Js.to_string chip_select##.value in
     if chip_name <> "" then request_load chip_name;
+    Js._false);
+
+  let update_endian_ui () =
+    if !is_big_endian then begin
+      endian_btn##.textContent := Js.some (Js.string "Big");
+      endian_btn##setAttribute (Js.string "title")
+        (Js.string "Click to toggle endianness (currently Big-endian: MSB on left, bit 0 on right)")
+    end else begin
+      endian_btn##.textContent := Js.some (Js.string "Little");
+      endian_btn##setAttribute (Js.string "title")
+        (Js.string "Click to toggle endianness (currently Little-endian: bit 0 on left, MSB on right)")
+    end
+  in
+
+  endian_btn##.onclick := Dom_html.handler (fun _ ->
+    is_big_endian := not !is_big_endian;
+    update_endian_ui ();
+    render_visual_input ();
+    render_visual_output ();
     Js._false);
 
   group_select##.onchange := Dom_html.handler (fun _ ->
