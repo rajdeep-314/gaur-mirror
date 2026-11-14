@@ -423,6 +423,7 @@ type app_state = {
   mutable current_status : string;
   mutable is_halted : bool;
   mutable current_modal_frame : State.frame option;
+  mutable run_active : bool;
 }
 
 let app : app_state = {
@@ -439,6 +440,7 @@ let app : app_state = {
   current_status = "Ready";
   is_halted = false;
   current_modal_frame = None;
+  run_active = false;
 }
 
 (* =========================================================================
@@ -737,35 +739,69 @@ let () =
   in
 
   (* Render Source Viewer with Line Highlighting *)
+  (* Cache for the source viewer. Rebuilding all lines on every sync wastes
+     far more time than executing VM instructions, so we only rebuild when
+     the source changes; otherwise we just toggle the highlight classes of
+     the two affected lines. *)
+  let last_rendered_source = ref None in
+  let last_active_line = ref None in
+
+  let set_line_class line_num ~active =
+    let el = DU.get_element (Printf.sprintf "code-line-%d" line_num) in
+    el##.className := Js.string (if active then "code-line active-line" else "code-line")
+  in
+
+  let scroll_line_into_view line_num =
+    let el = DU.get_element (Printf.sprintf "code-line-%d" line_num) in
+    ignore (el##scrollIntoView Js._false)
+  in
+
   let render_source_viewer () =
-    clear_element_children source_viewer;
-    let lines = String.split_on_char '\n' app.raw_source in
-    List.iteri (fun idx line_text ->
-      let line_num = idx + 1 in
-      let line_div = doc##createElement (Js.string "div") in
-      let is_active = match app.active_line_num with Some l -> l = line_num | None -> false in
-      line_div##.className := Js.string (if is_active then "code-line active-line" else "code-line");
-      line_div##.id := Js.string (Printf.sprintf "code-line-%d" line_num);
-      let num_span = doc##createElement (Js.string "span") in
-      num_span##.className := Js.string "line-num";
-      num_span##.style##.marginRight := Js.string "12px";
-      num_span##.style##.color := Js.string "var(--text-muted)";
-      num_span##.style##.display := Js.string "inline-block";
-      num_span##.style##.width := Js.string "28px";
-      num_span##.style##.textAlign := Js.string "right";
-      num_span##.style##.userSelect := Js.string "none";
-      DU.set_text num_span (string_of_int line_num);
+    let source_changed =
+      match !last_rendered_source with
+      | Some t -> t <> app.raw_source
+      | None -> true
+    in
+    if source_changed then begin
+      clear_element_children source_viewer;
+      let lines = String.split_on_char '\n' app.raw_source in
+      List.iteri (fun idx line_text ->
+        let line_num = idx + 1 in
+        let line_div = doc##createElement (Js.string "div") in
+        let is_active = match app.active_line_num with Some l -> l = line_num | None -> false in
+        line_div##.className := Js.string (if is_active then "code-line active-line" else "code-line");
+        line_div##.id := Js.string (Printf.sprintf "code-line-%d" line_num);
+        let num_span = doc##createElement (Js.string "span") in
+        num_span##.className := Js.string "line-num";
+        num_span##.style##.marginRight := Js.string "12px";
+        num_span##.style##.color := Js.string "var(--text-muted)";
+        num_span##.style##.display := Js.string "inline-block";
+        num_span##.style##.width := Js.string "28px";
+        num_span##.style##.textAlign := Js.string "right";
+        num_span##.style##.userSelect := Js.string "none";
+        DU.set_text num_span (string_of_int line_num);
 
-      let text_span = doc##createElement (Js.string "span") in
-      DU.set_text text_span (if line_text = "" then " " else line_text);
+        let text_span = doc##createElement (Js.string "span") in
+        DU.set_text text_span (if line_text = "" then " " else line_text);
 
-      Dom.appendChild line_div num_span;
-      Dom.appendChild line_div text_span;
-      Dom.appendChild source_viewer line_div;
+        Dom.appendChild line_div num_span;
+        Dom.appendChild line_div text_span;
+        Dom.appendChild source_viewer line_div;
 
-      if is_active then
-        ignore (line_div##scrollIntoView Js._false)
-    ) lines
+        if is_active then scroll_line_into_view line_num
+      ) lines;
+      last_rendered_source := Some app.raw_source;
+      last_active_line := app.active_line_num
+    end
+    else if !last_active_line <> app.active_line_num then begin
+      (match !last_active_line with
+       | Some l -> set_line_class l ~active:false
+       | None -> ());
+      (match app.active_line_num with
+       | Some l -> set_line_class l ~active:true; scroll_line_into_view l
+       | None -> ());
+      last_active_line := app.active_line_num
+    end
   in
 
   (* Render Call Stack *)
@@ -859,7 +895,14 @@ let () =
     app.current_status <- "Execution error (see details in source pane)"
   in
 
+  (* Stop the browser-pumped run loop, if any, and restore the button. *)
+  let stop_run () =
+    app.run_active <- false;
+    DU.set_text run_btn "Run"
+  in
+
   let switch_to_edit_mode () =
+    stop_run ();
     app.is_editing <- true;
     app.sim_state <- None;
     app.active_line_num <- None;
@@ -878,6 +921,7 @@ let () =
   in
 
   let switch_to_emulate_mode () =
+    stop_run ();
     app.raw_source <- Js.to_string source_textarea##.value;
     match compile_program () with
     | Ok () ->
@@ -897,8 +941,65 @@ let () =
         DU.set_text status_text app.current_status
   in
 
+  (* Number of VM instructions executed per browser tick when running. The
+     tick yields to the browser (timers and keyboard events) between batches,
+     so the page stays responsive and infinite VM loops run indefinitely.
+     Sized so that even instruction-count-paced busy loops (e.g. in
+     grid.vm) drain quickly, while the 60fps tick keeps the screen fresh. *)
+  let run_batch_size = 50000 in
+  let run_delay_ms = 16. in
+
+  (* Execute one batch of instructions. Updates app state; sets
+     app.run_active to false when the machine halts or an error occurs.
+     Entirely iterative, so the stack stays constant. *)
+  let run_one_batch () =
+    match app.prog, app.sim_state with
+    | Some p, Some s ->
+        let steps = ref 0 in
+        let current_s = ref s in
+        let finished = ref false in
+        while not !finished && !steps < run_batch_size do
+          (try
+             let ins = E.fetch_inst p !current_s in
+             current_s := E.execute_inst p !current_s ins;
+             incr steps
+           with
+           | Er.ExecutionError (_, (s', Er.Execution.ExecutionTerminated v)) ->
+               clear_error ();
+               current_s := s';
+               app.is_halted <- true;
+               app.last_rv <- Some (Some v);
+               app.current_status <- Printf.sprintf "Execution terminated with return value %ld" v;
+               finished := true
+           | Er.ExecutionError (a, e) ->
+               current_s := Er.Execution.state e;
+               report_exec_error a e;
+               finished := true
+           | exn ->
+               app.current_status <- "Error: " ^ Printexc.to_string exn;
+               finished := true)
+        done;
+        app.sim_state <- Some !current_s;
+        if !finished then stop_run ()
+    | _ -> stop_run ()
+  in
+
+  (* Pump the run loop: run a batch, sync the UI, and schedule the next
+     tick as long as we're still running. *)
+  let rec schedule_run_tick () =
+    ignore (Dom_html.window##setTimeout
+      (Js.wrap_callback (fun () ->
+        if app.run_active then begin
+          run_one_batch ();
+          sync_ui ();
+          if app.run_active then schedule_run_tick ()
+        end))
+      (Js.float run_delay_ms))
+  in
+
   (* Execution Handlers *)
   let handle_step () =
+    stop_run ();
     if app.is_halted then
       app.current_status <- "Execution already terminated. Click Reset to run again."
     else
@@ -929,76 +1030,71 @@ let () =
   in
 
   let handle_step_n count =
+    stop_run ();
     if app.is_halted then
       app.current_status <- "Execution already terminated. Click Reset to run again."
     else
       match app.prog, app.sim_state with
       | Some p, Some s ->
-          let rec loop current_step current_s =
-            if current_step >= count then begin
-              clear_error ();
-              app.sim_state <- Some current_s;
-              app.current_status <- Printf.sprintf "Executed %d instructions" count
-            end else
-              try
-                let ins = E.fetch_inst p current_s in
-                let next_s = E.execute_inst p current_s ins in
-                loop (current_step + 1) next_s
-              with
-              | Er.ExecutionError (_, (s', Er.Execution.ExecutionTerminated v)) ->
-                  clear_error ();
-                  app.sim_state <- Some s';
-                  app.is_halted <- true;
-                  app.last_rv <- Some (Some v);
-                  app.current_status <- Printf.sprintf "Execution terminated with return value %ld (after %d steps)" v (current_step + 1)
-              | Er.ExecutionError (a, e) ->
-                  app.sim_state <- Some (Er.Execution.state e);
-                  report_exec_error a e
-              | exn ->
-                  app.sim_state <- Some current_s;
-                  app.current_status <- "Error: " ^ Printexc.to_string exn
-          in
-          loop 0 s;
+          (* Iterative, so the stack stays constant no matter how large
+             count is. The try/with stays inside the loop body, which is
+             fine because it is popped on every iteration. *)
+          let steps = ref 0 in
+          let current_s = ref s in
+          let finished = ref false in
+          while not !finished && !steps < count do
+            (try
+               let ins = E.fetch_inst p !current_s in
+               current_s := E.execute_inst p !current_s ins;
+               incr steps
+             with
+             | Er.ExecutionError (_, (s', Er.Execution.ExecutionTerminated v)) ->
+                 clear_error ();
+                 current_s := s';
+                 app.is_halted <- true;
+                 app.last_rv <- Some (Some v);
+                 app.current_status <- Printf.sprintf "Execution terminated with return value %ld (after %d steps)" v (!steps + 1);
+                 finished := true
+             | Er.ExecutionError (a, e) ->
+                 current_s := Er.Execution.state e;
+                 report_exec_error a e;
+                 finished := true
+             | exn ->
+                 app.current_status <- "Error: " ^ Printexc.to_string exn;
+                 finished := true)
+          done;
+          app.sim_state <- Some !current_s;
+          if not !finished then begin
+            clear_error ();
+            app.current_status <- Printf.sprintf "Executed %d instructions" count
+          end;
           sync_ui ()
       | _ -> ()
   in
 
   let handle_run () =
-    if app.is_halted then
+    if app.run_active then begin
+      (* Toggle off: stop the pump. *)
+      stop_run ();
+      app.current_status <- "Stopped";
+      sync_ui ()
+    end
+    else if app.is_halted then
       app.current_status <- "Execution already terminated. Click Reset to run again."
     else
       match app.prog, app.sim_state with
-      | Some p, Some s ->
-          let max_steps = 200000 in
-          let rec loop steps current_s =
-            if steps >= max_steps then begin
-              app.sim_state <- Some current_s;
-              app.current_status <- Printf.sprintf "Reached step limit (%d steps)" max_steps
-            end else
-              try
-                let ins = E.fetch_inst p current_s in
-                let next_s = E.execute_inst p current_s ins in
-                loop (steps + 1) next_s
-              with
-              | Er.ExecutionError (_, (s', Er.Execution.ExecutionTerminated v)) ->
-                  clear_error ();
-                  app.sim_state <- Some s';
-                  app.is_halted <- true;
-                  app.last_rv <- Some (Some v);
-                  app.current_status <- Printf.sprintf "Execution terminated with return value %ld" v
-              | Er.ExecutionError (a, e) ->
-                  app.sim_state <- Some (Er.Execution.state e);
-                  report_exec_error a e
-              | exn ->
-                  app.sim_state <- Some current_s;
-                  app.current_status <- "Error: " ^ Printexc.to_string exn
-          in
-          loop 0 s;
-          sync_ui ()
+      | Some _, Some _ ->
+          clear_error ();
+          app.run_active <- true;
+          DU.set_text run_btn "Stop";
+          app.current_status <- "Running... (press Stop to pause)";
+          sync_ui ();
+          schedule_run_tick ()
       | _ -> ()
   in
 
   let handle_reset () =
+    stop_run ();
     clear_error ();
     match app.prog with
     | Some p ->
@@ -1013,6 +1109,7 @@ let () =
   in
 
   let handle_till_return () =
+    stop_run ();
     if app.is_halted then
       app.current_status <- "Execution already terminated."
     else
@@ -1049,6 +1146,7 @@ let () =
   in
 
   let handle_till_before_return () =
+    stop_run ();
     if app.is_halted then
       app.current_status <- "Execution already terminated."
     else
@@ -1082,6 +1180,7 @@ let () =
   in
 
   let handle_next_bpt () =
+    stop_run ();
     if app.is_halted then
       app.current_status <- "Execution already terminated."
     else
@@ -1111,6 +1210,7 @@ let () =
   in
 
   let handle_till_named_bpt bpt_name =
+    stop_run ();
     if bpt_name = "" then
       app.current_status <- "Please specify a breakpoint name in the input field"
     else if app.is_halted then
