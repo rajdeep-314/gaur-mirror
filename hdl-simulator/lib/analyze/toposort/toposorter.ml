@@ -1,7 +1,7 @@
+open Errors
 open Dependency
 open Parse
 open Hdlutils
-open Errors
 
 module STRING = struct
   type t = string

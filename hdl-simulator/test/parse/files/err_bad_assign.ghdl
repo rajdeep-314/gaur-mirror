@@ -1,0 +1,6 @@
+CHIP BadAssign {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out :=
+}

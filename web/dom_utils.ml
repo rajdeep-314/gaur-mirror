@@ -54,6 +54,7 @@ let update_line_numbers textarea line_numbers =
 
 (* Set up Tab handling and a keyboard shortcut handler. *)
 let setup_tab_to_spaces
+    ?(expand_placeholder = false)
     textarea
     (shortcut_handler : Dom_html.keyboardEvent Js.t -> bool Js.t) =
 
@@ -64,20 +65,35 @@ let setup_tab_to_spaces
 
         Dom.preventDefault ev;
 
-        let start = textarea##.selectionStart in
-        let finish = textarea##.selectionEnd in
         let value = Js.to_string textarea##.value in
-        let before = String.sub value 0 start in
-        let selected = String.sub value start (finish - start) in
-        let after = String.sub value finish
-          (String.length value - finish) in
+        if expand_placeholder && value = "" then begin
+          let placeholder = Js.to_string textarea##.placeholder in
+          if placeholder <> "" then begin
+            textarea##.value := textarea##.placeholder;
+            let len = String.length placeholder in
+            textarea##setSelectionRange len len;
+            let input_ev = Js.Unsafe.new_obj (Js.Unsafe.pure_js_expr "Event") [| Js.Unsafe.inject (Js.string "input") |] in
+            ignore (textarea##dispatchEvent input_ev);
+            Js._false
+          end else begin
+            Js._false
+          end
+        end else begin
+          let start = textarea##.selectionStart in
+          let finish = textarea##.selectionEnd in
+          let before = String.sub value 0 start in
+          let selected = String.sub value start (finish - start) in
+          let after = String.sub value finish (String.length value - finish) in
 
-        textarea##.value :=
-          Js.string (before ^ "    " ^ selected ^ after);
+          textarea##.value :=
+            Js.string (before ^ "    " ^ selected ^ after);
 
-        textarea##setSelectionRange (start + 4) (start + 4);
+          textarea##setSelectionRange (start + 4) (start + 4);
+          let input_ev = Js.Unsafe.new_obj (Js.Unsafe.pure_js_expr "Event") [| Js.Unsafe.inject (Js.string "input") |] in
+          ignore (textarea##dispatchEvent input_ev);
 
-        Js._false
+          Js._false
+        end
 
       end else begin
         shortcut_handler ev
@@ -105,14 +121,14 @@ let setup_line_numbers textarea line_numbers =
 
 
 (* Set up line numbers with custom keyboard shortcuts. *)
-(* Set up line numbers with custom keyboard shortcuts. *)
 let setup_line_numbers_with_shortcuts
+    ?expand_placeholder
     textarea
     line_numbers
     (shortcut_handler : Dom_html.keyboardEvent Js.t -> bool Js.t) =
 
   update_line_numbers textarea line_numbers;
-  setup_tab_to_spaces textarea shortcut_handler;
+  setup_tab_to_spaces ?expand_placeholder textarea shortcut_handler;
 
   textarea##.oninput :=
     Dom_html.handler (fun _ ->
@@ -237,7 +253,9 @@ let setup_file_input file_input textarea line_numbers errors =
 
                     | Some source ->
                         textarea##.value := Js.string source;
-                        update_line_numbers textarea line_numbers
+                        update_line_numbers textarea line_numbers;
+                        let ev = Js.Unsafe.new_obj (Js.Unsafe.pure_js_expr "Event") [| Js.Unsafe.inject (Js.string "input") |] in
+                        ignore (textarea##dispatchEvent ev)
                   )
       end;
 

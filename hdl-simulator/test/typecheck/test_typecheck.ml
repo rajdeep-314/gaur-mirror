@@ -1,6 +1,6 @@
-open Lib.Parse
-open Lib.Typecheck
-open Lib.Hdlutils
+open Hdl_simulator.Parse
+open Hdl_simulator.Typecheck
+open Hdl_simulator.Hdlutils
 
 let usage_txt =
   Printf.sprintf "Usage: %s <file.ghdl>" Sys.argv.(0)

@@ -1,0 +1,13 @@
+CHIP Not {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := Nand { a = in, b = in }
+}
+
+CHIP SelfLoop {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := Not out
+}

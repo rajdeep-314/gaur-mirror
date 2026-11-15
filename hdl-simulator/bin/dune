@@ -2,4 +2,4 @@
  (package hdl-simulator)
  (public_name hdl-simulator)
  (name ghdls)
- (libraries lib))
+ (libraries hdl-simulator.lib))

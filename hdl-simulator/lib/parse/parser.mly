@@ -20,7 +20,7 @@
     |> Seq.map (function
        | '0' -> false
        | '1' -> true
-       |  c  -> raise (SyntaxError  ( Printf.sprintf
+       |  c  -> raise (LexerError   ( Printf.sprintf
                                       "Unexpected '%s'.\n"
                                       str)))
     |> List.of_seq

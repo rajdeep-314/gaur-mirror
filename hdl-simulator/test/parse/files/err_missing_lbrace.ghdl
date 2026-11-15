@@ -1,0 +1,4 @@
+CHIP MissingBrace
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+}

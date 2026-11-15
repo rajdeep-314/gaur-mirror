@@ -1,0 +1,30 @@
+CHIP StepA {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := in
+}
+
+CHIP StepB {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := in
+}
+
+CHIP StepC {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  out := in
+}
+
+CHIP Ring3 {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+
+  w1 := StepA out
+  w2 := StepB w1
+  w3 := StepC w2
+  out := w3
+}

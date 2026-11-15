@@ -1,0 +1,17 @@
+CHIP Cell {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+  STATES st: bits 1
+
+  out := st
+  st' <- in
+}
+
+CHIP LoopCell {
+  INPUT in: bits 1
+  OUTPUT out: bits 1
+  STATES st: bits 1
+
+  out := st
+  st' <- out
+}

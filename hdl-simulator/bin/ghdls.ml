@@ -1,4 +1,4 @@
-open Lib
+open Hdl_simulator
 open Hdlutils
 open Analyze
 open Backend.Interpreter
@@ -33,6 +33,7 @@ let _ =
       |> Parse.parse_ic_many
       |> Toposort.toposort
       |> Typecheck.typecheck
+      |> Causality.analyse
       |> Liveness.analyse
       |> Reduce.reduce_prog
       |> Repl.repl !chip_name
